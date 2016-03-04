@@ -5,6 +5,7 @@
 Operaciones.
 
 """
+from __future__ import print_function
 import os
 import logging
 logging.basicConfig(filename = "%s.log" % (
@@ -189,7 +190,7 @@ def buscar_grupo_talla(productoVenta):
     except TypeError, e:
         strlog = "(EE)[T] %s no se encuentra en Murano." % (
                 productoVenta.descripcion)
-        print strlog
+        print(strlog)
         logging.error(strlog)
         if not DEBUG:
             raise e
@@ -202,20 +203,36 @@ def buscar_codigo_producto(productoVenta):
     Busca el ID del producto en Murano para la descripción del producto
     recibido.
     """
+    # Se puede dar el caso de que el producto exista pero la descripción no
+    # coincida completamente porque Murano ha recortado el texto para que
+    # quepa en su mierda de campo tipo CHAR[40]. ¿En serio? 2016 bro!
+    # Buscamos directamente por el código de murano_exportar: [PC|PV]+ID
+    # Podría aquí devolverlo directamente, pero al menos así me aseguro de
+    # que existe en Murano.
     #res = consultar_producto(nombre = productoVenta.descripcion)
     res = consultar_producto(producto = productoVenta)
     try:
         codarticulo = res[0]['CodigoArticulo']
+        desc_ginn = productoVenta.descripcion
+        assert (desc_ginn.startswith(res[0]['DescripcionArticulo']) or
+                desc_ginn.startswith(res[0]['Descripcion2Articulo']))
     except (IndexError, TypeError), e:
-        # TODO: Ver cómo tratar los errores de cuando el producto no existe en Murano. ¿Se puede dar el caso? Todos se darán de alta en Murano y se buscarán ahí cuando se creen los artículos en los partes de producción. Debería exisitir. **Pero se podría dar el caso de que el nombre haya cambiado.**
-        strlog = "(EE)[C] %s no se encuentra en Murano." % (
-                productoVenta.descripcion)
-        print strlog
+        strlog = "(EE)[C] %s no se encuentra en Murano. Excepción: %s" % (
+                productoVenta.descripcion, e)
+        print(strlog)
         logging.error(strlog)
         if not DEBUG:
             raise e
         else:
             codarticulo = ''
+    except AssertionError:
+        strlog = '(WW)[C] La descripción de "%s" (%s) ha cambiado.'\
+                 ' En Murano es: "%s"/"%s"' % (productoVenta.descripcion,
+                                               productoVenta.puid,
+                                               res[0]['DescripcionArticulo'],
+                                               res[0]['Descripcion2Articulo'])
+        print(strlog)
+        logging.warning(strlog)
     return codarticulo
 
 def buscar_codigo_almacen(almacen, articulo = None):
@@ -238,7 +255,7 @@ def buscar_codigo_almacen(almacen, articulo = None):
         except Exception, e:
             strlog = "(EE)[A] Almacén '%s' no se encuentra en Murano." % (
                     almacen.nombre)
-            print strlog
+            print(strlog)
             logging.error(strlog)
             if not DEBUG:
                 raise e
@@ -262,7 +279,7 @@ def simulate_guid():
     """
     if VERBOSE:
         strlog = "Simulando guid..."
-        print strlog
+        print(strlog)
         logging.info(strlog)
     import random
     grupos = 8, 4, 4, 4, 12
@@ -276,7 +293,7 @@ def simulate_guid():
     guid = "-".join(subgrupos)
     if VERBOSE:
         strlog = guid
-        print strlog
+        print(strlog)
         logging.info(strlog)
     return guid
 

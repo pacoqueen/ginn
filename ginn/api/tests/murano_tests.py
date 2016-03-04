@@ -69,36 +69,36 @@ def main():
     parser = argparse.ArgumentParser(
             description = "Pruebas de movimientos de stock en Murano.")
     parser.add_argument("-b", "--balas", dest = "balas",
-            help = "Inserta las últimas 100 balas y sus consumos.",
-            default = False, action = "store_true")
+            help = "Inserta las últimas n balas y sus consumos.",
+            default = 0, type = int)
     parser.add_argument("-r", "--rollos", dest = "rollos",
-            help = "Inserta los últimos 100 rollos y sus consumos.",
-            default = False, action = "store_true")
+            help = "Inserta los últimos n rollos y sus consumos.",
+            default = 0, type = int)
     parser.add_argument("-c", "--cajas", dest ="cajas",
-            help = "Inserta los últimos 10 palés y sus consumos.",
-            default = False, action = "store_true")
+            help = "Inserta los últimos n palés y sus consumos.",
+            default = 0, type = int)
     parser.add_argument("-g", "--bigbags", dest = "bigbags",
-            help = "Inserta los últimos 100 bigbags y sus consumos.",
-            default = False, action = "store_true")
+            help = "Inserta los últimos n bigbags y sus consumos.",
+            default = 0, type = int)
     if len(sys.argv) == 1:
         parser.print_help()
     args = parser.parse_args()
     ## Pruebas
     if args.balas:
-        balas = pclases.Bala.select(orderBy = "-id")[:100]
-        for bala in balas:
+        balas = pclases.Bala.select(orderBy = "-id")
+        for bala in balas.limit(args.balas):
             prueba_bala(bala.codigo)
     if args.rollos:
-        rollos = pclases.Rollo.select(orderBy = "-id")[:100]
-        for rollo in rollos:
+        rollos = pclases.Rollo.select(orderBy = "-id")
+        for rollo in rollos.limit(args.rollos):
             prueba_rollo(rollo.codigo)
     if args.cajas:
-        pales = pclases.Pale.select(orderBy = "-id")[:10]
-        for pale in pales:
+        pales = pclases.Pale.select(orderBy = "-id")
+        for pale in pales.limit(args.cajas):
             prueba_pale(pale.codigo)
     if args.bigbags:
-        bigbags = pclases.Bigbag.select(orderBy = "-id")[:100]
-        for bigbag in bigbags:
+        bigbags = pclases.Bigbag.select(orderBy = "-id")
+        for bigbag in bigbags.limit(args.bigbags):
             prueba_bigbag(bigbag.codigo)
 
 if __name__ == "__main__":

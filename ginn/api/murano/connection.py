@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import os
 import logging
 logging.basicConfig(filename = "%s.log" % (
@@ -43,8 +44,8 @@ class Connection:
         if VERBOSE:
             frame = inspect.currentframe()
             args, _, _, values = inspect.getargvalues(frame)
-            print "Iniciando conexión [%s]" % "; ".join(
-                    ["%s = %s" % (i, values[i]) for i in args if i != "self"])
+            print("Iniciando conexión [%s]" % "; ".join(
+                    ["%s = %s" % (i, values[i]) for i in args if i != "self"]))
         self.__database = database
         if password is None:
             try:
@@ -77,10 +78,10 @@ class Connection:
         Desconecta la sesión actual con MS-SQLServer.
         """
         if VERBOSE:
-            print "Desconectando...",
+            print("Desconectando...")
         self.conn.disconnect()
         if VERBOSE:
-            print "[OK]"
+            print("\t\t\t[OK]")
 
     def run_sql(self, sql):
         """
@@ -98,35 +99,35 @@ class Connection:
             logging.debug(sentence_sql)
             if DEBUG:
                 strlog = " ==> SQLServer --> %s" % (str_clean(sentence_sql))
-                print strlog
+                print(strlog)
                 logging.info(strlog)
             if self.conn:   # En modo DEBUG esto es None.
                 try:
                     if VERBOSE:
                         strlog = "Lanzando consulta %s..." % (
                                 sentence_sql.split()[0])
-                        print strlog
+                        print(strlog)
                         logging.info(strlog)
                     res = c.execute(sentence_sql)
                     if "SELECT" in sentence_sql:
                         if VERBOSE:
                             strlog = "    · fetchall..."
-                            print strlog
+                            print(strlog)
                             logging.info(strlog)
                         res = c.fetchall()
                         if VERBOSE:
                             strlog = "                [OK]"
-                            print strlog
+                            print(strlog)
                             logging.info(strlog)
                     else:
                         if VERBOSE:
                             strlog = "    · commit..."
-                            print strlog
+                            print(strlog)
                             logging.info(strlog)
                         self.conn.commit()
                         if VERBOSE:
                             strlog = "                [OK]"
-                            print strlog
+                            print(strlog)
                             logging.info(strlog)
                 except Exception, e:
                     if not DEBUG:
@@ -134,7 +135,7 @@ class Connection:
                         raise e
                     else:
                         strerror = " -- (!) [Excepción %s]" % e
-                        print strerror
+                        print(strerror)
                         logging.error(strerror)
         return res
 
