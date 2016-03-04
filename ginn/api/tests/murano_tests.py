@@ -111,8 +111,9 @@ def prueba_codigo(codigo):
                pclases.PREFIJO_ROLLOC: pclases.RolloC,
                pclases.PREFIJO_ROLLODEFECTUOSO: pclases.RolloDefectuoso}
     objeto = None
-    for prefijo, clase_pclases in mapping:
+    for prefijo in mapping:
         if codigo.startswith(prefijo):
+            clase_pclases = mapping[prefijo]
             objeto = clase_pclases.selectBy(codigo = codigo)[0]
             prueba_objeto(objeto)
     if not objeto:
