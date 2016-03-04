@@ -363,10 +363,11 @@ def get_codalmacen_articulo(conexion, articulo):
               ORDER BY Fecha DESC;""" % (conexion.get_database(),
                                          codigo_articulo, 
                                          CODEMPRESA)
-    if codalmacen is None:
-        codalmacen = ""
-    else:
+    try:
         codalmacen = conexion.run_sql(SQL)["CodigoAlmacen"]
+    except (TypeError, AttributeError, KeyError): 
+        # codalmacen es None o no se encontraron registros
+        codalmacen = ""
     return codalmacen
 
 def crear_proceso_IME(conexion):
