@@ -144,15 +144,20 @@ def prueba_objeto(objeto):
     if isinstance(objeto, (pclases.Rollo,
                            pclases.RolloDefectuoso,
                            pclases.RolloC)):
+        print("Insertando rollo %s (%s)..." % (objeto.codigo, objeto.puid))
         murano.create_rollo(objeto)
     elif isinstance(objeto, (pclases.Bala,
                              pclases.BalaCable)):
+        print("Insertando bala %s (%s)..." % (objeto.codigo, objeto.puid))
         murano.create_bala(objeto)
     elif isinstance(objeto, pclases.Bigbag):
+        print("Insertando bigbag %s (%s)..." % (objeto.codigo, objeto.puid))
         murano.create_bigbag(objeto)
     elif isinstance(objeto, pclases.Caja):
+        print("Insertando caja %s (%s)..." % (objeto.codigo, objeto.puid))
         murano.create_caja(objeto)
     elif isinstance(objeto, pclases.Pale):
+        print("Insertando palé %s (%s)..." % (objeto.codigo, objeto.puid))
         murano.create_pale(objeto)
     else:
         raise NotImplementedError, "%s no soportado" % (objeto.puid)
