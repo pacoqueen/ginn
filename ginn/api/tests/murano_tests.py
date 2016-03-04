@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+
+ERRCODENOTFOUND = 1
+ERRCODENOTIMPLEMENTED = 2
+
 import argparse
 import sys, os
 # Desde el framework se hacen algunas cosas sucias con los argumentos,
@@ -97,6 +101,60 @@ def prueba_bigbag(codigo = None):
     # Los partes de reembolsado se ignoran. Solo la fibra fabricada
     # directamente para almacenar en bigbags en lugar de en balas.
 
+def prueba_codigo(codigo):
+    mapping = {pclases.PREFIJO_ROLLO: pclases.Rollo,
+               pclases.PREFIJO_BALA: pclases.Bala,
+               pclases.PREFIJO_BIGBAG: pclases.Bigbag,
+               pclases.PREFIJO_PALE: pclases.Pale,
+               pclases.PREFIJO_CAJA: pclases.Caja,
+               pclases.PREFIJO_BALACABLE: pclases.BalaCable,
+               pclases.PREFIJO_ROLLOC: pclases.RolloC,
+               pclases.PREFIJO_ROLLODEFECTUOSO: pclases.RolloDefectuoso}
+    objeto = None
+    for prefijo, clase_pclases in mapping:
+        if codigo.startswith(prefijo):
+            objeto = clase_pclases.selectBy(codigo = codigo)[0]
+            prueba_objeto(objeto)
+    if not objeto:
+        if codigo.startswith(pclases.PREFIJO_BOLSA):
+            print("Código de bolsa detectado. Debe insertar al menos una "
+                  "caja completa de bolsas.")
+            sys.exit(ERRCODENOTIMPLEMENTED)
+        elif codigo.startswith(pclases.PREFIJO_PARTIDACEM):
+            print("Código de partida de cemento detectado. No soportado.")
+            sys.exit(ERRCODENOTIMPLEMENTED)
+        elif codigo.startswith(pclases.PREFIJO_LOTECEM):
+            print("Código de lote de cemento detectado. No soportado.")
+            sys.exit(ERRCODENOTIMPLEMENTED)
+        elif codigo.startswith(pclases.PREFIJO_LOTE):
+            print("Código de lote de fibra detectado. No soportado.")
+            sys.exit(ERRCODENOTIMPLEMENTED)
+        elif codigo.startswith(pclases.PREFIJO_PARTIDA):
+            print("Código de partida de geotextiles detectado. No soportado.")
+            sys.exit(ERRCODENOTIMPLEMENTED)
+        elif codigo.startswith(pclases.PREFIJO_PARTIDACARGA):
+            print("Código de partida de carga detectado. No soportado.")
+            sys.exit(ERRCODENOTIMPLEMENTED)
+        else:
+            print("El código %s no se reconoce.")
+            sys.exit(ERRCODENOTFOUND)
+
+def prueba_objeto(objeto):
+    if isinstance(objeto, (pclases.Rollo,
+                           pclases.RolloDefectuoso,
+                           pclases.RolloC)):
+        murano.create_rollo(objeto)
+    elif isinstance(objeto, (pclases.Bala,
+                             pclases.BalaCable)):
+        murano.create_bala(objeto)
+    elif isinstance(objeto, pclases.Bigbag):
+        murano.create_bigbag(objeto)
+    elif isinstance(objeto, pclases.Caja):
+        murano.create_caja(objeto)
+    elif isinstance(objeto, pclases.Pale):
+        murano.create_pale(objeto)
+    else:
+        raise NotImplementedError, "%s no soportado" % (objeto.puid)
 
 def main():
     ## Parámetros
@@ -114,6 +172,10 @@ def main():
     parser.add_argument("-g", "--bigbags", dest = "bigbags",
             help = "Inserta los últimos n bigbags y sus consumos.",
             default = 0, type = int)
+    parser.add_argument("-o", "--codigo", dest = "codigo",
+            help = "Especifica el código del artículo a insertar. "
+                   "**No tiene en cuenta los consumos relacionados.**",
+            default = None, type = str)
     if len(sys.argv) == 1:
         parser.print_help()
     args = parser.parse_args()
@@ -134,6 +196,8 @@ def main():
         bigbags = pclases.Bigbag.select(orderBy = "-id")
         for bigbag in bigbags.limit(args.bigbags):
             prueba_bigbag(bigbag.codigo)
+    if args.codigo:
+        prueba_codigo(args.codigo)
 
 if __name__ == "__main__":
     main()
