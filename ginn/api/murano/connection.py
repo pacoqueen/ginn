@@ -81,7 +81,7 @@ class Connection:
             print("Desconectando...")
         self.conn.disconnect()
         if VERBOSE:
-            print("\t\t\t[OK]")
+            print("\t\t\t\t[OK]")
 
     def run_sql(self, sql):
         """
@@ -116,7 +116,7 @@ class Connection:
                             logging.info(strlog)
                         res = c.fetchall()
                         if VERBOSE:
-                            strlog = "                [OK]"
+                            strlog = "\t\t\t\t\t\t\t\t\t[OK]"
                             print(strlog)
                             logging.info(strlog)
                     else:
@@ -126,7 +126,7 @@ class Connection:
                             logging.info(strlog)
                         self.conn.commit()
                         if VERBOSE:
-                            strlog = "                [OK]"
+                            strlog = "\t\t\t\t\t\t\t\t\t[OK]"
                             print(strlog)
                             logging.info(strlog)
                 except Exception, e:
@@ -134,7 +134,7 @@ class Connection:
                         logging.critical(e)
                         raise e
                     else:
-                        strerror = " -- (!) [Excepción %s]" % e
+                        strerror = "\t\t\t\t -- (!) [Excepción %s]" % e
                         print(strerror)
                         logging.error(strerror)
         return res

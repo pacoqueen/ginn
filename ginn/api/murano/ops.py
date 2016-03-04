@@ -723,7 +723,7 @@ def create_articulo(articulo, cantidad = 1, producto = None):
         elif articulo.es_balaCable():
             create_bala(articulo.balaCable, delta, producto)
         elif articulo.es_bigbag():
-            create_bigabag(articulo.bigbag, delta, producto)
+            create_bigbag(articulo.bigbag, delta, producto)
         elif articulo.es_caja():
             create_caja(articulo.caja, delta, producto)
         elif articulo.es_rollo():
