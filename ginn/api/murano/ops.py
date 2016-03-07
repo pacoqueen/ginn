@@ -51,7 +51,7 @@ SQL = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
             Precio,
             Importe,
             Unidades2_,
-            -- UnidadMedida2_,
+            UnidadMedida2_,
             FactorConversion_,
             Comentario,
             -- CodigoCanal,
@@ -92,8 +92,8 @@ SQL = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
             '%s',       -- unidad de medida específica
             %f,         -- precio
             %f,         -- importe
-            %f,         -- unidades2 = unidades * factor de conversion
-            -- NULL,
+            %f,         -- unidades2 = unidades * factor de conversion | fc!=0
+            '%s',       -- UnidadMedida2_
             %f,         -- factor de conversión
             '%s',       -- comentario
             -- NULL,
@@ -198,6 +198,24 @@ def buscar_grupo_talla(productoVenta):
         else:
             grupo_talla = 0
     return grupo_talla
+
+def buscar_unidad_medida2(producto):
+    """
+    Devuelve la unidad de medida básica de la ficha del producto.
+    """
+    res = consultar_producto(producto)
+    try:
+        unidad2 = res[0]['UnidadMedida2_']
+    except TypeError, e:
+        strlog = "(EE)[U] UnidadMedida2_ para %s no se encuentra en Murano."%(
+                producto.descripcion)
+        print(strlog)
+        logging.error(strlog)
+        if not DEBUG:
+            raise e
+        else:
+            unidad2 = "ROLLO|BALA|CAJA"
+    return unidad2
 
 def buscar_codigo_producto(productoVenta):
     """
@@ -547,7 +565,7 @@ def prepare_params(articulo, cantidad = 1, producto = None):
     codigo_articulo = buscar_codigo_producto(producto)
     codigo_almacen = buscar_codigo_almacen(articulo.almacen, articulo)
     codigo_talla = articulo.get_str_calidad()
-    grupo_talla = buscar_grupo_talla(articulo.productoVenta)
+    grupo_talla = buscar_grupo_talla(producto)
     if cantidad == 1:
         tipo_movimiento = 1     # 1 = entrada, 2 = salida.
     else:
@@ -557,19 +575,20 @@ def prepare_params(articulo, cantidad = 1, producto = None):
     precio_kg = buscar_precio_coste(producto, ejercicio, codigo_almacen)
     precio = estimar_precio_coste(articulo, precio_kg)
     importe = unidades * precio
-    factor_conversion = buscar_factor_conversion(articulo.productoVenta)
+    factor_conversion = buscar_factor_conversion(producto)
     if factor_conversion:
         unidades2 = unidades * factor_conversion
     else:
         unidades2 = 1 # Siempre será uno porque por cada rollo o bala hay 
                       # solo 1 mov. stock y 1 mov. serie.
+    unidad_medida2 = buscar_unidad_medida2(producto)
     origen_movimiento = "F" # E = Entrada de Stock (entrada directa), 
                             # F (fabricación), I (inventario), 
                             # M (rechazo fabricación), S (Salida stock)
     return (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
-            unidades, precio, importe, unidades2, factor_conversion,
-            origen_movimiento)
+            unidades, precio, importe, unidades2, unidad_medida2,
+            factor_conversion, origen_movimiento)
 
 def estimar_precio_coste(articulo, precio_kg):
     """
@@ -622,14 +641,16 @@ def create_bala(bala, cantidad = 1, producto = None):
     numero_serie_lc = bala.codigo
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
-            unidades, precio, importe, unidades2, factor_conversion,
-            origen_movimiento) = prepare_params(articulo, cantidad, producto)
+            unidades, precio, importe, unidades2, unidad_medida2,
+            factor_conversion, origen_movimiento) = prepare_params(
+                    articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
     sql_movstock = SQL % (database,
                           CODEMPRESA, ejercicio, periodo, fecha, documento,
                           codigo_articulo, codigo_almacen, partida,
                           grupo_talla, codigo_talla, tipo_movimiento, unidades,
                           unidad_medida, precio, importe, unidades2,
+                          unidad_medida2,
                           factor_conversion, comentario, ubicacion,
                           origen_movimiento, numero_serie_lc,
                           id_proceso_IME)
@@ -662,8 +683,9 @@ def create_bigbag(bigbag, cantidad = 1, producto = None):
     unidad_medida = "KG"
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
-            unidades, precio, importe, unidades2, factor_conversion,
-            origen_movimiento) = prepare_params(articulo, cantidad, producto)
+            unidades, precio, importe, unidades2, unidad_medida2,
+            factor_conversion, origen_movimiento) = prepare_params(
+                    articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
     sql_movstock = SQL % (database,
                           CODEMPRESA, ejercicio, periodo, fecha, documento,
@@ -705,8 +727,9 @@ def create_rollo(rollo, cantidad = 1, producto = None):
     unidad_medida = "M2"
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
-            unidades, precio, importe, unidades2, factor_conversion,
-            origen_movimiento) = prepare_params(articulo, cantidad, producto)
+            unidades, precio, importe, unidades2, unidad_medida2,
+            factor_conversion, origen_movimiento) = prepare_params(
+                    articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
     sql_movstock = SQL % (database,
                           CODEMPRESA, ejercicio, periodo, fecha, documento,
@@ -746,8 +769,9 @@ def create_caja(caja, cantidad = 1, producto = None):
     numero_serie_lc = caja.codigo
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
-            unidades, precio, importe, unidades2, factor_conversion,
-            origen_movimiento) = prepare_params(articulo, cantidad, producto)
+            unidades, precio, importe, unidades2, unidad_medida2,
+            factor_conversion, origen_movimiento) = prepare_params(
+                    articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
     sql_movstock = SQL % (database,
                           CODEMPRESA, ejercicio, periodo, fecha, documento,
@@ -963,11 +987,13 @@ def update_stock(producto, delta, almacen):
                             # F (fabricación), I (inventario), 
                             # M (rechazo fabricación), S (Salida stock)
     id_proceso_IME = crear_proceso_IME(c)
+    unidad_medida2 = buscar_unidad_medida2(producto)
     sql_movstock = SQL % (database,
                           CODEMPRESA, ejercicio, periodo, fecha, documento,
                           codigo_articulo, codigo_almacen, partida,
                           grupo_talla, codigo_talla, tipo_movimiento, unidades,
                           unidad_medida, precio, importe, unidades2,
+                          unidad_medida2,
                           factor_conversion, comentario, ubicacion,
                           origen_movimiento, numero_serie_lc,
                           id_proceso_IME)
