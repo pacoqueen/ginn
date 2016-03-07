@@ -353,7 +353,7 @@ def buscar_precio_coste_murano(producto, ejercicio, codigo_almacen):
            """ % (c.get_database(),
                   cod_articulo, 
                   ejercicio,
-                  cod_almacen,
+                  codigo_almacen,
                   CODEMPRESA)
     try:
         precio_coste = c.run_sql(SQL)[0]["PrecioMedio"]
