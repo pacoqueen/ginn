@@ -271,7 +271,7 @@ def buscar_precio_coste_familia_murano(cod_familia):
     """
     c = Connection()
     SQL = r"""SELECT TOP 1 PrecioPorUnidadEspecifica
-              FROM [%s].[dbo].[Familia]
+              FROM [%s].[dbo].[Familias]
               WHERE CodigoFamilia = '%s'
                 AND CodigoSubfamilia = '***********'
                 AND CodigoEmpresa = '%d';
