@@ -692,6 +692,7 @@ def create_bigbag(bigbag, cantidad = 1, producto = None):
                           codigo_articulo, codigo_almacen, partida,
                           grupo_talla, codigo_talla, tipo_movimiento, unidades,
                           unidad_medida, precio, importe, unidades2,
+                          unidad_medida2,
                           factor_conversion, comentario, ubicacion,
                           origen_movimiento, numero_serie_lc,
                           id_proceso_IME)
@@ -736,6 +737,7 @@ def create_rollo(rollo, cantidad = 1, producto = None):
                           codigo_articulo, codigo_almacen, partida,
                           grupo_talla, codigo_talla, tipo_movimiento, unidades,
                           unidad_medida, precio, importe, unidades2,
+                          unidad_medida2,
                           factor_conversion, comentario, ubicacion,
                           origen_movimiento, numero_serie_lc,
                           id_proceso_IME)
@@ -778,6 +780,7 @@ def create_caja(caja, cantidad = 1, producto = None):
                           codigo_articulo, codigo_almacen, partida,
                           grupo_talla, codigo_talla, tipo_movimiento, unidades,
                           unidad_medida, precio, importe, unidades2,
+                          unidad_medida2,
                           factor_conversion, comentario, ubicacion,
                           origen_movimiento, numero_serie_lc,
                           id_proceso_IME)
