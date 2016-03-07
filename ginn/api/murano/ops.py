@@ -558,7 +558,11 @@ def prepare_params(articulo, cantidad = 1, producto = None):
     precio = estimar_precio_coste(articulo, precio_kg)
     importe = unidades * precio
     factor_conversion = buscar_factor_conversion(articulo.productoVenta)
-    unidades2 = unidades * factor_conversion
+    if factor_conversion:
+        unidades2 = unidades * factor_conversion
+    else:
+        unidades2 = 1 # Siempre será uno porque por cada rollo o bala hay 
+                      # solo 1 mov. stock y 1 mov. serie.
     origen_movimiento = "F" # E = Entrada de Stock (entrada directa), 
                             # F (fabricación), I (inventario), 
                             # M (rechazo fabricación), S (Salida stock)
