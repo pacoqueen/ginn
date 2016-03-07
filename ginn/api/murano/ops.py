@@ -294,7 +294,7 @@ def buscar_precio_coste_familia_ginn(cod_familia):
     """
     Devuelve el precio por familia definido en ginn.
     """
-    # TODO: FIXME: HARCODED: Esto debe ir a la tabla de ginn correspondiente.
+    # TODO: FIXME: HARCODED: Esto debe ir a la tabla de ginn correspondiente y reflejarlo en la ventana que sea.
     if cod_familia == "GEO":
         precio_coste = 2.210
     elif cod_familia == "FIB" or cod_familia == "FCE":
@@ -545,8 +545,8 @@ def prepare_params(articulo, cantidad = 1, producto = None):
         tipo_movimiento = 2
     unidades = 1    # En dimensión base: 1 bala, rollo, caja, bigbag...
     #precio = 0.0
-    precio = buscar_precio_coste(producto, ejercicio, codigo_almacen)
-    precio *= articulo.peso     # TODO: ¿peso o peso_sin embalaje?
+    precio_kg = buscar_precio_coste(producto, ejercicio, codigo_almacen)
+    precio = estimar_precio_coste(articulo, precio_kg)
     importe = unidades * precio
     factor_conversion = buscar_factor_conversion(articulo.productoVenta)
     unidades2 = unidades * factor_conversion
@@ -557,6 +557,40 @@ def prepare_params(articulo, cantidad = 1, producto = None):
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
             unidades, precio, importe, unidades2, factor_conversion,
             origen_movimiento)
+
+def estimar_precio_coste(articulo, precio_kg):
+    """
+    Estima el precio de coste del artículo recibido en función de los €/kg
+    indicados en el parámetro «precio_kg».
+    """
+    # Este precio de coste "requete"-estimado es un CWT en toda regla. Ver 
+    # correo del 7 de marzo de 2016 - 13:01
+    if articulo.es_rollo():
+        # Peso teórico ideal, sin embalaje.
+        peso = articulo.get_peso_teorico()
+    elif articulo.es_rolloC():
+        # Peso real dado en báscula, con embalaje y todo.
+        peso = articulo.peso
+    elif articulo.es_bala():
+        # Peso real dado en báscula, con embalaje y todo.
+        peso = articulo.peso
+    elif articulo.es_bala_cable():
+        # Peso real dado en báscula, con embalaje y todo.
+        peso = articulo.peso
+    elif articulo.es_bigbag():
+        # Peso real dado en báscula, con embalaje y todo.
+        peso = articulo.peso
+    elif articulo.es_caja():
+        # Peso nominal de la caja. El teórico. La embaladora no falla y el 
+        # cartón es despreciable. Es el peso que se almacena como real para
+        # las cajas a la hora de fabricarlas.
+        peso = articulo.peso
+    else:
+        strerror = "ops:estimar_precio_coste:No se pudo estimar para «%s»" % (
+                articulo)
+        logging.error(strerror)
+        raise ValueError, strerror
+    return peso * precio_kg
 
 def create_bala(bala, cantidad = 1, producto = None):
     """
