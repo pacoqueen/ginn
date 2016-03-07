@@ -288,8 +288,9 @@ def buscar_precio_coste_familia_murano(cod_familia):
                   CODEMPRESA)
     try:
         precio_coste = c.run_sql(SQL)[0]["GEO_CosteUnidadEspecifica"]
+        precio_coste = float(precio_coste)  # Viene como Decimal
     except (TypeError, AttributeError, KeyError): 
-        # codalmacen es None o no se encontraron registros
+        # cod_familia es None o no se encontraron registros
         raise ValueError
     except Exception, e:
         logging.warning("No se encontró precio en Murano para la familia "
