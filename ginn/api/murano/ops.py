@@ -287,7 +287,7 @@ def buscar_precio_coste_familia_murano(cod_familia):
                   cod_familia, 
                   CODEMPRESA)
     try:
-        precio_coste = c.run_sql(SQL)["GEO_CosteUnidadEspecifica"]
+        precio_coste = c.run_sql(SQL)[0]["GEO_CosteUnidadEspecifica"]
     except (TypeError, AttributeError, KeyError): 
         # codalmacen es None o no se encontraron registros
         raise ValueError
@@ -336,7 +336,7 @@ def buscar_precio_coste_murano(producto, ejercicio, codigo_almacen):
                   cod_almacen,
                   CODEMPRESA)
     try:
-        precio_coste = c.run_sql(SQL)["PrecioMedio"]
+        precio_coste = c.run_sql(SQL)[0]["PrecioMedio"]
     except (TypeError, AttributeError, KeyError): 
         # codalmacen es None o no se encontraron registros
         raise ValueError
@@ -495,7 +495,7 @@ def get_codalmacen_articulo(conexion, articulo):
                                          codigo_articulo, 
                                          CODEMPRESA)
     try:
-        codalmacen = conexion.run_sql(SQL)["CodigoAlmacen"]
+        codalmacen = conexion.run_sql(SQL)[0]["CodigoAlmacen"]
     except (TypeError, AttributeError, KeyError): 
         # codalmacen es None o no se encontraron registros
         codalmacen = ""
