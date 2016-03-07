@@ -218,7 +218,7 @@ def build_fila(producto, columnas):
             # Familia a la que pertenece. Es donde se especifica el 
             # precio mínimo, por tanto el producto debe pertenecer a
             # una familia al importarlo.
-            valor = determinar_familia(producto)
+            valor = determinar_familia_Murano(producto)
         else:
             campo = columna
             try:
@@ -344,7 +344,7 @@ def determinar_unidad_medida_precio(producto):
         res = "E"
     return res
 
-def determinar_familia(producto):
+def determinar_familia_Murano(producto):
     """
     Devuelve el código de familia del producto. En el código de familia se
     especifica el precio mínimo, por tanto es importante y relevante solo
@@ -366,6 +366,29 @@ def determinar_familia(producto):
             res = "FCE"     # Fibra cemento
         elif producto.es_bolsa() or producto.es_caja():
             res = "FEM"     # Fibra embolsada
+    elif isinstance(producto, pclases.ProductoCompra):
+        valor = producto.tipoDeMaterial.descripcion
+        if valor:
+            if valor == "Aceites y lubricantes":
+                res = "OIL"
+            elif valor == "Comercializados":
+                res = "COM"
+            elif valor == "Mantenimiento":
+                res = "MAN"
+            elif valor == "Materia Prima":
+                res = "MAP"
+            elif valor == "Material adicional":
+                res = "MAT"
+            elif valor == "Mercancía inicial Valdemoro":
+                res = "MIV"
+            elif valor == "Productos comercializados":
+                res = "COM"
+            elif valor == "Repuestos fibra":
+                res = "REF"
+            elif valor == "Repuestos geotextiles":
+                res = "REG"
+            else:
+                res = valor
     return res
 
 def muranize_valor(valor, columna, producto):
@@ -396,6 +419,8 @@ def muranize_valor(valor, columna, producto):
     elif columna == "camposEspecificosBala.color":
         res = valor.upper()
     elif columna == "tipoDeMaterial.descripcion":
+        # [20160207] Una vez modificado el determinar_familia_Murano ya no
+        # haría falta. Lo dejo para no romper la compatibilidad hacia atrás
         if valor:
             if valor == "Aceites y lubricantes":
                 res = "OIL"

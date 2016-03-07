@@ -13,6 +13,7 @@ logging.basicConfig(filename = "%s.log" % (
     level = logging.DEBUG)
 import datetime
 from connection import Connection, DEBUG, VERBOSE
+from export import determinar_familia_Murano
 
 try:
     import win32com.client
@@ -235,6 +236,127 @@ def buscar_codigo_producto(productoVenta):
         logging.warning(strlog)
     return codarticulo
 
+def buscar_precio_coste(producto, ejercicio, codigo_almacen):
+    """
+    Devuelve el importe en €/kg definido en Murano y después en ginn (si no se
+    encuenta) para la familia del producto.
+    Si es producto de compra, devuelve el precio de valoracion por unidad de
+    producto según la función de valoración definida para él.
+    """
+    cod_familia = determinar_familia_Murano(producto)
+    if isinstance(producto, pclases.ProductoVenta):
+        try:
+            precio_coste = buscar_precio_coste_familia_murano(cod_familia)
+        except ValueError:
+            precio_coste = buscar_precio_coste_familia_ginn(cod_familia)
+    elif isinstance(producto, pclases.ProductoCompra):
+        try:
+            precio_coste = buscar_precio_coste_murano(producto, ejercicio,
+                                                      codigo_almacen)
+        except ValueError:
+            precio_coste = buscar_precio_coste_ginn(producto)
+    else:
+        # WTF?
+        raise ValueError, "ops:buscar_precio_coste: el producto «%s» recibido"\
+                          " no es un producto de compra ni de venta." % (
+                                  producto)
+    return precio_coste
+
+def buscar_precio_coste_familia_murano(cod_familia):
+    """
+    Devuelve el precio de coste de la base de datos de Murano para el código
+    de familia recibido.
+    Lanza ValueError si el código de familia no se encuentra o no tiene
+    precio de coste.
+    """
+    c = Connection()
+    SQL = r"""SELECT TOP 1 PrecioPorUnidadEspecifica
+              FROM [%s].[dbo].[Familia]
+              WHERE CodigoFamilia = '%s'
+                AND CodigoSubfamilia = '***********'
+                AND CodigoEmpresa = '%d';
+           """ % (c.get_database(),
+                  cod_familia, 
+                  CODEMPRESA)
+    try:
+        precio_coste = c.run_sql(SQL)["PrecioPorUnidadEspecifica"]
+    except (TypeError, AttributeError, KeyError): 
+        # codalmacen es None o no se encontraron registros
+        raise ValueError
+    except Exception, e:
+        logging.warning("No se encontró precio en Murano para la familia "
+                        "«%s». Además, provocó una excepción %s." % 
+                        (cod_familia, e))
+        precio_coste = None
+    return precio_coste
+
+def buscar_precio_coste_familia_ginn(cod_familia):
+    """
+    Devuelve el precio por familia definido en ginn.
+    """
+    # TODO: FIXME: HARCODED: Esto debe ir a la tabla de ginn correspondiente.
+    if cod_familia == "GEO":
+        precio_coste = 2.210
+    elif cod_familia == "FIB" or cod_familia == "FCE":
+        precio_coste = 1.545
+    elif cod_familia == "FEM":
+        precio_coste = 1.884
+    else:
+        raise ValueError, "cod_familia debe ser GEO, FIB, FCE o FEM. Se "\
+                          "recibió: %s" % (cod_familia)
+
+def buscar_precio_coste_murano(producto, ejercicio, codigo_almacen):
+    """
+    Devuelve el precio de coste de la base de datos de Murano para el producto
+    recibido. Según Sage lo aconsejable es enviar el «PrecioMedio» en el
+    momento del consumo del producto. Se almacena en el campo «PrecioMedio»
+    de la tabla «AcumuladoStock», donde solo hay un registro por producto,
+    año y periodo. El periodo 99 siempre guarda el más actualizado.
+    """
+    c = Connection()
+    cod_articulo = get_codigo_articulo_murano(producto)
+    SQL = r"""SELECT TOP 1 PrecioMedio
+              FROM [%s].[dbo].[AcumuladoStock]
+              WHERE CodigoArticulo = '%s'
+                AND Ejercicio = %d
+                AND CodigoAlmacen = '%s'
+                AND CodigoEmpresa = '%d'
+                AND Periodo = 99;
+           """ % (c.get_database(),
+                  cod_articulo, 
+                  ejercicio,
+                  cod_almacen,
+                  CODEMPRESA)
+    try:
+        precio_coste = c.run_sql(SQL)["PrecioMedio"]
+    except (TypeError, AttributeError, KeyError): 
+        # codalmacen es None o no se encontraron registros
+        raise ValueError
+    except Exception, e:
+        logging.warning("No se encontró precio medio en Murano para el "
+                        "producto «%s». Además, provocó una excepción %s." % 
+                        (cod_articulo, e))
+        precio_coste = None
+    return precio_coste
+
+def buscar_precio_coste_ginn(producto):
+    """
+    Devuelve el precio de coste en ginn para el producto (debe ser un producto
+    de compra) según su función de valoración.
+    """
+    if isinstance(producto, pclases.ProductoCompra):
+        precio_coste = producto.get_precio_valoracion()
+    elif isinstance(producto, pclases.ProductoVenta):
+        # No debería entrar aquí, pero me estoy adelantando al futuro right now
+        cod_familia = determinar_familia_Murano(producto)
+        precio_coste = buscar_precio_coste_familia_ginn(cod_familia)
+    else:
+        # WTF?
+        raise ValueError, "ops:buscar_precio_coste_ginn: el producto «%s» "\
+                          "recibido no es un producto de compra ni de venta."%(
+                                  producto)
+    return precio_coste
+
 def buscar_codigo_almacen(almacen, articulo = None):
     """
     Devuelve almacén de la empresa configurada cuyo nombre coincida con el del
@@ -371,6 +493,20 @@ def get_codalmacen_articulo(conexion, articulo):
         codalmacen = ""
     return codalmacen
 
+def get_codigo_articulo_murano(producto):
+    """
+    Hemos elegido arbitrariamente (ver export.muranize_valor) que el código
+    de artículo en Murano sea [PC|PV]IDginn.
+    Calcula el CodigoArticulo del producto recibido según esa expresión y lo
+    devuelve.
+    """
+    if isinstance(producto, pclases.ProductoVenta):
+        idmurano = "PV"
+    else:
+        idmurano = "PC"
+    idmurano += str(producto.id)
+    return idmurano
+
 def crear_proceso_IME(conexion):
     """
     Crea un proceso de importación con guid único.
@@ -397,10 +533,9 @@ def prepare_params(articulo, cantidad = 1, producto = None):
     periodo = today.month
     fecha = today.strftime("%Y-%m-%d %H:%M:%S")
     documento = int(today.strftime("%Y%m%d"))
-    if producto:
-        codigo_articulo = buscar_codigo_producto(producto)
-    else:
-        codigo_articulo = buscar_codigo_producto(articulo.productoVenta)
+    if not producto:
+        producto = articulo.productoVenta
+    codigo_articulo = buscar_codigo_producto(producto)
     codigo_almacen = buscar_codigo_almacen(articulo.almacen, articulo)
     codigo_talla = articulo.get_str_calidad()
     grupo_talla = buscar_grupo_talla(articulo.productoVenta)
@@ -409,7 +544,9 @@ def prepare_params(articulo, cantidad = 1, producto = None):
     else:
         tipo_movimiento = 2
     unidades = 1    # En dimensión base: 1 bala, rollo, caja, bigbag...
-    precio = 0.0    # TODO: Hasta que se defina bien el precio coste por familia y cómo actualizarlo mensialmente.
+    #precio = 0.0
+    precio = buscar_precio_coste(producto, ejercicio, codigo_almacen)
+    precio *= articulo.peso     # TODO: ¿peso o peso_sin embalaje?
     importe = unidades * precio
     factor_conversion = buscar_factor_conversion(articulo.productoVenta)
     unidades2 = unidades * factor_conversion
@@ -676,11 +813,7 @@ def consultar_producto(producto = None, nombre = None):
             if DEBUG:
                 res = []
     else:   # Busco por el código de Murano: PC|PV + ID
-        if isinstance(producto, pclases.ProductoVenta):
-            idmurano = "PV"
-        else:
-            idmurano = "PC"
-        idmurano += str(producto.id)
+        idmurano = get_codigo_articulo_murano(producto)
         sql = "SELECT * FROM %s.dbo.Articulos WHERE " % (c.get_database())
         where = r"CodigoArticulo = '%s';" % (idmurano)
         sql += where
@@ -706,6 +839,7 @@ def update_calidad(articulo, calidad):
     # y volvemos a insertarlo como C. En ese caso no importa que se repita el 
     # código para el mismo producto porque antes hemos hecho la salida.
     # TODO: Ojo porque si cambio a calidad C probablemente implique un cambio de producto.
+    raise NotImplementedError, "Función no disponible por el momento."
 
 def create_articulo(articulo, cantidad = 1, producto = None):
     """
@@ -773,7 +907,8 @@ def update_stock(producto, delta, almacen):
         delta = abs(delta)
         tipo_movimiento = 2
     unidades = delta    # En dimensión base del producto.
-    precio = producto.precioDefecto # TODO: Hasta que se defina bien el precio coste del producto en el momento de ser consumido
+    #precio = producto.precioDefecto
+    precio = buscar_precio_coste(producto, ejercicio, codigo_almacen)
     importe = unidades * precio
     factor_conversion = buscar_factor_conversion(producto)
     unidades2 = unidades * factor_conversion
