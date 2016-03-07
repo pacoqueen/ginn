@@ -780,7 +780,7 @@ def create_caja(caja, cantidad = 1, producto = None):
     """
     articulo = caja.articulo
     partida = caja.partidaCem.codigo
-    unidad_medida = "M2"
+    unidad_medida = "KG"
     comentario = ("Caja ginn: [%s]" % caja.get_info())[:40]
     ubicacion = "Almac. de fibra embolsada."[:15]
     numero_serie_lc = caja.codigo
