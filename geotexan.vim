@@ -1,5 +1,5 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim: Vim session script.
-" Created by session.vim 1.5 on 07 marzo 2016 at 20:07:36.
+" Created by session.vim 1.5 on 07 marzo 2016 at 20:34:52.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -332,8 +332,6 @@ normal! zo
 normal! zo
 272
 normal! zo
-272
-normal! zo
 273
 normal! zo
 274
@@ -366,326 +364,320 @@ normal! zo
 normal! zo
 281
 normal! zo
-285
+289
 normal! zo
-301
+305
 normal! zo
-301
+305
 normal! zo
-306
+310
 normal! zo
-315
+318
 normal! zo
-316
+319
 normal! zo
-316
+319
 normal! zo
-316
+319
 normal! zo
-322
+325
 normal! zo
-333
-normal! zo
-334
-normal! zo
-334
-normal! zo
-334
+336
 normal! zo
 337
 normal! zo
-347
+337
 normal! zo
-347
+337
 normal! zo
-354
+340
 normal! zo
-364
+350
 normal! zo
-365
+350
 normal! zo
-365
+357
 normal! zo
-365
+367
 normal! zo
-371
+368
 normal! zo
-383
+368
 normal! zo
-384
+368
 normal! zo
-384
+374
 normal! zo
-384
+386
 normal! zo
-384
+387
 normal! zo
-385
+387
 normal! zo
-389
+387
 normal! zo
-397
+387
 normal! zo
-406
+388
 normal! zo
-407
+392
 normal! zo
-415
+400
+normal! zo
+409
+normal! zo
+410
 normal! zo
 418
 normal! zo
-422
+421
 normal! zo
-423
+425
 normal! zo
-423
+426
 normal! zo
-423
+426
 normal! zo
-427
+426
 normal! zo
-438
+430
 normal! zo
-451
+441
 normal! zo
-466
+454
 normal! zo
-475
+469
 normal! zo
-481
+478
 normal! zo
-488
+484
 normal! zo
-492
+491
 normal! zo
-498
+495
 normal! zo
-505
+501
 normal! zo
-512
-normal! zo
-512
+508
 normal! zo
 515
 normal! zo
 515
 normal! zo
-515
+518
 normal! zo
-515
+518
 normal! zo
-515
+518
 normal! zo
-515
+518
 normal! zo
-525
+518
 normal! zo
-539
+518
 normal! zo
-544
+528
 normal! zo
-545
+542
 normal! zo
-545
+547
 normal! zo
-545
+548
 normal! zo
-545
+548
 normal! zo
-545
+548
 normal! zo
-545
+548
 normal! zo
-551
+548
 normal! zo
-595
+548
 normal! zo
-600
+554
 normal! zo
-627
+598
 normal! zo
-628
+603
+normal! zo
+630
 normal! zo
 631
 normal! zo
-631
+637
 normal! zo
-631
-normal! zo
-634
-normal! zo
-649
-normal! zo
-649
+652
 normal! zo
 652
 normal! zo
 655
 normal! zo
-655
+658
 normal! zo
-655
+658
 normal! zo
-655
+658
 normal! zo
-669
+658
 normal! zo
-669
+672
 normal! zo
-669
+672
 normal! zo
-669
+672
 normal! zo
-669
+672
 normal! zo
-669
+672
 normal! zo
-682
+672
 normal! zo
-693
+685
 normal! zo
-693
+696
 normal! zo
 696
 normal! zo
 699
 normal! zo
-699
+702
 normal! zo
-699
+702
 normal! zo
-699
+702
 normal! zo
-713
+702
 normal! zo
-713
+716
 normal! zo
-713
+716
 normal! zo
-713
+716
 normal! zo
-713
+716
 normal! zo
-713
+716
 normal! zo
-726
+716
 normal! zo
-740
+729
 normal! zo
-740
+743
 normal! zo
 743
 normal! zo
 746
 normal! zo
-746
+749
 normal! zo
-746
+749
 normal! zo
-746
+749
 normal! zo
-760
+749
 normal! zo
-760
+763
 normal! zo
-760
+763
 normal! zo
-760
+763
 normal! zo
-760
+763
 normal! zo
-760
+763
 normal! zo
-774
+763
 normal! zo
-785
+777
 normal! zo
-785
+788
 normal! zo
 788
 normal! zo
 791
 normal! zo
-791
+794
 normal! zo
-791
+794
 normal! zo
-791
+794
 normal! zo
-805
+794
 normal! zo
-805
+808
 normal! zo
-805
+808
 normal! zo
-805
+808
 normal! zo
-805
+808
 normal! zo
-805
+808
 normal! zo
-819
+808
 normal! zo
-834
+822
 normal! zo
-856
+837
 normal! zo
-877
+859
 normal! zo
-887
+880
 normal! zo
-901
+890
 normal! zo
-910
+904
 normal! zo
 913
 normal! zo
 916
 normal! zo
-917
+919
 normal! zo
-933
+920
 normal! zo
-944
+936
 normal! zo
-957
+947
 normal! zo
-969
+960
 normal! zo
-1009
+972
 normal! zo
-1009
+1012
 normal! zo
-1009
+1012
 normal! zo
-1009
+1012
 normal! zo
-1028
+1012
 normal! zo
-1036
+1031
 normal! zo
-1042
+1039
 normal! zo
-1050
+1045
 normal! zo
-1069
+1053
 normal! zo
-1069
+1072
 normal! zo
-1069
+1072
 normal! zo
-1069
+1072
 normal! zo
-1069
+1072
 normal! zo
-1069
+1072
 normal! zo
-let s:l = 300 - ((1 * winheight(0) + 19) / 39)
+1072
+normal! zo
+let s:l = 741 - ((19 * winheight(0) + 19) / 39)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-300
-normal! 0
+741
+normal! 022|
 lcd ~/Geotexan/src/Geotex-INN
 wincmd w
 argglobal
@@ -786,7 +778,7 @@ setlocal fdn=20
 setlocal fen
 50
 normal! zo
-let s:l = 52 - ((1 * winheight(0) + 0) / 1)
+let s:l = 52 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -886,7 +878,7 @@ normal! zo
 normal! zo
 722
 normal! zo
-let s:l = 315 - ((1 * winheight(0) + 0) / 1)
+let s:l = 315 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1076,7 +1068,7 @@ normal! zo
 normal! zo
 21749
 normal! zo
-let s:l = 8974 - ((1 * winheight(0) + 0) / 1)
+let s:l = 8974 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
