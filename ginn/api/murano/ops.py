@@ -88,12 +88,12 @@ SQL = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
             %d,         -- grupo_talla
             '%s',       -- codigo_talla
             %d,         -- tipo_movimiento
-            %d,         -- unidades
+            %d,         -- unidades en la unidad de medida específica (m², kg)
             '%s',       -- unidad de medida específica
             %f,         -- precio
             %f,         -- importe
             %f,         -- unidades2 = unidades * factor de conversion | fc!=0
-            '%s',       -- UnidadMedida2_
+            '%s',       -- UnidadMedida2_ (la básica: ROLLO, BALA...)
             %f,         -- factor de conversión
             '%s',       -- comentario
             -- NULL,
@@ -200,7 +200,7 @@ def buscar_grupo_talla(productoVenta):
             grupo_talla = 0
     return grupo_talla
 
-def buscar_unidad_medida2(producto):
+def buscar_unidad_medida_basica(producto):
     """
     Devuelve la unidad de medida básica de la ficha del producto.
     """
@@ -571,18 +571,23 @@ def prepare_params(articulo, cantidad = 1, producto = None):
         tipo_movimiento = 1     # 1 = entrada, 2 = salida.
     else:
         tipo_movimiento = 2
-    unidades = 1    # En dimensión base: 1 bala, rollo, caja, bigbag...
+    #unidades = 1    # En dimensión base: 1 bala, rollo, caja, bigbag...
+    # [20160207] Al final no era en dimensión base, sino en la específica.
+    if articulo.es_rollo() or articulo.es_rollo_defectuoso():
+        unidades = articulo.get_superficie() # En dimensión específica: m²
+    else:
+        unidades = articulo.get_peso()  # En dimensión específica: kg
     #precio = 0.0
     precio_kg = buscar_precio_coste(producto, ejercicio, codigo_almacen)
     precio = estimar_precio_coste(articulo, precio_kg)
-    importe = unidades * precio
     factor_conversion = buscar_factor_conversion(producto)
     if factor_conversion:
         unidades2 = unidades * factor_conversion
     else:
         unidades2 = 1 # Siempre será uno porque por cada rollo o bala hay 
                       # solo 1 mov. stock y 1 mov. serie.
-    unidad_medida2 = buscar_unidad_medida2(producto)
+    importe = unidades2 * precio
+    unidad_medida2 = buscar_unidad_medida_basica(producto)
     origen_movimiento = "F" # E = Entrada de Stock (entrada directa), 
                             # F (fabricación), I (inventario), 
                             # M (rechazo fabricación), S (Salida stock)
@@ -659,7 +664,7 @@ def create_bala(bala, cantidad = 1, producto = None):
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock), 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
-    unidad_medida1 = buscar_unidad_medida2(articulo.productoVenta)
+    unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta)
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
@@ -703,7 +708,7 @@ def create_bigbag(bigbag, cantidad = 1, producto = None):
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock), 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
-    unidad_medida1 = buscar_unidad_medida2(articulo.productoVenta)
+    unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta)
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
@@ -750,7 +755,7 @@ def create_rollo(rollo, cantidad = 1, producto = None):
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock), 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
-    unidad_medida1 = buscar_unidad_medida2(articulo.productoVenta)
+    unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta)
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
@@ -795,7 +800,7 @@ def create_caja(caja, cantidad = 1, producto = None):
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock), 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
-    unidad_medida1 = buscar_unidad_medida2(articulo.productoVenta)
+    unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta)
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
@@ -999,7 +1004,7 @@ def update_stock(producto, delta, almacen):
                             # F (fabricación), I (inventario), 
                             # M (rechazo fabricación), S (Salida stock)
     id_proceso_IME = crear_proceso_IME(c)
-    unidad_medida2 = buscar_unidad_medida2(producto)
+    unidad_medida2 = buscar_unidad_medida_basica(producto)
     sql_movstock = SQL % (database,
                           CODEMPRESA, ejercicio, periodo, fecha, documento,
                           codigo_articulo, codigo_almacen, partida,
