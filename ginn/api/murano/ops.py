@@ -270,14 +270,14 @@ def buscar_precio_coste_familia_murano(cod_familia):
     precio de coste.
     """
     c = Connection()
-    SQL = r"""SELECT TOP 1 PrecioPorUnidadEspecifica
-              FROM [%s].[dbo].[Familias]
-              WHERE CodigoFamilia = '%s'
-                AND CodigoSubfamilia = '***********'
-                AND CodigoEmpresa = '%d';
-           """ % (c.get_database(),
-                  cod_familia, 
-                  CODEMPRESA)
+    #SQL = r"""SELECT TOP 1 PrecioPorUnidadEspecifica
+    #          FROM [%s].[dbo].[Familias]
+    #          WHERE CodigoFamilia = '%s'
+    #            AND CodigoSubfamilia = '***********'
+    #            AND CodigoEmpresa = '%d';
+    #       """ % (c.get_database(),
+    #              cod_familia, 
+    #              CODEMPRESA)
     SQL = r"""SELECT TOP 1 GEO_CosteUnidadEspecifica
               FROM [%s].[dbo].[Familias]
               WHERE CodigoFamilia = '%s'
@@ -287,7 +287,7 @@ def buscar_precio_coste_familia_murano(cod_familia):
                   cod_familia, 
                   CODEMPRESA)
     try:
-        precio_coste = c.run_sql(SQL)["PrecioPorUnidadEspecifica"]
+        precio_coste = c.run_sql(SQL)["GEO_CosteUnidadEspecifica"]
     except (TypeError, AttributeError, KeyError): 
         # codalmacen es None o no se encontraron registros
         raise ValueError
