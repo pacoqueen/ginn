@@ -659,7 +659,7 @@ def create_bala(bala, cantidad = 1, producto = None):
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock), 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
-    unidad_medida1 = buscar_unidad_medida2(producto)
+    unidad_medida1 = buscar_unidad_medida2(articulo.productoVenta)
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
@@ -703,7 +703,7 @@ def create_bigbag(bigbag, cantidad = 1, producto = None):
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock), 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
-    unidad_medida1 = buscar_unidad_medida2(producto)
+    unidad_medida1 = buscar_unidad_medida2(articulo.productoVenta)
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
@@ -750,7 +750,7 @@ def create_rollo(rollo, cantidad = 1, producto = None):
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock), 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
-    unidad_medida1 = buscar_unidad_medida2(producto)
+    unidad_medida1 = buscar_unidad_medida2(articulo.productoVenta)
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
@@ -795,7 +795,7 @@ def create_caja(caja, cantidad = 1, producto = None):
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock), 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
-    unidad_medida1 = buscar_unidad_medida2(producto)
+    unidad_medida1 = buscar_unidad_medida2(articulo.productoVenta)
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
