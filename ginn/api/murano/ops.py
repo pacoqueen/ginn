@@ -160,7 +160,8 @@ SQL_SERIE = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoSerie](
                 '%s',   -- código almacén
                 '%s',   -- ubicación
                 '%s',   -- partida
-                '%s',   -- unidad de medida específica (kg, m²)
+                '%s',   -- unidad de medida básica (ROLLO, BALA...) 
+                        -- NO la específica (kg, m²)
                 1,
                 -- NULL,
                 -- NULL,
@@ -657,12 +658,14 @@ def create_bala(bala, cantidad = 1, producto = None):
     c.run_sql(sql_movstock)
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock), 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
+    # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
+    unidad_medida1 = buscar_unidad_medida2(producto)
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
                                 mov_posicion_origen, codigo_talla,
                                 codigo_almacen, ubicacion, partida,
-                                unidad_medida, comentario, id_proceso_IME,
+                                unidad_medida1, comentario, id_proceso_IME,
                                 articulo.peso, articulo.peso_sin,
                                 0.0, # Metros cuadrados. Decimal NOT NULL
                                 ""   # Código palé. Varchar NOT NULL
@@ -699,12 +702,14 @@ def create_bigbag(bigbag, cantidad = 1, producto = None):
     c.run_sql(sql_movstock)
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock), 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
+    # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
+    unidad_medida1 = buscar_unidad_medida2(producto)
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
                                 mov_posicion_origen, codigo_talla,
                                 codigo_almacen, ubicacion, partida,
-                                unidad_medida, comentario, id_proceso_IME,
+                                unidad_medida1, comentario, id_proceso_IME,
                                 articulo.peso, articulo.peso_sin,
                                 0.0, # Metros cuadrados. Decimal NOT NULL
                                 ""   # Código palé. Varchar NOT NULL
@@ -744,12 +749,14 @@ def create_rollo(rollo, cantidad = 1, producto = None):
     c.run_sql(sql_movstock)
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock), 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
+    # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
+    unidad_medida1 = buscar_unidad_medida2(producto)
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
                                 mov_posicion_origen, codigo_talla,
                                 codigo_almacen, ubicacion, partida,
-                                unidad_medida, comentario, id_proceso_IME,
+                                unidad_medida1, comentario, id_proceso_IME,
                                 articulo.peso, articulo.peso_sin,
                                 articulo.get_superficie(), 
                                        # Metros cuadrados. Decimal NOT NULL
@@ -787,12 +794,14 @@ def create_caja(caja, cantidad = 1, producto = None):
     c.run_sql(sql_movstock)
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock), 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
+    # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
+    unidad_medida1 = buscar_unidad_medida2(producto)
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
                                 mov_posicion_origen, codigo_talla,
                                 codigo_almacen, ubicacion, partida,
-                                unidad_medida, comentario, id_proceso_IME,
+                                unidad_medida1, comentario, id_proceso_IME,
                                 articulo.peso, articulo.peso_sin,
                                 0.0,   # Metros cuadrados. Decimal NOT NULL
                                 caja.pale and caja.pale.codigo or ""
