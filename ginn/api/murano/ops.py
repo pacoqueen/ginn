@@ -279,6 +279,7 @@ def buscar_precio_coste(producto, ejercicio, codigo_almacen):
         raise ValueError, "ops:buscar_precio_coste: el producto «%s» recibido"\
                           " no es un producto de compra ni de venta." % (
                                   producto)
+    precio_coste = float(precio_coste)  # Viene como Decimal
     return precio_coste
 
 def buscar_precio_coste_familia_murano(cod_familia):
@@ -307,7 +308,6 @@ def buscar_precio_coste_familia_murano(cod_familia):
                   CODEMPRESA)
     try:
         precio_coste = c.run_sql(SQL)[0]["GEO_CosteUnidadEspecifica"]
-        precio_coste = float(precio_coste)  # Viene como Decimal
     except (TypeError, AttributeError, KeyError): 
         # cod_familia es None o no se encontraron registros
         raise ValueError
