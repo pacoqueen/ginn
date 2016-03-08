@@ -854,8 +854,13 @@ def create_pale(pale, cantidad = 1, producto = None):
     # Los palés se crean automáticamente al crear las cajas con el código de
     # palé informado. No hay que crear movimiento de stock ni de número de
     # serie para eso.
+    i = 0
+    totcajas = len(pale.cajas)
     for caja in pale.cajas:
+        i += 1
         # TODO: Check que compruebe si la caja ya existía para no duplicarlas.
+        if VERBOSE:
+            print("Creando caja %s... (%d/%d)" % (caja.codigo, i, totcajas))
         create_caja(caja, cantidad = cantidad, producto = producto)
     # No es necesario. Cada caja lanza su proceso y el palé no crea
     # registros en la base de datos. No hay que lanzar ninún proceso adicional.
