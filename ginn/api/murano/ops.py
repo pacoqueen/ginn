@@ -662,6 +662,8 @@ def estimar_precio_coste(articulo, precio_kg):
     if articulo.es_rollo():
         # Peso teórico ideal, sin embalaje.
         peso = articulo.get_peso_teorico()
+    elif articulo.es_rollo_defectuoso():
+        peso = articulo.peso
     elif articulo.es_rolloC():
         # Peso real dado en báscula, con embalaje y todo.
         peso = articulo.peso
