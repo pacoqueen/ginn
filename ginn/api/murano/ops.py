@@ -431,7 +431,7 @@ def simulate_guid():
     """
     Genera un código aleatorio similar al generado por MSSQLServer.
     """
-    if VERBOSE:
+    if VERBOSE and DEBUG:
         strlog = "Simulando guid..."
         print(strlog)
         logging.info(strlog)
@@ -445,7 +445,7 @@ def simulate_guid():
             subgrupo += c
         subgrupos.append(subgrupo)
     guid = "-".join(subgrupos)
-    if VERBOSE:
+    if VERBOSE and DEBUG:
         strlog = guid
         print(strlog)
         logging.info(strlog)

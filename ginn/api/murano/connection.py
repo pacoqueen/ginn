@@ -13,8 +13,7 @@ import inspect
 
 #DEBUG = True
 DEBUG = False
-#VERBOSE = True
-VERBOSE = False
+VERBOSE = True
 
 class Connection:
     def __init__(self):
@@ -106,29 +105,29 @@ class Connection:
                 logging.info(strlog)
             if self.conn:   # En modo DEBUG esto es None.
                 try:
-                    if VERBOSE:
+                    if VERBOSE and DEBUG:
                         strlog = "Lanzando consulta %s..." % (
                                 sentence_sql.split()[0])
                         print(strlog)
                         logging.info(strlog)
                     res = c.execute(sentence_sql)
                     if "SELECT" in sentence_sql:
-                        if VERBOSE:
+                        if VERBOSE and DEBUG:
                             strlog = "    · fetchall..."
                             print(strlog)
                             logging.info(strlog)
                         res = c.fetchall()
-                        if VERBOSE:
+                        if VERBOSE and DEBUG:
                             strlog = "\t\t\t\t\t\t\t\t\t[OK]"
                             print(strlog)
                             logging.info(strlog)
                     else:
-                        if VERBOSE:
+                        if VERBOSE and DEBUG:
                             strlog = "    · commit..."
                             print(strlog)
                             logging.info(strlog)
                         self.conn.commit()
-                        if VERBOSE:
+                        if VERBOSE and DEBUG:
                             strlog = "\t\t\t\t\t\t\t\t\t[OK]"
                             print(strlog)
                             logging.info(strlog)
