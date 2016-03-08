@@ -10125,7 +10125,7 @@ class Articulo(SQLObject, PRPCTOO):
         """
         Devuelve el peso teórico del artículo según la ficha del producto.
         """
-        for link in ("bala", "balaC", "rollo", "rolloDefecutoso", "rolloC",
+        for link in ("bala", "balaC", "rollo", "rolloDefectuoso", "rolloC",
                      "bigbag", "caja"):
             try:
                 linked = getattr(self, link)

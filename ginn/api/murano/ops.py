@@ -662,6 +662,8 @@ def estimar_precio_coste(articulo, precio_kg):
     if articulo.es_rollo():
         # Peso teórico ideal, sin embalaje.
         peso = articulo.get_peso_teorico()
+    elif articulo.es_rollo_defectuoso():
+        peso = articulo.peso
     elif articulo.es_rolloC():
         # Peso real dado en báscula, con embalaje y todo.
         peso = articulo.peso
@@ -721,6 +723,12 @@ def create_bala(bala, cantidad = 1, producto = None):
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
     unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta)
+    # TODO: OJO: El peso sin embalaje de una bala es el mismo que el bruto.
+    # En línea se descuenta .5 y se redondea al alza estimando que ese es el
+    # peso del embalaje (más humedad y demás). De modo que el peso bruto de una
+    # bala es el mismo que el peso neto. Eso dijimos que se corregiría, pero
+    # de momento no se ha decidido nada. Cuando cambien en ginn, aquí no hará
+    # falta tocar nada porque lo toma de las propiedades del artículo en sí.
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
