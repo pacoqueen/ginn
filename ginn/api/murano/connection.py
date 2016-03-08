@@ -42,7 +42,7 @@ class Connection:
         exista un fichero credentials.txt con la contraseña para acceder al
         servidor MS-SQLServer.
         """
-        if VERBOSE:
+        if VERBOSE and DEBUG:
             frame = inspect.currentframe()
             args, _, _, values = inspect.getargvalues(frame)
             print("Iniciando conexión [%s]" % "; ".join(
@@ -78,10 +78,10 @@ class Connection:
         """
         Desconecta la sesión actual con MS-SQLServer.
         """
-        if VERBOSE:
+        if VERBOSE and DEBUG:
             print("Desconectando...")
         self.conn.disconnect()
-        if VERBOSE:
+        if VERBOSE and DEBUG:
             print("\t\t\t\t[OK]")
 
     def run_sql(self, sql):
