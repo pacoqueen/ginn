@@ -97,12 +97,12 @@ class Connection:
             if not DEBUG:
                 raise e
         for sentence_sql in sql:
-            logging.debug("SQL a ejecutar:")
-            logging.debug(sentence_sql)
+            logging.info("SQL a ejecutar:")
+            logging.info(str_clean(sentence_sql))
             if DEBUG:
                 strlog = " ==> SQLServer --> %s" % (str_clean(sentence_sql))
                 print(strlog)
-                logging.info(strlog)
+                logging.debug(strlog)
             if self.conn:   # En modo DEBUG esto es None.
                 try:
                     strlog = "Lanzando consulta %s..." % (
