@@ -117,7 +117,7 @@ class Connection:
                         if VERBOSE and DEBUG:
                             print(strlog)
                         res = c.fetchall()
-                        strlog = "\t\t\t\t\t\t\t\t\t[OK]"
+                        strlog = "\t\t\t\t[OK]"
                         logging.info(strlog)
                         if VERBOSE and DEBUG:
                             print(strlog)
@@ -127,7 +127,7 @@ class Connection:
                         if VERBOSE and DEBUG:
                             print(strlog)
                         self.conn.commit()
-                        strlog = "\t\t\t\t\t\t\t\t\t[OK]"
+                        strlog = "\t\t\t\t[OK]"
                         logging.info(strlog)
                         if VERBOSE and DEBUG:
                             print(strlog)
