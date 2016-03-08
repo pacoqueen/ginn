@@ -203,6 +203,26 @@ def buscar_grupo_talla(productoVenta):
 
 def buscar_unidad_medida_basica(producto):
     """
+    Devuelve la unidad de medida básica según el tipo de producto en ginn.
+    """
+    if producto.es_bala():
+        unidad2 = "BALA"
+    elif (producto.es_rollo()
+            or producto.es_rollo_c()):
+        unidad2 = "ROLLO"
+    elif producto.es_bigbag():
+        unidad2 = "BIGBAG"
+    elif (producto.es_caja() or producto.es_bolsa()):
+        unidad2 = "CAJA"
+    else:
+        strlog = "(EE)[U] UnidadMedida2_ para «%s» (%s) indeterminada."%(
+                producto.descripcion, producto.puid)
+        logging.error(strlog)
+        raise ValueError, strlog
+    return unidad2
+
+def buscar_unidad_medida_basica_murano(producto):
+    """
     Devuelve la unidad de medida básica de la ficha del producto.
     """
     res = consultar_producto(producto)
