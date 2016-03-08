@@ -205,10 +205,9 @@ def buscar_unidad_medida_basica(producto):
     """
     Devuelve la unidad de medida básica según el tipo de producto en ginn.
     """
-    if producto.es_bala():
+    if producto.es_bala() or producto.es_bala_cable():
         unidad2 = "BALA"
-    elif (producto.es_rollo()
-            or producto.es_rollo_c()):
+    elif producto.es_rollo() or producto.es_rollo_c():
         unidad2 = "ROLLO"
     elif producto.es_bigbag():
         unidad2 = "BIGBAG"
@@ -820,6 +819,9 @@ def create_rollo(rollo, cantidad = 1, producto = None):
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
     unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta)
+    superficie = articulo.get_superficie()
+    if superficie is None:
+        superficie = 0.0
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
@@ -827,7 +829,7 @@ def create_rollo(rollo, cantidad = 1, producto = None):
                                 codigo_almacen, ubicacion, partida,
                                 unidad_medida1, comentario, id_proceso_IME,
                                 articulo.peso, articulo.peso_sin,
-                                articulo.get_superficie(), 
+                                superficie, 
                                        # Metros cuadrados. Decimal NOT NULL
                                 ""   # Código palé. Varchar NOT NULL
                                )
