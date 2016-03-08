@@ -6,7 +6,7 @@ import os
 import logging
 logging.basicConfig(filename = "%s.log" % (
     ".".join(os.path.basename(__file__).split(".")[:-1])),
-    format = "%(asctime)s %(levelname)-8s %(message)s",
+    format = "%(asctime)s %(levelname)-8s : %(message)s",
     level = logging.DEBUG)
 import pymssql
 import inspect
@@ -98,6 +98,7 @@ class Connection:
             if not DEBUG:
                 raise e
         for sentence_sql in sql:
+            logging.debug("SQL a ejecutar:")
             logging.debug(sentence_sql)
             if DEBUG:
                 strlog = " ==> SQLServer --> %s" % (str_clean(sentence_sql))

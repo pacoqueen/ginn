@@ -10,7 +10,7 @@ import os
 import logging
 logging.basicConfig(filename = "%s.log" % (
     ".".join(os.path.basename(__file__).split(".")[:-1])),
-    format = "%(asctime)s %(levelname)s %(message)s",
+    format = "%(asctime)s %(levelname)-8s : %(message)s",
     level = logging.DEBUG)
 import datetime
 from connection import Connection, DEBUG, VERBOSE
@@ -89,7 +89,7 @@ SQL = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
             %d,         -- grupo_talla
             '%s',       -- codigo_talla
             %d,         -- tipo_movimiento
-            %d,         -- unidades en la unidad de medida específica (m², kg)
+            %f,         -- unidades en la unidad de medida específica (m², kg)
             '%s',       -- unidad de medida específica
             %f,         -- precio
             %f,         -- importe
@@ -520,7 +520,7 @@ def get_codalmacen_articulo(conexion, articulo):
                                          CODEMPRESA)
     try:
         codalmacen = conexion.run_sql(SQL)[0]["CodigoAlmacen"]
-    except (TypeError, AttributeError, KeyError): 
+    except (TypeError, AttributeError, KeyError, IndexError): 
         # codalmacen es None o no se encontraron registros
         codalmacen = ""
     return codalmacen
@@ -568,13 +568,23 @@ def prepare_params(articulo, cantidad = 1, producto = None):
     if not producto:
         producto = articulo.productoVenta
     codigo_articulo = buscar_codigo_producto(producto)
-    codigo_almacen = buscar_codigo_almacen(articulo.almacen, articulo)
     codigo_talla = articulo.get_str_calidad()
     grupo_talla = buscar_grupo_talla(producto)
     if cantidad == 1:
         tipo_movimiento = 1     # 1 = entrada, 2 = salida.
     else:
         tipo_movimiento = 2
+    codigo_almacen = buscar_codigo_almacen(articulo.almacen, articulo)
+    # OJO: Este caso no se dará cuando pasemos a producción. Todos los bultos a
+    # consumir ya estarían en Murano previamente y con un almacén asignado.
+    # Para pruebas me aseguro de que se envía un almacén buscando el último
+    # donde estuvo el bulto.
+    if not codigo_almacen and tipo_movimiento == 2:
+        # Es un consumo y en ginn almacen ya es None. En Murano también es
+        # None porque puede ser un artículo que nunca había estado antes
+        # en Murano. Como por fuerza debe llevar un almacén, buscamos el
+        # almacén donde estaba antes de ser consumida la bala o bigbag.
+        codigo_almacen = buscar_ultimo_almacen_conocido_para(articulo)
     #unidades = 1    # En dimensión base: 1 bala, rollo, caja, bigbag...
     # [20160207] Al final no era en dimensión base, sino en la específica.
     if articulo.es_rollo() or articulo.es_rollo_defectuoso():
@@ -599,6 +609,23 @@ def prepare_params(articulo, cantidad = 1, producto = None):
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
             unidades, precio, importe, unidades2, unidad_medida2,
             factor_conversion, origen_movimiento)
+
+def buscar_ultimo_almacen_conocido_para(articulo):
+    """
+    Devuelve el código de almacén de Murano para el último almacén conocido
+    en ginn donde estuviera el artículo.
+    """
+    # Fallback al almacén principal, por si no tuviera ABSOLUTAMENTE ningún 
+    # movimiento.
+    last_almacen = pclases.Almacen.get_almacen_principal()
+    for movimiento in articulo.get_historial_trazabilidad()[::-1]:
+        # Movimientos van del más antiguo al más nuevo. Empiezo por el final.
+        fecha, objeto, almacen = movimiento
+        if almacen:
+            last_almacen = almacen
+            break
+    res = buscar_codigo_almacen(last_almacen)
+    return res
 
 def estimar_precio_coste(articulo, precio_kg):
     """
