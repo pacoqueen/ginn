@@ -6,6 +6,7 @@ import os
 import logging
 logging.basicConfig(filename = "%s.log" % (
     ".".join(os.path.basename(__file__).split(".")[:-1])),
+    format = "%(asctime)s %(levelname)-8s %(message)s",
     level = logging.DEBUG)
 import pymssql
 import inspect

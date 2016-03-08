@@ -10,6 +10,7 @@ import os
 import logging
 logging.basicConfig(filename = "%s.log" % (
     ".".join(os.path.basename(__file__).split(".")[:-1])),
+    format = "%(asctime)s %(levelname)s %(message)s",
     level = logging.DEBUG)
 import datetime
 from connection import Connection, DEBUG, VERBOSE
