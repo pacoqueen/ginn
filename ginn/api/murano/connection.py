@@ -105,32 +105,32 @@ class Connection:
                 logging.info(strlog)
             if self.conn:   # En modo DEBUG esto es None.
                 try:
+                    strlog = "Lanzando consulta %s..." % (
+                            sentence_sql.split()[0])
+                    logging.info(strlog)
                     if VERBOSE and DEBUG:
-                        strlog = "Lanzando consulta %s..." % (
-                                sentence_sql.split()[0])
                         print(strlog)
-                        logging.info(strlog)
                     res = c.execute(sentence_sql)
                     if "SELECT" in sentence_sql:
+                        strlog = "    · fetchall..."
+                        logging.info(strlog)
                         if VERBOSE and DEBUG:
-                            strlog = "    · fetchall..."
                             print(strlog)
-                            logging.info(strlog)
                         res = c.fetchall()
+                        strlog = "\t\t\t\t\t\t\t\t\t[OK]"
+                        logging.info(strlog)
                         if VERBOSE and DEBUG:
-                            strlog = "\t\t\t\t\t\t\t\t\t[OK]"
                             print(strlog)
-                            logging.info(strlog)
                     else:
+                        strlog = "    · commit..."
+                        logging.info(strlog)
                         if VERBOSE and DEBUG:
-                            strlog = "    · commit..."
                             print(strlog)
-                            logging.info(strlog)
                         self.conn.commit()
+                        strlog = "\t\t\t\t\t\t\t\t\t[OK]"
+                        logging.info(strlog)
                         if VERBOSE and DEBUG:
-                            strlog = "\t\t\t\t\t\t\t\t\t[OK]"
                             print(strlog)
-                            logging.info(strlog)
                 except Exception, e:
                     if not DEBUG:
                         logging.critical(e)

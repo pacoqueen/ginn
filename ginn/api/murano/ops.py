@@ -1116,14 +1116,14 @@ def fire(guid_proceso):
     # campos personalizados:
     # FIXED: No ejecuta el cálculo. Era por las '' alrededor del guid. Según el
     # .chm de ayuda los parámetros van sin encerrar en nada aunque sean cadena.
+    strverbose = "Lanzando proceso de importación %s..." % (guid_proceso)
+    logging.info(strverbose)
     if VERBOSE and DEBUG:
-        strverbose = "Lanzando proceso de importación %s..." % (guid_proceso)
         print(strverbose)
-        logging.info(strverbose)
     retCode = burano.EjecutaScript("AcumularCamposNuevosSeries",
                          "Label:=Inicio, idProcesoIME:=%s" % guid_proceso)
-    if VERBOSE and DEBUG:
-        strverbose = "Importación %s concluido con código de retorno: %s" % (
+    strverbose = "Importación %s concluido con código de retorno: %s" % (
                 guid_proceso, retCode)
+    logging.info(strverbose)
+    if VERBOSE and DEBUG:
         print(strverbose)
-        logging.info(strverbose)
