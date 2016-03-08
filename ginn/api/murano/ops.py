@@ -216,7 +216,7 @@ def buscar_unidad_medida_basica(producto):
         if not DEBUG:
             raise e
         else:
-            unidad2 = "ROLLO|BALA|CAJA"
+            unidad2 = "ROLLO|BALA|BIGBAG|CAJA"
     return unidad2
 
 def buscar_codigo_producto(productoVenta):
@@ -579,11 +579,16 @@ def prepare_params(articulo, cantidad = 1, producto = None):
     # consumir ya estarían en Murano previamente y con un almacén asignado.
     # Para pruebas me aseguro de que se envía un almacén buscando el último
     # donde estuvo el bulto.
-    if not codigo_almacen and tipo_movimiento == 2:
+    if not codigo_almacen: # and tipo_movimiento == 2:
         # Es un consumo y en ginn almacen ya es None. En Murano también es
         # None porque puede ser un artículo que nunca había estado antes
         # en Murano. Como por fuerza debe llevar un almacén, buscamos el
         # almacén donde estaba antes de ser consumida la bala o bigbag.
+        # Da igual el tipo de movimiento. Aunque sea una entrada, debemos
+        # buscar el último almacén **al menos en pruebas**. Se da el caso en
+        # que se fabrica un bigbag (por ejemplo) y se vende justo a 
+        # continuación antes de que dé tiempo a meterlo en Murano. Ya tiene
+        # el almacén a None en ginn y ya no lo traga bien Murano.
         codigo_almacen = buscar_ultimo_almacen_conocido_para(articulo)
     #unidades = 1    # En dimensión base: 1 bala, rollo, caja, bigbag...
     # [20160207] Al final no era en dimensión base, sino en la específica.
