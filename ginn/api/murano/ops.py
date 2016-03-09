@@ -1136,23 +1136,31 @@ def fire(guid_proceso):
                          "GEOTEXAN")
     retCode = None
     operacion = "ImportaIME"
+    strverbose = "Lanzando proceso de importación `%s` con GUID `%s`..." % (
+            operacion, guid_proceso)
     retCode = burano.EjecutaOEM("LCCImExP.LcImExProceso", operacion,
                                 str(guid_proceso), 1, 1, 0)
     # 1 = No borrar registros IME al finalizar.
     # 1 = No borrar registros con errores ni siquiera cuando el primer 
     # parámetro esté a 0.
     # 0 = Ejecutar en todos los módulos.
-    # Después de cada proceso hay que invocar al cálculo que acumula los
+    strverbose = "Importación `%s` concluida con código de retorno: %s" % (
+                guid_proceso, retCode)
+    logging.info(strverbose)
+    if VERBOSE and DEBUG:
+        print(strverbose)    # Después de cada proceso hay que invocar al cálculo que acumula los
     # campos personalizados:
     # FIXED: No ejecuta el cálculo. Era por las '' alrededor del guid. Según el
     # .chm de ayuda los parámetros van sin encerrar en nada aunque sean cadena.
-    strverbose = "Lanzando proceso de importación %s..." % (guid_proceso)
+    nombrescript = "AcumularCamposNuevosSeries"
+    paramsscript = "Label:=Inicio, idProcesoIME:=%s" % guid_proceso
+    strverbose = "Lanzando script `%s` con GUID `%s`..." % (
+            nombrescript, guid_proceso)
     logging.info(strverbose)
     if VERBOSE and DEBUG:
         print(strverbose)
-    retCode = burano.EjecutaScript("AcumularCamposNuevosSeries",
-                         "Label:=Inicio, idProcesoIME:=%s" % guid_proceso)
-    strverbose = "Importación %s concluido con código de retorno: %s" % (
+    retCode = burano.EjecutaScript(nombrescript, paramsscript)
+    strverbose = "Ejecución `%s` concluida con código de retorno: %s" % (
                 guid_proceso, retCode)
     logging.info(strverbose)
     if VERBOSE and DEBUG:
