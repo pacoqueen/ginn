@@ -262,6 +262,7 @@ def main():
             prueba_bigbag(bigbag.codigo)
     if args.codigo:
         for codigo in args.codigo:
+            # TODO: Progress bar
             prueba_codigo(codigo)
     if args.file_source: 
         for codigo in parse_file(args.file_source):

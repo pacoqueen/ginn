@@ -37,3 +37,6 @@
 [submodule "ginn/lib/fuzzywuzzy"]
 	path = ginn/lib/fuzzywuzzy
 	url = git@github.com:Geotexan/fuzzywuzzy.git
+[submodule "ginn/lib/tqdm"]
+	path = ginn/lib/tqdm
+	url = git@github.com:pacoqueen/tqdm.git
