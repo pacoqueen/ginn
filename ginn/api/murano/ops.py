@@ -893,7 +893,6 @@ def create_pale(pale, cantidad = 1, producto = None):
     totcajas = len(pale.cajas)
     for caja in pale.cajas:
         i += 1
-        # TODO: Check que compruebe si la caja ya existía para no duplicarlas.
         if VERBOSE:
             print("Creando caja %s... (%d/%d)" % (caja.codigo, i, totcajas))
         create_caja(caja, cantidad = cantidad, producto = producto)
@@ -1007,6 +1006,8 @@ def create_articulo(articulo, cantidad = 1, producto = None):
     objeto producto, se ignora el actual del artículo, se reemplaza en ginn
     por el recibido y se da de alta así en Murano.
     """
+    # TODO: Check que compruebe si el artículo ya existía para no duplicarlo.
+    # TODO: Hacer en todos los create_*, pero solo si es una inserción.
     if cantidad < 0:
         delta = 1
     else:
