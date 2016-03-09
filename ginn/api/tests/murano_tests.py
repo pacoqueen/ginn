@@ -17,6 +17,7 @@ ruta_ginn = os.path.abspath(os.path.join(
 sys.path.append(ruta_ginn)
 from framework import pclases
 from api import murano
+from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
 sys.argv = _argv
 
 def prueba_bala(codigo = None):
@@ -261,11 +262,10 @@ def main():
         for bigbag in bigbags.limit(args.bigbags):
             prueba_bigbag(bigbag.codigo)
     if args.codigo:
-        for codigo in args.codigo:
-            # TODO: Progress bar
+        for codigo in tqdm(args.codigo):
             prueba_codigo(codigo)
     if args.file_source: 
-        for codigo in parse_file(args.file_source):
+        for codigo in tqdm(parse_file(args.file_source)):
             prueba_codigo(codigo, consumir = True)
 
 if __name__ == "__main__":
