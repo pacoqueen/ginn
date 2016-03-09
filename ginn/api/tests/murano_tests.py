@@ -124,31 +124,45 @@ def prueba_codigo(codigo, consumir = False):
     for prefijo in mapping:
         if codigo.startswith(prefijo):
             clase_pclases = mapping[prefijo]
-            objeto = clase_pclases.selectBy(codigo = codigo)[0]
-            prueba_objeto(objeto, consumir)
+            try:
+                objeto = clase_pclases.selectBy(codigo = codigo)[0]
+            except IndexError:
+                print("El código %s no se encuentra en ginn." % (codigo))
+                objeto = None
+            else:
+                prueba_objeto(objeto, consumir)
     if not objeto:
+        check_seguir = lambda: raw_input(
+                "¿Continuar? (S/[N]): ").uppper().startswith("S")
         if codigo.startswith(pclases.PREFIJO_BOLSA):
             print("Código de bolsa detectado. Debe insertar al menos una "
                   "caja completa de bolsas.")
-            sys.exit(ERRCODENOTIMPLEMENTED)
+            if not check_seguir():
+                sys.exit(ERRCODENOTIMPLEMENTED)
         elif codigo.startswith(pclases.PREFIJO_PARTIDACEM):
             print("Código de partida de cemento detectado. No soportado.")
-            sys.exit(ERRCODENOTIMPLEMENTED)
+            if not check_seguir():
+                sys.exit(ERRCODENOTIMPLEMENTED)
         elif codigo.startswith(pclases.PREFIJO_LOTECEM):
             print("Código de lote de cemento detectado. No soportado.")
-            sys.exit(ERRCODENOTIMPLEMENTED)
+            if not check_seguir():
+                sys.exit(ERRCODENOTIMPLEMENTED)
         elif codigo.startswith(pclases.PREFIJO_LOTE):
             print("Código de lote de fibra detectado. No soportado.")
-            sys.exit(ERRCODENOTIMPLEMENTED)
+            if not check_seguir():
+                sys.exit(ERRCODENOTIMPLEMENTED)
         elif codigo.startswith(pclases.PREFIJO_PARTIDA):
             print("Código de partida de geotextiles detectado. No soportado.")
-            sys.exit(ERRCODENOTIMPLEMENTED)
+            if not check_seguir():
+                sys.exit(ERRCODENOTIMPLEMENTED)
         elif codigo.startswith(pclases.PREFIJO_PARTIDACARGA):
             print("Código de partida de carga detectado. No soportado.")
-            sys.exit(ERRCODENOTIMPLEMENTED)
+            if not check_seguir():
+                sys.exit(ERRCODENOTIMPLEMENTED)
         else:
-            print("El código %s no se reconoce.")
-            sys.exit(ERRCODENOTFOUND)
+            print("El código %s es incorrecto.")
+            if not check_seguir():
+                sys.exit(ERRCODENOTFOUND)
 
 def prueba_objeto(objeto, consumir = False):
     if isinstance(objeto, (pclases.Rollo,
