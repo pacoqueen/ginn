@@ -204,20 +204,34 @@ def buscar_grupo_talla(productoVenta):
 def buscar_unidad_medida_basica(producto):
     """
     Devuelve la unidad de medida básica según el tipo de producto en ginn.
+    Si el producto es un producto de compra o de venta pero sin trazabilidad
+    (como ocurre con la granza reciclada, por ejemplo), devuelve la cadena
+    vacía como unidad2, ya que en esos movimientos -Sage dixit- el campo
+    UnidadMedida2_ debe quedar vacío.
     """
-    if producto.es_bala() or producto.es_bala_cable():
-        unidad2 = "BALA"
-    elif producto.es_rollo() or producto.es_rollo_c():
-        unidad2 = "ROLLO"
-    elif producto.es_bigbag():
-        unidad2 = "BIGBAG"
-    elif (producto.es_caja() or producto.es_bolsa()):
-        unidad2 = "CAJA"
-    else:
-        strlog = "(EE)[U] UnidadMedida2_ para «%s» (%s) indeterminada."%(
-                producto.descripcion, producto.puid)
-        logging.error(strlog)
-        raise ValueError, strlog
+    # Al principio me dijo Félix que la buscara en Murano, pero no lo hago por
+    # dos motivos:
+    # 1.- Puede que la unidad básica en mirano sea la BALA pero estemos 
+    #     mandando un BIGBAG de ese producto.
+    # 2.- Por optimización. Cada consulta al MS-SQLServer tarda más que
+    #     cualquier operación compleja contra PostgreSQL. Y CONSUME LICENCIA.
+    if isinstance(producto, pclases.ProductoVenta):
+        if producto.es_bala() or producto.es_bala_cable():
+            unidad2 = "BALA"
+        elif producto.es_rollo() or producto.es_rollo_c():
+            unidad2 = "ROLLO"
+        elif producto.es_bigbag():
+            unidad2 = "BIGBAG"
+        elif producto.es_caja() or producto.es_bolsa():
+            unidad2 = "CAJA"
+        else:
+            strlog = "(EE)[U] UnidadMedida2_ para «%s» (%s) indeterminada."%(
+                    producto.descripcion, producto.puid)
+            logging.error(strlog)
+            unidad2 = ""
+            #raise ValueError, strlog
+    else:   # Es producto de compra.
+        unidad2 = ""
     return unidad2
 
 def buscar_unidad_medida_basica_murano(producto):
@@ -1008,6 +1022,7 @@ def create_articulo(articulo, cantidad = 1, producto = None):
     """
     # TODO: Check que compruebe si el artículo ya existía para no duplicarlo.
     # TODO: Hacer en todos los create_*, pero solo si es una inserción.
+    # TODO: ¿Y al descontar existencias? ¿Comprobar también que existan antes?
     if cantidad < 0:
         delta = 1
     else:
@@ -1149,7 +1164,8 @@ def fire(guid_proceso):
                 guid_proceso, retCode)
     logging.info(strverbose)
     if VERBOSE and DEBUG:
-        print(strverbose)    # Después de cada proceso hay que invocar al cálculo que acumula los
+        print(strverbose)
+    # Después de cada proceso hay que invocar al cálculo que acumula los
     # campos personalizados:
     # FIXED: No ejecuta el cálculo. Era por las '' alrededor del guid. Según el
     # .chm de ayuda los parámetros van sin encerrar en nada aunque sean cadena.
