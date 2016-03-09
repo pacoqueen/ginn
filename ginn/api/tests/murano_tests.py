@@ -144,7 +144,7 @@ def prueba_codigo(codigo, consumir = False):
                 prueba_objeto(objeto, consumir)
     if not objeto:
         check_seguir = lambda: raw_input(
-                "¿Continuar? (S/[N]): ").uppper().startswith("S")
+                "¿Continuar? (S/[N]): ").upper().startswith("S")
         if codigo.startswith(pclases.PREFIJO_BOLSA):
             print("Código de bolsa detectado. Debe insertar al menos una "
                   "caja completa de bolsas.")
@@ -171,7 +171,7 @@ def prueba_codigo(codigo, consumir = False):
             if not check_seguir():
                 sys.exit(ERRCODENOTIMPLEMENTED)
         else:
-            print("El código %s es incorrecto.")
+            print("El código %s es incorrecto." % (codigo))
             if not check_seguir():
                 sys.exit(ERRCODENOTFOUND)
 
