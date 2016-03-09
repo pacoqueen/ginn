@@ -7,14 +7,13 @@ ERRCODENOTFOUND = 1
 ERRCODENOTIMPLEMENTED = 2
 ERRFILENOTFOUND = 3
 
+import sys, os
 import logging
 logging.basicConfig(filename = "%s.log" % (
     ".".join(os.path.basename(__file__).split(".")[:-1])),
     format = "%(asctime)s %(levelname)-8s : %(message)s",
     level = logging.DEBUG)
-
 import argparse
-import sys, os
 # Desde el framework se hacen algunas cosas sucias con los argumentos,
 # así que tengo que hacer una importación limpia a posteriori.
 _argv, sys.argv = sys.argv, []
