@@ -225,6 +225,7 @@ def buscar_unidad_medida_basica(producto):
         elif producto.es_caja() or producto.es_bolsa():
             unidad2 = "CAJA"
         else:
+            # es_especial o es_granza o algo así. No lleva unidad2 en Murano.
             strlog = "(EE)[U] UnidadMedida2_ para «%s» (%s) indeterminada."%(
                     producto.descripcion, producto.puid)
             logging.error(strlog)

@@ -49,10 +49,19 @@ def prueba_bala(codigo = None):
             murano.consumir(c.productoCompra, c.cantidad, consumo = c)
 
 def prueba_rollo(codigo = None):
+    """
+    Si no se especifica, manda el último rollo (A) fabricado.
+    """
     if not codigo:
         r = pclases.Rollo.select(orderBy = "-id")[0]
     else:
-        r = pclases.Rollo.selectBy(codigo = codigo)[0]
+        try:
+            r = pclases.Rollo.selectBy(codigo = codigo)[0]
+        except IndexError:  # Será un rollo B entonces.
+            try:
+                r = pclases.RolloDefectuoso.selectBy(codigo = codigo)[0]
+            except IndexError:  # Es un rollo C. No queda otra.
+                r = pclases.RolloC.selectBy(codigo = codigo)[0]
     logging.info("Insertando rollo %s (%s) [%s]..." % (r.codigo,
         r.articulo.productoVenta.descripcion,
         r.puid))
