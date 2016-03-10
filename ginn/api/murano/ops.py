@@ -819,7 +819,6 @@ def create_bigbag(bigbag, cantidad = 1, producto = None):
     articulo = bigbag.articulo
     partida = bigbag.loteCem.codigo
     comentario = ("Bigbag ginn: [%s]" % bigbag.get_info())[:40]
-    #numero_serie_lc = bigbag.codigo
     numero_serie_lc = ""
     # Sage me indica que no informe de la serie en el movimiento de stock para 
     # solucionar lo del registro duplicado creado por Murano.
@@ -847,7 +846,7 @@ def create_bigbag(bigbag, cantidad = 1, producto = None):
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
     unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
                                                  articulo)
-    numero_serie_lc = bala.codigo
+    numero_serie_lc = bigbag.codigo
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
