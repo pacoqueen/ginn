@@ -965,7 +965,7 @@ def create_pale(pale, cantidad = 1, producto = None):
     totcajas = len(cajas)
     if VERBOSE:
         from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
-        cajas = tqdm(cajas)
+        cajas = tqdm(cajas, leave = False)
     for caja in cajas:
         i += 1
         if VERBOSE:
