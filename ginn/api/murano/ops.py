@@ -212,6 +212,24 @@ def buscar_unidad_medida_basica(producto, articulo = None):
     prevalece sobre la general del producto. Útil para productos que pueden
     empaquetarse tanto en balas como en bigbags.
     """
+    # NOTA: OJO: Al final sí que vamos a tener que recurrir a la ficha de
+    # Murano y sacar la unidad de medida de ahí. El porqué:
+    # Si Murano al procesar el registro de TmpIME...Stock encuentra que
+    # la unidad no coincide con la del producto en su ficha, dará error y solo
+    # se importará el movimiento serie. De modo que el stock no aumentaría
+    # aunque en el desglose por códigos de serie sí aparezca el BIGBAG. (PV71)
+    # De modo que mandamos el movimiento de stock como BALA (aunque sea un
+    # bigbag) para que haga el acumulado y el de serie como BIGBAG para que
+    # conste que es BIGBAG en el desglose de series en la ventana ^k de Murano
+    # [10/03/2016] No funciona bien de esa manera. No acumula el stock. Hay
+    # que mandar los dos movimientos con la misma unidad básica aunque se
+    # trate de un bigbag. Ya después filtraremos por código para ver los
+    # totales de bigbags (ya que en el campo de unidad pondrá también BALA solo
+    # se podría distinguir de esa forma).
+    return buscar_unidad_medida_basica_murano(producto)
+    ################## NADA DE ESTE CÓDIGO SE EJECUTARÁ
+    ## Lo dejo por si acaso...
+    ##########################
     # Al principio me dijo Félix que la buscara en Murano, pero no lo hago por
     # dos motivos:
     # 1.- Puede que la unidad básica en mirano sea la BALA pero estemos 
@@ -660,15 +678,6 @@ def prepare_params_movserie(articulo, cantidad = 1, producto = None):
         unidades2 = 1 # Siempre será uno porque por cada rollo o bala hay 
                       # solo 1 mov. stock y 1 mov. serie.
     importe = unidades2 * precio
-    # NOTA: OJO: Al final sí que vamos a tener que recurrir a la ficha de
-    # Murano y sacar la unidad de medida de ahí. El porqué:
-    # Si Murano al procesar el registro de TmpIME...Stock encuentra que
-    # la unidad no coincide con la del producto en su ficha, dará error y solo
-    # se importará el movimiento serie. De modo que el stock no aumentaría
-    # aunque en el desglose por códigos de serie sí aparezca el BIGBAG. (PV71)
-    # De modo que mandamos el movimiento de stock como BALA (aunque sea un
-    # bigbag) para que haga el acumulado y el de serie como BIGBAG para que
-    # conste que es BIGBAG en el desglose de series en la ventana ^k de Murano
     unidad_medida2 = buscar_unidad_medida_basica_murano(producto)
     origen_movimiento = "F" # E = Entrada de Stock (entrada directa), 
                             # F (fabricación), I (inventario), 
