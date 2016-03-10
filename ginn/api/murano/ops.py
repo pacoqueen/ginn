@@ -766,7 +766,6 @@ def create_bala(bala, cantidad = 1, producto = None):
     unidad_medida = "KG"
     comentario = ("Bala ginn: [%s]" % bala.get_info())[:40]
     ubicacion = "Almac. de fibra."[:15]
-    #numero_serie_lc = bala.codigo
     numero_serie_lc = ""
     # Sage me indica que no informe de la serie en el movimiento de stock para 
     # solucionar lo del registro duplicado creado por Murano.
@@ -798,6 +797,7 @@ def create_bala(bala, cantidad = 1, producto = None):
     # bala es el mismo que el peso neto. Eso dijimos que se corregiría, pero
     # de momento no se ha decidido nada. Cuando cambien en ginn, aquí no hará
     # falta tocar nada porque lo toma de las propiedades del artículo en sí.
+    numero_serie_lc = bala.codigo
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
@@ -847,6 +847,7 @@ def create_bigbag(bigbag, cantidad = 1, producto = None):
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
     unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
                                                  articulo)
+    numero_serie_lc = bala.codigo
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
@@ -871,7 +872,6 @@ def create_rollo(rollo, cantidad = 1, producto = None):
     except AttributeError:
         partida = ""   # DONE: Los rollos C no tienen partida. No pasa nada.
     comentario = ("Rollo ginn: [%s]" % rollo.get_info())[:40]
-    #numero_serie_lc = rollo.codigo
     numero_serie_lc = ""
     # Sage me indica que no informe de la serie en el movimiento de stock para 
     # solucionar lo del registro duplicado creado por Murano.
@@ -902,6 +902,7 @@ def create_rollo(rollo, cantidad = 1, producto = None):
     superficie = articulo.get_superficie()
     if superficie is None:
         superficie = 0.0
+    numero_serie_lc = rollo.codigo
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
@@ -926,7 +927,6 @@ def create_caja(caja, cantidad = 1, producto = None):
     unidad_medida = "KG"
     comentario = ("Caja ginn: [%s]" % caja.get_info())[:40]
     ubicacion = "Almac. de fibra embolsada."[:15]
-    #numero_serie_lc = caja.codigo
     numero_serie_lc = ""
     # Sage me indica que no informe de la serie en el movimiento de stock para 
     # solucionar lo del registro duplicado creado por Murano.
@@ -952,6 +952,7 @@ def create_caja(caja, cantidad = 1, producto = None):
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
     unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
                                                  articulo)
+    numero_serie_lc = caja.codigo
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
