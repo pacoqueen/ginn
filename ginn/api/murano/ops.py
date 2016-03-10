@@ -757,7 +757,8 @@ def create_bala(bala, cantidad = 1, producto = None):
                         # 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
-    unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta)
+    unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
+                                                 articulo)
     # TODO: OJO: El peso sin embalaje de una bala es el mismo que el bruto.
     # En línea se descuenta .5 y se redondea al alza estimando que ese es el
     # peso del embalaje (más humedad y demás). De modo que el peso bruto de una
@@ -808,7 +809,8 @@ def create_bigbag(bigbag, cantidad = 1, producto = None):
                          # 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
-    unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta)
+    unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
+                                                 articulo)
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
@@ -856,7 +858,8 @@ def create_rollo(rollo, cantidad = 1, producto = None):
                          # 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
-    unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta)
+    unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
+                                                 articulo)
     superficie = articulo.get_superficie()
     if superficie is None:
         superficie = 0.0
@@ -905,7 +908,8 @@ def create_caja(caja, cantidad = 1, producto = None):
                          # 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
-    unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta)
+    unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
+                                                 articulo)
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
