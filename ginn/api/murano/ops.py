@@ -201,13 +201,16 @@ def buscar_grupo_talla(productoVenta):
             grupo_talla = 0
     return grupo_talla
 
-def buscar_unidad_medida_basica(producto):
+def buscar_unidad_medida_basica(producto, articulo = None):
     """
     Devuelve la unidad de medida básica según el tipo de producto en ginn.
     Si el producto es un producto de compra o de venta pero sin trazabilidad
     (como ocurre con la granza reciclada, por ejemplo), devuelve la cadena
     vacía como unidad2, ya que en esos movimientos -Sage dixit- el campo
     UnidadMedida2_ debe quedar vacío.
+    Si se especifica un artículo, la unidad de éste (BALA, ROLLO, BIGBAG...)
+    prevalece sobre la general del producto. Útil para productos que pueden
+    empaquetarse tanto en balas como en bigbags.
     """
     # Al principio me dijo Félix que la buscara en Murano, pero no lo hago por
     # dos motivos:
@@ -215,24 +218,41 @@ def buscar_unidad_medida_basica(producto):
     #     mandando un BIGBAG de ese producto.
     # 2.- Por optimización. Cada consulta al MS-SQLServer tarda más que
     #     cualquier operación compleja contra PostgreSQL. Y CONSUME LICENCIA.
-    if isinstance(producto, pclases.ProductoVenta):
-        if producto.es_bala() or producto.es_bala_cable():
+    unidad2 = ""
+    if articulo:
+        if articulo.es_bala():
             unidad2 = "BALA"
-        elif producto.es_rollo() or producto.es_rollo_c():
+        elif articulo.es_bala_cable():
+            unidad2 = "BALA"
+        elif articulo.es_rollo():
             unidad2 = "ROLLO"
-        elif producto.es_bigbag():
+        elif articulo.es_rollo_defectuoso():
+            unidad2 = "ROLLO"
+        elif articulo.es_rollo_c():
+            unidad2 = "ROLLO"
+        elif articulo.es_bigbag():
             unidad2 = "BIGBAG"
-        elif producto.es_caja() or producto.es_bolsa():
+        elif articulo.es_caja():
             unidad2 = "CAJA"
-        else:
-            # es_especial o es_granza o algo así. No lleva unidad2 en Murano.
-            strlog = "(EE)[U] UnidadMedida2_ para «%s» (%s) indeterminada."%(
-                    producto.descripcion, producto.puid)
-            logging.error(strlog)
+    if not unidad2:     # Si no artículo o por artículo no se encontró nada.
+        if isinstance(producto, pclases.ProductoVenta):
+            if producto.es_bala() or producto.es_bala_cable():
+                unidad2 = "BALA"
+            elif producto.es_rollo() or producto.es_rollo_c():
+                unidad2 = "ROLLO"
+            elif producto.es_bigbag():
+                unidad2 = "BIGBAG"
+            elif producto.es_caja() or producto.es_bolsa():
+                unidad2 = "CAJA"
+            else:
+                # es_especial o es_granza o algo así. No lleva unidad2 en Murano.
+                strlog = "(EE)[U] UnidadMedida2_ para «%s» (%s) indeterminada."%(
+                        producto.descripcion, producto.puid)
+                logging.error(strlog)
+                unidad2 = ""
+                #raise ValueError, strlog
+        else:   # Es producto de compra.
             unidad2 = ""
-            #raise ValueError, strlog
-    else:   # Es producto de compra.
-        unidad2 = ""
     return unidad2
 
 def buscar_unidad_medida_basica_murano(producto):
@@ -640,7 +660,7 @@ def prepare_params(articulo, cantidad = 1, producto = None):
         unidades2 = 1 # Siempre será uno porque por cada rollo o bala hay 
                       # solo 1 mov. stock y 1 mov. serie.
     importe = unidades2 * precio
-    unidad_medida2 = buscar_unidad_medida_basica(producto)
+    unidad_medida2 = buscar_unidad_medida_basica(producto, articulo)
     origen_movimiento = "F" # E = Entrada de Stock (entrada directa), 
                             # F (fabricación), I (inventario), 
                             # M (rechazo fabricación), S (Salida stock)
@@ -733,7 +753,8 @@ def create_bala(bala, cantidad = 1, producto = None):
                           origen_movimiento, numero_serie_lc,
                           id_proceso_IME)
     c.run_sql(sql_movstock)
-    origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock), 11 (salida de stock), 12 (inventario)
+    origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock)
+                        # 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
     unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta)
@@ -783,7 +804,8 @@ def create_bigbag(bigbag, cantidad = 1, producto = None):
                           origen_movimiento, numero_serie_lc,
                           id_proceso_IME)
     c.run_sql(sql_movstock)
-    origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock), 11 (salida de stock), 12 (inventario)
+    origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock)
+                         # 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
     unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta)
@@ -830,7 +852,8 @@ def create_rollo(rollo, cantidad = 1, producto = None):
                           origen_movimiento, numero_serie_lc,
                           id_proceso_IME)
     c.run_sql(sql_movstock)
-    origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock), 11 (salida de stock), 12 (inventario)
+    origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock)
+                         # 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
     unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta)
@@ -878,7 +901,8 @@ def create_caja(caja, cantidad = 1, producto = None):
                           origen_movimiento, numero_serie_lc,
                           id_proceso_IME)
     c.run_sql(sql_movstock)
-    origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock), 11 (salida de stock), 12 (inventario)
+    origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock)
+                         # 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
     unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta)
