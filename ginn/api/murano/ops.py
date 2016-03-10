@@ -765,7 +765,10 @@ def create_bala(bala, cantidad = 1, producto = None):
     unidad_medida = "KG"
     comentario = ("Bala ginn: [%s]" % bala.get_info())[:40]
     ubicacion = "Almac. de fibra."[:15]
-    numero_serie_lc = bala.codigo
+    #numero_serie_lc = bala.codigo
+    numero_serie_lc = ""
+    # Sage me indica que no informe de la serie en el movimiento de stock para 
+    # solucionar lo del registro duplicado creado por Murano.
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
             unidades, precio, importe, unidades2, unidad_medida2,
@@ -779,10 +782,7 @@ def create_bala(bala, cantidad = 1, producto = None):
                           unidad_medida, precio, importe, unidades2,
                           unidad_medida2,
                           factor_conversion, comentario, ubicacion,
-                          origen_movimiento, "", # Sage me indica que no
-                    # informe de la serie en el movimiento de stock para 
-                    # solucionar lo del registro duplicado creado por Murano
-                    # numero_serie_lc,
+                          origen_movimiento, numero_serie_lc,
                           id_proceso_IME)
     c.run_sql(sql_movstock)
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock)
@@ -818,7 +818,10 @@ def create_bigbag(bigbag, cantidad = 1, producto = None):
     articulo = bigbag.articulo
     partida = bigbag.loteCem.codigo
     comentario = ("Bigbag ginn: [%s]" % bigbag.get_info())[:40]
-    numero_serie_lc = bigbag.codigo
+    #numero_serie_lc = bigbag.codigo
+    numero_serie_lc = ""
+    # Sage me indica que no informe de la serie en el movimiento de stock para 
+    # solucionar lo del registro duplicado creado por Murano.
     ubicacion = "Almac. de fibra."[:15]
     unidad_medida = "KG"
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
@@ -834,10 +837,7 @@ def create_bigbag(bigbag, cantidad = 1, producto = None):
                           unidad_medida, precio, importe, unidades2,
                           unidad_medida2,
                           factor_conversion, comentario, ubicacion,
-                          origen_movimiento, "", # Sage me indica que no
-                    # informe de la serie en el movimiento de stock para 
-                    # solucionar lo del registro duplicado creado por Murano
-                    # numero_serie_lc,
+                          origen_movimiento, numero_serie_lc,
                           id_proceso_IME)
     c.run_sql(sql_movstock)
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock)
@@ -870,7 +870,10 @@ def create_rollo(rollo, cantidad = 1, producto = None):
     except AttributeError:
         partida = ""   # DONE: Los rollos C no tienen partida. No pasa nada.
     comentario = ("Rollo ginn: [%s]" % rollo.get_info())[:40]
-    numero_serie_lc = rollo.codigo
+    #numero_serie_lc = rollo.codigo
+    numero_serie_lc = ""
+    # Sage me indica que no informe de la serie en el movimiento de stock para 
+    # solucionar lo del registro duplicado creado por Murano.
     ubicacion = "Almac. de geotextiles."[:15]
     unidad_medida = "M2"
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
@@ -886,10 +889,7 @@ def create_rollo(rollo, cantidad = 1, producto = None):
                           unidad_medida, precio, importe, unidades2,
                           unidad_medida2,
                           factor_conversion, comentario, ubicacion,
-                          origen_movimiento, "", # Sage me indica que no
-                    # informe de la serie en el movimiento de stock para 
-                    # solucionar lo del registro duplicado creado por Murano
-                    # numero_serie_lc,
+                          origen_movimiento, numero_serie_lc,
                           id_proceso_IME)
     c.run_sql(sql_movstock)
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock)
@@ -925,7 +925,10 @@ def create_caja(caja, cantidad = 1, producto = None):
     unidad_medida = "KG"
     comentario = ("Caja ginn: [%s]" % caja.get_info())[:40]
     ubicacion = "Almac. de fibra embolsada."[:15]
-    numero_serie_lc = caja.codigo
+    #numero_serie_lc = caja.codigo
+    numero_serie_lc = ""
+    # Sage me indica que no informe de la serie en el movimiento de stock para 
+    # solucionar lo del registro duplicado creado por Murano.
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
             unidades, precio, importe, unidades2, unidad_medida2,
@@ -939,10 +942,7 @@ def create_caja(caja, cantidad = 1, producto = None):
                           unidad_medida, precio, importe, unidades2,
                           unidad_medida2,
                           factor_conversion, comentario, ubicacion,
-                          origen_movimiento, "", # Sage me indica que no
-                    # informe de la serie en el movimiento de stock para 
-                    # solucionar lo del registro duplicado creado por Murano
-                    # numero_serie_lc,
+                          origen_movimiento, numero_serie_lc,
                           id_proceso_IME)
     c.run_sql(sql_movstock)
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock)
@@ -1180,10 +1180,7 @@ def update_stock(producto, delta, almacen):
                           unidad_medida, precio, importe, unidades2,
                           unidad_medida2,
                           factor_conversion, comentario, ubicacion,
-                          origen_movimiento, "", # Sage me indica que no
-                    # informe de la serie en el movimiento de stock para 
-                    # solucionar lo del registro duplicado creado por Murano
-                    # numero_serie_lc,
+                          origen_movimiento, numero_serie_lc,
                           id_proceso_IME)
     c.run_sql(sql_movstock)
     fire(id_proceso_IME)
