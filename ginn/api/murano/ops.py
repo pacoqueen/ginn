@@ -236,7 +236,7 @@ def buscar_unidad_medida_basica(producto, articulo = None):
     # totales de bigbags (ya que en el campo de unidad pondrá también BALA solo
     # se podría distinguir de esa forma).
 # PORASQUI: Cuando arreglemos el error de la coma en la importación de los dos registros bala, volver a probar usando BIGBAG para los bigbags.
-    return buscar_unidad_medida_basica_murano(producto)
+    #return buscar_unidad_medida_basica_murano(producto)
     ################## NADA DE ESTE CÓDIGO SE EJECUTARÁ
     ## Lo dejo por si acaso...
     ##########################
@@ -679,6 +679,7 @@ def prepare_params_movstock(articulo, cantidad = 1, producto = None):
     else:
         # PORASQUI: Si mando un número entero (los m² siempre son enteros) en el peso (que entra como Unidades en la TmpIME y MovStock) sí lo hace bien Murano. Pero si no, la coma la interpreta como separador de campo de una consulta SQL en el proceso interno de convertir la TmpIME en MovStock y PETA. Si arreglamos esto, volver a probar a enviar los BB como BB en vez de como BALA aunque el producto indique BALA como unidad básica.
         unidades = articulo.get_peso()  # En dimensión específica: kg
+        unidades = int(articulo.get_peso())  # TODO: FIXME: Sin decimales para probar.
     #precio = 0.0
     precio_kg = buscar_precio_coste(producto, ejercicio, codigo_almacen)
     precio = estimar_precio_coste(articulo, precio_kg)
