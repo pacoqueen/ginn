@@ -782,7 +782,7 @@ def create_bala(bala, cantidad = 1, producto = None):
                           id_proceso_IME)
     c.run_sql(sql_movstock)
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock)
-                        # 11 (salida de stock), 12 (inventario)
+                         # 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
     unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
@@ -965,7 +965,7 @@ def create_pale(pale, cantidad = 1, producto = None):
     totcajas = len(cajas)
     if VERBOSE:
         from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
-        cajas = tqdm(cajas, leave = False)
+        cajas = tqdm(cajas, total = totcajas, leave = False)
     for caja in cajas:
         i += 1
         if VERBOSE:

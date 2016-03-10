@@ -240,6 +240,7 @@ def parse_file(fsource):
         for l in f.readlines():
             for codigo in l.strip().upper().split():
                 yield codigo
+    f.close()
 
 def main():
     ## Parámetros
@@ -291,10 +292,30 @@ def main():
             pbar.set_description("Insertando sin consumos %s" % (codigo))
             prueba_codigo(codigo)
     if args.file_source: 
-        pbar = tqdm(parse_file(args.file_source))
+        pbar = tqdm(parse_file(args.file_source),
+                    total = file_len(args.file_source))
         for codigo in pbar:
             pbar.set_description("Insertando con consumos %s" % (codigo))
             prueba_codigo(codigo, consumir = True)
+
+def file_len(fsource):
+    """
+    Función generadora. Lee los códigos a insertar de un fichero de texto.
+    Devuelve un código en cada iteración.
+    """
+    res = 0
+    try:
+        f = open(fsource)
+    except IOError:
+        print("El fichero %s no existe." % (fsource))
+        sys.exit(ERRFILENOTFOUND)
+    else:
+        for l in f.readlines():
+            for codigo in l.strip().upper().split():
+                res += 1
+    f.close()
+    return res
+
 
 if __name__ == "__main__":
     main()
