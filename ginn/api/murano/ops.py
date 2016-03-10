@@ -31,90 +31,90 @@ from framework import pclases
 
 CODEMPRESA = 8000   # Empresa de pruebas. Cambiar por la 10200 en producción.
 
-SQL = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
-            CodigoEmpresa,
-            Ejercicio,
-            Periodo,
-            Fecha,
-            Serie,
-            Documento,
-            CodigoArticulo,
-            CodigoAlmacen,
-            -- AlmacenContrapartida,
-            Partida,
-            -- Partida2_,
-            -- CodigoColor_,
-            GrupoTalla_,
-            CodigoTalla01_,
-            TipoMovimiento,
-            Unidades,
-            UnidadMedida1_,
-            Precio,
-            Importe,
-            Unidades2_,
-            UnidadMedida2_,
-            FactorConversion_,
-            Comentario,
-            -- CodigoCanal,
-            -- CodigoCliente,
-            -- CodigoProveedor,
-            -- FechaCaduca,
-            Ubicacion,
-            OrigenMovimiento,
-            -- EmpresaOrigen,
-            -- MovOrigen,
-            -- EjercicioDocumento,
-            NumeroSerieLc,
-            IdProcesoIME,
-            -- MovIdentificadorIME,
-            StatusTraspasadoIME,
-            TipoImportacionIME,
-            DocumentoUnico --,
-            -- FechaRegistro,
-            -- MovPosicion
-            )
-        VALUES (
-            %d,         -- código empresa
-            %d,         -- ejercicio
-            %d,         -- periodo
-            '%s',       -- fecha
-            'FAB',
-            %d,         -- documento
-            '%s',       -- codigo_articulo
-            '%s',       -- codigo_almacen
-            -- '',
-            '%s',       -- partida
-            -- NULL,
-            -- NULL,
-            %d,         -- grupo_talla
-            '%s',       -- codigo_talla
-            %d,         -- tipo_movimiento
-            %f,         -- unidades en la unidad de medida específica (m², kg)
-            '%s',       -- unidad de medida específica
-            %f,         -- precio
-            %f,         -- importe
-            %f,         -- unidades2 = unidades * factor de conversion | fc!=0
-            '%s',       -- UnidadMedida2_ (la básica: ROLLO, BALA...)
-            %f,         -- factor de conversión
-            '%s',       -- comentario
-            -- NULL,
-            -- NULL,
-            -- NULL,
-            -- NULL,
-            '%s',       -- ubicación
-            '%s',       -- origen movimiento
-            -- NULL,
-            -- NULL,
-            -- NULL,
-            '%s',       -- NumeroSerieLc
-            '%s',       -- IdProcesoIME
-            -- NULL,
-            0,
-            0,
-            -1 --,
-            -- NULL,
-            -- NULL
-            );"""
+SQL_STOCK = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
+               CodigoEmpresa,
+               Ejercicio,
+               Periodo,
+               Fecha,
+               Serie,
+               Documento,
+               CodigoArticulo,
+               CodigoAlmacen,
+               -- AlmacenContrapartida,
+               Partida,
+               -- Partida2_,
+               -- CodigoColor_,
+               GrupoTalla_,
+               CodigoTalla01_,
+               TipoMovimiento,
+               Unidades,
+               UnidadMedida1_,
+               Precio,
+               Importe,
+               Unidades2_,
+               UnidadMedida2_,
+               FactorConversion_,
+               Comentario,
+               -- CodigoCanal,
+               -- CodigoCliente,
+               -- CodigoProveedor,
+               -- FechaCaduca,
+               Ubicacion,
+               OrigenMovimiento,
+               -- EmpresaOrigen,
+               -- MovOrigen,
+               -- EjercicioDocumento,
+               NumeroSerieLc,
+               IdProcesoIME,
+               -- MovIdentificadorIME,
+               StatusTraspasadoIME,
+               TipoImportacionIME,
+               DocumentoUnico --,
+               -- FechaRegistro,
+               -- MovPosicion
+               )
+           VALUES (
+               %d,      -- código empresa
+               %d,      -- ejercicio
+               %d,      -- periodo
+               '%s',    -- fecha
+               'FAB',
+               %d,      -- documento
+               '%s',    -- codigo_articulo
+               '%s',    -- codigo_almacen
+               -- '',
+               '%s',    -- partida
+               -- NULL,
+               -- NULL,
+               %d,      -- grupo_talla
+               '%s',    -- codigo_talla
+               %d,      -- tipo_movimiento
+               %f,      -- unidades en la unidad de medida específica (m², kg)
+               '%s',    -- unidad de medida específica
+               %f,      -- precio
+               %f,      -- importe
+               %f,      -- unidades2 = unidades * factor de conversion | fc!=0
+               '%s',    -- UnidadMedida2_ (la básica: ROLLO, BALA...)
+               %f,      -- factor de conversión
+               '%s',    -- comentario
+               -- NULL,
+               -- NULL,
+               -- NULL,
+               -- NULL,
+               '%s',    -- ubicación
+               '%s',    -- origen movimiento
+               -- NULL,
+               -- NULL,
+               -- NULL,
+               '%s',    -- NumeroSerieLc
+               '%s',    -- IdProcesoIME
+               -- NULL,
+               0,
+               0,
+               -1 --,
+               -- NULL,
+               -- NULL
+               );"""
 
 SQL_SERIE = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoSerie](
                 CodigoEmpresa,
@@ -245,13 +245,13 @@ def buscar_unidad_medida_basica(producto, articulo = None):
             elif producto.es_caja() or producto.es_bolsa():
                 unidad2 = "CAJA"
             else:
-                # es_especial o es_granza o algo así. No lleva unidad2 en Murano.
-                strlog = "(EE)[U] UnidadMedida2_ para «%s» (%s) indeterminada."%(
-                        producto.descripcion, producto.puid)
+                # es_especial, es_granza o algo así. No lleva unidad2 en Murano
+                strlog = "(EE)[U] UnidadMedida2_ para «%s» (%s) indeterminada"\
+                         "." % (producto.descripcion, producto.puid)
                 logging.error(strlog)
                 unidad2 = ""
                 #raise ValueError, strlog
-        else:   # Es producto de compra.
+        else:   # Es producto de compra. La unidad2 no debe informarse.
             unidad2 = ""
     return unidad2
 
@@ -605,7 +605,7 @@ def crear_proceso_IME(conexion):
         """ % (conexion.get_database(), guid_proceso))
     return guid_proceso
 
-def prepare_params(articulo, cantidad = 1, producto = None):
+def prepare_params_movserie(articulo, cantidad = 1, producto = None):
     """
     Prepara los parámetros comunes a todos los artículos con movimiento de
     serie y devuelve la conexión a la base de datos MS-SQLServer.
@@ -660,7 +660,16 @@ def prepare_params(articulo, cantidad = 1, producto = None):
         unidades2 = 1 # Siempre será uno porque por cada rollo o bala hay 
                       # solo 1 mov. stock y 1 mov. serie.
     importe = unidades2 * precio
-    unidad_medida2 = buscar_unidad_medida_basica(producto, articulo)
+    # NOTA: OJO: Al final sí que vamos a tener que recurrir a la ficha de
+    # Murano y sacar la unidad de medida de ahí. El porqué:
+    # Si Murano al procesar el registro de TmpIME...Stock encuentra que
+    # la unidad no coincide con la del producto en su ficha, dará error y solo
+    # se importará el movimiento serie. De modo que el stock no aumentaría
+    # aunque en el desglose por códigos de serie sí aparezca el BIGBAG. (PV71)
+    # De modo que mandamos el movimiento de stock como BALA (aunque sea un
+    # bigbag) para que haga el acumulado y el de serie como BIGBAG para que
+    # conste que es BIGBAG en el desglose de series en la ventana ^k de Murano
+    unidad_medida2 = buscar_unidad_medida_basica_murano(producto)
     origen_movimiento = "F" # E = Entrada de Stock (entrada directa), 
                             # F (fabricación), I (inventario), 
                             # M (rechazo fabricación), S (Salida stock)
@@ -740,10 +749,10 @@ def create_bala(bala, cantidad = 1, producto = None):
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
             unidades, precio, importe, unidades2, unidad_medida2,
-            factor_conversion, origen_movimiento) = prepare_params(
+            factor_conversion, origen_movimiento) = prepare_params_movserie(
                     articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
-    sql_movstock = SQL % (database,
+    sql_movstock = SQL_STOCK % (database,
                           CODEMPRESA, ejercicio, periodo, fecha, documento,
                           codigo_articulo, codigo_almacen, partida,
                           grupo_talla, codigo_talla, tipo_movimiento, unidades,
@@ -792,10 +801,10 @@ def create_bigbag(bigbag, cantidad = 1, producto = None):
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
             unidades, precio, importe, unidades2, unidad_medida2,
-            factor_conversion, origen_movimiento) = prepare_params(
+            factor_conversion, origen_movimiento) = prepare_params_movserie(
                     articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
-    sql_movstock = SQL % (database,
+    sql_movstock = SQL_STOCK % (database,
                           CODEMPRESA, ejercicio, periodo, fecha, documento,
                           codigo_articulo, codigo_almacen, partida,
                           grupo_talla, codigo_talla, tipo_movimiento, unidades,
@@ -841,10 +850,10 @@ def create_rollo(rollo, cantidad = 1, producto = None):
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
             unidades, precio, importe, unidades2, unidad_medida2,
-            factor_conversion, origen_movimiento) = prepare_params(
+            factor_conversion, origen_movimiento) = prepare_params_movserie(
                     articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
-    sql_movstock = SQL % (database,
+    sql_movstock = SQL_STOCK % (database,
                           CODEMPRESA, ejercicio, periodo, fecha, documento,
                           codigo_articulo, codigo_almacen, partida,
                           grupo_talla, codigo_talla, tipo_movimiento, unidades,
@@ -891,10 +900,10 @@ def create_caja(caja, cantidad = 1, producto = None):
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
             unidades, precio, importe, unidades2, unidad_medida2,
-            factor_conversion, origen_movimiento) = prepare_params(
+            factor_conversion, origen_movimiento) = prepare_params_movserie(
                     articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
-    sql_movstock = SQL % (database,
+    sql_movstock = SQL_STOCK % (database,
                           CODEMPRESA, ejercicio, periodo, fecha, documento,
                           codigo_articulo, codigo_almacen, partida,
                           grupo_talla, codigo_talla, tipo_movimiento, unidades,
@@ -1120,8 +1129,12 @@ def update_stock(producto, delta, almacen):
                             # F (fabricación), I (inventario), 
                             # M (rechazo fabricación), S (Salida stock)
     id_proceso_IME = crear_proceso_IME(c)
+    # En el movimiento de stock la unidad principal (unidad_medida) es la que
+    # sea. En la segunda unidad (unidad_mediad2) mandamos "", que es lo que
+    # me devolverá buscar_unidad_medida_basica para todo lo que no sea un
+    # producto con código de trazabilidad.
     unidad_medida2 = buscar_unidad_medida_basica(producto)
-    sql_movstock = SQL % (database,
+    sql_movstock = SQL_STOCK % (database,
                           CODEMPRESA, ejercicio, periodo, fecha, documento,
                           codigo_articulo, codigo_almacen, partida,
                           grupo_talla, codigo_talla, tipo_movimiento, unidades,
