@@ -690,7 +690,7 @@ def prepare_params_movstock(articulo, cantidad = 1, producto = None):
         unidades2 = 1 # Siempre será uno porque por cada rollo o bala hay 
                       # solo 1 mov. stock y 1 mov. serie.
     importe = unidades2 * precio
-    unidad_medida2 = buscar_unidad_medida_basica_murano(producto)
+    unidad_medida2 = buscar_unidad_medida_basica_murano(producto, articulo)
     origen_movimiento = "F" # E = Entrada de Stock (entrada directa), 
                             # F (fabricación), I (inventario), 
                             # M (rechazo fabricación), S (Salida stock)
