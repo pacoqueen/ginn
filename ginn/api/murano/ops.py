@@ -677,6 +677,7 @@ def prepare_params_movstock(articulo, cantidad = 1, producto = None):
     if articulo.es_rollo() or articulo.es_rollo_defectuoso():
         unidades = articulo.get_superficie() # En dimensión específica: m²
     else:
+        # PORASQUI: Si mando un número entero (los m² siempre son enteros) en el peso (que entra como Unidades en la TmpIME y MovStock) sí lo hace bien Murano. Pero si no, la coma la interpreta como separador de campo de una consulta SQL en el proceso interno de convertir la TmpIME en MovStock y PETA. Si arreglamos esto, volver a probar a enviar los BB como BB en vez de como BALA aunque el producto indique BALA como unidad básica.
         unidades = articulo.get_peso()  # En dimensión específica: kg
     #precio = 0.0
     precio_kg = buscar_precio_coste(producto, ejercicio, codigo_almacen)
@@ -778,7 +779,10 @@ def create_bala(bala, cantidad = 1, producto = None):
                           unidad_medida, precio, importe, unidades2,
                           unidad_medida2,
                           factor_conversion, comentario, ubicacion,
-                          origen_movimiento, numero_serie_lc,
+                          origen_movimiento, "", # Sage me indica que no
+                    # informe de la serie en el movimiento de stock para 
+                    # solucionar lo del registro duplicado creado por Murano
+                    # numero_serie_lc,
                           id_proceso_IME)
     c.run_sql(sql_movstock)
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock)
@@ -830,7 +834,10 @@ def create_bigbag(bigbag, cantidad = 1, producto = None):
                           unidad_medida, precio, importe, unidades2,
                           unidad_medida2,
                           factor_conversion, comentario, ubicacion,
-                          origen_movimiento, numero_serie_lc,
+                          origen_movimiento, "", # Sage me indica que no
+                    # informe de la serie en el movimiento de stock para 
+                    # solucionar lo del registro duplicado creado por Murano
+                    # numero_serie_lc,
                           id_proceso_IME)
     c.run_sql(sql_movstock)
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock)
@@ -879,7 +886,10 @@ def create_rollo(rollo, cantidad = 1, producto = None):
                           unidad_medida, precio, importe, unidades2,
                           unidad_medida2,
                           factor_conversion, comentario, ubicacion,
-                          origen_movimiento, numero_serie_lc,
+                          origen_movimiento, "", # Sage me indica que no
+                    # informe de la serie en el movimiento de stock para 
+                    # solucionar lo del registro duplicado creado por Murano
+                    # numero_serie_lc,
                           id_proceso_IME)
     c.run_sql(sql_movstock)
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock)
@@ -929,7 +939,10 @@ def create_caja(caja, cantidad = 1, producto = None):
                           unidad_medida, precio, importe, unidades2,
                           unidad_medida2,
                           factor_conversion, comentario, ubicacion,
-                          origen_movimiento, numero_serie_lc,
+                          origen_movimiento, "", # Sage me indica que no
+                    # informe de la serie en el movimiento de stock para 
+                    # solucionar lo del registro duplicado creado por Murano
+                    # numero_serie_lc,
                           id_proceso_IME)
     c.run_sql(sql_movstock)
     origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock)
@@ -1167,7 +1180,10 @@ def update_stock(producto, delta, almacen):
                           unidad_medida, precio, importe, unidades2,
                           unidad_medida2,
                           factor_conversion, comentario, ubicacion,
-                          origen_movimiento, numero_serie_lc,
+                          origen_movimiento, "", # Sage me indica que no
+                    # informe de la serie en el movimiento de stock para 
+                    # solucionar lo del registro duplicado creado por Murano
+                    # numero_serie_lc,
                           id_proceso_IME)
     c.run_sql(sql_movstock)
     fire(id_proceso_IME)
