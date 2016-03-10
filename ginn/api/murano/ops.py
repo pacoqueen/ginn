@@ -203,6 +203,15 @@ def buscar_grupo_talla(productoVenta):
 
 def buscar_unidad_medida_basica(producto, articulo = None):
     """
+    Devuelve la unidad de medida básica de la ficha de murano para el
+    producto indicado. Devuelve "" si el producto no lleva tratamiento de
+    serie, porque en ese caso el registro de movimiento de stock solo debe
+    llevar una unidad. Y esta función se usa para determinar la segunda.
+
+    ***
+
+    OBSOLETO:
+    ---------
     Devuelve la unidad de medida básica según el tipo de producto en ginn.
     Si el producto es un producto de compra o de venta pero sin trazabilidad
     (como ocurre con la granza reciclada, por ejemplo), devuelve la cadena
@@ -226,6 +235,7 @@ def buscar_unidad_medida_basica(producto, articulo = None):
     # trate de un bigbag. Ya después filtraremos por código para ver los
     # totales de bigbags (ya que en el campo de unidad pondrá también BALA solo
     # se podría distinguir de esa forma).
+# PORASQUI: Cuando arreglemos el error de la coma en la importación de los dos registros bala, volver a probar usando BIGBAG para los bigbags.
     return buscar_unidad_medida_basica_murano(producto)
     ################## NADA DE ESTE CÓDIGO SE EJECUTARÁ
     ## Lo dejo por si acaso...
@@ -619,7 +629,7 @@ def crear_proceso_IME(conexion):
     conexion.run_sql(r"""
         INSERT INTO %s.dbo.Iniciador_tmpIME(IdProcesoIME, EstadoIME, sysUsuario,
                                      sysUserName, Descripcion, TipoImportacion)
-        VALUES ('%s', 0, 1, 'administrador', 'Importación desde ginn', 254);
+        VALUES ('%s', 0, 1, 'administrador', 'Gateway ginn API Murano', 254);
         """ % (conexion.get_database(), guid_proceso))
     return guid_proceso
 
@@ -1070,6 +1080,8 @@ def create_articulo(articulo, cantidad = 1, producto = None):
     # TODO: Check que compruebe si el artículo ya existía para no duplicarlo.
     # TODO: Hacer en todos los create_*, pero solo si es una inserción.
     # TODO: ¿Y al descontar existencias? ¿Comprobar también que existan antes?
+    # De todos modos el proceso de importación devolverá error si la serie 
+    # está duplicada.
     if cantidad < 0:
         delta = 1
     else:
@@ -1205,6 +1217,9 @@ def fire(guid_proceso):
     operacion = "ImportaIME"
     strverbose = "Lanzando proceso de importación `%s` con GUID `%s`..." % (
             operacion, guid_proceso)
+    logging.info(strverbose)
+    if VERBOSE and DEBUG:
+        print(strverbose)
     retCode = burano.EjecutaOEM("LCCImExP.LcImExProceso", operacion,
                                 str(guid_proceso), 1, 1, 0)
     # 1 = No borrar registros IME al finalizar.
@@ -1216,20 +1231,30 @@ def fire(guid_proceso):
     logging.info(strverbose)
     if VERBOSE and DEBUG:
         print(strverbose)
-    # Después de cada proceso hay que invocar al cálculo que acumula los
-    # campos personalizados:
-    # FIXED: No ejecuta el cálculo. Era por las '' alrededor del guid. Según el
-    # .chm de ayuda los parámetros van sin encerrar en nada aunque sean cadena.
-    nombrescript = "AcumularCamposNuevosSeries"
-    paramsscript = "Label:=Inicio, idProcesoIME:=%s" % guid_proceso
-    strverbose = "Lanzando script `%s` con GUID `%s`..." % (
-            nombrescript, guid_proceso)
-    logging.info(strverbose)
-    if VERBOSE and DEBUG:
-        print(strverbose)
-    retCode = burano.EjecutaScript(nombrescript, paramsscript)
-    strverbose = "Ejecución `%s` concluida con código de retorno: %s" % (
-                guid_proceso, retCode)
-    logging.info(strverbose)
-    if VERBOSE and DEBUG:
-        print(strverbose)
+    ## Si retcode es 1: cagada. Si es 0: éxito
+    if retCode:
+        strerr = "¡PROCESO DE IMPORTACIÓN %s CON ERRORES!"\
+                 " No se lanza el script de acumulación de stock." % (
+                         guid_proceso)
+        logging.error(strerr)
+    else:
+        # Después de cada proceso hay que invocar al cálculo que acumula los
+        # campos personalizados:
+        # FIXED: No ejecuta el cálculo. Era por las '' alrededor del guid. 
+        # Según el .chm de ayuda los parámetros van sin encerrar en nada 
+        # aunque sean cadena.
+        nombrescript = "AcumularCamposNuevosSeries"
+        paramsscript = "Label:=Inicio, idProcesoIME:=%s" % guid_proceso
+        strverbose = "Lanzando script `%s` con GUID `%s`..." % (
+                nombrescript, guid_proceso)
+        logging.info(strverbose)
+        if VERBOSE and DEBUG:
+            print(strverbose)
+        retCode = burano.EjecutaScript(nombrescript, paramsscript)
+        ## retCode devuelve (True, ...) si se hace con éxito. El problema es
+        ## que no sé si retCode[0] será False cuando falla.
+        strverbose = "Ejecución `%s` concluida con código de retorno: %s" % (
+                    guid_proceso, retCode)
+        logging.info(strverbose)
+        if VERBOSE and DEBUG:
+            print(strverbose)
