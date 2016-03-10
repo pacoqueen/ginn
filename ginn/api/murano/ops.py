@@ -633,7 +633,7 @@ def crear_proceso_IME(conexion):
         """ % (conexion.get_database(), guid_proceso))
     return guid_proceso
 
-def prepare_params_movserie(articulo, cantidad = 1, producto = None):
+def prepare_params_movstock(articulo, cantidad = 1, producto = None):
     """
     Prepara los parámetros comunes a todos los artículos con movimiento de
     serie y devuelve la conexión a la base de datos MS-SQLServer.
@@ -768,7 +768,7 @@ def create_bala(bala, cantidad = 1, producto = None):
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
             unidades, precio, importe, unidades2, unidad_medida2,
-            factor_conversion, origen_movimiento) = prepare_params_movserie(
+            factor_conversion, origen_movimiento) = prepare_params_movstock(
                     articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
     sql_movstock = SQL_STOCK % (database,
@@ -820,7 +820,7 @@ def create_bigbag(bigbag, cantidad = 1, producto = None):
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
             unidades, precio, importe, unidades2, unidad_medida2,
-            factor_conversion, origen_movimiento) = prepare_params_movserie(
+            factor_conversion, origen_movimiento) = prepare_params_movstock(
                     articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
     sql_movstock = SQL_STOCK % (database,
@@ -869,7 +869,7 @@ def create_rollo(rollo, cantidad = 1, producto = None):
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
             unidades, precio, importe, unidades2, unidad_medida2,
-            factor_conversion, origen_movimiento) = prepare_params_movserie(
+            factor_conversion, origen_movimiento) = prepare_params_movstock(
                     articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
     sql_movstock = SQL_STOCK % (database,
@@ -919,7 +919,7 @@ def create_caja(caja, cantidad = 1, producto = None):
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
             unidades, precio, importe, unidades2, unidad_medida2,
-            factor_conversion, origen_movimiento) = prepare_params_movserie(
+            factor_conversion, origen_movimiento) = prepare_params_movstock(
                     articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
     sql_movstock = SQL_STOCK % (database,
@@ -961,11 +961,16 @@ def create_pale(pale, cantidad = 1, producto = None):
     # palé informado. No hay que crear movimiento de stock ni de número de
     # serie para eso.
     i = 0
-    totcajas = len(pale.cajas)
-    for caja in pale.cajas:
+    cajas = pale.cajas
+    totcajas = len(cajas)
+    if VERBOSE:
+        from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
+        cajas = tqdm(cajas, nested = True)
+    for caja in cajas:
         i += 1
         if VERBOSE:
-            print("Creando caja %s... (%d/%d)" % (caja.codigo, i, totcajas))
+            cajas.set_description("Creando caja %s... (%d/%d)" % (
+                caja.codigo, i, totcajas))
         create_caja(caja, cantidad = cantidad, producto = producto)
     # No es necesario. Cada caja lanza su proceso y el palé no crea
     # registros en la base de datos. No hay que lanzar ninún proceso adicional.
