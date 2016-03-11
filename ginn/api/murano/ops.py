@@ -146,7 +146,7 @@ SQL_SERIE = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoSerie](
                 PesoNeto_,
                 MetrosCuadrados,
                 CodigoPale)
-               VALUES(
+            VALUES (
                 %d,     -- código empresa
                 '%s',   -- código artículo
                 '%s',   -- número de serie del artículo
@@ -221,25 +221,6 @@ def buscar_unidad_medida_basica(producto, articulo = None):
     prevalece sobre la general del producto. Útil para productos que pueden
     empaquetarse tanto en balas como en bigbags.
     """
-    # NOTA: OJO: Al final sí que vamos a tener que recurrir a la ficha de
-    # Murano y sacar la unidad de medida de ahí. El porqué:
-    # Si Murano al procesar el registro de TmpIME...Stock encuentra que
-    # la unidad no coincide con la del producto en su ficha, dará error y solo
-    # se importará el movimiento serie. De modo que el stock no aumentaría
-    # aunque en el desglose por códigos de serie sí aparezca el BIGBAG. (PV71)
-    # De modo que mandamos el movimiento de stock como BALA (aunque sea un
-    # bigbag) para que haga el acumulado y el de serie como BIGBAG para que
-    # conste que es BIGBAG en el desglose de series en la ventana ^k de Murano
-    # [10/03/2016] No funciona bien de esa manera. No acumula el stock. Hay
-    # que mandar los dos movimientos con la misma unidad básica aunque se
-    # trate de un bigbag. Ya después filtraremos por código para ver los
-    # totales de bigbags (ya que en el campo de unidad pondrá también BALA solo
-    # se podría distinguir de esa forma).
-# PORASQUI: Cuando arreglemos el error de la coma en la importación de los dos registros bala, volver a probar usando BIGBAG para los bigbags.
-    #return buscar_unidad_medida_basica_murano(producto)
-    ################## NADA DE ESTE CÓDIGO SE EJECUTARÁ
-    ## Lo dejo por si acaso...
-    ##########################
     # Al principio me dijo Félix que la buscara en Murano, pero no lo hago por
     # dos motivos:
     # 1.- Puede que la unidad básica en mirano sea la BALA pero estemos 
@@ -408,7 +389,8 @@ def buscar_precio_coste_familia_ginn(cod_familia):
     """
     Devuelve el precio por familia definido en ginn.
     """
-    # TODO: FIXME: HARCODED: Esto debe ir a la tabla de ginn correspondiente y reflejarlo en la ventana que sea.
+    # TODO: FIXME: HARCODED: Esto debeía ir en la tabla de ginn correspondiente
+    # y reflejarlo en la ventana que sea (no hay ventana de familias).
     if cod_familia == "GEO":
         precio_coste = 2.210
     elif cod_familia == "FIB" or cod_familia == "FCE":
@@ -675,11 +657,16 @@ def prepare_params_movstock(articulo, cantidad = 1, producto = None):
     #unidades = 1    # En dimensión base: 1 bala, rollo, caja, bigbag...
     # [20160207] Al final no era en dimensión base, sino en la específica.
     if articulo.es_rollo() or articulo.es_rollo_defectuoso():
+        # Los rollos C no tienen m² definidos. Se tratan al peso.
         unidades = articulo.get_superficie() # En dimensión específica: m²
     else:
-        # PORASQUI: Si mando un número entero (los m² siempre son enteros) en el peso (que entra como Unidades en la TmpIME y MovStock) sí lo hace bien Murano. Pero si no, la coma la interpreta como separador de campo de una consulta SQL en el proceso interno de convertir la TmpIME en MovStock y PETA. Si arreglamos esto, volver a probar a enviar los BB como BB en vez de como BALA aunque el producto indique BALA como unidad básica.
+        ## TODO: PORASQUI: No recordaba que habíamos cambiado el criterio de los pesos a enviar a Murano. Para las balas es peso bruto - 200 gr, para los rollos A es el peso neto, etc. Ver correo del viernes 11/03/2016.
+        # BUG: [Murano] Si mando un número entero (los m² siempre son enteros) 
+        # en el peso (que entra como Unidades en la TmpIME y MovStock) sí lo 
+        # hace bien Murano. Pero si no, la coma la interpreta como separador 
+        # de campo de una consulta SQL en el proceso interno de convertir la 
+        # TmpIME en MovStock, `da un syntax error near ,` en la traza y PETA.
         unidades = articulo.get_peso()  # En dimensión específica: kg
-        unidades = int(articulo.get_peso())  # TODO: FIXME: Sin decimales para probar.
     #precio = 0.0
     precio_kg = buscar_precio_coste(producto, ejercicio, codigo_almacen)
     precio = estimar_precio_coste(articulo, precio_kg)
