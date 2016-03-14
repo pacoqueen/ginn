@@ -10185,6 +10185,35 @@ class Articulo(SQLObject, PRPCTOO):
             res = None
         return res
 
+    @property
+    def pesoEmbalaje(self):
+        """
+        Devuelve el peso del embalaje del producto. Los rollos B y C tienen
+        su propio campo. Los A deben obtenerlo de la ficha del producto.
+        Las balas A y B no tienen definido peso de embalaje y es despreciable
+        actualmente. OJO: [20160314] Esto cambiará próximamente.
+        Las balas C tienen su propio campo.
+        Los bigbag no tienen peso de embalaje.
+        Las cajas no tienen peso de embalaje. OJO: [20160314] Cambiará.
+        """
+        res = None
+        if self.bala:
+            res = 0.0
+        elif self.balaCable:
+            res = self.balaCable.pesoEmbalaje
+        elif self.rollo:
+            res = self.productoVenta.camposEspecificosRollo.pesoEmbalaje
+        elif self.rolloDefectuoso:
+            res = self.rolloDefectuoso.pesoEmbalaje
+        elif self.rolloC:
+            res = self.rolloC.pesoEmbalaje
+        elif self.bigbag:
+            res = 0.0
+        elif self.caja:
+            res = 0.0
+        return res
+    peso_embalaje = pesoEmbalaje
+
 cont, tiempo = print_verbose(cont, total, tiempo)
 
 class PedidoVenta(SQLObject, PRPCTOO):

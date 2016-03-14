@@ -15,6 +15,8 @@ logging.basicConfig(filename = "%s.log" % (
 import datetime
 from connection import Connection, DEBUG, VERBOSE
 from export import determinar_familia_Murano
+from extra import get_peso_bruto, get_peso_neto, get_peso_ideal
+from extra import get_peso_embalaje, get_superficie
 
 try:
     import win32com.client
@@ -656,17 +658,7 @@ def prepare_params_movstock(articulo, cantidad = 1, producto = None):
         codigo_almacen = buscar_ultimo_almacen_conocido_para(articulo)
     #unidades = 1    # En dimensión base: 1 bala, rollo, caja, bigbag...
     # [20160207] Al final no era en dimensión base, sino en la específica.
-    if articulo.es_rollo() or articulo.es_rollo_defectuoso():
-        # Los rollos C no tienen m² definidos. Se tratan al peso.
-        unidades = articulo.get_superficie() # En dimensión específica: m²
-    else:
-        ## TODO: PORASQUI: No recordaba que habíamos cambiado el criterio de los pesos a enviar a Murano. Para las balas es peso bruto - 200 gr, para los rollos A es el peso neto, etc. Ver correo del viernes 11/03/2016.
-        # BUG: [Murano] Si mando un número entero (los m² siempre son enteros) 
-        # en el peso (que entra como Unidades en la TmpIME y MovStock) sí lo 
-        # hace bien Murano. Pero si no, la coma la interpreta como separador 
-        # de campo de una consulta SQL en el proceso interno de convertir la 
-        # TmpIME en MovStock, `da un syntax error near ,` en la traza y PETA.
-        unidades = articulo.get_peso()  # En dimensión específica: kg
+    unidades = get_cantidad_dimension_especifica(articulo)
     #precio = 0.0
     precio_kg = buscar_precio_coste(producto, ejercicio, codigo_almacen)
     precio = estimar_precio_coste(articulo, precio_kg)
@@ -685,6 +677,27 @@ def prepare_params_movstock(articulo, cantidad = 1, producto = None):
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
             unidades, precio, importe, unidades2, unidad_medida2,
             factor_conversion, origen_movimiento)
+
+def get_cantidad_dimension_especifica(articulo):
+    """
+    Devuelve la cantidad a sumar o restar del stock de Murano del artículo
+    con código de trazabilidad recibido. Va en undad específica: kg o m².
+    """
+    if articulo.es_rollo() or articulo.es_rollo_defectuoso():
+        # Los rollos C no tienen m² definidos. Se tratan al peso.
+        unidades = get_superficie(articulo) # En dimensión específica: m²
+    elif articulo.es_bala():
+        #unidades = articulo.get_peso()  
+        unidades = get_peso_bruto(articulo)  # En dimensión específica: kg
+    ### XXX ### XXX ### XXX ### XXX ### XXX ### XXX ### XXX ### XXX ### XXX ##
+    # BUG: [Murano] Si mando un número entero (los m² siempre son enteros) 
+    # en el peso (que entra como Unidades en la TmpIME y MovStock) sí lo 
+    # hace bien Murano. Pero si no, la coma la interpreta como separador 
+    # de campo de una consulta SQL en el proceso interno de convertir la 
+    # TmpIME en MovStock, `da un syntax error near ,` en la traza y PETA.
+    # TODO: FIXME: Hasta que no se arregle, mando número entero para probar.
+    unidades = int(unidades)    ### XXX ### XXX ### XXX ### XXX ### XXX ######
+    return unidades
 
 def buscar_ultimo_almacen_conocido_para(articulo):
     """
@@ -785,13 +798,16 @@ def create_bala(bala, cantidad = 1, producto = None):
     # de momento no se ha decidido nada. Cuando cambien en ginn, aquí no hará
     # falta tocar nada porque lo toma de las propiedades del artículo en sí.
     numero_serie_lc = bala.codigo
+    peso_bruto = get_peso_bruto(articulo)
+    peso_neto = get_peso_neto(articulo)
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
                                 mov_posicion_origen, codigo_talla,
                                 codigo_almacen, ubicacion, partida,
                                 unidad_medida1, comentario, id_proceso_IME,
-                                articulo.peso, articulo.peso_sin,
+                                #articulo.peso, articulo.peso_sin,
+                                peso_bruto, peso_neto,
                                 0.0, # Metros cuadrados. Decimal NOT NULL
                                 ""   # Código palé. Varchar NOT NULL
                                )
@@ -834,13 +850,16 @@ def create_bigbag(bigbag, cantidad = 1, producto = None):
     unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
                                                  articulo)
     numero_serie_lc = bigbag.codigo
+    peso_bruto = get_peso_bruto(articulo)
+    peso_neto = get_peso_neto(articulo)
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
                                 mov_posicion_origen, codigo_talla,
                                 codigo_almacen, ubicacion, partida,
                                 unidad_medida1, comentario, id_proceso_IME,
-                                articulo.peso, articulo.peso_sin,
+                                #articulo.peso, articulo.peso_sin,
+                                peso_bruto, peso_neto,
                                 0.0, # Metros cuadrados. Decimal NOT NULL
                                 ""   # Código palé. Varchar NOT NULL
                                )
@@ -885,18 +904,18 @@ def create_rollo(rollo, cantidad = 1, producto = None):
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
     unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
                                                  articulo)
-    superficie = articulo.get_superficie()
-    if superficie is None:
-        superficie = 0.0
+    superficie = get_superficie(articulo)
     numero_serie_lc = rollo.codigo
+    peso_bruto = get_peso_bruto(articulo)
+    peso_neto = get_peso_neto(articulo)
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
                                 mov_posicion_origen, codigo_talla,
                                 codigo_almacen, ubicacion, partida,
                                 unidad_medida1, comentario, id_proceso_IME,
-                                articulo.peso, articulo.peso_sin,
-                                superficie, 
+                                #articulo.peso, articulo.peso_sin,
+                                peso_bruto, peso_neto, superficie, 
                                        # Metros cuadrados. Decimal NOT NULL
                                 ""   # Código palé. Varchar NOT NULL
                                )
@@ -939,13 +958,16 @@ def create_caja(caja, cantidad = 1, producto = None):
     unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
                                                  articulo)
     numero_serie_lc = caja.codigo
+    peso_bruto = get_peso_bruto(articulo)
+    peso_neto = get_peso_neto(articulo)
     sql_movserie = SQL_SERIE % (database,
                                 CODEMPRESA, codigo_articulo, numero_serie_lc,
                                 fecha, origen_documento, ejercicio, documento,
                                 mov_posicion_origen, codigo_talla,
                                 codigo_almacen, ubicacion, partida,
                                 unidad_medida1, comentario, id_proceso_IME,
-                                articulo.peso, articulo.peso_sin,
+                                #articulo.peso, articulo.peso_sin,
+                                peso_bruto, peso_neto,
                                 0.0,   # Metros cuadrados. Decimal NOT NULL
                                 caja.pale and caja.pale.codigo or ""
                                        # Código palé. Varchar NOT NULL
