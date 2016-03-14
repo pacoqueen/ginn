@@ -696,8 +696,10 @@ def get_cantidad_dimension_especifica(articulo):
     # hace bien Murano. Pero si no, la coma la interpreta como separador 
     # de campo de una consulta SQL en el proceso interno de convertir la 
     # TmpIME en MovStock, `da un syntax error near ,` en la traza y PETA.
-    # TODO: FIXME: Hasta que no se arregle, mando número entero para probar.
-    unidades = int(unidades)    ### XXX ### XXX ### XXX ### XXX ### XXX ######
+    # TODO: FIXME: Hasta que no se arregle, mando número entero multiplicado
+    # por 10 y en Murano se vuelve a dividir entre 10 para que se quede la
+    # cantidad correcta en kilos.
+    unidades = int(unidades * 10)    ### XXX ### XXX ### XXX ### XXX ### XXX ##
     return unidades
 
 def buscar_ultimo_almacen_conocido_para(articulo):
