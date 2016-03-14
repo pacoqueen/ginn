@@ -391,8 +391,9 @@ def buscar_precio_coste_familia_ginn(cod_familia):
     """
     Devuelve el precio por familia definido en ginn.
     """
-    # TODO: FIXME: HARCODED: Esto debeía ir en la tabla de ginn correspondiente
+    # FIXME: HARCODED: Esto debeía ir en la tabla de ginn correspondiente
     # y reflejarlo en la ventana que sea (no hay ventana de familias).
+    # En teoría no haría falta ya que siempre van a venir de Murano.
     if cod_familia == "GEO":
         precio_coste = 2.210
     elif cod_familia == "FIB" or cod_familia == "FCE":
@@ -791,12 +792,6 @@ def create_bala(bala, cantidad = 1, producto = None):
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
     unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
                                                  articulo)
-    # TODO: OJO: El peso sin embalaje de una bala es el mismo que el bruto.
-    # En línea se descuenta .5 y se redondea al alza estimando que ese es el
-    # peso del embalaje (más humedad y demás). De modo que el peso bruto de una
-    # bala es el mismo que el peso neto. Eso dijimos que se corregiría, pero
-    # de momento no se ha decidido nada. Cuando cambien en ginn, aquí no hará
-    # falta tocar nada porque lo toma de las propiedades del artículo en sí.
     numero_serie_lc = bala.codigo
     peso_bruto = get_peso_bruto(articulo)
     peso_neto = get_peso_neto(articulo)

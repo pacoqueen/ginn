@@ -69,3 +69,4 @@ CVS/*
 ginn/api/tests/*.csv
 ginn/api/tests/*.xls
 ginn/api/tests/*.log
+ginn/api/*.log
