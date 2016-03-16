@@ -57,7 +57,7 @@ SQL_STOCK = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
                UnidadMedida2_,
                FactorConversion_,
                Comentario,
-               -- CodigoCanal,
+               CodigoCanal,
                -- CodigoCliente,
                -- CodigoProveedor,
                -- FechaCaduca,
@@ -99,7 +99,7 @@ SQL_STOCK = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
                '%s',    -- UnidadMedida2_ (la básica: ROLLO, BALA...)
                %f,      -- factor de conversión
                '%s',    -- comentario
-               -- NULL,
+               'DIV',   -- FIXME: XXX: Temporal para lo del cálculo de dividir entre 100 las unidades de todos los movimientos marcados con 'DIV' en CodigoCanal y evitar el BUG _syntax error_ de Murano de la coma.
                -- NULL,
                -- NULL,
                -- NULL,
