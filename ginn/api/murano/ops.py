@@ -697,9 +697,9 @@ def get_cantidad_dimension_especifica(articulo):
     # de campo de una consulta SQL en el proceso interno de convertir la 
     # TmpIME en MovStock, `da un syntax error near ,` en la traza y PETA.
     # TODO: FIXME: Hasta que no se arregle, mando número entero multiplicado
-    # por 10 y en Murano se vuelve a dividir entre 10 para que se quede la
+    # por 100 y en Murano se vuelve a dividir entre 100 para que se quede la
     # cantidad correcta en kilos.
-    unidades = int(unidades * 10)    ### XXX ### XXX ### XXX ### XXX ### XXX ##
+    unidades = int(unidades * 100)  ### XXX ### XXX ### XXX ### XXX ### XXX ##
     return unidades
 
 def buscar_ultimo_almacen_conocido_para(articulo):
@@ -1278,8 +1278,27 @@ def fire(guid_proceso):
         retCode = burano.EjecutaScript(nombrescript, paramsscript)
         ## retCode devuelve (True, ...) si se hace con éxito. El problema es
         ## que no sé si retCode[0] será False cuando falla.
+        strverbose = "Ejecución `%s` (GUID `%s`) "\
+                     "concluida con código de retorno: %s" % (
+                             nombrescript, guid_proceso, retCode)
+        logging.info(strverbose)
+        if VERBOSE and DEBUG:
+            print(strverbose)
+        # FIXME:XXX: Para evitar el bug de los decimales en Murano, mandamos
+        # las unidades del movimiento de stock multiplicadas por 100 (las 
+        # balas solo van a tener una cifra decimal porque la báscula pesa de 
+        # 500 en 500 gr, pero la definición nueva del peso bruto de los palés
+        # puede llevar hasta 2).
+        nombrescript = "GEO_DividirStock"
+        paramsscript = "Label:=Inicio"
+        strverbose = "Lanzando script `%s`..." % (
+                nombrescript)
+        logging.info(strverbose)
+        if VERBOSE and DEBUG:
+            print(strverbose)
+        retCode = burano.EjecutaScript(nombrescript, paramsscript)
         strverbose = "Ejecución `%s` concluida con código de retorno: %s" % (
-                    guid_proceso, retCode)
+                    nombrescript, retCode)
         logging.info(strverbose)
         if VERBOSE and DEBUG:
             print(strverbose)
