@@ -50,9 +50,11 @@ def get_peso_bruto(a):
     if peso == peso_sin and a.es_bala():    # A ó B
         # Modelo antiguo. El peso neto es igual que el peso bruto porque
         # ya en báscula se le ha descontado 1 o 1.5 kg.
-        res = peso + 1.5 # No hay forma de saber el peso real que ha dado
+        res = peso + 1.0 # No hay forma de saber el peso real que ha dado
         # en báscula ya que se almacena directamente después de haberle 
         # restado 1 (si no era peso entero) ó 1.5 kg (si el peso acababa en .0)
+        # Para las balas a las que descontaron 1.5 le faltarían 500 gr.
+        #res += 0.5 
     else: # Balas C, rollos, bigbag y cajas
         res = peso
     return res
