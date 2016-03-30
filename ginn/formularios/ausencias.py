@@ -286,7 +286,7 @@ class Ausencias(Ventana):
                 model_tv[path][numcol] = text
                 ausencia = pclases.Ausencia.get(model_tv[path][-1])
                 ausencia.motivo = ct
-                self.actualizar_ventana()
+                self.actualizar_ventana(deep_refresh = False)
         cellcombo.connect("edited", guardar_combo, tv.get_model(), numcol, model)
         column.pack_start(cellcombo)
         column.set_attributes(cellcombo, text = numcol)
@@ -300,7 +300,8 @@ class Ausencias(Ventana):
             model = cb.get_model()
             ide = model[itr][0]
             self.objeto = pclases.Empleado.get(ide)
-        self.actualizar_ventana(objeto_anterior = anterior)
+        self.actualizar_ventana(objeto_anterior = anterior,
+                                deep_refresh = False)
 
     def activar_widgets(self, s):
         """
@@ -329,7 +330,8 @@ class Ausencias(Ventana):
         except:
             empleado = None
         self.objeto = empleado
-        self.actualizar_ventana(objeto_anterior = anterior)
+        self.actualizar_ventana(objeto_anterior = anterior,
+                                deep_refresh = False)
 
     def rellenar_widgets(self):
         """
@@ -476,7 +478,7 @@ class Ausencias(Ventana):
                                                 fecha = fechaincrementada, 
                                                 motivo = motivo)
                     pclases.Auditoria.nuevo(ausencia, self.usuario, __file__)
-                self.actualizar_ventana()
+                self.actualizar_ventana(deep_refresh = False)
             except (ValueError, TypeError):
                 utils.dialogo_info(titulo = "VALOR INCORRECTO",
                         texto = "Debe teclear un número. Vuelva a intentarlo",
@@ -488,7 +490,7 @@ class Ausencias(Ventana):
             ide = model[itr][-1]
             ausencia = pclases.Ausencia.get(ide)
             ausencia.destroy(ventana = __file__)
-            self.actualizar_ventana()
+            self.actualizar_ventana(deep_refresh = False)
         else:
             utils.dialogo_info(titulo = "SELECCIONE AUSENCIA", 
                                texto = "Seleccione la ausencia a eliminar.", 
@@ -519,7 +521,7 @@ class Ausencias(Ventana):
                             fechaInicio = fecha, 
                             fechaFin = fechaFin)
         pclases.Auditoria.nuevo(baja, self.usuario, __file__)
-        self.actualizar_ventana()
+        self.actualizar_ventana(deep_refresh = False)
 
     def drop_baja(self, boton):
         model, itr = self.wids['tv_bajas'].get_selection().get_selected()
@@ -527,7 +529,7 @@ class Ausencias(Ventana):
             ide = model[itr][-1]
             baja = pclases.Baja.get(ide)
             baja.destroy(ventana = __file__)
-            self.actualizar_ventana()
+            self.actualizar_ventana(deep_refresh = False)
         else:
             utils.dialogo_info(titulo = "SELECCIONE BAJA", 
                                texto = "Seleccione la baja a eliminar.", 

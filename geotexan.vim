@@ -1,6 +1,6 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim:
 " Vim session script.
-" Created by session.vim 2.13.1 on 30 marzo 2016 at 18:52:45.
+" Created by session.vim 2.13.1 on 30 marzo 2016 at 19:04:59.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -65,14 +65,14 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 5 + 25) / 51)
-exe '2resize ' . ((&lines * 5 + 25) / 51)
-exe '3resize ' . ((&lines * 5 + 25) / 51)
-exe '4resize ' . ((&lines * 5 + 25) / 51)
-exe '5resize ' . ((&lines * 5 + 25) / 51)
-exe '6resize ' . ((&lines * 6 + 25) / 51)
-exe '7resize ' . ((&lines * 6 + 25) / 51)
-exe '8resize ' . ((&lines * 5 + 25) / 51)
+exe '1resize ' . ((&lines * 2 + 24) / 49)
+exe '2resize ' . ((&lines * 1 + 24) / 49)
+exe '3resize ' . ((&lines * 1 + 24) / 49)
+exe '4resize ' . ((&lines * 1 + 24) / 49)
+exe '5resize ' . ((&lines * 1 + 24) / 49)
+exe '6resize ' . ((&lines * 1 + 24) / 49)
+exe '7resize ' . ((&lines * 32 + 24) / 49)
+exe '8resize ' . ((&lines * 1 + 24) / 49)
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -83,7 +83,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 16 - ((0 * winheight(0) + 2) / 5)
+let s:l = 16 - ((0 * winheight(0) + 1) / 2)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -101,7 +101,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 3 - ((0 * winheight(0) + 2) / 5)
+let s:l = 3 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -119,7 +119,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 3 - ((0 * winheight(0) + 2) / 5)
+let s:l = 3 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -137,7 +137,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 5 - ((0 * winheight(0) + 2) / 5)
+let s:l = 5 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -155,7 +155,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 2) / 5)
+let s:l = 1 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -173,7 +173,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 591 - ((0 * winheight(0) + 3) / 6)
+let s:l = 591 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -191,12 +191,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 77 - ((0 * winheight(0) + 3) / 6)
+let s:l = 81 - ((15 * winheight(0) + 16) / 32)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-77
-normal! 0
+81
+normal! 014|
 wincmd w
 argglobal
 edit ginn/framework/pclases/__init__.py
@@ -209,7 +209,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 23 - ((1 * winheight(0) + 2) / 5)
+let s:l = 23 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -217,14 +217,14 @@ normal! zt
 normal! 028|
 wincmd w
 7wincmd w
-exe '1resize ' . ((&lines * 5 + 25) / 51)
-exe '2resize ' . ((&lines * 5 + 25) / 51)
-exe '3resize ' . ((&lines * 5 + 25) / 51)
-exe '4resize ' . ((&lines * 5 + 25) / 51)
-exe '5resize ' . ((&lines * 5 + 25) / 51)
-exe '6resize ' . ((&lines * 6 + 25) / 51)
-exe '7resize ' . ((&lines * 6 + 25) / 51)
-exe '8resize ' . ((&lines * 5 + 25) / 51)
+exe '1resize ' . ((&lines * 2 + 24) / 49)
+exe '2resize ' . ((&lines * 1 + 24) / 49)
+exe '3resize ' . ((&lines * 1 + 24) / 49)
+exe '4resize ' . ((&lines * 1 + 24) / 49)
+exe '5resize ' . ((&lines * 1 + 24) / 49)
+exe '6resize ' . ((&lines * 1 + 24) / 49)
+exe '7resize ' . ((&lines * 32 + 24) / 49)
+exe '8resize ' . ((&lines * 1 + 24) / 49)
 tabnext 1
 if exists('s:wipebuf')
 "   silent exe 'bwipe ' . s:wipebuf
