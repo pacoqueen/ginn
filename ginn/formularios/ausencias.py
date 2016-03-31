@@ -25,51 +25,52 @@
 
 
 ###################################################################
-## ausencias.py - Ausencias y permisos.
+#  ausencias.py - Ausencias y permisos.
 ###################################################################
-## NOTAS:
-##  Un día de ausencia, un registro.
-##  Si el motivo de la ausencia implica 2 o más días, 2 o más 
-##  registros a crear.
-## 
+#  NOTAS:
+#   Un día de ausencia, un registro.
+#   Si el motivo de la ausencia implica 2 o más días, 2 o más
+#   registros a crear.
+#
 ###################################################################
-## Changelog:
-## 27 de julio de 2005 -> Inicio
-## 28 de julio de 2005 -> Falta impresión permiso.
-## 
+#  Changelog:
+#  27 de julio de 2005 -> Inicio
+#  28 de julio de 2005 -> Falta impresión permiso.
+#
 ###################################################################
 
 from ventana import Ventana
 from formularios import utils
 import pygtk
 pygtk.require('2.0')
-import gtk, time
+import gtk
+import time
 from framework import pclases
 from informes import geninformes
 import mx.DateTime
 import datetime
 
+
 class Ausencias(Ventana):
-    def __init__(self, objeto = None, usuario = None):
+    def __init__(self, objeto=None, usuario=None):
         """
         Constructor. objeto puede ser un objeto de pclases con el que
         comenzar la ventana (en lugar del primero de la tabla, que es
         el que se muestra por defecto).
-        Aunque la clase "principal" es Ausencia, self.objeto será el 
+        Aunque la clase "principal" es Ausencia, self.objeto será el
         empleado al que pertenecen las ausencias.
         """
-        Ventana.__init__(self, 'ausencias.glade', objeto, usuario = usuario)
+        Ventana.__init__(self, 'ausencias.glade', objeto, usuario=usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_drop_ausencia/clicked': self.drop_ausencia,
                        'b_add_ausencia/clicked': self.add_ausencia,
                        'b_imprimir/clicked': self.imprimir_ausencia,
                        'sp_anno/changed': self.anno_changed,
-                       'b_add_baja/clicked': self.add_baja, 
-                       'b_drop_baja/clicked': self.drop_baja
-                      } 
+                       'b_add_baja/clicked': self.add_baja,
+                       'b_drop_baja/clicked': self.drop_baja}
         self.add_connections(connections)
         self.inicializar_ventana()
-        if self.objeto == None:
+        if self.objeto is None:
             self.ir_a_primero()
         else:
             self.ir_a(objeto)
@@ -78,7 +79,7 @@ class Ausencias(Ventana):
     def anno_changed(self, sp_anno):
         tmphndlr = self.handlers_id['sp_anno']['changed'][-1]
         sp_anno.disconnect(tmphndlr)
-        self.actualizar_ventana(deep_refresh = False)
+        self.actualizar_ventana(deep_refresh=False)
         tmphndlr = sp_anno.connect("changed", self.anno_changed)
         self.handlers_id['sp_anno']['changed'].append(tmphndlr)
 
@@ -91,7 +92,7 @@ class Ausencias(Ventana):
 
     def aviso_actualizacion(self):
         """
-        Muestra una ventana modal con el mensaje de objeto 
+        Muestra una ventana modal con el mensaje de objeto
         actualizado.
         """
         pass
@@ -110,27 +111,27 @@ class Ausencias(Ventana):
         self.wids['b_guardar'].set_sensitive(False)
         self.wids['b_nuevo'].set_sensitive(True)
         self.wids['b_buscar'].set_sensitive(True)
-        cols = (('Fecha', 'gobject.TYPE_STRING', 
-                    True, True, True, self.cambiar_fecha), 
+        cols = (('Fecha', 'gobject.TYPE_STRING',
+                    True, True, True, self.cambiar_fecha),
                 ('Motivo', 'gobject.TYPE_STRING', False, True, False, None),
-                ('Observaciones', 'gobject.TYPE_STRING', 
+                ('Observaciones', 'gobject.TYPE_STRING',
                     True, True, False, self.cambiar_observaciones),
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(self.wids['tv_ausencias'], cols)
         self.cambiar_por_combo(self.wids['tv_ausencias'], 1)
-        utils.rellenar_lista(self.wids['cbe_empleado'], 
-                [(c.id, "%s %s" % (c.nombre, c.apellidos)) for c in 
+        utils.rellenar_lista(self.wids['cbe_empleado'],
+                [(c.id, "%s %s" % (c.nombre, c.apellidos)) for c in
                  pclases.Empleado.select(pclases.Empleado.q.activo == True,
                                          orderBy="nombre")])
         self.wids['cbe_empleado'].connect('changed',
                                           self.cambiar_seleccion_empleado)
-        cols = (('Fecha inicio', 'gobject.TYPE_STRING', 
-                    True, True, True, self.cambiar_fecha_inicio_baja), 
-                ('Fecha fin', 'gobject.TYPE_STRING', 
-                    True, True, False, self.cambiar_fecha_fin_baja), 
-                ('Motivo', 'gobject.TYPE_STRING', 
+        cols = (('Fecha inicio', 'gobject.TYPE_STRING',
+                    True, True, True, self.cambiar_fecha_inicio_baja),
+                ('Fecha fin', 'gobject.TYPE_STRING',
+                    True, True, False, self.cambiar_fecha_fin_baja),
+                ('Motivo', 'gobject.TYPE_STRING',
                     True, True, False, self.cambiar_motivo_baja),
-                ('Observaciones', 'gobject.TYPE_STRING', 
+                ('Observaciones', 'gobject.TYPE_STRING',
                     True, True, False, self.cambiar_observaciones_baja),
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(self.wids['tv_bajas'], cols)
@@ -139,8 +140,8 @@ class Ausencias(Ventana):
         try:
             fecha = utils.parse_fecha(texto)
         except (ValueError, TypeError):
-            utils.dialogo_info(titulo = "FECHA INCORRECTA", 
-                               texto = "La fecha introducida no es válida", 
+            utils.dialogo_info(titulo = "FECHA INCORRECTA",
+                               texto = "La fecha introducida no es válida",
                                padre = self.wids['ventana'])
             return
         model = self.wids['tv_bajas'].get_model()
@@ -155,8 +156,8 @@ class Ausencias(Ventana):
             fechaintermedia = iniciorango
             while fechaintermedia < finrango:
                 if bajaexistente.esta_vigente(fechaintermedia):
-                    utils.dialogo_info(titulo = "BAJA SOLAPADA", 
-                                       texto = "Las bajas médicas no pueden solaparse entre sí, elija otra fecha.", 
+                    utils.dialogo_info(titulo = "BAJA SOLAPADA",
+                                       texto = "Las bajas médicas no pueden solaparse entre sí, elija otra fecha.",
                                        padre = self.wids['ventana'])
                     return
                 if isinstance(fechaintermedia, datetime.date):
@@ -170,12 +171,12 @@ class Ausencias(Ventana):
         model[path][0] = utils.str_fecha(baja.fechaInicio)
         model[path][1] = utils.str_fecha(baja.fechaFin)
 
-    def cambiar_fecha_fin_baja(self, cell, path, texto): 
+    def cambiar_fecha_fin_baja(self, cell, path, texto):
         try:
             fecha = utils.parse_fecha(texto)
         except (ValueError, TypeError):
-            utils.dialogo_info(titulo = "FECHA INCORRECTA", 
-                               texto = "La fecha introducida no es válida", 
+            utils.dialogo_info(titulo = "FECHA INCORRECTA",
+                               texto = "La fecha introducida no es válida",
                                padre = self.wids['ventana'])
             return
         model = self.wids['tv_bajas'].get_model()
@@ -190,8 +191,8 @@ class Ausencias(Ventana):
             fechaintermedia = iniciorango
             while fechaintermedia < finrango:
                 if bajaexistente.esta_vigente(fechaintermedia):
-                    utils.dialogo_info(titulo = "BAJA SOLAPADA", 
-                                       texto = "Las bajas médicas no pueden solaparse entre sí, elija otra fecha.", 
+                    utils.dialogo_info(titulo = "BAJA SOLAPADA",
+                                       texto = "Las bajas médicas no pueden solaparse entre sí, elija otra fecha.",
                                        padre = self.wids['ventana'])
                     return
                 if isinstance(fechaintermedia, datetime.date):
@@ -205,14 +206,14 @@ class Ausencias(Ventana):
         model[path][0] = utils.str_fecha(baja.fechaInicio)
         model[path][1] = utils.str_fecha(baja.fechaFin)
 
-    def cambiar_motivo_baja(self, cell, path, texto): 
+    def cambiar_motivo_baja(self, cell, path, texto):
         model = self.wids['tv_bajas'].get_model()
         baja = pclases.Baja.get(model[path][-1])
         baja.motivo = texto
         baja.sync()
         model[path][2] = baja.motivo
 
-    def cambiar_observaciones_baja(self, cell, path, texto): 
+    def cambiar_observaciones_baja(self, cell, path, texto):
         model = self.wids['tv_bajas'].get_model()
         baja = pclases.Baja.get(model[path][-1])
         baja.observaciones = texto
@@ -224,18 +225,18 @@ class Ausencias(Ventana):
         ausencia = pclases.Ausencia.get(model[path][-1])
         try:
             tfecha = time.strptime(texto, '%d/%m/%Y')
-            ausencia.fecha = mx.DateTime.DateFrom(tfecha.tm_year, 
-                                                  tfecha.tm_mon, 
+            ausencia.fecha = mx.DateTime.DateFrom(tfecha.tm_year,
+                                                  tfecha.tm_mon,
                                                   tfecha.tm_mday)
         except:
             try:
                 tfecha = time.strptime(texto, '%d/%m/%y')
-                ausencia.fecha = mx.DateTime.DateFrom(tfecha.tm_year, 
-                                                  tfecha.tm_mon, 
+                ausencia.fecha = mx.DateTime.DateFrom(tfecha.tm_year,
+                                                  tfecha.tm_mon,
                                                   tfecha.tm_mday)
             except:
-                utils.dialogo_info('FECHA INCORRECTA', 
-                        'La fecha introducida (%s) no es correcta.' % texto, 
+                utils.dialogo_info('FECHA INCORRECTA',
+                        'La fecha introducida (%s) no es correcta.' % texto,
                         padre = self.wids['ventana'])
         ausencia.sync()
         model[path][0] = utils.str_fecha(ausencia.fecha)
@@ -286,7 +287,7 @@ class Ausencias(Ventana):
                 model_tv[path][numcol] = text
                 ausencia = pclases.Ausencia.get(model_tv[path][-1])
                 ausencia.motivo = ct
-                self.actualizar_ventana(deep_refresh = False)
+                self.actualizar_ventana(deep_refresh=False)
         cellcombo.connect("edited", guardar_combo, tv.get_model(), numcol, model)
         column.pack_start(cellcombo)
         column.set_attributes(cellcombo, text = numcol)
@@ -301,17 +302,17 @@ class Ausencias(Ventana):
             ide = model[itr][0]
             self.objeto = pclases.Empleado.get(ide)
         self.actualizar_ventana(objeto_anterior = anterior,
-                                deep_refresh = False)
+                                deep_refresh=False)
 
     def activar_widgets(self, s):
         """
-        Activa o desactiva (sensitive=True/False) todos 
-        los widgets de la ventana que dependan del 
+        Activa o desactiva (sensitive=True/False) todos
+        los widgets de la ventana que dependan del
         objeto mostrado.
         Entrada: s debe ser True o False. En todo caso
         se evaluará como boolean.
         """
-        ws = ('hbox12', 'hbox13', 'frame1', 'e_centro', 'label20', 'frame2')  
+        ws = ('hbox12', 'hbox13', 'frame1', 'e_centro', 'label20', 'frame2')
         for w in ws:
             self.wids[w].set_sensitive(s)
 
@@ -325,20 +326,20 @@ class Ausencias(Ventana):
             # Anulo el aviso de actualización del envío que deja de ser activo.
             if empleado != None: empleado.notificador.set_func(lambda : None)
             empleado = pclases.Empleado.select(
-                    pclases.Empleado.q.activo == True, orderBy="id")[0]    
-            empleado.notificador.set_func(self.aviso_actualizacion)    
+                    pclases.Empleado.q.activo == True, orderBy="id")[0]
+            empleado.notificador.set_func(self.aviso_actualizacion)
         except:
             empleado = None
         self.objeto = empleado
         self.actualizar_ventana(objeto_anterior = anterior,
-                                deep_refresh = False)
+                                deep_refresh=False)
 
     def rellenar_widgets(self):
         """
         Introduce la información del empleado actual
         en los widgets.
         No se chequea que sea != None, así que
-        hay que tener cuidado de no llamar a 
+        hay que tener cuidado de no llamar a
         esta función en ese caso.
         """
         empleado = self.objeto
@@ -350,45 +351,45 @@ class Ausencias(Ventana):
             # ¿Y si hay cambios de días de convenio durante el mismo año?
             # De momento lo dejo así, porque la lógica me dice que no se
             # viaja en el tiempo para pedir días de años anteriores.
-            self.wids['e_dias_convenio'].set_text(categoriaLaboral 
+            self.wids['e_dias_convenio'].set_text(categoriaLaboral
                 and "%d" % (categoriaLaboral.diasConvenio) or '')
-            self.wids['e_dias_asuntos_propios'].set_text(categoriaLaboral 
+            self.wids['e_dias_asuntos_propios'].set_text(categoriaLaboral
                 and "%d" % (categoriaLaboral.diasAsuntosPropios) or '')
             anno = self.wids['sp_anno'].get_value()
             diasConvenioRestantes = empleado.get_diasConvenioRestantes(anno)
             self.wids['e_dc_restantes'].set_text('%d' % diasConvenioRestantes)
             if diasConvenioRestantes > 0:
-                self.wids['e_dc_restantes'].modify_base(gtk.STATE_NORMAL, 
+                self.wids['e_dc_restantes'].modify_base(gtk.STATE_NORMAL,
                     self.wids['e_dc_restantes'].get_colormap().alloc_color(
                         "white"))
             elif diasConvenioRestantes == 0:
-                self.wids['e_dc_restantes'].modify_base(gtk.STATE_NORMAL, 
+                self.wids['e_dc_restantes'].modify_base(gtk.STATE_NORMAL,
                     self.wids['e_dc_restantes'].get_colormap().alloc_color(
                         "orange"))
             else:
-                self.wids['e_dc_restantes'].modify_base(gtk.STATE_NORMAL, 
+                self.wids['e_dc_restantes'].modify_base(gtk.STATE_NORMAL,
                     self.wids['e_dc_restantes'].get_colormap().alloc_color(
                         "red"))
             diasAsuntosPropiosRestantes = empleado.get_diasAsuntosPropiosRestantes(anno)
             self.wids['e_dap_restantes'].set_text(
                     '%d' % diasAsuntosPropiosRestantes)
             if diasAsuntosPropiosRestantes > 0:
-                self.wids['e_dap_restantes'].modify_base(gtk.STATE_NORMAL, 
+                self.wids['e_dap_restantes'].modify_base(gtk.STATE_NORMAL,
                     self.wids['e_dap_restantes'].get_colormap().alloc_color(
                         "white"))
             elif diasAsuntosPropiosRestantes == 0:
-                self.wids['e_dap_restantes'].modify_base(gtk.STATE_NORMAL, 
+                self.wids['e_dap_restantes'].modify_base(gtk.STATE_NORMAL,
                     self.wids['e_dap_restantes'].get_colormap().alloc_color(
                         "orange"))
             else:
-                self.wids['e_dap_restantes'].modify_base(gtk.STATE_NORMAL, 
+                self.wids['e_dap_restantes'].modify_base(gtk.STATE_NORMAL,
                     self.wids['e_dap_restantes'].get_colormap().alloc_color(
                         "red"))
             try:
                 utils.combo_set_from_db(self.wids['cbe_empleado'], empleado.id)
-                # No sé qué pasa con el model cuando se abre la ventana 
-                # en un objeto determinado pero casca diciendo que es 
-                # None. Lo ignoro y punto. En siguientes llamadas a 
+                # No sé qué pasa con el model cuando se abre la ventana
+                # en un objeto determinado pero casca diciendo que es
+                # None. Lo ignoro y punto. En siguientes llamadas a
                 # rellenar_widgets ya no peta.
             except:
                 pass
@@ -441,9 +442,9 @@ class Ausencias(Ventana):
                     pclases.Baja.q.empleado == self.objeto))
                 for baja in bajas:
                     model.append(
-                      (utils.str_fecha(baja.fechaInicio), 
-                       baja.fechaFin and utils.str_fecha(baja.fechaFin) or "", 
-                       baja.motivo, 
+                      (utils.str_fecha(baja.fechaInicio),
+                       baja.fechaFin and utils.str_fecha(baja.fechaFin) or "",
+                       baja.motivo,
                        baja.observaciones,
                        baja.id))
 
@@ -456,8 +457,8 @@ class Ausencias(Ventana):
         for motivo in pclases.Motivo.select():
             opciones.append((motivo.id, "%s %s" % (
                 motivo.descripcion, motivo.descripcionDias)))
-        idmotivo = utils.dialogo_combo(titulo = "¿MOTIVO?", 
-                                       texto = "Seleccione motivo de ausencia", 
+        idmotivo = utils.dialogo_combo(titulo = "¿MOTIVO?",
+                                       texto = "Seleccione motivo de ausencia",
                                        ops = opciones,
                                        padre = self.wids['ventana'])
         if idmotivo != None:
@@ -474,11 +475,11 @@ class Ausencias(Ventana):
                         fechaincrementada = fecha + (datetime.timedelta(i))
                     else:
                         fechaincrementada = fecha + (mx.DateTime.oneDay * i)
-                    ausencia = pclases.Ausencia(empleado = self.objeto, 
-                                                fecha = fechaincrementada, 
+                    ausencia = pclases.Ausencia(empleado = self.objeto,
+                                                fecha = fechaincrementada,
                                                 motivo = motivo)
                     pclases.Auditoria.nuevo(ausencia, self.usuario, __file__)
-                self.actualizar_ventana(deep_refresh = False)
+                self.actualizar_ventana(deep_refresh=False)
             except (ValueError, TypeError):
                 utils.dialogo_info(titulo = "VALOR INCORRECTO",
                         texto = "Debe teclear un número. Vuelva a intentarlo",
@@ -490,10 +491,10 @@ class Ausencias(Ventana):
             ide = model[itr][-1]
             ausencia = pclases.Ausencia.get(ide)
             ausencia.destroy(ventana = __file__)
-            self.actualizar_ventana(deep_refresh = False)
+            self.actualizar_ventana(deep_refresh=False)
         else:
-            utils.dialogo_info(titulo = "SELECCIONE AUSENCIA", 
-                               texto = "Seleccione la ausencia a eliminar.", 
+            utils.dialogo_info(titulo = "SELECCIONE AUSENCIA",
+                               texto = "Seleccione la ausencia a eliminar.",
                                padre = self.wids['ventana'])
 
     def add_baja(self, boton):
@@ -513,15 +514,15 @@ class Ausencias(Ventana):
             if b.fechaInicio >= fecha:
                 fechaFin = b.fechaInicio
             if b.esta_vigente(fecha):
-                utils.dialogo_info(titulo = "BAJA SOLAPADA", 
-                                   texto = "Las bajas médicas no pueden solaparse entre sí, elija otra fecha.", 
+                utils.dialogo_info(titulo = "BAJA SOLAPADA",
+                                   texto = "Las bajas médicas no pueden solaparse entre sí, elija otra fecha.",
                                    padre = self.wids['ventana'])
                 return
-        baja = pclases.Baja(empleado = self.objeto, 
-                            fechaInicio = fecha, 
+        baja = pclases.Baja(empleado = self.objeto,
+                            fechaInicio = fecha,
                             fechaFin = fechaFin)
         pclases.Auditoria.nuevo(baja, self.usuario, __file__)
-        self.actualizar_ventana(deep_refresh = False)
+        self.actualizar_ventana(deep_refresh=False)
 
     def drop_baja(self, boton):
         model, itr = self.wids['tv_bajas'].get_selection().get_selected()
@@ -529,10 +530,10 @@ class Ausencias(Ventana):
             ide = model[itr][-1]
             baja = pclases.Baja.get(ide)
             baja.destroy(ventana = __file__)
-            self.actualizar_ventana(deep_refresh = False)
+            self.actualizar_ventana(deep_refresh=False)
         else:
-            utils.dialogo_info(titulo = "SELECCIONE BAJA", 
-                               texto = "Seleccione la baja a eliminar.", 
+            utils.dialogo_info(titulo = "SELECCIONE BAJA",
+                               texto = "Seleccione la baja a eliminar.",
                                padre = self.wids['ventana'])
 
     def imprimir_ausencia(self, b):
@@ -541,7 +542,7 @@ class Ausencias(Ventana):
         if itr != None:
             ide = model[itr][-1]
             ausencia = pclases.Ausencia.get(ide)
-            empleado = (ausencia.empleado.nombre 
+            empleado = (ausencia.empleado.nombre
                         + ' ' + ausencia.empleado.apellidos)
             centro = ausencia.empleado.centroTrabajo
             if centro != None:
@@ -560,11 +561,10 @@ class Ausencias(Ventana):
             reports.abrir_pdf(geninformes.ausencia(
                 empleado,centro,fecha,turno,motivo,motivos))
         else:
-            utils.dialogo_info(titulo = "SELECCIONE AUSENCIA", 
-                               texto = "Seleccione la ausencia a imprimir.", 
+            utils.dialogo_info(titulo = "SELECCIONE AUSENCIA",
+                               texto = "Seleccione la ausencia a imprimir.",
                                padre = self.wids['ventana'])
 
 
 if __name__ == '__main__':
     v = Ausencias()
-

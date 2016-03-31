@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__doc__ = """
+r"""
 API de conexión con Sage Murano
 ===============================
 
@@ -34,7 +34,7 @@ DELETE
 
 EXTRA
 -----
-* Llamada a procedimiento de importación interno de Murano via 
+* Llamada a procedimiento de importación interno de Murano via
 %SYSTEMDRV%\...\Sage\Sage Murano\LCOEM.dll
 * Exportación a CSV y SQL de todos los productos, clientes y proveedores.
 
@@ -43,10 +43,11 @@ REQUERIMENTS
 pymssql, pywin32
 """
 
-from ops import create_bala, create_rollo, consumir, delete_articulo
-from ops import create_pale, create_bigbag
-from export import exportar_productos, exportar_clientes, exportar_proveedores
+from ginn.api.murano.ops import create_bala, create_rollo, consumir
+from ginn.api.murano.ops import create_pale, create_bigbag, delete_articulo
+from ginn.api.murano.export import exportar_productos, exportar_clientes
+from ginn.api.murano.export import exportar_proveedores
+
 __all__ = ["create_bala", "create_rollo", "consumir", "delete_articulo",
            "exportar_productos", "exportar_clientes", "exportar_proveedores",
            "create_bigbag", "create_pale"]
-

@@ -1,6 +1,6 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim:
 " Vim session script.
-" Created by session.vim 2.13.1 on 30 marzo 2016 at 19:04:59.
+" Created by session.vim 2.13.1 on 31 marzo 2016 at 17:00:34.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -13,7 +13,7 @@ if &background != 'dark'
 	set background=dark
 endif
 if !exists('g:colors_name') || g:colors_name != 'sierra' | colorscheme sierra | endif
-call setqflist([])
+call setqflist([{'lnum': 17, 'col': 1, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'ginn/api/murano/export.py', 'text': 'E402 module level import not at top of file'}, {'lnum': 18, 'col': 1, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'ginn/api/murano/export.py', 'text': 'E402 module level import not at top of file'}, {'lnum': 677, 'col': 80, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'filename': 'ginn/api/murano/export.py', 'text': 'E501 line too long (81 > 79 characters)'}])
 let SessionLoad = 1
 if &cp | set nocp | endif
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
@@ -24,20 +24,12 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +1 ginn/framework/pclases/__init__.py
-badd +1 ginn/api/tests/murano_tests.py
+badd +15 ginn/api/murano/export.py
 badd +1 ginn/api/murano/extra.py
-badd +1 ginn/api/murano/ops.py
-badd +1 ginn/api/murano/connection.py
-badd +1 ginn/api/murano/__init__.py
-badd +1 ginn/api/murano/export.py
-badd +724 ginn/formularios/empleados.py
-badd +1 ginn/formularios/ausencias.py
-badd +13 ginn/formularios/utils.py
-badd +946 ginn/formularios/presupuestos.py
+badd +15 ginn/api/murano/ops.py
 argglobal
 silent! argdel *
-edit ginn/api/tests/murano_tests.py
+edit ginn/api/murano/extra.py
 set splitbelow splitright
 wincmd _ | wincmd |
 split
@@ -47,16 +39,7 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-wincmd _ | wincmd |
-split
-wincmd _ | wincmd |
-split
-wincmd _ | wincmd |
-split
-7wincmd k
-wincmd w
-wincmd w
-wincmd w
+4wincmd k
 wincmd w
 wincmd w
 wincmd w
@@ -65,14 +48,11 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 2 + 24) / 49)
-exe '2resize ' . ((&lines * 1 + 24) / 49)
-exe '3resize ' . ((&lines * 1 + 24) / 49)
-exe '4resize ' . ((&lines * 1 + 24) / 49)
-exe '5resize ' . ((&lines * 1 + 24) / 49)
-exe '6resize ' . ((&lines * 1 + 24) / 49)
-exe '7resize ' . ((&lines * 32 + 24) / 49)
-exe '8resize ' . ((&lines * 1 + 24) / 49)
+exe '1resize ' . ((&lines * 15 + 26) / 52)
+exe '2resize ' . ((&lines * 15 + 26) / 52)
+exe '3resize ' . ((&lines * 1 + 26) / 52)
+exe '4resize ' . ((&lines * 14 + 26) / 52)
+exe '5resize ' . ((&lines * 1 + 26) / 52)
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -83,84 +63,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 16 - ((0 * winheight(0) + 1) / 2)
+let s:l = 16 - ((6 * winheight(0) + 7) / 15)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 16
-normal! 015|
-wincmd w
-argglobal
-edit ginn/api/murano/extra.py
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-let s:l = 3 - ((0 * winheight(0) + 0) / 1)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-3
-normal! 0
-wincmd w
-argglobal
-edit ginn/api/murano/ops.py
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-let s:l = 3 - ((0 * winheight(0) + 0) / 1)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-3
-normal! 0
-wincmd w
-argglobal
-edit ginn/api/murano/connection.py
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-let s:l = 5 - ((0 * winheight(0) + 0) / 1)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-5
-normal! 09|
-wincmd w
-argglobal
-edit ginn/api/murano/__init__.py
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 0) / 1)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-1
-normal! 021|
+normal! 048|
 wincmd w
 argglobal
 edit ginn/api/murano/export.py
@@ -173,15 +81,26 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 591 - ((0 * winheight(0) + 0) / 1)
+let s:l = 912 - ((0 * winheight(0) + 7) / 15)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-591
-normal! 037|
+912
+normal! 0
 wincmd w
 argglobal
-edit ginn/formularios/ausencias.py
+enew
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+wincmd w
+argglobal
+edit ginn/api/murano/extra.py
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -191,15 +110,15 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 81 - ((15 * winheight(0) + 16) / 32)
+let s:l = 1 - ((0 * winheight(0) + 7) / 14)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-81
-normal! 014|
+1
+normal! 0
 wincmd w
 argglobal
-edit ginn/framework/pclases/__init__.py
+enew
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -208,29 +127,19 @@ setlocal fdl=0
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-silent! normal! zE
-let s:l = 23 - ((0 * winheight(0) + 0) / 1)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-23
-normal! 028|
 wincmd w
-7wincmd w
-exe '1resize ' . ((&lines * 2 + 24) / 49)
-exe '2resize ' . ((&lines * 1 + 24) / 49)
-exe '3resize ' . ((&lines * 1 + 24) / 49)
-exe '4resize ' . ((&lines * 1 + 24) / 49)
-exe '5resize ' . ((&lines * 1 + 24) / 49)
-exe '6resize ' . ((&lines * 1 + 24) / 49)
-exe '7resize ' . ((&lines * 32 + 24) / 49)
-exe '8resize ' . ((&lines * 1 + 24) / 49)
+2wincmd w
+exe '1resize ' . ((&lines * 15 + 26) / 52)
+exe '2resize ' . ((&lines * 15 + 26) / 52)
+exe '3resize ' . ((&lines * 1 + 26) / 52)
+exe '4resize ' . ((&lines * 14 + 26) / 52)
+exe '5resize ' . ((&lines * 1 + 26) / 52)
 tabnext 1
 if exists('s:wipebuf')
 "   silent exe 'bwipe ' . s:wipebuf
 endif
 " unlet! s:wipebuf
-set winheight=1 winwidth=20 shortmess=filnxtToO
+set winheight=1 winwidth=20 shortmess=filnxtToOc
 let s:sx = expand("<sfile>:p:r")."x.vim"
 if file_readable(s:sx)
   exe "source " . fnameescape(s:sx)
@@ -241,7 +150,20 @@ let &so = s:so_save | let &siso = s:siso_save
 " Everything down here is generated by vim-session (not supported
 " by :mksession out of the box).
 
-7wincmd w
+5wincmd w
+tabnext 1
+let s:bufnr_save = bufnr("%")
+let s:cwd_save = getcwd()
+cwindow
+if !getbufvar(s:bufnr_save, '&modified')
+  let s:wipebuflines = getbufline(s:bufnr_save, 1, '$')
+  if len(s:wipebuflines) <= 1 && empty(get(s:wipebuflines, 0, ''))
+    silent execute 'bwipeout' s:bufnr_save
+  endif
+endif
+execute "cd" fnameescape(s:cwd_save)
+1resize 15|vert 1resize 118|2resize 15|vert 2resize 118|3resize 1|vert 3resize 118|4resize 14|vert 4resize 118|5resize 1|vert 5resize 118|
+2wincmd w
 tabnext 1
 if exists('s:wipebuf')
   if empty(bufname(s:wipebuf))

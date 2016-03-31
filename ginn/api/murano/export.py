@@ -7,20 +7,26 @@ Generan ficheros CSV, no importan nada directamente a Murano. Esos ficheros
 CSV sirven como fuente para las guías de importación diseñadas por Sage.
 """
 
-import sys, os, datetime, csv
-ruta_ginn = os.path.abspath(os.path.join(
-        os.path.dirname(__file__), "..", "..", "..", "ginn"))
-sys.path.append(ruta_ginn)
+import sys
+import os
+import datetime
+import csv
+from collections import OrderedDict
+RUTA_GINN = os.path.abspath(os.path.join(
+    os.path.dirname(__file__), "..", "..", "..", "ginn"))
+sys.path.append(RUTA_GINN)
+# pylint: disable=wrong-import-position, import-error,too-many-branches
 from framework import pclases
 from formularios.utils import eliminar_dobles_espacios
 
-## ====================
-## Exportación de datos
-## ====================
+# # ====================
+# # Exportación de datos
+# # ====================
 
-## Productos ##################################################################
+# # Productos #################################################################
 
-def exportar_productos():
+
+def exportar_productos(fdestproductos='productos.csv'):
     """
     Exporta los productos de venta y de compra a una tabla CSV.
     """
@@ -28,14 +34,14 @@ def exportar_productos():
         "id",                                                           # 0
         "lineaDeProduccion.nombre",     # Indirecto
         # Nos interesa intercambiar la descripcion (larga) por el nombre
-        # (corto) porque Murano buscará antes por descripción que por 
+        # (corto) porque Murano buscará antes por descripción que por
         # descripcion2, así que en descripcion2 meteremos el nombre (corto).
         "descripcion",                                                  # 2
         "descripcion2/nombre",                                          # 3
         "codigo",
         "minimo",                                                       # 5
         "precioPorDefecto/precioDefecto",
-                                        # precioDefecto en productos de compra.
+        # precioDefecto en productos de compra.
         "arancel",
         "prodestandar",
         "annoCertificacion",
@@ -43,15 +49,15 @@ def exportar_productos():
         "uso",
         "obsoleto",
         # Específicos de productos de compra:
-        "tipoDeMaterial.descripcion", # Indirecto:
-                                      # tipoDeMaterianID -> .descripcion
+        "tipoDeMaterial.descripcion",  # Indirecto:
+                                       # tipoDeMaterianID -> .descripcion
         "unidad",
         "minimo",
         "existencias",
         "controlExistencias",
         "fvaloracion",
         "observaciones",
-        "proveedor.nombre", # Indirecto: proveedorID -> proveedor.nombre
+        "proveedor.nombre",  # Indirecto: proveedorID -> proveedor.nombre
         # Campos específicos de rollos y Marcado CE
         "camposEspecificosRollo.gramos",
         "camposEspecificosRollo.codigoComposan",
@@ -95,9 +101,9 @@ def exportar_productos():
         "camposEspecificosRollo.estandarPruebaPiramidal",
         "camposEspecificosRollo.toleranciaPruebaPiramidal",
         "camposEspecificosRollo.toleranciaPruebaPiramidalSup",
-        "camposEspecificosRollo.modeloEtiqueta.modulo",  # Indirecto: .modulo
-        "camposEspecificosRollo.modeloEtiqueta.funcion", # Indirecto: .funcion
-        "camposEspecificosRollo.cliente.nombre",         # Indirecto: .nombre
+        "camposEspecificosRollo.modeloEtiqueta.modulo",   # Indirecto: .modulo
+        "camposEspecificosRollo.modeloEtiqueta.funcion",  # Indirecto: .funcion
+        "camposEspecificosRollo.cliente.nombre",          # Indirecto: .nombre
         # Campos específicos de fibra
         "camposEspecificosBala.dtex",
         "camposEspecificosBala.corte",
@@ -113,33 +119,35 @@ def exportar_productos():
         # "cliente.nombre", -> Dupe
         # Campos artificiales. Solo existe en Murano y hay que informarlos.
         "unidadDeMedidaBasica",     # ROLLO, BALA, etc.
-        "tratamientoSeries", # Sí/No(-1, 0) para indicar si llevan trazabilidad
+        "tratamientoSeries",  # Sí/No(-1,0) para indicar si llevan trazabilidad
         "grupoTallas",          # "ABC", "AB" o "".
         "tratamientoPartidas",  # Sí/No. Sí para los de trazabilidad.
         "factorConversion",     # 0 si no es fijo o la cantidad correspondiente
-        # por ejemplo, cuántas cajas entran en un Kg. Solo lo usaremos en cajas.
-        "unidadMedidaVentas", # Unidad en que se venderá el artículo (M2, KG...)
-        "unidadMedidaPrecio", # Indica en qué se expresa el precio: unidad 
-            # "Específica" para rollos, balas, cajas y BB (mandar una "E") o 
-            # básica para el resto (mandar una "B")
-        "familia" # Familia a la que pertenece. Es donde se especifica el 
-                  # precio mínimo, por tanto el producto debe pertenecer a
-                  # una familia al importarlo.
-       ]
+        # por ejemplo, cuántas cajas entran en un Kg. Solo lo usaremos en cajas
+        "unidadMedidaVentas",  # Unidad en que se venderá el artículo (M2,KG..)
+        "unidadMedidaPrecio",  # Indica en qué se expresa el precio: unidad
+        # "Específica" para rollos, balas, cajas y BB (mandar una "E") o
+        # básica para el resto (mandar una "B")
+        "familia"]  # Familia a la que pertenece. Es donde se especifica el
+    # precio mínimo, por tanto el producto debe pertenecer a
+    # una familia al importarlo.
     filas = []
-    for pv in pclases.ProductoVenta.select(orderBy = "descripcion"):
-        fila = build_fila(pv, columnas)
+    for prodventa in pclases.ProductoVenta.select(orderBy="descripcion"):
+        fila = build_fila(prodventa, columnas)
         filas.append(fila)
-    for pc in pclases.ProductoCompra.select(orderBy = "descripcion"):
-        fila = build_fila(pc, columnas)
+    for prodcompra in pclases.ProductoCompra.select(orderBy="descripcion"):
+        fila = build_fila(prodcompra, columnas)
         filas.append(fila)
     columnas, filas = post_process(columnas, filas)
-    generate_csv(columnas, filas, "productos.csv")
-    # FIXME: En generate_csv se hacen operaciones que deberían ser comunes
-    # a generate_sql.
-    #generate_sql(columnas, filas, "Articulos")
+    generate_csv(columnas, filas, fdestproductos)
+
 
 def extract_valor_indirecto(producto, columna):
+    """
+    Devuelve el valor de un campo "indirecto" del producto.
+    Divide por el "." para saber cuál es el objeto intermedio y el campo final
+    del que extraer el valor.
+    """
     if columna.count(".") == 1:
         tabla_intermedia, campo = columna.split(".")
         try:
@@ -154,7 +162,7 @@ def extract_valor_indirecto(producto, columna):
                 valor = ''  # registro_intermedio es None
     elif columna.count(".") > 1:
         tabla_intermedia = columna.split(".")[0]
-        resto_campo = columna[columna.index(".")+1:]
+        resto_campo = columna[columna.index(".") + 1:]
         try:
             registro_intermedio = getattr(producto, tabla_intermedia)
         except AttributeError:  # Este tipo de registro no tiene esa relación
@@ -164,9 +172,11 @@ def extract_valor_indirecto(producto, columna):
         else:
             valor = ''
     else:
-        raise ValueError, "El campo «%s» no es indirecto." % campo
+        raise ValueError("El campo «%s» no es indirecto." % campo)
     return valor
 
+
+# pylint: disable=redefined-variable-type
 def build_fila(producto, columnas):
     """
     Genera una lista con los datos del producto en el orden de las columnas
@@ -183,15 +193,15 @@ def build_fila(producto, columnas):
             except AttributeError:
                 try:
                     valor = getattr(producto, campo_alternativo)
-                except AttributeError, e:
+                except AttributeError as excepcion:
                     # DIRTY HACK: Hemos invertido los campos nombre y desc.
                     if campo_alternativo == "nombre":
                         valor = ""
                     else:
-                        raise e
+                        raise excepcion
         # Campos que no existen en ginn pero necesita Murano:
         elif columna == "unidadDeMedidaBasica":
-            valor = determinar_unidad_de_medida_basica(producto)
+            valor = determinar_unidad_medida_basica(producto)
         elif columna == "tratamientoSeries":
             # Sí/No(-1, 0) para indicar si llevan trazabilidad
             valor = determinar_tratamiento_series(producto)
@@ -203,22 +213,22 @@ def build_fila(producto, columnas):
             valor = determinar_tratamiento_partidas(producto)
         elif columna == "factorConversion":
             # 0 si no es fijo o la cantidad correspondiente
-            # por ejemplo, cuántas cajas entran en un Kg. Solo lo 
+            # por ejemplo, cuántas cajas entran en un Kg. Solo lo
             # usaremos en cajas.
             valor = determinar_factor_conversion(producto)
         elif columna == "unidadMedidaVentas":
             # Unidad en que se venderá el artículo (M2, KG...)
             valor = determinar_unidad_medida_ventas(producto)
         elif columna == "unidadMedidaPrecio":
-            # Indica en qué se expresa el precio: unidad 
-            # "Específica" para rollos, balas, cajas y BB (mandar una "E") o 
+            # Indica en qué se expresa el precio: unidad
+            # "Específica" para rollos, balas, cajas y BB (mandar una "E") o
             # básica para el resto (mandar una "B")
             valor = determinar_unidad_medida_precio(producto)
         elif columna == "familia":
-            # Familia a la que pertenece. Es donde se especifica el 
+            # Familia a la que pertenece. Es donde se especifica el
             # precio mínimo, por tanto el producto debe pertenecer a
             # una familia al importarlo.
-            valor = determinar_familia_Murano(producto)
+            valor = determinar_familia_murano(producto)
         else:
             campo = columna
             try:
@@ -230,7 +240,8 @@ def build_fila(producto, columnas):
         res.append(valor)
     return res
 
-def determinar_unidad_de_medida_basica(producto):
+
+def determinar_unidad_medida_basica(producto):
     """
     Devuelve ROLLO, BALA, CAJA o la unidad de medida principal del producto
     con trazabilidad, o la unidad del producto en otro caso.
@@ -247,14 +258,15 @@ def determinar_unidad_de_medida_basica(producto):
         elif producto.es_bolsa() or producto.es_caja():
             res = "CAJA"    # Fibra embolsada
         elif producto.es_especial():
-            res = producto.unidad # Comercializados
+            res = producto.unidad  # Comercializados
         elif producto.es_granza():
-            res = producto.unidad # Granza
+            res = producto.unidad  # Granza
         else:
             res = ""
     else:
         res = ""
     return res
+
 
 def determinar_tratamiento_series(producto):
     """
@@ -265,6 +277,7 @@ def determinar_tratamiento_series(producto):
     else:
         res = 0
     return res
+
 
 def determinar_grupo_tallas(producto):
     """
@@ -282,6 +295,7 @@ def determinar_grupo_tallas(producto):
             res = "AB"
     return res
 
+
 def determinar_tratamiento_partidas(producto):
     """
     -1 si lleva trazabilidad. 0 en otro caso.
@@ -291,6 +305,7 @@ def determinar_tratamiento_partidas(producto):
     else:
         res = 0
     return res
+
 
 def determinar_factor_conversion(producto):
     """
@@ -304,6 +319,7 @@ def determinar_factor_conversion(producto):
         kilos_caja = producto.camposEspecificosBala.gramosBolsa / 1000.0
         res = 1.0 / kilos_caja
     return res
+
 
 def determinar_unidad_medida_ventas(producto):
     """
@@ -323,7 +339,7 @@ def determinar_unidad_medida_ventas(producto):
         elif producto.es_bolsa() or producto.es_caja():
             res = "KG"  # Fibra embolsada
         elif producto.es_especial():
-            res = producto.unidad # Comercializados
+            res = producto.unidad  # Comercializados
         elif producto.es_granza():
             res = "KG"  # Granza
         else:
@@ -331,6 +347,7 @@ def determinar_unidad_medida_ventas(producto):
     else:
         res = ""
     return res
+
 
 def determinar_unidad_medida_precio(producto):
     """
@@ -344,7 +361,8 @@ def determinar_unidad_medida_precio(producto):
         res = "E"
     return res
 
-def determinar_familia_Murano(producto):
+
+def determinar_familia_murano(producto):
     """
     Devuelve el código de familia del producto. En el código de familia se
     especifica el precio mínimo, por tanto es importante y relevante solo
@@ -391,6 +409,8 @@ def determinar_familia_Murano(producto):
                 res = valor
     return res
 
+
+# pylint: disable=redefined-variable-type, too-many-statements
 def muranize_valor(valor, columna, producto):
     """
     Devuelve el valor conforme a los tipos de Murano. Se confirma el tipo de
@@ -419,7 +439,7 @@ def muranize_valor(valor, columna, producto):
     elif columna == "camposEspecificosBala.color":
         res = valor.upper()
     elif columna == "tipoDeMaterial.descripcion":
-        # [20160207] Una vez modificado el determinar_familia_Murano ya no
+        # [20160207] Una vez modificado el determinar_familia_murano ya no
         # haría falta. Lo dejo para no romper la compatibilidad hacia atrás
         if valor:
             if valor == "Aceites y lubricantes":
@@ -462,6 +482,7 @@ def muranize_valor(valor, columna, producto):
         res = valor
     return res
 
+
 def clean_valor(valor):
     """
     Cambia los valores problemáticos para la guía de importación de Murano.
@@ -488,6 +509,7 @@ def clean_valor(valor):
             res = valor
     return res
 
+
 def clean_cabecera(columnas):
     """
     Elimina los puntos de los nombres de los campos para evitar problemas
@@ -496,7 +518,8 @@ def clean_cabecera(columnas):
     res = []
     index = 0
     for cabecera in columnas:
-        if cabecera in ("lineaDeProduccion.nombre", "tipoDeMaterial.descripcion"):
+        if cabecera in ("lineaDeProduccion.nombre",
+                        "tipoDeMaterial.descripcion"):
             cabecera = cabecera.replace(".", "")
         elif cabecera.startswith("camposEspecificosRollo"):
             cabecera = cabecera.replace("camposEspecificosRollo", "CER")
@@ -505,9 +528,9 @@ def clean_cabecera(columnas):
             cabecera = cabecera.replace("camposEspecificosBala", "CEB")
             cabecera = cabecera.replace(".", "")
         elif cabecera == "nombre" and index <= 5:
-            # FIXME: De momento lo hago así de cutremente. El caso es cambiar
+            # De momento lo hago así de cutremente. El caso es cambiar
             # el nombre del producto por nombreArticulo para que no se
-            # confunda con el proveedor.nombre (que se recorta también a 
+            # confunda con el proveedor.nombre (que se recorta también a
             # «nombre» solo). Como el nombre del artículo viene antes y seguro
             # que está en la columna 2 ó 3...
             cabecera = "nombreArticulo"
@@ -518,20 +541,25 @@ def clean_cabecera(columnas):
         index += 1
     return res
 
-def generate_csv(columnas, filas, nombre_fichero, limpiar_cabecera = True):
+
+def generate_csv(columnas, filas, nombre_fichero, limpiar_cabecera=True):
     """
     Crea un fichero CSV con las filas recibidas. La primera estará compuesta
     por los nombres de los campos (columnas).
     """
-    fout = file(nombre_fichero, "w")
-    fcsv = csv.writer(fout)
     if limpiar_cabecera:
         cabecera = clean_cabecera(columnas)
     else:
         cabecera = columnas
-    fcsv.writerow(cabecera)
+    # Si no existe, agrega la cabecera. Si ya existía, solo agrega los datos.
+    escribir_cabecera = not os.path.exists(nombre_fichero)
+    fout = open(nombre_fichero, "a")
+    fcsv = csv.writer(fout)
+    if escribir_cabecera:
+        fcsv.writerow(cabecera)
     fcsv.writerows(filas)
     fout.close()
+
 
 def filtro_comercializados(descripcion):
     """
@@ -539,21 +567,20 @@ def filtro_comercializados(descripcion):
     de Mercancía Inicial de Valdemoro (deprecated) y corresponden en realidad a
     comercializados.
     """
-    if descripcion in ("COMPO-PET-120 (100X2,20) (CT)",
-                       "COMPO-PET-300 (100X2,20) (CT)"
-                       "COMPOFOL / GUTTA P8 NEGRO (30X2) M2.",
-                       "COMPOFOL PAC 4,3X200",
-                       "COMPO-PET-200 (140X2,20) (CT)",
-                       "COMPOGRID 200/40 (4,4x 100) m2",
-                       "COMPOGRID 200/40 (4,4x 100) m2",
-                       "COMPOCORE 8 MM (1,05 X20) M2",
-                       "COMPOFOL / GUTTA P8 NEGRO (30X2) M2.",
-                       "COMPOFOL PAC 2,2X32 (M2) (CT)",
-                       "COMPOGRID 110/30 (3,90X100) M2",
-                       "ROADRAIN 800/160 R (48ML) ML"):
-        return True
-    else:
-        return False
+    res = descripcion in ("COMPO-PET-120 (100X2,20) (CT)",
+                          "COMPO-PET-300 (100X2,20) (CT)"
+                          "COMPOFOL / GUTTA P8 NEGRO (30X2) M2.",
+                          "COMPOFOL PAC 4,3X200",
+                          "COMPO-PET-200 (140X2,20) (CT)",
+                          "COMPOGRID 200/40 (4,4x 100) m2",
+                          "COMPOGRID 200/40 (4,4x 100) m2",
+                          "COMPOCORE 8 MM (1,05 X20) M2",
+                          "COMPOFOL / GUTTA P8 NEGRO (30X2) M2.",
+                          "COMPOFOL PAC 2,2X32 (M2) (CT)",
+                          "COMPOGRID 110/30 (3,90X100) M2",
+                          "ROADRAIN 800/160 R (48ML) ML")
+    return res
+
 
 def post_process(columnas, _filas):
     """
@@ -573,34 +600,150 @@ def post_process(columnas, _filas):
         filas.append(fila)
     return columnas, filas
 
-## Clientes ###################################################################
+
+# # Clientes ##################################################################
 def exportar_clientes():
     """
     Exporta los clientes con actividad en los últimos 2 años a una tabla CSV.
-    Esta tabla posteriormente se procesa para completar información.
-    Al realizar cada importación primero se trata de leer el fichero CSV,
-    se construye un nuevo volcado combinando los datos de la base de datos
-    y el CSV y se vuelve a volcar el fichero CSV.
+    La tabla la construye según la lista de campos del fichero que espera
+    la guía de importación y toma como fuente:
+    * Base de datos de ginn.
+    * Fichero CSV (originalmente es un Excel) con el resto de datos.
     """
-    fdest = "clientes.csv"
-    # Me aseguro que el orden es siempre el mismo porque Murano es muy
-    # quisuilloso al respecto.
-    cliente = pclases.Cliente.select()[0]
-    cols_extra = ["cuenta contable", "sección", "departamento"]
-    orden_campos = ["id"] + [f.name for f in cliente.sqlmeta.columnList]
-# TODO: PORASQUI: El orden y los campos hay que sacarlos del Excel modelo de Sage
-    orden_campos += cols_extra
-    if os.path.exists(fdest):
-        listado = parse(fdest)
-        update_listado(listado)
-    else:
-        hoy = datetime.date.today()
-        two_years_ago = datetime.date(day = hoy.day, month = hoy.month,
-                                      year = hoy.year - 2)
-        listado = create_listado_inicial_clientes(cols_extra, two_years_ago)
-    dump(listado, fdest, orden_campos)
+    fdestclientes = "clientesproveedores.csv"
+    fdestdomicilios = "domicilios.csv"
+    fdestcontactos = "contactos.csv"
+    hoy = datetime.date.today()
+    two_years_ago = datetime.date(day=hoy.day, month=hoy.month,
+                                  year=hoy.year - 2)
+    listado = create_dic_clientes(two_years_ago)
+    dump(listado, fdestclientes, fdestdomicilios, fdestcontactos)
 
-def build_cabecera(listado, orden_campos = []):
+
+def create_dic_clientes(fecha_ultima_actividad=None):
+    """
+    Devuelve un diccionario cuyas claves son los ID de cliente y los valores
+    son diccionarios con los campos y valores para cada cliente.
+    Cada diccionario de cliente (el valor de la clave de su ID en el
+    diccionario principal) lleva también una clave 'OBRAS' y otra
+    'CONTACTOS' con una colección de diccionarios de sus obras y contactos
+    ya tratados también con las claves que espera la guía de importación y
+    los valores correspondientes.
+    Si se especifica una fecha de última actividad se filtran los clientes
+    e ignoran aquellos que no hayan realizado un pedido u oferta después
+    de esa fecha.
+    """
+    fcuentas = "20160216_clientes_fjflopez.csv"
+    cuentas_clientes = build_dic_cuentas(fcuentas)
+    lista_campos = load_lista_campos_cliente()
+    clientes = set()
+    if not fecha_ultima_actividad:
+        for cliente in pclases.Cliente.select():
+            clientes.add(cliente.id)
+    else:
+        for cliente in buscar_clientes_con_actividad(pclases.Presupuesto,
+                                                     fecha_ultima_actividad):
+            clientes.add(cliente.id)
+        for cliente in buscar_clientes_con_actividad(pclases.PedidoVenta,
+                                                     fecha_ultima_actividad):
+            clientes.add(cliente.id)
+    res = {}
+    for cid in clientes:
+        cliente = pclases.Cliente.get(cid)
+        res[cid] = build_dic_cliente(cliente, cuentas_clientes, lista_campos)
+        res[cid]['OBRAS'] = {}
+        res[cid]['CONTACTOS'] = {}
+        for obra in cliente.obras:
+            res[id]['OBRAS'][obra.id] = build_dic_obra(obra)
+            for contacto in obra.contactos:
+                res[id]['CONTACTOS'][contacto.id] = build_dic_contacto(contacto)
+                # OJO: Es posible que duplique contactos si varios clientes lo
+                # comparten. El ID será el mismo. Ya veremos qué hace Murano
+                # en ese caso.
+    return res
+
+
+def load_lista_campos_cliente():
+    """
+    Devuelve la lista de campos en el orden específico que espera la guía
+    de importación de Murano. La lista de campos es según la nomenclatura
+    de Murano. La correspondencia con los campos de ginn la da el propio
+    diccionario ordenado. Si un mismo campo se corresponde con 2 ó 3 de los
+    de Murano es porque hay que separar el valor entre esos campos de Murano
+    de ser necesario.
+    """
+    res = OrderedDict()
+    res['CodigoEmpresa'] = None      # Sin correspondencia en ginn.
+    res['ClienteOProveedor'] = None  # Se determina después.
+    res['CodigoClienteProveedor'] = 'id'
+    res['TarifaPrecio'] = 'tarifaID'
+    res['Telefono'] = 'telefono'
+    res['Nombre'] = 'nombre'
+    res['CIFDNI'] = 'cif'
+    res['Domicilio'] = 'direccion'
+    res['Nacion'] = 'pais'
+    res['Municipio'] = 'ciudad'
+    res['Provincia'] = 'provincia'
+    res['CodigoPostal'] = 'cp'
+    res['CodigoIva'] = 'iva'
+    res['RazonSocial'] = 'nombref'
+    res['email1'] = 'email'
+    res['email2'] = 'email'
+    res['nombre1'] = 'contacto'
+    res['nombre2'] = 'contacto'
+    res['Comentarios'] = 'observaciones'
+    res['CodigoCondiciones'] = 'vencimientos'
+    res['CodigoTipoEfecto'] = 'documentodepago'
+    res['DiasFijos1'] = 'diadepago'
+    res['DiasFijos2'] = 'diadepago'
+    res['DiasFijos3'] = 'diadepago'
+    res['BloqueoAlbaran'] = 'inhabilitado'
+    res['GEO_EnviaCorreoAlbaran'] = 'enviarCorreoAlbaran'
+    res['GEO_EnviaCorreoFactura'] = 'enviarCorreoFactura'
+    res['GEO_EnviaCorreoPacking'] = 'enviarCorreoPacking'
+    res['Fax'] = 'fax'
+    res['RemesaHabitual'] = 'cuentaOrigenID'
+    res['GEO_RiesgoAseguradora'] = 'riesgoAsegurado'
+    res['RiesgoMaximo'] = 'riesgoConcedido'
+    res['CopiasFactura'] = 'copiasFactura'
+    res['CodigoTipoClienteLC'] = 'tipoDeClienteID'
+    res['GEO_RequiereValidacion'] = 'validacionManual'
+    res['CodigoCuenta'] = None
+    res['CodigoSeccion'] = None
+    return res
+
+
+def load_lista_campos_domicilios():
+    """
+    Devuelve un diccionario ordenado con la lista de campos que espera
+    recibir Murano en la guía de importación de domicilios (obras).
+    """
+    res = OrderedDict()
+    res['CP'] = None
+    res['CodigoEmpresa'] = None
+    res['TipoDomicilio'] = None
+    res['CodigoCliente'] = 'clientes'  # FIXME: Ya veré cómo discernimos cuál
+    res['NumeroDomicilio'] = None
+    # TODO: PORASQUI
+    res['Nombre'] = ''
+    res[''] = ''
+    res[''] = ''
+    res[''] = ''
+    res[''] = ''
+    res[''] = ''
+    res[''] = ''
+    return res
+
+
+def load_lista_campos_contactos():
+    """
+    Devuelve un diccionario ordenado con la lista de campos que espera
+    recibir Murano en la guía de importación de contactos.
+    """
+    res = OrderedDict()
+    return res
+
+def build_cabecera(listado, orden_campos=()):
     """
     Devuelve una lista de campos del listado.
     """
@@ -610,8 +753,9 @@ def build_cabecera(listado, orden_campos = []):
     res = []
     for campo in orden_campos:
         if campo not in campos:
-            raise ValueError, "El campo %s no existe en el diccionario de clientes." % campo
-            continue    # ¿TYPO en el nombre del campo?
+            raise ValueError("El campo %s no existe en el diccionario de "
+                             "clientes." % campo)
+            # ¿TYPO en el nombre del campo?
         res.append(campo)
         campos_tratados.append(campo)
     # El resto de campos del diccionario que no se especificaron en el orden.
@@ -621,16 +765,18 @@ def build_cabecera(listado, orden_campos = []):
         res.append(campo)
     return res
 
+
 def build_fila_cliente(dic_cliente, campos):
     """
     Devuelve una lista de valores según el orden de campos especificado.
     """
     res = []
-    for c in campos:
-        res.append(dic_cliente[c])
+    for campo in campos:
+        res.append(dic_cliente[campo])
     return res
 
-def dump(listado, fdest, orden_campos):
+
+def dump(listado, fdest):
     """
     Convierte el diccionaro «listado» en filas para alimentar un nuevo CSV
     que incluye los nombres de los campos como cabecera de columnas.
@@ -640,7 +786,8 @@ def dump(listado, fdest, orden_campos):
     for cid in listado:
         fila = build_fila_cliente(listado[cid], cabecera)
         filas.append(fila)
-    generate_csv(cabecera, filas, fdest, limpiar_cabecera = False)
+    generate_csv(cabecera, filas, fdest, limpiar_cabecera=False)
+
 
 def parse(fdest):
     """
@@ -660,12 +807,13 @@ def parse(fdest):
     fin.close()
     return res
 
-def update_listado(listado, pclase = pclases.Cliente):
+
+def update_listado(listado, pclase=pclases.Cliente):
     """
     En el propio diccionario de clientes recibido actualiza los valores
     según los actuales de los clientes de la base de datos. Si algún
     cliente no está presente en el diccionario, pero se ha creado con
-    posterioridad, lo incluye **aunque no haya tenido actividad según el 
+    posterioridad, lo incluye **aunque no haya tenido actividad según el
     criterio con que se construye la lista inicial**.
     Estos nuevos clientes puede que sean tan nuevos que ni siquiera ha
     dado tiempo a que hagan un pedido, por eso se incluyen.
@@ -696,44 +844,17 @@ def update_listado(listado, pclase = pclases.Cliente):
             for campo in campos:
                 listado[nuevo.id][campo] = getattr(objeto, campo, None)
 
-def create_listado_inicial_clientes(cols_extra, fecha_ultima_actividad = None):
-    """
-    Devuelve un diccionario cuyas claves son los ID de cliente y los valores
-    son diccionarios con los campos y valores para cada cliente.
-    Agrega campos adicionales que deben ir al CSV y no están presentes en
-    la base de datos.
-    Si se especifica una fecha de última actividad se filtran los clientes
-    e ignoran aquellos que no hayan realizado un pedido u oferta después
-    de esa fecha.
-    """
-    clientes = set()
-    if not fecha_ultima_actividad:
-        for c in pclases.Cliente.select():
-            clientes.add(c.id)
-    else:
-        for c in buscar_clientes_con_actividad(pclases.Presupuesto,
-                                               fecha_ultima_actividad):
-            clientes.add(c.id)
-        for c in buscar_clientes_con_actividad(pclases.PedidoVenta,
-                                               fecha_ultima_actividad):
-            clientes.add(c.id)
-    res = {}
-    for cid in clientes:
-        cliente = pclases.Cliente.get(cid)
-        res[cid] = build_dic_cliente(cliente)
-        for col in cols_extra:
-            res[cid][col] = None
-    return res
 
 def buscar_clientes_con_actividad(pclase, fecha):
     """
     Devuelve una lista de ID de clientes con algún objeto en la tabla
     representada por pclase posterior a la fecha indicada.
     """
-    for o in pclase.select():
-        if o.fecha >= fecha:
-            if o.cliente:
-                yield o.cliente
+    for objeto in pclase.select():
+        if objeto.fecha >= fecha:
+            if objeto.cliente:
+                yield objeto.cliente
+
 
 def build_dic_cliente(cliente):
     """
@@ -742,7 +863,8 @@ def build_dic_cliente(cliente):
     """
     return cliente.sqlmeta.asDict()
 
-## Proveedores ################################################################
+
+# # Proveedores ###############################################################
 def exportar_proveedores():
     """
     Exporta los clientes con actividad en los últimos 2 años a una tabla CSV.
@@ -763,13 +885,14 @@ def exportar_proveedores():
         update_listado(listado)
     else:
         hoy = datetime.date.today()
-        two_years_ago = datetime.date(day = hoy.day, month = hoy.month,
-                                      year = hoy.year - 2)
-        listado = create_listado_inicial_proveedores(cols_extra, two_years_ago)
+        two_years_ago = datetime.date(day=hoy.day, month=hoy.month,
+                                      year=hoy.year - 2)
+        listado = create_dic_inicial_proveedores(cols_extra, two_years_ago)
     dump(listado, fdest, orden_campos)
 
-def create_listado_inicial_proveedores(cols_extra,
-                                       fecha_ultima_actividad = None):
+
+def create_dic_inicial_proveedores(cols_extra,
+                                   fecha_ultima_actividad=None):
     """
     Devuelve un diccionario cuyas claves son los ID de proveedor y los valores
     son diccionarios con los campos y valores para cada proveedor.
@@ -781,15 +904,15 @@ def create_listado_inicial_proveedores(cols_extra,
     """
     proveedores = set()
     if not fecha_ultima_actividad:
-        for c in pclases.Proveedor.select():
-            proveedores.add(c.id)
+        for proveedor in pclases.Proveedor.select():
+            proveedores.add(proveedor.id)
     else:
-        for c in buscar_proveedores_con_actividad(pclases.PedidoCompra,
-                                                  fecha_ultima_actividad):
-            proveedores.add(c.id)
-        for c in buscar_proveedores_con_actividad(pclases.FacturaCompra,
-                                                  fecha_ultima_actividad):
-            proveedores.add(c.id)
+        for proveedor in buscar_proveedores_activos(pclases.PedidoCompra,
+                                                    fecha_ultima_actividad):
+            proveedores.add(proveedor.id)
+        for proveedor in buscar_proveedores_activos(pclases.FacturaCompra,
+                                                    fecha_ultima_actividad):
+            proveedores.add(proveedor.id)
     res = {}
     for cid in proveedores:
         proveedor = pclases.Proveedor.get(cid)
@@ -799,13 +922,14 @@ def create_listado_inicial_proveedores(cols_extra,
             res[cid][col] = None
     return res
 
-def buscar_proveedores_con_actividad(pclase, fecha):
+
+def buscar_proveedores_activos(pclase, fecha):
     """
     Devuelve una lista de ID de clientes con algún objeto en la tabla
     representada por pclase posterior a la fecha indicada.
     """
-    for o in pclase.select():
+    for objeto in pclase.select():
         # Sorprendentemente hay pedidos o facturas sin fecha.
-        if o.fecha and o.fecha >= fecha:
-            if o.proveedor:
-                yield o.proveedor
+        if objeto.fecha and objeto.fecha >= fecha:
+            if objeto.proveedor:
+                yield objeto.proveedor

@@ -8,10 +8,11 @@ Operaciones.
 from __future__ import print_function
 import os
 import logging
-logging.basicConfig(filename = "%s.log" % (
-    ".".join(os.path.basename(__file__).split(".")[:-1])),
-    format = "%(asctime)s %(levelname)-8s : %(message)s",
-    level = logging.DEBUG)
+
+NOMFLOG = ".".join(os.path.basename(__file__).split(".")[:-1])
+logging.basicConfig(filename="%s.log" % (NOMFLOG),
+                    format="%(asctime)s %(levelname)-8s : %(message)s",
+                    level=logging.DEBUG)
 import datetime
 from connection import Connection, DEBUG, VERBOSE
 from export import determinar_familia_Murano
@@ -25,9 +26,10 @@ except ImportError:
 else:
     LCOEM = True
 
-import sys, os
+import sys
+import os
 ruta_ginn = os.path.abspath(os.path.join(
-        os.path.dirname(__file__), "..", "..", "..", "ginn"))
+    os.path.dirname(__file__), "..", "..", "..", "ginn"))
 sys.path.append(ruta_ginn)
 from framework import pclases
 
@@ -122,7 +124,7 @@ SQL_SERIE = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoSerie](
                 CodigoEmpresa,
                 CodigoArticulo,
                 NumeroSerieLc,
-                Fecha, 
+                Fecha,
                 OrigenDocumento,
                 EjercicioDocumento,
                 SerieDocumento,
@@ -163,7 +165,7 @@ SQL_SERIE = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoSerie](
                 '%s',   -- código almacén
                 '%s',   -- ubicación
                 '%s',   -- partida
-                '%s',   -- unidad de medida básica (ROLLO, BALA...) 
+                '%s',   -- unidad de medida básica (ROLLO, BALA...)
                         -- NO la específica (kg, m²)
                 1,
                 -- NULL,
@@ -181,6 +183,7 @@ SQL_SERIE = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoSerie](
                 '%s'      -- código de palé
                );"""
 
+
 def buscar_grupo_talla(productoVenta):
     """
     Devuelve el código de grupo de tallas (calidades) que puede tener el
@@ -188,13 +191,13 @@ def buscar_grupo_talla(productoVenta):
     """
     # Hemos varios grupos de talla: 1 para A, B y C, 2 para A, B (sin C), etc.
     grupo_talla = 0     # Sin grupo de talla
-    #res = consultar_producto(nombre = productoVenta.descripcion)
+    # res = consultar_producto(nombre = productoVenta.descripcion)
     res = consultar_producto(productoVenta)
     try:
         grupo_talla = res[0]['GrupoTalla_']
     except TypeError, e:
         strlog = "(EE)[T] %s no se encuentra en Murano." % (
-                productoVenta.descripcion)
+            productoVenta.descripcion)
         print(strlog)
         logging.error(strlog)
         if not DEBUG:
@@ -203,7 +206,8 @@ def buscar_grupo_talla(productoVenta):
             grupo_talla = 0
     return grupo_talla
 
-def buscar_unidad_medida_basica(producto, articulo = None):
+
+def buscar_unidad_medida_basica(producto, articulo=None):
     """
     Devuelve la unidad de medida básica de la ficha de murano para el
     producto indicado. Devuelve "" si el producto no lleva tratamiento de
@@ -225,7 +229,7 @@ def buscar_unidad_medida_basica(producto, articulo = None):
     """
     # Al principio me dijo Félix que la buscara en Murano, pero no lo hago por
     # dos motivos:
-    # 1.- Puede que la unidad básica en mirano sea la BALA pero estemos 
+    # 1.- Puede que la unidad básica en mirano sea la BALA pero estemos
     #     mandando un BIGBAG de ese producto.
     # 2.- Por optimización. Cada consulta al MS-SQLServer tarda más que
     #     cualquier operación compleja contra PostgreSQL. Y CONSUME LICENCIA.
@@ -261,10 +265,11 @@ def buscar_unidad_medida_basica(producto, articulo = None):
                          "." % (producto.descripcion, producto.puid)
                 logging.error(strlog)
                 unidad2 = ""
-                #raise ValueError, strlog
+                # raise ValueError, strlog
         else:   # Es producto de compra. La unidad2 no debe informarse.
             unidad2 = ""
     return unidad2
+
 
 def buscar_unidad_medida_basica_murano(producto):
     """
@@ -274,8 +279,8 @@ def buscar_unidad_medida_basica_murano(producto):
     try:
         unidad2 = res[0]['UnidadMedida2_']
     except TypeError, e:
-        strlog = "(EE)[U] UnidadMedida2_ para %s no se encuentra en Murano."%(
-                producto.descripcion)
+        strlog = "(EE)[U] UnidadMedida2_ para %s no se encuentra en Murano." % (
+            producto.descripcion)
         print(strlog)
         logging.error(strlog)
         if not DEBUG:
@@ -283,6 +288,7 @@ def buscar_unidad_medida_basica_murano(producto):
         else:
             unidad2 = "ROLLO|BALA|BIGBAG|CAJA"
     return unidad2
+
 
 def buscar_codigo_producto(productoVenta):
     """
@@ -295,8 +301,8 @@ def buscar_codigo_producto(productoVenta):
     # Buscamos directamente por el código de murano_exportar: [PC|PV]+ID
     # Podría aquí devolverlo directamente, pero al menos así me aseguro de
     # que existe en Murano.
-    #res = consultar_producto(nombre = productoVenta.descripcion)
-    res = consultar_producto(producto = productoVenta)
+    # res = consultar_producto(nombre = productoVenta.descripcion)
+    res = consultar_producto(producto=productoVenta)
     try:
         codarticulo = res[0]['CodigoArticulo']
         desc_ginn = productoVenta.descripcion
@@ -304,7 +310,7 @@ def buscar_codigo_producto(productoVenta):
                 desc_ginn.startswith(res[0]['Descripcion2Articulo']))
     except (IndexError, TypeError), e:
         strlog = "(EE)[C] %s no se encuentra en Murano. Excepción: %s" % (
-                productoVenta.descripcion, e)
+            productoVenta.descripcion, e)
         print(strlog)
         logging.error(strlog)
         if not DEBUG:
@@ -320,6 +326,7 @@ def buscar_codigo_producto(productoVenta):
         print(strlog)
         logging.warning(strlog)
     return codarticulo
+
 
 def buscar_precio_coste(producto, ejercicio, codigo_almacen):
     """
@@ -344,12 +351,13 @@ def buscar_precio_coste(producto, ejercicio, codigo_almacen):
         # WTF?
         raise ValueError, "ops:buscar_precio_coste: el producto «%s» recibido"\
                           " no es un producto de compra ni de venta." % (
-                                  producto)
+                              producto)
     try:
         precio_coste = float(precio_coste)  # Viene como Decimal
     except TypeError:   # No tiene precio de coste en ningún sitio.
         precio_coste = 0.0
     return precio_coste
+
 
 def buscar_precio_coste_familia_murano(cod_familia):
     """
@@ -359,13 +367,13 @@ def buscar_precio_coste_familia_murano(cod_familia):
     precio de coste.
     """
     c = Connection()
-    #SQL = r"""SELECT TOP 1 PrecioPorUnidadEspecifica
+    # SQL = r"""SELECT TOP 1 PrecioPorUnidadEspecifica
     #          FROM [%s].[dbo].[Familias]
     #          WHERE CodigoFamilia = '%s'
     #            AND CodigoSubfamilia = '***********'
     #            AND CodigoEmpresa = '%d';
     #       """ % (c.get_database(),
-    #              cod_familia, 
+    #              cod_familia,
     #              CODEMPRESA)
     SQL = r"""SELECT TOP 1 GEO_CosteUnidadEspecifica
               FROM [%s].[dbo].[Familias]
@@ -373,19 +381,20 @@ def buscar_precio_coste_familia_murano(cod_familia):
                 AND CodigoSubfamilia = '**********'
                 AND CodigoEmpresa = '%d';
            """ % (c.get_database(),
-                  cod_familia, 
+                  cod_familia,
                   CODEMPRESA)
     try:
         precio_coste = c.run_sql(SQL)[0]["GEO_CosteUnidadEspecifica"]
-    except (TypeError, AttributeError, KeyError): 
+    except (TypeError, AttributeError, KeyError):
         # cod_familia es None o no se encontraron registros
         raise ValueError
     except Exception, e:
         logging.warning("No se encontró precio en Murano para la familia "
-                        "«%s». Además, provocó una excepción %s." % 
+                        "«%s». Además, provocó una excepción %s." %
                         (cod_familia, e))
         precio_coste = None
     return precio_coste
+
 
 def buscar_precio_coste_familia_ginn(cod_familia):
     """
@@ -403,6 +412,7 @@ def buscar_precio_coste_familia_ginn(cod_familia):
     else:
         raise ValueError, "cod_familia debe ser GEO, FIB, FCE o FEM. Se "\
                           "recibió: %s" % (cod_familia)
+
 
 def buscar_precio_coste_murano(producto, ejercicio, codigo_almacen):
     """
@@ -422,21 +432,22 @@ def buscar_precio_coste_murano(producto, ejercicio, codigo_almacen):
                 AND CodigoEmpresa = '%d'
                 AND Periodo = 99;
            """ % (c.get_database(),
-                  cod_articulo, 
+                  cod_articulo,
                   ejercicio,
                   codigo_almacen,
                   CODEMPRESA)
     try:
         precio_coste = c.run_sql(SQL)[0]["PrecioMedio"]
-    except (TypeError, AttributeError, KeyError, IndexError): 
+    except (TypeError, AttributeError, KeyError, IndexError):
         # codalmacen es None o no se encontraron registros
         raise ValueError
     except Exception, e:
         logging.warning("No se encontró precio medio en Murano para el "
-                        "producto «%s». Además, provocó una excepción %s." % 
+                        "producto «%s». Además, provocó una excepción %s." %
                         (cod_articulo, e))
         precio_coste = None
     return precio_coste
+
 
 def buscar_precio_coste_ginn(producto):
     """
@@ -452,11 +463,12 @@ def buscar_precio_coste_ginn(producto):
     else:
         # WTF?
         raise ValueError, "ops:buscar_precio_coste_ginn: el producto «%s» "\
-                          "recibido no es un producto de compra ni de venta."%(
-                                  producto)
+                          "recibido no es un producto de compra ni de venta." % (
+                              producto)
     return precio_coste
 
-def buscar_codigo_almacen(almacen, articulo = None):
+
+def buscar_codigo_almacen(almacen, articulo=None):
     """
     Devuelve almacén de la empresa configurada cuyo nombre coincida con el del
     almacén de ginn recibido.
@@ -468,14 +480,14 @@ def buscar_codigo_almacen(almacen, articulo = None):
         filas = c.run_sql("""SELECT CodigoAlmacen
             FROM %s.dbo.Almacenes
             WHERE CodigoEmpresa = %d AND Almacen = '%s'
-            ORDER BY CodigoAlmacen;""" % (c.get_database(), 
+            ORDER BY CodigoAlmacen;""" % (c.get_database(),
                                           CODEMPRESA,
                                           almacen.nombre))
         try:
             codalmacen = filas[0]['CodigoAlmacen']
         except Exception, e:
             strlog = "(EE)[A] Almacén '%s' no se encuentra en Murano." % (
-                    almacen.nombre)
+                almacen.nombre)
             print(strlog)
             logging.error(strlog)
             if not DEBUG:
@@ -493,6 +505,7 @@ def buscar_codigo_almacen(almacen, articulo = None):
                 raise ValueError, "(EE)[A] Debe especificarse un almacén "\
                                   "o un artículo."
     return codalmacen
+
 
 def simulate_guid():
     """
@@ -518,6 +531,7 @@ def simulate_guid():
         logging.info(strlog)
     return guid
 
+
 def buscar_factor_conversion(producto):
     """
     Busca el factor de conversión en la tabla de productos de Murano a partir
@@ -529,7 +543,7 @@ def buscar_factor_conversion(producto):
     """
     # Balas A, B y C: 0
     # Bigbags: 0
-    # Rollos A y B: 0 
+    # Rollos A y B: 0
     # En rollos C: 1
     # En cajas, que todas pesan iguales: 1. Los palés no hay que crearlos, se
     # crean solos al meter las cajas.
@@ -539,8 +553,9 @@ def buscar_factor_conversion(producto):
         else:
             factor_conversion = 0
     else:
-        factor_conversion = 1 
+        factor_conversion = 1
     return factor_conversion
+
 
 def genera_guid(conexion):
     """
@@ -554,6 +569,7 @@ def genera_guid(conexion):
         else:
             guid = simulate_guid()
     return guid
+
 
 def get_mov_posicion(conexion, codigo_articulo):
     """
@@ -572,6 +588,7 @@ def get_mov_posicion(conexion, codigo_articulo):
             mov_posicion = simulate_guid()
     return mov_posicion
 
+
 def get_codalmacen_articulo(conexion, articulo):
     """
     Busca el último movimiento de stock del artículo y devuelve el código
@@ -583,14 +600,15 @@ def get_codalmacen_articulo(conexion, articulo):
               FROM [%s].[dbo].[MovimientoArticuloSerie]
               WHERE NumeroSerieLc = '%s' AND CodigoEmpresa = '%d'
               ORDER BY Fecha DESC;""" % (conexion.get_database(),
-                                         codigo_articulo, 
+                                         codigo_articulo,
                                          CODEMPRESA)
     try:
         codalmacen = conexion.run_sql(SQL)[0]["CodigoAlmacen"]
-    except (TypeError, AttributeError, KeyError, IndexError): 
+    except (TypeError, AttributeError, KeyError, IndexError):
         # codalmacen es None o no se encontraron registros
         codalmacen = ""
     return codalmacen
+
 
 def get_codigo_articulo_murano(producto):
     """
@@ -606,6 +624,7 @@ def get_codigo_articulo_murano(producto):
     idmurano += str(producto.id)
     return idmurano
 
+
 def crear_proceso_IME(conexion):
     """
     Crea un proceso de importación con guid único.
@@ -618,7 +637,8 @@ def crear_proceso_IME(conexion):
         """ % (conexion.get_database(), guid_proceso))
     return guid_proceso
 
-def prepare_params_movstock(articulo, cantidad = 1, producto = None):
+
+def prepare_params_movstock(articulo, cantidad=1, producto=None):
     """
     Prepara los parámetros comunes a todos los artículos con movimiento de
     serie y devuelve la conexión a la base de datos MS-SQLServer.
@@ -646,38 +666,39 @@ def prepare_params_movstock(articulo, cantidad = 1, producto = None):
     # consumir ya estarían en Murano previamente y con un almacén asignado.
     # Para pruebas me aseguro de que se envía un almacén buscando el último
     # donde estuvo el bulto.
-    if not codigo_almacen: # and tipo_movimiento == 2:
+    if not codigo_almacen:  # and tipo_movimiento == 2:
         # Es un consumo y en ginn almacen ya es None. En Murano también es
         # None porque puede ser un artículo que nunca había estado antes
         # en Murano. Como por fuerza debe llevar un almacén, buscamos el
         # almacén donde estaba antes de ser consumida la bala o bigbag.
         # Da igual el tipo de movimiento. Aunque sea una entrada, debemos
         # buscar el último almacén **al menos en pruebas**. Se da el caso en
-        # que se fabrica un bigbag (por ejemplo) y se vende justo a 
+        # que se fabrica un bigbag (por ejemplo) y se vende justo a
         # continuación antes de que dé tiempo a meterlo en Murano. Ya tiene
         # el almacén a None en ginn y ya no lo traga bien Murano.
         codigo_almacen = buscar_ultimo_almacen_conocido_para(articulo)
-    #unidades = 1    # En dimensión base: 1 bala, rollo, caja, bigbag...
+    # unidades = 1    # En dimensión base: 1 bala, rollo, caja, bigbag...
     # [20160207] Al final no era en dimensión base, sino en la específica.
     unidades = get_cantidad_dimension_especifica(articulo)
-    #precio = 0.0
+    # precio = 0.0
     precio_kg = buscar_precio_coste(producto, ejercicio, codigo_almacen)
     precio = estimar_precio_coste(articulo, precio_kg)
     factor_conversion = buscar_factor_conversion(producto)
     if factor_conversion:
         unidades2 = unidades * factor_conversion
     else:
-        unidades2 = 1 # Siempre será uno porque por cada rollo o bala hay 
+        unidades2 = 1  # Siempre será uno porque por cada rollo o bala hay
                       # solo 1 mov. stock y 1 mov. serie.
     importe = unidades2 * precio
     unidad_medida2 = buscar_unidad_medida_basica(producto, articulo)
-    origen_movimiento = "F" # E = Entrada de Stock (entrada directa), 
-                            # F (fabricación), I (inventario), 
+    origen_movimiento = "F"  # E = Entrada de Stock (entrada directa),
+                            # F (fabricación), I (inventario),
                             # M (rechazo fabricación), S (Salida stock)
     return (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
             unidades, precio, importe, unidades2, unidad_medida2,
             factor_conversion, origen_movimiento)
+
 
 def get_cantidad_dimension_especifica(articulo):
     """
@@ -686,28 +707,29 @@ def get_cantidad_dimension_especifica(articulo):
     """
     if articulo.es_rollo() or articulo.es_rollo_defectuoso():
         # Los rollos C no tienen m² definidos. Se tratan al peso.
-        unidades = get_superficie(articulo) # En dimensión específica: m²
+        unidades = get_superficie(articulo)  # En dimensión específica: m²
     elif articulo.es_bala():
-        #unidades = articulo.get_peso()  
+        # unidades = articulo.get_peso()
         unidades = get_peso_bruto(articulo)  # En dimensión específica: kg
-    ### XXX ### XXX ### XXX ### XXX ### XXX ### XXX ### XXX ### XXX ### XXX ##
-    # BUG: [Murano] Si mando un número entero (los m² siempre son enteros) 
-    # en el peso (que entra como Unidades en la TmpIME y MovStock) sí lo 
-    # hace bien Murano. Pero si no, la coma la interpreta como separador 
-    # de campo de una consulta SQL en el proceso interno de convertir la 
+    # XXX ### XXX ### XXX ### XXX ### XXX ### XXX ### XXX ### XXX ### XXX ##
+    # BUG: [Murano] Si mando un número entero (los m² siempre son enteros)
+    # en el peso (que entra como Unidades en la TmpIME y MovStock) sí lo
+    # hace bien Murano. Pero si no, la coma la interpreta como separador
+    # de campo de una consulta SQL en el proceso interno de convertir la
     # TmpIME en MovStock, `da un syntax error near ,` en la traza y PETA.
     # TODO: FIXME: Hasta que no se arregle, mando número entero multiplicado
     # por 100 y en Murano se vuelve a dividir entre 100 para que se quede la
     # cantidad correcta en kilos.
-    unidades = int(unidades * 100)  ### XXX ### XXX ### XXX ### XXX ### XXX ##
+    unidades = int(unidades * 100)  # XXX ### XXX ### XXX ### XXX ### XXX ##
     return unidades
+
 
 def buscar_ultimo_almacen_conocido_para(articulo):
     """
     Devuelve el código de almacén de Murano para el último almacén conocido
     en ginn donde estuviera el artículo.
     """
-    # Fallback al almacén principal, por si no tuviera ABSOLUTAMENTE ningún 
+    # Fallback al almacén principal, por si no tuviera ABSOLUTAMENTE ningún
     # movimiento.
     last_almacen = pclases.Almacen.get_almacen_principal()
     for movimiento in articulo.get_historial_trazabilidad()[::-1]:
@@ -719,12 +741,13 @@ def buscar_ultimo_almacen_conocido_para(articulo):
     res = buscar_codigo_almacen(last_almacen)
     return res
 
+
 def estimar_precio_coste(articulo, precio_kg):
     """
     Estima el precio de coste del artículo recibido en función de los €/kg
     indicados en el parámetro «precio_kg».
     """
-    # Este precio de coste "requete"-estimado es un CWT en toda regla. Ver 
+    # Este precio de coste "requete"-estimado es un CWT en toda regla. Ver
     # correo del 7 de marzo de 2016 - 13:01
     if articulo.es_rollo():
         # Peso teórico ideal, sin embalaje.
@@ -744,18 +767,19 @@ def estimar_precio_coste(articulo, precio_kg):
         # Peso real dado en báscula, con embalaje y todo.
         peso = articulo.peso
     elif articulo.es_caja():
-        # Peso nominal de la caja. El teórico. La embaladora no falla y el 
+        # Peso nominal de la caja. El teórico. La embaladora no falla y el
         # cartón es despreciable. Es el peso que se almacena como real para
         # las cajas a la hora de fabricarlas.
         peso = articulo.peso
     else:
         strerror = "ops:estimar_precio_coste:No se pudo estimar para «%s»" % (
-                articulo)
+            articulo)
         logging.error(strerror)
         raise ValueError, strerror
     return peso * precio_kg
 
-def create_bala(bala, cantidad = 1, producto = None):
+
+def create_bala(bala, cantidad=1, producto=None):
     """
     Crea una bala en las tablas temporales de Murano.
     Recibe un objeto bala de ginn.
@@ -765,30 +789,30 @@ def create_bala(bala, cantidad = 1, producto = None):
     try:
         partida = bala.lote.codigo
     except AttributeError:
-        partida = "" # DONE: Balas C no tienen lote. No pasa nada. Murano traga.
+        partida = ""  # DONE: Balas C no tienen lote. No pasa nada. Murano traga.
     unidad_medida = "KG"
     comentario = ("Bala ginn: [%s]" % bala.get_info())[:40]
     ubicacion = "Almac. de fibra."[:15]
     numero_serie_lc = ""
-    # Sage me indica que no informe de la serie en el movimiento de stock para 
+    # Sage me indica que no informe de la serie en el movimiento de stock para
     # solucionar lo del registro duplicado creado por Murano.
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
-            codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
-            unidades, precio, importe, unidades2, unidad_medida2,
-            factor_conversion, origen_movimiento) = prepare_params_movstock(
-                    articulo, cantidad, producto)
+     codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
+     unidades, precio, importe, unidades2, unidad_medida2,
+     factor_conversion, origen_movimiento) = prepare_params_movstock(
+        articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
     sql_movstock = SQL_STOCK % (database,
-                          CODEMPRESA, ejercicio, periodo, fecha, documento,
-                          codigo_articulo, codigo_almacen, partida,
-                          grupo_talla, codigo_talla, tipo_movimiento, unidades,
-                          unidad_medida, precio, importe, unidades2,
-                          unidad_medida2,
-                          factor_conversion, comentario, ubicacion,
-                          origen_movimiento, numero_serie_lc,
-                          id_proceso_IME)
+                                CODEMPRESA, ejercicio, periodo, fecha, documento,
+                                codigo_articulo, codigo_almacen, partida,
+                                grupo_talla, codigo_talla, tipo_movimiento, unidades,
+                                unidad_medida, precio, importe, unidades2,
+                                unidad_medida2,
+                                factor_conversion, comentario, ubicacion,
+                                origen_movimiento, numero_serie_lc,
+                                id_proceso_IME)
     c.run_sql(sql_movstock)
-    origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock)
+    origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
                          # 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
@@ -803,15 +827,16 @@ def create_bala(bala, cantidad = 1, producto = None):
                                 mov_posicion_origen, codigo_talla,
                                 codigo_almacen, ubicacion, partida,
                                 unidad_medida1, comentario, id_proceso_IME,
-                                #articulo.peso, articulo.peso_sin,
+                                # articulo.peso, articulo.peso_sin,
                                 peso_bruto, peso_neto,
-                                0.0, # Metros cuadrados. Decimal NOT NULL
+                                0.0,  # Metros cuadrados. Decimal NOT NULL
                                 ""   # Código palé. Varchar NOT NULL
-                               )
+                                )
     c.run_sql(sql_movserie)
     fire(id_proceso_IME)
 
-def create_bigbag(bigbag, cantidad = 1, producto = None):
+
+def create_bigbag(bigbag, cantidad=1, producto=None):
     """
     Crea un bigbag en Murano a partir de la información del bigbag en ginn.
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
@@ -820,27 +845,27 @@ def create_bigbag(bigbag, cantidad = 1, producto = None):
     partida = bigbag.loteCem.codigo
     comentario = ("Bigbag ginn: [%s]" % bigbag.get_info())[:40]
     numero_serie_lc = ""
-    # Sage me indica que no informe de la serie en el movimiento de stock para 
+    # Sage me indica que no informe de la serie en el movimiento de stock para
     # solucionar lo del registro duplicado creado por Murano.
     ubicacion = "Almac. de fibra."[:15]
     unidad_medida = "KG"
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
-            codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
-            unidades, precio, importe, unidades2, unidad_medida2,
-            factor_conversion, origen_movimiento) = prepare_params_movstock(
-                    articulo, cantidad, producto)
+     codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
+     unidades, precio, importe, unidades2, unidad_medida2,
+     factor_conversion, origen_movimiento) = prepare_params_movstock(
+        articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
     sql_movstock = SQL_STOCK % (database,
-                          CODEMPRESA, ejercicio, periodo, fecha, documento,
-                          codigo_articulo, codigo_almacen, partida,
-                          grupo_talla, codigo_talla, tipo_movimiento, unidades,
-                          unidad_medida, precio, importe, unidades2,
-                          unidad_medida2,
-                          factor_conversion, comentario, ubicacion,
-                          origen_movimiento, numero_serie_lc,
-                          id_proceso_IME)
+                                CODEMPRESA, ejercicio, periodo, fecha, documento,
+                                codigo_articulo, codigo_almacen, partida,
+                                grupo_talla, codigo_talla, tipo_movimiento, unidades,
+                                unidad_medida, precio, importe, unidades2,
+                                unidad_medida2,
+                                factor_conversion, comentario, ubicacion,
+                                origen_movimiento, numero_serie_lc,
+                                id_proceso_IME)
     c.run_sql(sql_movstock)
-    origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock)
+    origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
                          # 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
@@ -855,15 +880,16 @@ def create_bigbag(bigbag, cantidad = 1, producto = None):
                                 mov_posicion_origen, codigo_talla,
                                 codigo_almacen, ubicacion, partida,
                                 unidad_medida1, comentario, id_proceso_IME,
-                                #articulo.peso, articulo.peso_sin,
+                                # articulo.peso, articulo.peso_sin,
                                 peso_bruto, peso_neto,
-                                0.0, # Metros cuadrados. Decimal NOT NULL
+                                0.0,  # Metros cuadrados. Decimal NOT NULL
                                 ""   # Código palé. Varchar NOT NULL
-                               )
+                                )
     c.run_sql(sql_movserie)
     fire(id_proceso_IME)
 
-def create_rollo(rollo, cantidad = 1, producto = None):
+
+def create_rollo(rollo, cantidad=1, producto=None):
     """
     Crea un rollo en Murano a partir de la información del rollo en ginn.
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
@@ -875,27 +901,27 @@ def create_rollo(rollo, cantidad = 1, producto = None):
         partida = ""   # DONE: Los rollos C no tienen partida. No pasa nada.
     comentario = ("Rollo ginn: [%s]" % rollo.get_info())[:40]
     numero_serie_lc = ""
-    # Sage me indica que no informe de la serie en el movimiento de stock para 
+    # Sage me indica que no informe de la serie en el movimiento de stock para
     # solucionar lo del registro duplicado creado por Murano.
     ubicacion = "Almac. de geotextiles."[:15]
     unidad_medida = "M2"
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
-            codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
-            unidades, precio, importe, unidades2, unidad_medida2,
-            factor_conversion, origen_movimiento) = prepare_params_movstock(
-                    articulo, cantidad, producto)
+     codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
+     unidades, precio, importe, unidades2, unidad_medida2,
+     factor_conversion, origen_movimiento) = prepare_params_movstock(
+        articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
     sql_movstock = SQL_STOCK % (database,
-                          CODEMPRESA, ejercicio, periodo, fecha, documento,
-                          codigo_articulo, codigo_almacen, partida,
-                          grupo_talla, codigo_talla, tipo_movimiento, unidades,
-                          unidad_medida, precio, importe, unidades2,
-                          unidad_medida2,
-                          factor_conversion, comentario, ubicacion,
-                          origen_movimiento, numero_serie_lc,
-                          id_proceso_IME)
+                                CODEMPRESA, ejercicio, periodo, fecha, documento,
+                                codigo_articulo, codigo_almacen, partida,
+                                grupo_talla, codigo_talla, tipo_movimiento, unidades,
+                                unidad_medida, precio, importe, unidades2,
+                                unidad_medida2,
+                                factor_conversion, comentario, ubicacion,
+                                origen_movimiento, numero_serie_lc,
+                                id_proceso_IME)
     c.run_sql(sql_movstock)
-    origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock)
+    origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
                          # 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
@@ -911,15 +937,16 @@ def create_rollo(rollo, cantidad = 1, producto = None):
                                 mov_posicion_origen, codigo_talla,
                                 codigo_almacen, ubicacion, partida,
                                 unidad_medida1, comentario, id_proceso_IME,
-                                #articulo.peso, articulo.peso_sin,
-                                peso_bruto, peso_neto, superficie, 
-                                       # Metros cuadrados. Decimal NOT NULL
+                                # articulo.peso, articulo.peso_sin,
+                                peso_bruto, peso_neto, superficie,
+                                # Metros cuadrados. Decimal NOT NULL
                                 ""   # Código palé. Varchar NOT NULL
-                               )
+                                )
     c.run_sql(sql_movserie)
     fire(id_proceso_IME)
 
-def create_caja(caja, cantidad = 1, producto = None):
+
+def create_caja(caja, cantidad=1, producto=None):
     """
     Crea una caja en Murano a partir de la información del objeto caja en ginn.
     Si cantidad es 1, realiza un decremento.
@@ -930,25 +957,25 @@ def create_caja(caja, cantidad = 1, producto = None):
     comentario = ("Caja ginn: [%s]" % caja.get_info())[:40]
     ubicacion = "Almac. de fibra embolsada."[:15]
     numero_serie_lc = ""
-    # Sage me indica que no informe de la serie en el movimiento de stock para 
+    # Sage me indica que no informe de la serie en el movimiento de stock para
     # solucionar lo del registro duplicado creado por Murano.
     (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
-            codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
-            unidades, precio, importe, unidades2, unidad_medida2,
-            factor_conversion, origen_movimiento) = prepare_params_movstock(
-                    articulo, cantidad, producto)
+     codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
+     unidades, precio, importe, unidades2, unidad_medida2,
+     factor_conversion, origen_movimiento) = prepare_params_movstock(
+        articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
     sql_movstock = SQL_STOCK % (database,
-                          CODEMPRESA, ejercicio, periodo, fecha, documento,
-                          codigo_articulo, codigo_almacen, partida,
-                          grupo_talla, codigo_talla, tipo_movimiento, unidades,
-                          unidad_medida, precio, importe, unidades2,
-                          unidad_medida2,
-                          factor_conversion, comentario, ubicacion,
-                          origen_movimiento, numero_serie_lc,
-                          id_proceso_IME)
+                                CODEMPRESA, ejercicio, periodo, fecha, documento,
+                                codigo_articulo, codigo_almacen, partida,
+                                grupo_talla, codigo_talla, tipo_movimiento, unidades,
+                                unidad_medida, precio, importe, unidades2,
+                                unidad_medida2,
+                                factor_conversion, comentario, ubicacion,
+                                origen_movimiento, numero_serie_lc,
+                                id_proceso_IME)
     c.run_sql(sql_movstock)
-    origen_documento = 2 # 2 (Fabricación), 10 (entrada de stock)
+    origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
                          # 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
@@ -963,16 +990,17 @@ def create_caja(caja, cantidad = 1, producto = None):
                                 mov_posicion_origen, codigo_talla,
                                 codigo_almacen, ubicacion, partida,
                                 unidad_medida1, comentario, id_proceso_IME,
-                                #articulo.peso, articulo.peso_sin,
+                                # articulo.peso, articulo.peso_sin,
                                 peso_bruto, peso_neto,
                                 0.0,   # Metros cuadrados. Decimal NOT NULL
                                 caja.pale and caja.pale.codigo or ""
                                        # Código palé. Varchar NOT NULL
-                               )
+                                )
     c.run_sql(sql_movserie)
     fire(id_proceso_IME)
 
-def create_pale(pale, cantidad = 1, producto = None):
+
+def create_pale(pale, cantidad=1, producto=None):
     """
     Crea un palé con todas sus cajas en Murano a partir del palé de ginn.
     Si cantidad es -1 saca el palé del almacén.
@@ -985,18 +1013,19 @@ def create_pale(pale, cantidad = 1, producto = None):
     totcajas = len(cajas)
     if VERBOSE:
         from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
-        cajas = tqdm(cajas, total = totcajas, leave = False)
+        cajas = tqdm(cajas, total=totcajas, leave=False)
     for caja in cajas:
         i += 1
         if VERBOSE:
             cajas.set_description("Creando caja %s... (%d/%d)" % (
                 caja.codigo, i, totcajas))
-        create_caja(caja, cantidad = cantidad, producto = producto)
+        create_caja(caja, cantidad=cantidad, producto=producto)
     # No es necesario. Cada caja lanza su proceso y el palé no crea
     # registros en la base de datos. No hay que lanzar ninún proceso adicional.
-    #fire(id_proceso_IME)
+    # fire(id_proceso_IME)
 
-def consulta_proveedor(nombre = None, cif = None):
+
+def consulta_proveedor(nombre=None, cif=None):
     """
     Obtiene los datos de un proveedor buscando por nombre, cif o ambas cosas.
     Devuelve una lista de proveedores coincidentes en forma de diccionarios
@@ -1018,7 +1047,8 @@ def consulta_proveedor(nombre = None, cif = None):
     res = c.run_sql(sql)
     return res
 
-def consulta_cliente(nombre = None, cif = None):
+
+def consulta_cliente(nombre=None, cif=None):
     """
     Obtiene los datos de un cliente buscando por nombre, cif o ambas cosas.
     Devuelve una lista de clientes coincidentes.
@@ -1039,7 +1069,8 @@ def consulta_cliente(nombre = None, cif = None):
     res = c.run_sql(sql)
     return res
 
-def consultar_producto(producto = None, nombre = None):
+
+def consultar_producto(producto=None, nombre=None):
     """
     Busca un producto por nombre, si se especifica el parámetro.
     En otro caso, busca por el código `[PC|PV]id`. Se debe recibir el objeto
@@ -1079,9 +1110,10 @@ def consultar_producto(producto = None, nombre = None):
             if not res or len(res) == 0:
                 raise AssertionError, "No se encontraron registros."
             elif len(res) > 1:
-                raise AssertionError, "Se encontró más de un artículo:\n %s"%(
-                        "\n".join([str(i) for i in res]))
+                raise AssertionError, "Se encontró más de un artículo:\n %s" % (
+                    "\n".join([str(i) for i in res]))
     return res
+
 
 def update_calidad(articulo, calidad):
     """
@@ -1090,12 +1122,14 @@ def update_calidad(articulo, calidad):
     if calidad not in "aAbBcC":
         raise ValueError, "El parámetro calidad debe ser A, B o C."
     # DONE: [Marcos Sage] No modificamos tablas. Hacemos salida del producto A
-    # y volvemos a insertarlo como C. En ese caso no importa que se repita el 
+    # y volvemos a insertarlo como C. En ese caso no importa que se repita el
     # código para el mismo producto porque antes hemos hecho la salida.
-    # TODO: Ojo porque si cambio a calidad C probablemente implique un cambio de producto.
+    # TODO: Ojo porque si cambio a calidad C probablemente implique un cambio
+    # de producto.
     raise NotImplementedError, "Función no disponible por el momento."
 
-def create_articulo(articulo, cantidad = 1, producto = None):
+
+def create_articulo(articulo, cantidad=1, producto=None):
     """
     Crea un artículo nuevo en Murano con el producto recibido. Si no se
     recibe ninguno, se usa el que tenga asociado en ginn. Si se recibe un
@@ -1105,7 +1139,7 @@ def create_articulo(articulo, cantidad = 1, producto = None):
     # TODO: Check que compruebe si el artículo ya existía para no duplicarlo.
     # TODO: Hacer en todos los create_*, pero solo si es una inserción.
     # TODO: ¿Y al descontar existencias? ¿Comprobar también que existan antes?
-    # De todos modos el proceso de importación devolverá error si la serie 
+    # De todos modos el proceso de importación devolverá error si la serie
     # está duplicada.
     if cantidad < 0:
         delta = 1
@@ -1127,14 +1161,16 @@ def create_articulo(articulo, cantidad = 1, producto = None):
         else:
             raise ValueError, "El artículo %s no es bala, bala de cable, "\
                               "bigbag, caja, rollo ni rollo C." % (
-                                      articulo.puid)
+                                  articulo.puid)
+
 
 def update_producto(articulo, producto):
     """
     Cambia el artículo recibido al producto indicado.
     """
     delete_articulo(articulo)
-    create_articulo(articulo, producto = producto)
+    create_articulo(articulo, producto=producto)
+
 
 def update_stock(producto, delta, almacen):
     """
@@ -1145,7 +1181,7 @@ def update_stock(producto, delta, almacen):
     """
     assert(isinstance(producto, pclases.ProductoCompra))
     partida = ""
-    unidad_medida = "" # producto.unidad
+    unidad_medida = ""  # producto.unidad
     comentario = ("Stock ginn: %f [%s]" % (delta, producto.get_info()))[:40]
     ubicacion = "Almacén general"[:15]
     numero_serie_lc = ""
@@ -1159,20 +1195,20 @@ def update_stock(producto, delta, almacen):
     codigo_articulo = buscar_codigo_producto(producto)
     codigo_almacen = buscar_codigo_almacen(almacen)
     codigo_talla = ""   # No hay calidades en los productos de compra.
-    grupo_talla = 0 # No tratamiento de calidades en productos sin trazabilidad.
+    grupo_talla = 0  # No tratamiento de calidades en productos sin trazabilidad.
     if delta >= 0:
         tipo_movimiento = 1     # 1 = entrada, 2 = salida.
     else:
         delta = abs(delta)
         tipo_movimiento = 2
     unidades = delta    # En dimensión base del producto.
-    #precio = producto.precioDefecto
+    # precio = producto.precioDefecto
     precio = buscar_precio_coste(producto, ejercicio, codigo_almacen)
     importe = unidades * precio
     factor_conversion = buscar_factor_conversion(producto)
     unidades2 = unidades * factor_conversion
-    origen_movimiento = "F" # E = Entrada de Stock (entrada directa), 
-                            # F (fabricación), I (inventario), 
+    origen_movimiento = "F"  # E = Entrada de Stock (entrada directa),
+                            # F (fabricación), I (inventario),
                             # M (rechazo fabricación), S (Salida stock)
     id_proceso_IME = crear_proceso_IME(c)
     # En el movimiento de stock la unidad principal (unidad_medida) es la que
@@ -1181,25 +1217,27 @@ def update_stock(producto, delta, almacen):
     # producto con código de trazabilidad.
     unidad_medida2 = buscar_unidad_medida_basica(producto)
     sql_movstock = SQL_STOCK % (database,
-                          CODEMPRESA, ejercicio, periodo, fecha, documento,
-                          codigo_articulo, codigo_almacen, partida,
-                          grupo_talla, codigo_talla, tipo_movimiento, unidades,
-                          unidad_medida, precio, importe, unidades2,
-                          unidad_medida2,
-                          factor_conversion, comentario, ubicacion,
-                          origen_movimiento, numero_serie_lc,
-                          id_proceso_IME)
+                                CODEMPRESA, ejercicio, periodo, fecha, documento,
+                                codigo_articulo, codigo_almacen, partida,
+                                grupo_talla, codigo_talla, tipo_movimiento, unidades,
+                                unidad_medida, precio, importe, unidades2,
+                                unidad_medida2,
+                                factor_conversion, comentario, ubicacion,
+                                origen_movimiento, numero_serie_lc,
+                                id_proceso_IME)
     c.run_sql(sql_movstock)
     fire(id_proceso_IME)
+
 
 def delete_articulo(articulo):
     """
     Elimina el artículo en Murano mediante la creación de un movimiento de
     stock negativo de ese código de producto.
     """
-    create_articulo(articulo, cantidad = -1)
+    create_articulo(articulo, cantidad=-1)
 
-def consumir(productoCompra, cantidad, almacen = None, consumo = None):
+
+def consumir(productoCompra, cantidad, almacen=None, consumo=None):
     """
     Decrementa las existencias del producto recibido en la cantidad indicada
     mediante registros de movimientos de stock en Murano en el almacén
@@ -1209,7 +1247,8 @@ def consumir(productoCompra, cantidad, almacen = None, consumo = None):
     """
     if not almacen:
         if not productoCompra.es_granza():
-            almacen = pclases.Almacen.get_almacen_principal() # Los consumos de 
+            almacen = pclases.Almacen.get_almacen_principal(
+            )  # Los consumos de
                     # materia prima siempre se hacen desde el almacén principal.
                     # EXCEPTO los de granza, que se hacen desde un silo que se
                     # trata como almacén en Murano.
@@ -1220,6 +1259,7 @@ def consumir(productoCompra, cantidad, almacen = None, consumo = None):
                 raise ValueError, "Si no especifica un almacén debe indicar "\
                                   "el consumo origen de ginn como referencia."
     update_stock(productoCompra, -cantidad, almacen)
+
 
 def fire(guid_proceso):
     """
@@ -1241,64 +1281,64 @@ def fire(guid_proceso):
     retCode = None
     operacion = "ImportaIME"
     strverbose = "Lanzando proceso de importación `%s` con GUID `%s`..." % (
-            operacion, guid_proceso)
+        operacion, guid_proceso)
     logging.info(strverbose)
     if VERBOSE and DEBUG:
         print(strverbose)
     retCode = burano.EjecutaOEM("LCCImExP.LcImExProceso", operacion,
                                 str(guid_proceso), 1, 1, 0)
     # 1 = No borrar registros IME al finalizar.
-    # 1 = No borrar registros con errores ni siquiera cuando el primer 
+    # 1 = No borrar registros con errores ni siquiera cuando el primer
     # parámetro esté a 0.
     # 0 = Ejecutar en todos los módulos.
     strverbose = "Importación `%s` concluida con código de retorno: %s" % (
-                guid_proceso, retCode)
+        guid_proceso, retCode)
     logging.info(strverbose)
     if VERBOSE and DEBUG:
         print(strverbose)
-    ## Si retcode es 1: cagada. Si es 0: éxito
+    # Si retcode es 1: cagada. Si es 0: éxito
     if retCode:
         strerr = "¡PROCESO DE IMPORTACIÓN %s CON ERRORES!"\
                  " No se lanza el script de acumulación de stock." % (
-                         guid_proceso)
+                     guid_proceso)
         logging.error(strerr)
     else:
         # Después de cada proceso hay que invocar al cálculo que acumula los
         # campos personalizados:
-        # FIXED: No ejecuta el cálculo. Era por las '' alrededor del guid. 
-        # Según el .chm de ayuda los parámetros van sin encerrar en nada 
+        # FIXED: No ejecuta el cálculo. Era por las '' alrededor del guid.
+        # Según el .chm de ayuda los parámetros van sin encerrar en nada
         # aunque sean cadena.
         nombrescript = "AcumularCamposNuevosSeries"
         paramsscript = "Label:=Inicio, idProcesoIME:=%s" % guid_proceso
         strverbose = "Lanzando script `%s` con GUID `%s`..." % (
-                nombrescript, guid_proceso)
+            nombrescript, guid_proceso)
         logging.info(strverbose)
         if VERBOSE and DEBUG:
             print(strverbose)
         retCode = burano.EjecutaScript(nombrescript, paramsscript)
-        ## retCode devuelve (True, ...) si se hace con éxito. El problema es
-        ## que no sé si retCode[0] será False cuando falla.
+        # retCode devuelve (True, ...) si se hace con éxito. El problema es
+        # que no sé si retCode[0] será False cuando falla.
         strverbose = "Ejecución `%s` (GUID `%s`) "\
                      "concluida con código de retorno: %s" % (
-                             nombrescript, guid_proceso, retCode)
+                         nombrescript, guid_proceso, retCode)
         logging.info(strverbose)
         if VERBOSE and DEBUG:
             print(strverbose)
         # FIXME:XXX: Para evitar el bug de los decimales en Murano, mandamos
-        # las unidades del movimiento de stock multiplicadas por 100 (las 
-        # balas solo van a tener una cifra decimal porque la báscula pesa de 
+        # las unidades del movimiento de stock multiplicadas por 100 (las
+        # balas solo van a tener una cifra decimal porque la báscula pesa de
         # 500 en 500 gr, pero la definición nueva del peso bruto de los palés
         # puede llevar hasta 2).
         nombrescript = "GEO_DividirStock"
         paramsscript = "Label:=Inicio"
         strverbose = "Lanzando script `%s`..." % (
-                nombrescript)
+            nombrescript)
         logging.info(strverbose)
         if VERBOSE and DEBUG:
             print(strverbose)
         retCode = burano.EjecutaScript(nombrescript, paramsscript)
         strverbose = "Ejecución `%s` concluida con código de retorno: %s" % (
-                    nombrescript, retCode)
+            nombrescript, retCode)
         logging.info(strverbose)
         if VERBOSE and DEBUG:
             print(strverbose)
