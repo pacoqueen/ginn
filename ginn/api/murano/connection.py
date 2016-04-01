@@ -1,15 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+Funciones relacionadas con la conexión a SQLServer.
+
+Se definen aquí también las constantes CODEMPRESA (empresa destino en Murano),
+VERBOSE y DEBUG.
+"""
+
 from __future__ import print_function
 import os
 import logging
-logging.basicConfig(filename="%s.log" % (
-    ".".join(os.path.basename(__file__).split(".")[:-1])),
+logging.basicConfig(
+    filename="%s.log" % (".".join(os.path.basename(__file__).split(".")[:-1])),
     format="%(asctime)s %(levelname)-8s : %(message)s",
     level=logging.DEBUG)
-import pymssql
 import inspect
+import pymssql
 
 # DEBUG = True
 DEBUG = False
@@ -17,17 +24,19 @@ VERBOSE = True
 CODEMPRESA = 8000   # Empresa de pruebas. Cambiar por la 10200 en producción.
 
 
-class Connection:
-
+class Connection(object):
+    """
+    Clase que encapsula la conexión a SQLServer.
+    """
     def __init__(self):
         self.__database = ""    # Inicialización temporal hasta que conecte.
         try:
             self.conn = self.__connect()
-        except pymssql.InterfaceError as e:
+        except pymssql.InterfaceError as exception:
             if DEBUG:
                 self.conn = None    # No se pudo conectar. Modo "debug".
             else:
-                raise e
+                raise exception
 
     def __del__(self):
         try:
@@ -63,6 +72,7 @@ class Connection:
                 password = credentials.readlines()[0].split()[0]
                 credentials.close()
         try:
+            # pylint: disable=unexpected-keyword-arg
             conn = pymssql.connect(server=server, user=user,
                                    password=password, database=database)
         except TypeError:   # Depende de la versión usa host o server.
@@ -83,10 +93,12 @@ class Connection:
         """
         if VERBOSE and DEBUG:
             print("Desconectando...")
+        # pylint: disable=no-member
         self.conn.disconnect()
         if VERBOSE and DEBUG:
             print("\t\t\t\t[OK]")
 
+    # pylint: disable=too-many-branches
     def run_sql(self, sql):
         """
         Crea un cursor, ejecuta la(s) consulta(s) y cierra el cursor.
@@ -95,10 +107,10 @@ class Connection:
         if not isinstance(sql, (list, tuple)):
             sql = [sql]
         try:
-            c = self.conn.cursor(as_dict=True)
-        except AttributeError as e:
+            conn = self.conn.cursor(as_dict=True)
+        except AttributeError as exception:
             if not DEBUG:
-                raise e
+                raise exception
         for sentence_sql in sql:
             logging.info("SQL a ejecutar:")
             logging.info(str_clean(sentence_sql))
@@ -113,13 +125,13 @@ class Connection:
                     logging.info(strlog)
                     if VERBOSE and DEBUG:
                         print(strlog)
-                    res = c.execute(sentence_sql)
+                    res = conn.execute(sentence_sql)
                     if "SELECT" in sentence_sql:
                         strlog = "    · fetchall..."
                         logging.info(strlog)
                         if VERBOSE and DEBUG:
                             print(strlog)
-                        res = c.fetchall()
+                        res = conn.fetchall()
                         strlog = "\t\t\t\t[OK]"
                         logging.info(strlog)
                         if VERBOSE and DEBUG:
@@ -134,23 +146,24 @@ class Connection:
                         logging.info(strlog)
                         if VERBOSE and DEBUG:
                             print(strlog)
-                except Exception as e:
+                # pylint: disable=broad-except
+                except Exception as exception:
                     if not DEBUG:
-                        logging.critical(e)
-                        raise e
+                        logging.critical(exception)
+                        raise exception
                     else:
-                        strerror = "\t\t\t\t -- (!) [Excepción %s]" % e
+                        strerror = "\t\t\t -- (!) [Excepción %s]" % exception
                         print(strerror)
                         logging.error(strerror)
         return res
 
 
-def str_clean(s):
+def str_clean(strsql):
     """
     Devuelve la consulta SQL sin comentarios ni retornos de carro.
     """
     import re
-    res = re.sub(r"--.*[$|\n]", "", s)
+    res = re.sub(r"--.*[$|\n]", "", strsql)
     res = res.split()
     res = " ".join([word.strip() for word in res])
     return res

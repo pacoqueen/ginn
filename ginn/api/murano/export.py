@@ -7,11 +7,13 @@ Generan ficheros CSV, no importan nada directamente a Murano. Esos ficheros
 CSV sirven como fuente para las guías de importación diseñadas por Sage.
 """
 
+# pylint: disable=too-many-lines, relative-import, too-many-locals
+
 import sys
 import os
 import datetime
 import csv
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 RUTA_GINN = os.path.abspath(os.path.join(
     os.path.dirname(__file__), "..", "..", "..", "ginn"))
 sys.path.append(RUTA_GINN)
@@ -603,7 +605,10 @@ def post_process(columnas, _filas):
 
 
 # # Clientes ##################################################################
-def exportar_clientes():
+DOMICILIOS_CLIENTES = defaultdict(lambda: 0)
+
+
+def exportar_clientes(fdestclientes, fdestdomicilios, fdestcontactos):
     """
     Exporta los clientes con actividad en los últimos 2 años a una tabla CSV.
     La tabla la construye según la lista de campos del fichero que espera
@@ -611,9 +616,6 @@ def exportar_clientes():
     * Base de datos de ginn.
     * Fichero CSV (originalmente es un Excel) con el resto de datos.
     """
-    fdestclientes = "clientesproveedores.csv"
-    fdestdomicilios = "domicilios.csv"
-    fdestcontactos = "contactos.csv"
     hoy = datetime.date.today()
     two_years_ago = datetime.date(day=hoy.day, month=hoy.month,
                                   year=hoy.year - 2)
@@ -655,13 +657,140 @@ def create_dic_clientes(fecha_ultima_actividad=None):
         res[cid]['OBRAS'] = {}
         res[cid]['CONTACTOS'] = {}
         for obra in cliente.obras:
-            res[id]['OBRAS'][obra.id] = build_dic_obra(obra)
+            res[cid]['OBRAS'][obra.id] = build_dic_obra(
+                obra, cliente, load_lista_campos_domicilios)
             for contacto in obra.contactos:
-                res[id]['CONTACTOS'][contacto.id] = build_dic_contacto(contacto)
+                res[cid]['CONTACTOS'][contacto.id] = build_dic_contacto(
+                    contacto, cliente, load_lista_campos_contactos)
+                # Inicalmente a "", es necesario un postprocesado para esto:
+                res[cid]['CONTACTOS'][contacto.id]['NumeroDomicilio'] = (
+                    res[cid]['OBRAS'][obra.id]['NumeroDomicilio'])
                 # OJO: Es posible que duplique contactos si varios clientes lo
                 # comparten. El ID será el mismo. Ya veremos qué hace Murano
                 # en ese caso.
     return res
+
+
+def build_dic_obra(obra, cliente, load_lista):
+    """
+    Devuelve un diccionario con los valores de la obra en las claves
+    correspondientes según la nomenclatura que espera recibir la guía
+    de importación de Murano.
+    """
+    # Me traigo los nomrbes de los campos y su equivalencia en ginn, bien
+    # como nombre del atributo (str) o como función a ejecutar con el cliente.
+    res = {}
+    lista_campos = load_lista()
+    for campo in lista_campos:
+        attr = lista_campos[campo]
+        if isinstance(attr, str):
+            if " " in attr:     # El valor es la concatenación de 2 campos:
+                valores = []
+                for subcampo in attr.split():
+                    valores.append(getattr(obra, subcampo))
+                valor = " ".join(valores)
+            else:
+                valor = getattr(obra, attr)
+            res[campo] = valor
+        elif attr is None:
+            res[campo] = ""     # Campo sin equivalencia en ginn.
+        elif isinstance(attr, int):
+            res[campo] = str(attr)
+        else:
+            res[campo] = attr(cliente)
+    return res
+
+
+def build_dic_contacto(contacto, cliente, load_lista):
+    """
+    Devuelve un diccionario con los datos del contacto en las claves esperadas
+    por la guía de importación de Murano.
+    """
+    return build_dic_obra(contacto, cliente, load_lista)
+
+
+def build_dic_cuentas(fcuentas):
+    """
+    Devuelve un diccionario cuyas claves son el ID de cliente en ginn y
+    los valores son un diccionario con cuenta contable, sección y departamento.
+    """
+    res = {}
+    fin = open(fcuentas, "r")
+    reader = csv.reader(fin)
+    cabecera = None
+    for fila in reader:
+        if not cabecera:
+            cabecera = fila     # Solo la primera vez.
+        else:
+            dic_cliente = dict(zip(cabecera, fila))
+            res[dic_cliente["id"]] = dic_cliente
+    fin.close()
+    return res
+
+
+def extract_codigo_clienteproveedor(cliente):
+    """
+    Devuelve el código de cliente que **tendrá** en Murano: C+cliente.id
+    """
+    mid = "C{}".format(cliente.id)
+    return mid
+
+
+def extract_diadepago1_from_cliente(cliente):
+    """
+    Devuelve el primer día de pago del cliente.
+    """
+    try:
+        dia = cliente.get_dias_de_pago()[0]
+    except IndexError:
+        dia = ""
+    return dia
+
+
+def extract_diadepago2_from_cliente(cliente):
+    """
+    Devuelve el primer día de pago del cliente.
+    """
+    try:
+        dia = cliente.get_dias_de_pago()[1]
+    except IndexError:
+        dia = ""
+    return dia
+
+
+def extract_diadepago3_from_cliente(cliente):
+    """
+    Devuelve el primer día de pago del cliente.
+    """
+    try:
+        dia = " ".join(cliente.get_dias_de_pago()[2:])
+    except IndexError:
+        dia = ""
+    return dia
+
+
+def extract_email1_from_cliente(cliente):
+    """
+    Devuelve el primer email del cliente como cadena.
+    """
+    try:
+        email = cliente.email.split()[0]
+    except IndexError:
+        email = ""
+    email = email.split(",")[0]
+    email = email.split(";")[0]
+    email = email.strip()
+    return email
+
+
+def extract_email2_from_cliente(cliente):
+    """
+    Devuelve el resto de emails del cliente como cadena.
+    """
+    email = cliente.email.replace(",", " ").replace(";", " ")
+    email = ", ".join(email.split()[1:])
+    email = email.strip()
+    return email
 
 
 def load_lista_campos_cliente():
@@ -675,7 +804,8 @@ def load_lista_campos_cliente():
     """
     res = OrderedDict()
     res['CodigoEmpresa'] = CODEMPRESA
-    res['ClienteOProveedor'] = 'C'  # C para clientes, fijo. P para proveedor.
+    res['ClienteOProveedor'] = lambda cliente: isinstance(
+        cliente, pclases.Cliente) and 'C' or 'P'  # C=clientes. P=proveedor
     res['CodigoClienteProveedor'] = extract_codigo_clienteproveedor
     res['TarifaPrecio'] = 'tarifaID'
     res['Telefono'] = 'telefono'
@@ -695,23 +825,25 @@ def load_lista_campos_cliente():
     res['Comentarios'] = 'observaciones'
     res['CodigoCondiciones'] = 'vencimientos'
     res['CodigoTipoEfecto'] = 'documentodepago'
-    res['DiasFijos1'] = 'diadepago'
-    res['DiasFijos2'] = 'diadepago'
-    res['DiasFijos3'] = 'diadepago'
+    res['DiasFijos1'] = extract_diadepago1_from_cliente
+    res['DiasFijos2'] = extract_diadepago2_from_cliente
+    res['DiasFijos3'] = extract_diadepago3_from_cliente
     res['BloqueoAlbaran'] = 'inhabilitado'
     res['GEO_EnviaCorreoAlbaran'] = 'enviarCorreoAlbaran'
     res['GEO_EnviaCorreoFactura'] = 'enviarCorreoFactura'
     res['GEO_EnviaCorreoPacking'] = 'enviarCorreoPacking'
     res['Fax'] = 'fax'
     res['RemesaHabitual'] = lambda cli: (cli.cuentaOrigen and
-                                         cli.cluentaOrigen.get_info() or "")
+                                         cli.cuentaOrigen.get_info() or "")
     res['GEO_RiesgoAseguradora'] = 'riesgoAsegurado'
     res['RiesgoMaximo'] = 'riesgoConcedido'
     res['CopiasFactura'] = 'copiasFactura'
-    res['CodigoTipoClienteLC'] = lambda cli: cli.tipoDeCliente.descripcion
+    res['CodigoTipoClienteLC'] = lambda cli: (
+        cli.tipoDeCliente and cli.tipoDeCliente.descripcion or "")
     res['GEO_RequiereValidacion'] = 'validacionManual'
-    res['CodigoCuenta'] = None      # Sin correspondencia en ginn.
-    res['CodigoSeccion'] = None     # Se determina después.
+    # HACK: Esto que viene ahora es muy muy muy feo Hay evals de por medio:
+    res['CodigoCuenta'] = "cuentas_clientes[cliente.id]['cuenta contable']"
+    res['CodigoSeccion'] = "cuentas_clientes[cliente.id]['sección']"
     return res
 
 
@@ -725,7 +857,9 @@ def load_lista_campos_domicilios():
     res['CodigoEmpresa'] = CODEMPRESA
     res['TipoDomicilio'] = None         # E=Envío, F=Factura, R=Recibo
     res['CodigoCliente'] = extract_codigo_clienteproveedor
-    res['NumeroDomicilio'] = None       # Contador incremental
+    res['NumeroDomicilio'] = extract_numdomicilio
+    # El número de domicilio de Murano que se corresponde con la obra del
+    # contacto. Incremental por cliente. El 0 no se puede usar.
     res['RazonSocial'] = 'nombre'
     res['Domicilio'] = 'direccion'
     res['CodigoPostal'] = 'cp'
@@ -751,33 +885,28 @@ def load_lista_campos_contactos():
     res['TelefonoContactoLc'] = 'telefono'
     res['Telefono2ContactoLc'] = 'movil'
     res['Telefono3ContactoLc'] = 'fax'
-    res['FaxContactoLc'] = None
+    res['FaxContactoLc'] = None     # Sin correspondencia en ginn.
     res['EMail1'] = 'correoe'
     res['Email2'] = 'web'
-    res['NumeroDomicilio'] = None   # El número de domicilio de Murano que se
-    # corresponde con la obra del contacto. Incremental por cliente. Saltar 0.
+    res['NumeroDomicilio'] = None   # Caso especial. Se completará después.
     return res
 
 
-def build_cabecera(listado, orden_campos=()):
+def extract_numdomicilio(cliente):
+    """
+    Para cada cliente recibido devuelve un número entero comenzando por 1 e
+    incrementándose en cada llamada.
+    """
+    DOMICILIOS_CLIENTES[cliente] += 1
+    return DOMICILIOS_CLIENTES[cliente]
+
+
+def build_cabecera(orden_campos=()):
     """
     Devuelve una lista de campos del listado.
     """
-    campos_tratados = []
-    # Si el listado está vacío, petará.
-    campos = listado[listado.keys()[0]].keys()
     res = []
     for campo in orden_campos:
-        if campo not in campos:
-            raise ValueError("El campo %s no existe en el diccionario de "
-                             "clientes." % campo)
-            # ¿TYPO en el nombre del campo?
-        res.append(campo)
-        campos_tratados.append(campo)
-    # El resto de campos del diccionario que no se especificaron en el orden.
-    for campo in campos:
-        if campo in campos_tratados:
-            continue
         res.append(campo)
     return res
 
@@ -792,17 +921,42 @@ def build_fila_cliente(dic_cliente, campos):
     return res
 
 
-def dump(listado, fdest):
+def dump(listado, fdestclientes, fdestdomicilios, fdestcontactos):
     """
     Convierte el diccionaro «listado» en filas para alimentar un nuevo CSV
     que incluye los nombres de los campos como cabecera de columnas.
+    Se construye un CSV para clientes/proveedores, otro para domicilios
+    (obras) y otro para contactos.
+    Los nombres de campos irán en el orden definido por la guía de importación.
+    Si alguno de los ficheros no existe, agrega una cabecera de campos. Si no,
+    solo agrega filas.
     """
-    cabecera = build_cabecera(listado, orden_campos)
-    filas = []
-    for cid in listado:
+    filas_clientes = []
+    filas_domicilios = []
+    filas_contactos = []
+    orden_campos = load_lista_campos_cliente()
+    orden_campos_domicilios = load_lista_campos_domicilios()
+    orden_campos_contactos = load_lista_campos_contactos()
+    cabecera = build_cabecera(orden_campos)
+    cabecera_domicilios = build_cabecera(orden_campos_domicilios)
+    cabecera_contactos = build_cabecera(orden_campos_contactos)
+    for cid in listado:     # ID de ginn.
         fila = build_fila_cliente(listado[cid], cabecera)
-        filas.append(fila)
-    generate_csv(cabecera, filas, fdest, limpiar_cabecera=False)
+        filas_clientes.append(fila)
+        for oid in listado[cid]['OBRAS']:
+            fila_obra = build_fila_cliente(listado[cid]['OBRAS'][oid],
+                                           cabecera_domicilios)
+            filas_domicilios.append(fila_obra)
+        for oid in listado[cid]['CONTACTOS']:
+            fila_contacto = build_fila_cliente(listado[cid]['CONTACTOS'][oid],
+                                               cabecera_contactos)
+            filas_contactos.append(fila_contacto)
+    generate_csv(cabecera, filas_clientes, fdestclientes,
+                 limpiar_cabecera=False)
+    generate_csv(cabecera, filas_domicilios, fdestdomicilios,
+                 limpiar_cabecera=False)
+    generate_csv(cabecera, filas_contactos, fdestcontactos,
+                 limpiar_cabecera=False)
 
 
 def parse(fdest):
@@ -872,12 +1026,31 @@ def buscar_clientes_con_actividad(pclase, fecha):
                 yield objeto.cliente
 
 
-def build_dic_cliente(cliente):
+# pylint: disable=eval-used,unused-argument
+def build_dic_cliente(cliente, cuentas_clientes, lista_campos):
     """
     Devuelve un diccionario que representa a un cliente con los nombres de
     campo como clave y los datos del cliente como valores.
     """
-    return cliente.sqlmeta.asDict()
+    res = {}
+    for campo in lista_campos:
+        attr = lista_campos[campo]
+        if attr is None:
+            valor = ""     # Campo sin equivalencia en ginn.
+        elif isinstance(attr, str):
+            if "cuentas_clientes" in attr:
+                try:
+                    valor = eval(attr)  # Es valor del diccionario de cuentas.
+                except KeyError:
+                    valor = ""  # Cliente no presente en excel de cuentas cont.
+            else:   # Es un atributo normal del objeto.
+                valor = getattr(cliente, attr)
+        elif isinstance(attr, int):
+            valor = str(attr)
+        else:   # Función a invocar con cliente como parámetro.
+            valor = attr(cliente)
+        res[campo] = valor
+    return res
 
 
 # # Proveedores ###############################################################
@@ -904,7 +1077,7 @@ def exportar_proveedores():
         two_years_ago = datetime.date(day=hoy.day, month=hoy.month,
                                       year=hoy.year - 2)
         listado = create_dic_inicial_proveedores(cols_extra, two_years_ago)
-    dump(listado, fdest, orden_campos)
+    # dump(listado, fdest, orden_campos)
 
 
 def create_dic_inicial_proveedores(cols_extra,
@@ -933,7 +1106,7 @@ def create_dic_inicial_proveedores(cols_extra,
     for cid in proveedores:
         proveedor = pclases.Proveedor.get(cid)
         # Me vale la función de clientes para el diccionario del proveedor.
-        res[cid] = build_dic_cliente(proveedor)
+        # res[cid] = build_dic_cliente(proveedor)
         for col in cols_extra:
             res[cid][col] = None
     return res
