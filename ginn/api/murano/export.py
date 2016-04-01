@@ -724,12 +724,12 @@ def load_lista_campos_domicilios():
     res['TipoDomicilio'] = None         # E=Envío, F=Factura, R=Recibo
     res['CodigoCliente'] = 'clientes'   # FIXME: Ya veré cómo discernimos cuál
     res['NumeroDomicilio'] = None       # Contador incremental
+    res['RazonSocial'] = 'nombre'
     res['Domicilio'] = 'direccion'
     res['CodigoPostal'] = 'cp'
     res['Municipio'] = 'ciudad'
     res['Provincia'] = 'provincia'
     res['Nacion'] = 'pais'
-    res[''] = 'nombre'
     return res
 
 
@@ -739,6 +739,20 @@ def load_lista_campos_contactos():
     recibir Murano en la guía de importación de contactos.
     """
     res = OrderedDict()
+    res['CodigoEmpresa'] = None
+    res['CodigoCliente'] = None
+    res['CodigoCargoLc'] = None
+    res['NombreContactoLc'] = None
+    res['CodigoAreaContactoLc'] = None
+    res['CodigoCortesiaLc'] = None
+    res['TelefonoContactoLc'] = None
+    res['Telefono2ContactoLc'] = None
+    res['Telefono3ContactoLc'] = None
+    res['FaxContactoLc'] = None
+    res['EMail1'] = None
+    res['Email2'] = None
+    res['NumeroDomicilio'] = None   # El número de domicilio de Murano que se
+    # corresponde con la obra del contacto.
     return res
 
 def build_cabecera(listado, orden_campos=()):
