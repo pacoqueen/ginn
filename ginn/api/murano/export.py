@@ -719,19 +719,17 @@ def load_lista_campos_domicilios():
     recibir Murano en la guía de importación de domicilios (obras).
     """
     res = OrderedDict()
-    res['CP'] = None
+    res['CP'] = None    # C = Cliente, P = Proveedor
     res['CodigoEmpresa'] = None
-    res['TipoDomicilio'] = None
-    res['CodigoCliente'] = 'clientes'  # FIXME: Ya veré cómo discernimos cuál
-    res['NumeroDomicilio'] = None
-    # TODO: PORASQUI
-    res['Nombre'] = ''
-    res[''] = ''
-    res[''] = ''
-    res[''] = ''
-    res[''] = ''
-    res[''] = ''
-    res[''] = ''
+    res['TipoDomicilio'] = None         # E=Envío, F=Factura, R=Recibo
+    res['CodigoCliente'] = 'clientes'   # FIXME: Ya veré cómo discernimos cuál
+    res['NumeroDomicilio'] = None       # Contador incremental
+    res['Domicilio'] = 'direccion'
+    res['CodigoPostal'] = 'cp'
+    res['Municipio'] = 'ciudad'
+    res['Provincia'] = 'provincia'
+    res['Nacion'] = 'pais'
+    res[''] = 'nombre'
     return res
 
 
