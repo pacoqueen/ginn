@@ -18,6 +18,7 @@ sys.path.append(RUTA_GINN)
 # pylint: disable=wrong-import-position, import-error,too-many-branches
 from framework import pclases
 from formularios.utils import eliminar_dobles_espacios
+from connection import CODEMPRESA
 
 # # ====================
 # # Exportación de datos
@@ -673,9 +674,9 @@ def load_lista_campos_cliente():
     de ser necesario.
     """
     res = OrderedDict()
-    res['CodigoEmpresa'] = None      # Sin correspondencia en ginn.
-    res['ClienteOProveedor'] = None  # Se determina después.
-    res['CodigoClienteProveedor'] = 'id'
+    res['CodigoEmpresa'] = CODEMPRESA
+    res['ClienteOProveedor'] = 'C'  # C para clientes, fijo. P para proveedor.
+    res['CodigoClienteProveedor'] = extract_codigo_clienteproveedor
     res['TarifaPrecio'] = 'tarifaID'
     res['Telefono'] = 'telefono'
     res['Nombre'] = 'nombre'
@@ -687,10 +688,10 @@ def load_lista_campos_cliente():
     res['CodigoPostal'] = 'cp'
     res['CodigoIva'] = 'iva'
     res['RazonSocial'] = 'nombref'
-    res['email1'] = 'email'
-    res['email2'] = 'email'
-    res['nombre1'] = 'contacto'
-    res['nombre2'] = 'contacto'
+    res['email1'] = extract_email1_from_cliente
+    res['email2'] = extract_email2_from_cliente
+    res['nombre1'] = lambda cliente: cliente.contacto.split(",")[0]
+    res['nombre2'] = lambda cliente: "".join(cliente.contacto.split(",")[1:])
     res['Comentarios'] = 'observaciones'
     res['CodigoCondiciones'] = 'vencimientos'
     res['CodigoTipoEfecto'] = 'documentodepago'
@@ -702,14 +703,15 @@ def load_lista_campos_cliente():
     res['GEO_EnviaCorreoFactura'] = 'enviarCorreoFactura'
     res['GEO_EnviaCorreoPacking'] = 'enviarCorreoPacking'
     res['Fax'] = 'fax'
-    res['RemesaHabitual'] = 'cuentaOrigenID'
+    res['RemesaHabitual'] = lambda cli: (cli.cuentaOrigen and
+                                         cli.cluentaOrigen.get_info() or "")
     res['GEO_RiesgoAseguradora'] = 'riesgoAsegurado'
     res['RiesgoMaximo'] = 'riesgoConcedido'
     res['CopiasFactura'] = 'copiasFactura'
-    res['CodigoTipoClienteLC'] = 'tipoDeClienteID'
+    res['CodigoTipoClienteLC'] = lambda cli: cli.tipoDeCliente.descripcion
     res['GEO_RequiereValidacion'] = 'validacionManual'
-    res['CodigoCuenta'] = None
-    res['CodigoSeccion'] = None
+    res['CodigoCuenta'] = None      # Sin correspondencia en ginn.
+    res['CodigoSeccion'] = None     # Se determina después.
     return res
 
 
@@ -720,9 +722,9 @@ def load_lista_campos_domicilios():
     """
     res = OrderedDict()
     res['CP'] = None    # C = Cliente, P = Proveedor
-    res['CodigoEmpresa'] = None
+    res['CodigoEmpresa'] = CODEMPRESA
     res['TipoDomicilio'] = None         # E=Envío, F=Factura, R=Recibo
-    res['CodigoCliente'] = 'clientes'   # FIXME: Ya veré cómo discernimos cuál
+    res['CodigoCliente'] = extract_codigo_clienteproveedor
     res['NumeroDomicilio'] = None       # Contador incremental
     res['RazonSocial'] = 'nombre'
     res['Domicilio'] = 'direccion'
@@ -730,6 +732,7 @@ def load_lista_campos_domicilios():
     res['Municipio'] = 'ciudad'
     res['Provincia'] = 'provincia'
     res['Nacion'] = 'pais'
+    # El resto de campos no son obligatorios según el Excel de Sage.
     return res
 
 
@@ -739,21 +742,22 @@ def load_lista_campos_contactos():
     recibir Murano en la guía de importación de contactos.
     """
     res = OrderedDict()
-    res['CodigoEmpresa'] = None
-    res['CodigoCliente'] = None
-    res['CodigoCargoLc'] = None
-    res['NombreContactoLc'] = None
+    res['CodigoEmpresa'] = CODEMPRESA
+    res['CodigoCliente'] = extract_codigo_clienteproveedor
+    res['CodigoCargoLc'] = 'cargo'
+    res['NombreContactoLc'] = 'nombre apellidos'  # getattr del split del str
     res['CodigoAreaContactoLc'] = None
     res['CodigoCortesiaLc'] = None
-    res['TelefonoContactoLc'] = None
-    res['Telefono2ContactoLc'] = None
-    res['Telefono3ContactoLc'] = None
+    res['TelefonoContactoLc'] = 'telefono'
+    res['Telefono2ContactoLc'] = 'movil'
+    res['Telefono3ContactoLc'] = 'fax'
     res['FaxContactoLc'] = None
-    res['EMail1'] = None
-    res['Email2'] = None
+    res['EMail1'] = 'correoe'
+    res['Email2'] = 'web'
     res['NumeroDomicilio'] = None   # El número de domicilio de Murano que se
-    # corresponde con la obra del contacto.
+    # corresponde con la obra del contacto. Incremental por cliente. Saltar 0.
     return res
+
 
 def build_cabecera(listado, orden_campos=()):
     """

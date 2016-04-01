@@ -43,10 +43,11 @@ REQUERIMENTS
 pymssql, pywin32
 """
 
-from ginn.api.murano.ops import create_bala, create_rollo, consumir
-from ginn.api.murano.ops import create_pale, create_bigbag, delete_articulo
-from ginn.api.murano.export import exportar_productos, exportar_clientes
-from ginn.api.murano.export import exportar_proveedores
+# pylint: disable=import-error
+from api.murano.ops import create_bala, create_rollo, consumir
+from api.murano.ops import create_pale, create_bigbag, delete_articulo
+from api.murano.export import exportar_productos, exportar_clientes
+from api.murano.export import exportar_proveedores
 
 __all__ = ["create_bala", "create_rollo", "consumir", "delete_articulo",
            "exportar_productos", "exportar_clientes", "exportar_proveedores",

@@ -30,16 +30,16 @@ parser.add_argument("-t", "--todo",
                     default=False, action="store_true")
 
 
-# def do_imports():
-#     """
-#     Desde el framework se hacen algunas cosas sucias con los argumentos,
-#     así que tengo que hacer una importación limpia a posteriori.
-#     """
-#     sys.argv = []
-#     ruta_ginn = os.path.abspath(os.path.join(
-#         os.path.dirname(__file__), "..", "..", "..", "ginn"))
-#     sys.path.append(ruta_ginn)
-#     from framework import pclases
+def do_imports():
+    """
+    Desde el framework se hacen algunas cosas sucias con los argumentos,
+    así que tengo que hacer una importación limpia a posteriori.
+    """
+    sys.argv = []
+    ruta_ginn = os.path.abspath(os.path.join(
+        os.path.dirname(__file__), "..", "..", "..", "ginn"))
+    sys.path.append(ruta_ginn)
+    # from framework import pclases
 
 
 def main():
@@ -50,7 +50,7 @@ def main():
     if len(sys.argv) == 1:
         parser.print_help()
     args = parser.parse_args()
-    # do_imports()
+    do_imports()
     # pylint: disable=import-error
     from api import murano
     destproductos = 'productos.csv'

@@ -4,23 +4,26 @@
 from __future__ import print_function
 import os
 import logging
-logging.basicConfig(filename = "%s.log" % (
+logging.basicConfig(filename="%s.log" % (
     ".".join(os.path.basename(__file__).split(".")[:-1])),
-    format = "%(asctime)s %(levelname)-8s : %(message)s",
-    level = logging.DEBUG)
+    format="%(asctime)s %(levelname)-8s : %(message)s",
+    level=logging.DEBUG)
 import pymssql
 import inspect
 
-#DEBUG = True
+# DEBUG = True
 DEBUG = False
 VERBOSE = True
+CODEMPRESA = 8000   # Empresa de pruebas. Cambiar por la 10200 en producción.
+
 
 class Connection:
+
     def __init__(self):
         self.__database = ""    # Inicialización temporal hasta que conecte.
         try:
             self.conn = self.__connect()
-        except pymssql.InterfaceError, e:
+        except pymssql.InterfaceError as e:
             if DEBUG:
                 self.conn = None    # No se pudo conectar. Modo "debug".
             else:
@@ -30,13 +33,13 @@ class Connection:
         try:
             self.conn.close()
         except AttributeError:
-            pass    # No hay conexión que cerrar. 
+            pass    # No hay conexión que cerrar.
 
     def __connect(self,
-                  server = r"LOGONSERVER\MURANO",
-                  user = "logic",
-                  password = None,
-                  database = "GEOTEXAN"):
+                  server=r"LOGONSERVER\MURANO",
+                  user="logic",
+                  password=None,
+                  database="GEOTEXAN"):
         """
         Inicia la conexión con los parámetros por defecto. Es necesario que
         exista un fichero credentials.txt con la contraseña para acceder al
@@ -46,25 +49,25 @@ class Connection:
             frame = inspect.currentframe()
             args, _, _, values = inspect.getargvalues(frame)
             print("Iniciando conexión [%s]" % "; ".join(
-                    ["%s = %s" % (i, values[i]) for i in args if i != "self"]))
+                ["%s = %s" % (i, values[i]) for i in args if i != "self"]))
         self.__database = database
         if password is None:
             try:
                 directorio = os.path.abspath(os.path.dirname(__file__))
                 credentials = open(os.path.join(directorio, "credentials.txt"))
             except IOError:
-                raise Exception, "Cree un fichero credentials.txt en %s "\
-                        "conteniendo la contraseña para el usuario %s." %(
-                                directorio, user)
+                raise Exception("Cree un fichero credentials.txt en %s "
+                                "conteniendo la contraseña para el usuario "
+                                "%s." % (directorio, user))
             else:
                 password = credentials.readlines()[0].split()[0]
                 credentials.close()
         try:
-            conn = pymssql.connect(server = server, user = user,
-                                   password = password, database = database)
+            conn = pymssql.connect(server=server, user=user,
+                                   password=password, database=database)
         except TypeError:   # Depende de la versión usa host o server.
-            conn = pymssql.connect(host = server, user = user,
-                                   password = password, database = database)
+            conn = pymssql.connect(host=server, user=user,
+                                   password=password, database=database)
         return conn
 
     def get_database(self):
@@ -92,8 +95,8 @@ class Connection:
         if not isinstance(sql, (list, tuple)):
             sql = [sql]
         try:
-            c = self.conn.cursor(as_dict = True)
-        except AttributeError, e:
+            c = self.conn.cursor(as_dict=True)
+        except AttributeError as e:
             if not DEBUG:
                 raise e
         for sentence_sql in sql:
@@ -106,7 +109,7 @@ class Connection:
             if self.conn:   # En modo DEBUG esto es None.
                 try:
                     strlog = "Lanzando consulta %s..." % (
-                            sentence_sql.split()[0])
+                        sentence_sql.split()[0])
                     logging.info(strlog)
                     if VERBOSE and DEBUG:
                         print(strlog)
@@ -131,7 +134,7 @@ class Connection:
                         logging.info(strlog)
                         if VERBOSE and DEBUG:
                             print(strlog)
-                except Exception, e:
+                except Exception as e:
                     if not DEBUG:
                         logging.critical(e)
                         raise e
@@ -140,6 +143,7 @@ class Connection:
                         print(strerror)
                         logging.error(strerror)
         return res
+
 
 def str_clean(s):
     """

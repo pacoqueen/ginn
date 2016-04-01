@@ -14,10 +14,9 @@ logging.basicConfig(filename="%s.log" % (NOMFLOG),
                     format="%(asctime)s %(levelname)-8s : %(message)s",
                     level=logging.DEBUG)
 import datetime
-from connection import Connection, DEBUG, VERBOSE
-from export import determinar_familia_Murano
-from extra import get_peso_bruto, get_peso_neto, get_peso_ideal
-from extra import get_peso_embalaje, get_superficie
+from connection import Connection, DEBUG, VERBOSE, CODEMPRESA
+from export import determinar_familia_murano
+from extra import get_peso_bruto, get_peso_neto, get_superficie
 
 try:
     import win32com.client
@@ -33,7 +32,6 @@ ruta_ginn = os.path.abspath(os.path.join(
 sys.path.append(ruta_ginn)
 from framework import pclases
 
-CODEMPRESA = 8000   # Empresa de pruebas. Cambiar por la 10200 en producción.
 
 SQL_STOCK = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
                CodigoEmpresa,
@@ -195,7 +193,7 @@ def buscar_grupo_talla(productoVenta):
     res = consultar_producto(productoVenta)
     try:
         grupo_talla = res[0]['GrupoTalla_']
-    except TypeError, e:
+    except TypeError as e:
         strlog = "(EE)[T] %s no se encuentra en Murano." % (
             productoVenta.descripcion)
         print(strlog)
@@ -278,9 +276,9 @@ def buscar_unidad_medida_basica_murano(producto):
     res = consultar_producto(producto)
     try:
         unidad2 = res[0]['UnidadMedida2_']
-    except TypeError, e:
-        strlog = "(EE)[U] UnidadMedida2_ para %s no se encuentra en Murano." % (
-            producto.descripcion)
+    except TypeError as e:
+        strlog = "(EE)[U] UnidadMedida2_ para %s no se encuentra en Murano"\
+                 "." % (producto.descripcion)
         print(strlog)
         logging.error(strlog)
         if not DEBUG:
@@ -308,7 +306,7 @@ def buscar_codigo_producto(productoVenta):
         desc_ginn = productoVenta.descripcion
         assert (desc_ginn.startswith(res[0]['DescripcionArticulo']) or
                 desc_ginn.startswith(res[0]['Descripcion2Articulo']))
-    except (IndexError, TypeError), e:
+    except (IndexError, TypeError) as e:
         strlog = "(EE)[C] %s no se encuentra en Murano. Excepción: %s" % (
             productoVenta.descripcion, e)
         print(strlog)
@@ -335,7 +333,7 @@ def buscar_precio_coste(producto, ejercicio, codigo_almacen):
     Si es producto de compra, devuelve el precio de valoracion por unidad de
     producto según la función de valoración definida para él.
     """
-    cod_familia = determinar_familia_Murano(producto)
+    cod_familia = determinar_familia_murano(producto)
     if isinstance(producto, pclases.ProductoVenta):
         try:
             precio_coste = buscar_precio_coste_familia_murano(cod_familia)
@@ -349,9 +347,9 @@ def buscar_precio_coste(producto, ejercicio, codigo_almacen):
             precio_coste = buscar_precio_coste_ginn(producto)
     else:
         # WTF?
-        raise ValueError, "ops:buscar_precio_coste: el producto «%s» recibido"\
-                          " no es un producto de compra ni de venta." % (
-                              producto)
+        raise ValueError("ops:buscar_precio_coste: el producto «%s» recibido"
+                         " no es un producto de compra ni de venta."
+                         % (producto))
     try:
         precio_coste = float(precio_coste)  # Viene como Decimal
     except TypeError:   # No tiene precio de coste en ningún sitio.
@@ -388,7 +386,7 @@ def buscar_precio_coste_familia_murano(cod_familia):
     except (TypeError, AttributeError, KeyError):
         # cod_familia es None o no se encontraron registros
         raise ValueError
-    except Exception, e:
+    except Exception as e:
         logging.warning("No se encontró precio en Murano para la familia "
                         "«%s». Además, provocó una excepción %s." %
                         (cod_familia, e))
@@ -410,8 +408,9 @@ def buscar_precio_coste_familia_ginn(cod_familia):
     elif cod_familia == "FEM":
         precio_coste = 1.884
     else:
-        raise ValueError, "cod_familia debe ser GEO, FIB, FCE o FEM. Se "\
-                          "recibió: %s" % (cod_familia)
+        raise ValueError("cod_familia debe ser GEO, FIB, FCE o FEM. Se "
+                         "recibió: %s" % (cod_familia))
+    return precio_coste
 
 
 def buscar_precio_coste_murano(producto, ejercicio, codigo_almacen):
@@ -441,7 +440,7 @@ def buscar_precio_coste_murano(producto, ejercicio, codigo_almacen):
     except (TypeError, AttributeError, KeyError, IndexError):
         # codalmacen es None o no se encontraron registros
         raise ValueError
-    except Exception, e:
+    except Exception as e:
         logging.warning("No se encontró precio medio en Murano para el "
                         "producto «%s». Además, provocó una excepción %s." %
                         (cod_articulo, e))
@@ -458,13 +457,13 @@ def buscar_precio_coste_ginn(producto):
         precio_coste = producto.get_precio_valoracion()
     elif isinstance(producto, pclases.ProductoVenta):
         # No debería entrar aquí, pero me estoy adelantando al futuro right now
-        cod_familia = determinar_familia_Murano(producto)
+        cod_familia = determinar_familia_murano(producto)
         precio_coste = buscar_precio_coste_familia_ginn(cod_familia)
     else:
         # WTF?
-        raise ValueError, "ops:buscar_precio_coste_ginn: el producto «%s» "\
-                          "recibido no es un producto de compra ni de venta." % (
-                              producto)
+        raise ValueError("ops:buscar_precio_coste_ginn: el producto «%s» "
+                         "recibido no es un producto de compra ni de venta."
+                         % (producto))
     return precio_coste
 
 
@@ -485,7 +484,7 @@ def buscar_codigo_almacen(almacen, articulo=None):
                                           almacen.nombre))
         try:
             codalmacen = filas[0]['CodigoAlmacen']
-        except Exception, e:
+        except Exception as e:
             strlog = "(EE)[A] Almacén '%s' no se encuentra en Murano." % (
                 almacen.nombre)
             print(strlog)
@@ -502,8 +501,8 @@ def buscar_codigo_almacen(almacen, articulo=None):
                 assert articulo is not None
                 codalmacen = get_codalmacen_articulo(c, articulo)
             except AssertionError:
-                raise ValueError, "(EE)[A] Debe especificarse un almacén "\
-                                  "o un artículo."
+                raise ValueError("(EE)[A] Debe especificarse un almacén "
+                                 "o un artículo.")
     return codalmacen
 
 
@@ -563,7 +562,7 @@ def genera_guid(conexion):
     """
     try:
         guid = conexion.run_sql("SELECT NEWID() AS guid;")[0]['guid']
-    except Exception, e:
+    except Exception as e:
         if not DEBUG:
             raise e
         else:
@@ -581,7 +580,7 @@ def get_mov_posicion(conexion, codigo_articulo):
             WHERE NumeroSerieLc = '%s'
             ORDER BY FechaRegistro DESC;
             """ % (conexion.get_database(), codigo_articulo))[0]['MovPosicion']
-    except Exception, e:
+    except Exception as e:
         if not DEBUG:
             raise e
         else:
@@ -631,8 +630,9 @@ def crear_proceso_IME(conexion):
     """
     guid_proceso = genera_guid(conexion)
     conexion.run_sql(r"""
-        INSERT INTO %s.dbo.Iniciador_tmpIME(IdProcesoIME, EstadoIME, sysUsuario,
-                                     sysUserName, Descripcion, TipoImportacion)
+        INSERT INTO %s.dbo.Iniciador_tmpIME(IdProcesoIME, EstadoIME,
+                                            sysUsuario, sysUserName,
+                                            Descripcion, TipoImportacion)
         VALUES ('%s', 0, 1, 'administrador', 'Gateway ginn API Murano', 254);
         """ % (conexion.get_database(), guid_proceso))
     return guid_proceso
@@ -688,12 +688,12 @@ def prepare_params_movstock(articulo, cantidad=1, producto=None):
         unidades2 = unidades * factor_conversion
     else:
         unidades2 = 1  # Siempre será uno porque por cada rollo o bala hay
-                      # solo 1 mov. stock y 1 mov. serie.
+        # solo 1 mov. stock y 1 mov. serie.
     importe = unidades2 * precio
     unidad_medida2 = buscar_unidad_medida_basica(producto, articulo)
     origen_movimiento = "F"  # E = Entrada de Stock (entrada directa),
-                            # F (fabricación), I (inventario),
-                            # M (rechazo fabricación), S (Salida stock)
+    # F (fabricación), I (inventario),
+    # M (rechazo fabricación), S (Salida stock)
     return (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
             codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
             unidades, precio, importe, unidades2, unidad_medida2,
@@ -775,7 +775,7 @@ def estimar_precio_coste(articulo, precio_kg):
         strerror = "ops:estimar_precio_coste:No se pudo estimar para «%s»" % (
             articulo)
         logging.error(strerror)
-        raise ValueError, strerror
+        raise ValueError(strerror)
     return peso * precio_kg
 
 
@@ -789,7 +789,7 @@ def create_bala(bala, cantidad=1, producto=None):
     try:
         partida = bala.lote.codigo
     except AttributeError:
-        partida = ""  # DONE: Balas C no tienen lote. No pasa nada. Murano traga.
+        partida = ""  # Balas C no tienen lote. No pasa nada. Murano traga.
     unidad_medida = "KG"
     comentario = ("Bala ginn: [%s]" % bala.get_info())[:40]
     ubicacion = "Almac. de fibra."[:15]
@@ -803,17 +803,17 @@ def create_bala(bala, cantidad=1, producto=None):
         articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
     sql_movstock = SQL_STOCK % (database,
-                                CODEMPRESA, ejercicio, periodo, fecha, documento,
-                                codigo_articulo, codigo_almacen, partida,
-                                grupo_talla, codigo_talla, tipo_movimiento, unidades,
-                                unidad_medida, precio, importe, unidades2,
-                                unidad_medida2,
+                                CODEMPRESA, ejercicio, periodo, fecha,
+                                documento, codigo_articulo, codigo_almacen,
+                                partida, grupo_talla, codigo_talla,
+                                tipo_movimiento, unidades, unidad_medida,
+                                precio, importe, unidades2, unidad_medida2,
                                 factor_conversion, comentario, ubicacion,
                                 origen_movimiento, numero_serie_lc,
                                 id_proceso_IME)
     c.run_sql(sql_movstock)
     origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
-                         # 11 (salida de stock), 12 (inventario)
+    # 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
     unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
@@ -856,17 +856,17 @@ def create_bigbag(bigbag, cantidad=1, producto=None):
         articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
     sql_movstock = SQL_STOCK % (database,
-                                CODEMPRESA, ejercicio, periodo, fecha, documento,
-                                codigo_articulo, codigo_almacen, partida,
-                                grupo_talla, codigo_talla, tipo_movimiento, unidades,
-                                unidad_medida, precio, importe, unidades2,
-                                unidad_medida2,
+                                CODEMPRESA, ejercicio, periodo, fecha,
+                                documento, codigo_articulo, codigo_almacen,
+                                partida, grupo_talla, codigo_talla,
+                                tipo_movimiento, unidades, unidad_medida,
+                                precio, importe, unidades2, unidad_medida2,
                                 factor_conversion, comentario, ubicacion,
                                 origen_movimiento, numero_serie_lc,
                                 id_proceso_IME)
     c.run_sql(sql_movstock)
     origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
-                         # 11 (salida de stock), 12 (inventario)
+    # 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
     unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
@@ -912,17 +912,17 @@ def create_rollo(rollo, cantidad=1, producto=None):
         articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
     sql_movstock = SQL_STOCK % (database,
-                                CODEMPRESA, ejercicio, periodo, fecha, documento,
-                                codigo_articulo, codigo_almacen, partida,
-                                grupo_talla, codigo_talla, tipo_movimiento, unidades,
-                                unidad_medida, precio, importe, unidades2,
-                                unidad_medida2,
+                                CODEMPRESA, ejercicio, periodo, fecha,
+                                documento, codigo_articulo, codigo_almacen,
+                                partida, grupo_talla, codigo_talla,
+                                tipo_movimiento, unidades, unidad_medida,
+                                precio, importe, unidades2, unidad_medida2,
                                 factor_conversion, comentario, ubicacion,
                                 origen_movimiento, numero_serie_lc,
                                 id_proceso_IME)
     c.run_sql(sql_movstock)
     origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
-                         # 11 (salida de stock), 12 (inventario)
+    # 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
     unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
@@ -966,17 +966,17 @@ def create_caja(caja, cantidad=1, producto=None):
         articulo, cantidad, producto)
     id_proceso_IME = crear_proceso_IME(c)
     sql_movstock = SQL_STOCK % (database,
-                                CODEMPRESA, ejercicio, periodo, fecha, documento,
-                                codigo_articulo, codigo_almacen, partida,
-                                grupo_talla, codigo_talla, tipo_movimiento, unidades,
-                                unidad_medida, precio, importe, unidades2,
-                                unidad_medida2,
+                                CODEMPRESA, ejercicio, periodo, fecha,
+                                documento, codigo_articulo, codigo_almacen,
+                                partida, grupo_talla, codigo_talla,
+                                tipo_movimiento, unidades, unidad_medida,
+                                precio, importe, unidades2, unidad_medida2,
                                 factor_conversion, comentario, ubicacion,
                                 origen_movimiento, numero_serie_lc,
                                 id_proceso_IME)
     c.run_sql(sql_movstock)
     origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
-                         # 11 (salida de stock), 12 (inventario)
+    # 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
     unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
@@ -1108,10 +1108,10 @@ def consultar_producto(producto=None, nombre=None):
             assert len(res) == 1
         except AssertionError:
             if not res or len(res) == 0:
-                raise AssertionError, "No se encontraron registros."
+                raise AssertionError("No se encontraron registros.")
             elif len(res) > 1:
-                raise AssertionError, "Se encontró más de un artículo:\n %s" % (
-                    "\n".join([str(i) for i in res]))
+                raise AssertionError("Se encontró más de un artículo:\n %s" % (
+                    "\n".join([str(i) for i in res])))
     return res
 
 
@@ -1120,13 +1120,13 @@ def update_calidad(articulo, calidad):
     Cambia la calidad del artículo en Murano a la recibida. Debe ser A, B o C.
     """
     if calidad not in "aAbBcC":
-        raise ValueError, "El parámetro calidad debe ser A, B o C."
+        raise ValueError("El parámetro calidad debe ser A, B o C.")
     # DONE: [Marcos Sage] No modificamos tablas. Hacemos salida del producto A
     # y volvemos a insertarlo como C. En ese caso no importa que se repita el
     # código para el mismo producto porque antes hemos hecho la salida.
     # TODO: Ojo porque si cambio a calidad C probablemente implique un cambio
     # de producto.
-    raise NotImplementedError, "Función no disponible por el momento."
+    raise NotImplementedError("Función no disponible por el momento.")
 
 
 def create_articulo(articulo, cantidad=1, producto=None):
@@ -1159,9 +1159,9 @@ def create_articulo(articulo, cantidad=1, producto=None):
         elif articulo.es_rolloC():
             create_rollo(articulo.rolloC, delta, producto)
         else:
-            raise ValueError, "El artículo %s no es bala, bala de cable, "\
-                              "bigbag, caja, rollo ni rollo C." % (
-                                  articulo.puid)
+            raise ValueError("El artículo %s no es bala, bala de cable, "
+                             "bigbag, caja, rollo ni rollo C."
+                             % (articulo.puid))
 
 
 def update_producto(articulo, producto):
@@ -1195,7 +1195,7 @@ def update_stock(producto, delta, almacen):
     codigo_articulo = buscar_codigo_producto(producto)
     codigo_almacen = buscar_codigo_almacen(almacen)
     codigo_talla = ""   # No hay calidades en los productos de compra.
-    grupo_talla = 0  # No tratamiento de calidades en productos sin trazabilidad.
+    grupo_talla = 0  # No tratamiento de calidad en productos sin trazabilidad.
     if delta >= 0:
         tipo_movimiento = 1     # 1 = entrada, 2 = salida.
     else:
@@ -1208,8 +1208,8 @@ def update_stock(producto, delta, almacen):
     factor_conversion = buscar_factor_conversion(producto)
     unidades2 = unidades * factor_conversion
     origen_movimiento = "F"  # E = Entrada de Stock (entrada directa),
-                            # F (fabricación), I (inventario),
-                            # M (rechazo fabricación), S (Salida stock)
+    # F (fabricación), I (inventario),
+    # M (rechazo fabricación), S (Salida stock)
     id_proceso_IME = crear_proceso_IME(c)
     # En el movimiento de stock la unidad principal (unidad_medida) es la que
     # sea. En la segunda unidad (unidad_mediad2) mandamos "", que es lo que
@@ -1217,11 +1217,11 @@ def update_stock(producto, delta, almacen):
     # producto con código de trazabilidad.
     unidad_medida2 = buscar_unidad_medida_basica(producto)
     sql_movstock = SQL_STOCK % (database,
-                                CODEMPRESA, ejercicio, periodo, fecha, documento,
-                                codigo_articulo, codigo_almacen, partida,
-                                grupo_talla, codigo_talla, tipo_movimiento, unidades,
-                                unidad_medida, precio, importe, unidades2,
-                                unidad_medida2,
+                                CODEMPRESA, ejercicio, periodo, fecha,
+                                documento, codigo_articulo, codigo_almacen,
+                                partida, grupo_talla, codigo_talla,
+                                tipo_movimiento, unidades, unidad_medida,
+                                precio, importe, unidades2, unidad_medida2,
                                 factor_conversion, comentario, ubicacion,
                                 origen_movimiento, numero_serie_lc,
                                 id_proceso_IME)
@@ -1247,17 +1247,16 @@ def consumir(productoCompra, cantidad, almacen=None, consumo=None):
     """
     if not almacen:
         if not productoCompra.es_granza():
-            almacen = pclases.Almacen.get_almacen_principal(
-            )  # Los consumos de
-                    # materia prima siempre se hacen desde el almacén principal.
-                    # EXCEPTO los de granza, que se hacen desde un silo que se
-                    # trata como almacén en Murano.
+            almacen = pclases.Almacen.get_almacen_principal()
+            # Los consumos de materia prima siempre se hacen desde el almacén
+            # principal. EXCEPTO los de granza, que se hacen desde un silo que
+            # se trata como almacén en Murano.
         else:
             try:
                 almacen = consumo.silo
             except AttributeError:
-                raise ValueError, "Si no especifica un almacén debe indicar "\
-                                  "el consumo origen de ginn como referencia."
+                raise ValueError("Si no especifica un almacén debe indicar "
+                                 "el consumo origen de ginn como referencia.")
     update_stock(productoCompra, -cantidad, almacen)
 
 
@@ -1270,7 +1269,7 @@ def fire(guid_proceso):
                " la biblioteca win32com y lanzar esta función desde una "\
                "plataforma donde se encuentre instalado Sage Murano."
     if not LCOEM:
-        raise NotImplementedError, strerror
+        raise NotImplementedError(strerror)
     burano = win32com.client.Dispatch("LogicControlOEM.OEM_EjecutaOEM")
     burano.InicializaOEM(CODEMPRESA,
                          "OEM",
