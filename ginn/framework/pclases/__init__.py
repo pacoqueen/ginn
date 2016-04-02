@@ -166,7 +166,7 @@ if DEBUG and VERBOSE:
 #row2 = MyTable(**row.asDict(), connection=connection2)
 #
 #   Most methods in SQLObject accept connection parameter.
-# 
+#
 ###############################################################################
 
 # HACK:
@@ -2051,7 +2051,7 @@ class Silo(SQLObject, PRPCTOO):
                     carga.productoCompra.existencias += parte_proporcional - carga.cantidad
                 carga.cantidad = parte_proporcional
                 #myprint("carga.cantidad", carga.cantidad)
-            en_el_silo = (parte_proporcional * len(cargas_efectivas) 
+            en_el_silo = (parte_proporcional * len(cargas_efectivas)
                           + cantidad_restante) # Por lo mismo que antes. [1]
             # myprint("en_el_silo:", en_el_silo,
             #         "parte_proporcional:", parte_proporcional,
@@ -2257,7 +2257,7 @@ class FacturaCompra(SQLObject, PRPCTOO):
                 totiva += subtotal * self.iva
         #totiva = round(totiva, 2)       # Al igual que la base imponible, el total de IVA se redondea a 2 decimales.
         totiva = utils.myround(totiva) # Lo cambio por mi propia versión
-            # correcta de redondear a 2 decimales. Caso fra. FV4/0003558 
+            # correcta de redondear a 2 decimales. Caso fra. FV4/0003558
             # de 24/12/2014 (mrodriguez)
         return totiva
 
@@ -4952,6 +4952,20 @@ class Proveedor(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
+    def get_dias_de_pago(self):
+        """
+        Devuelve UNA TUPLA con los días de pago del cliente (vacía si no tiene).
+        """
+        res = []
+        if self.diadepago != None:
+            regexpr = re.compile("\d*")
+            lista_dias = regexpr.findall(self.diadepago)
+            try:
+                res = tuple([int(i) for i in lista_dias if i != ''])
+            except TypeError, msg:
+                print "ERROR: pclases: cliente.get_dias_de_pago(): %s" % (msg)
+        return res
+
     def get_documentoDePago(self, strict_mode = False):
         """
         Devuelve un objeto DocumentoDePago que se relaciona unívocamente con
@@ -6062,7 +6076,7 @@ class Rollo(SQLObject, PRPCTOO):
     parteDeProduccion = property(lambda self: self.articulo.parteDeProduccion,
                                  set_parteDeProduccion)
     parteDeProduccionID = property(
-            lambda self: self.articulo.parteDeProduccionID, 
+            lambda self: self.articulo.parteDeProduccionID,
             set_parteDeProduccion)
 
     def cambiar_numrollo(self, numrollo):
@@ -7806,7 +7820,7 @@ class Producto:
         materiaprima = TipoDeMaterial.select(
                 TipoDeMaterial.q.descripcion.contains('materia prima'))[0]
         try:
-            res = (self.tipoDeMaterialID == materiaprima.id 
+            res = (self.tipoDeMaterialID == materiaprima.id
                     and "granza" in self.descripcion.lower())
         except AttributeError:
             res = False     # Es un producto de compra.
@@ -11024,7 +11038,7 @@ class Presupuesto(SQLObject, PRPCTOO):
         """
         res = False
         for ldp in self.lineasDePresupuesto:
-            if (not ldp.productoVenta and not ldp.productoCompra and 
+            if (not ldp.productoVenta and not ldp.productoCompra and
                 not "TRANSPORTE " in ldp.descripcion.upper() and
                 not "TRANSPORT " in ldp.descripcion.upper() and
                 ldp.descripcion.upper().strip() != "TRANSPORTE" and
@@ -11073,7 +11087,7 @@ class Presupuesto(SQLObject, PRPCTOO):
         # duplicado en una función en cada clase.
         # Para el caso del bloqueo forzado, ver correo de nzumer del 16/10/2014
         validable = VALIDABLE
-        if (validable == VALIDABLE 
+        if (validable == VALIDABLE
                 and self.comercial and self.comercial.validacionManual):
             validable = BLOQUEO_FORZADO
         if (validable == VALIDABLE
@@ -11317,7 +11331,7 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 class Visita(SQLObject, PRPCTOO):
     class sqlmeta:
         fromDatabase = True
-    
+
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
@@ -12256,16 +12270,16 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
              WHERE articulo.bala_id IS NOT NULL
                AND (articulo.parte_de_produccion_id IN (%s)
                     OR (articulo.parte_de_produccion_id IS NULL
-                        AND (articulo.bala_id IN 
+                        AND (articulo.bala_id IN
                                 (SELECT bala.id
                                    FROM bala
-                                  WHERE bala.fechahora < '%s' 
+                                  WHERE bala.fechahora < '%s'
                                     AND articulo.bala_id = bala.id
                                 )
                             )
                        )
                    )
-        """ % (partes_de_balas_antes_de_fecha, 
+        """ % (partes_de_balas_antes_de_fecha,
                fecha_limite_para_comparaciones_con_fechahoras)
         partes_de_rollos_antes_de_fecha = """
           SELECT parte_de_produccion.id
@@ -12425,9 +12439,9 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         """ % (partidas_de_carga_en_partidas_despues_de_fecha)
         # PLAN: Tal vez esta subconsulta chorretosa que mezca SQL y
         #       SQLObject se pueda optimizar:
-        ids_pcs_sin_prod = [pc.id for pc 
+        ids_pcs_sin_prod = [pc.id for pc
                             in PartidaCarga.select(
-                                PartidaCarga.q.fecha > hasta) 
+                                PartidaCarga.q.fecha > hasta)
                             if len(pc._get_partes_partidas()) == 0]
         if len(ids_pcs_sin_prod) > 0:
             partidas_de_carga_sin_produccion = ", ".join(
@@ -12446,7 +12460,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
               AND (bala.partida_carga_id IN (%s)
                    OR bala.partida_carga_id IN (%s)
                    OR bala.partida_carga_id IS NULL);
-        """ % (self.id, partidas_de_carga_usadas_despues_de_fecha, 
+        """ % (self.id, partidas_de_carga_usadas_despues_de_fecha,
                partidas_de_carga_sin_produccion)
         ## ## ## BALAS DEL PRODUCTO # ## ## ## ## ## ## ##
         balas_del_producto = """
@@ -12467,7 +12481,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         Bala._connection.query(balas_del_producto)
         # print 5
         ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ##
-        query = """ id IN 
+        query = """ id IN
             (SELECT bala.id
                FROM bala,
                     tmp_balas_del_producto p,
@@ -12476,9 +12490,9 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                     tmp_balas_usadas_despues_de_fecha_o_no_usadas
               WHERE bala.id = p.bala_id
                 AND bala.id = produccion.bala_id
-                AND bala.id 
+                AND bala.id
                     = tmp_balas_vendidas_despues_de_fecha_o_no_vendidas.bala_id
-                AND bala.id 
+                AND bala.id
                     = tmp_balas_usadas_despues_de_fecha_o_no_usadas.bala_id
                GROUP BY bala.id
             ) """
@@ -17024,12 +17038,12 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
 
     def save_conf_silos(self, silos = {}, fechahora = mx.DateTime.localtime()):
         """
-        Guarda la configuración de los silos reales y de granza reciclada 
+        Guarda la configuración de los silos reales y de granza reciclada
         recibidos. El diccionario debe contener objetos silos (o enteros
         de silo "ficticio" de reciclada), producto consumiéndose y porcentaje
         marcado en un diccionario con el silo o el entero como clave.
         P.ej.:
-        silos = {Silo_1: {'productoCompra': ProductoCompra_1, 
+        silos = {Silo_1: {'productoCompra': ProductoCompra_1,
                           'porcentaje': 0.5},
                  1: {'productoCompra': ProductoCompra_2,
                      'porcentaje': 0.5}
@@ -17047,7 +17061,7 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
                 else:
                     silo = None
                     reciclada = key_silo
-                PDPConfSilo(silo = silo, 
+                PDPConfSilo(silo = silo,
                             reciclada = reciclada,
                             productoCompra = silos[key_silo]['productoCompra'],
                             fechahora = fechahora,
@@ -17095,7 +17109,7 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         sum_silos = sum([res[silo].porcentaje for silo in res if res[silo]])
         assert (sum_silos == 1.0 or sum_silos == 0.0),\
                     "[%s] Configuración de silos inválida para %s." % (
-                            self.puid, 
+                            self.puid,
                             utils.str_fechahora(fechahora))
         return res
 
@@ -18082,7 +18096,7 @@ class PDPConfSilo(SQLObject, PRPCTOO):
         res = "PDPConfSilo: [%s] %s estaba consumiendo %s de %s al %s%%" % (
                     utils.str_fechahora(self.fechahora),
                     self.parteDeProduccion.puid,
-                    self.productoCompra.descripcion, 
+                    self.productoCompra.descripcion,
                     self.silo.puid,
                     utils.float2str(self.porcentaje * 100, autodec = True)
                     )
@@ -18588,7 +18602,7 @@ class Consumo(SQLObject, PRPCTOO):
         """
         if self.siloID != None:
             return True     # Está feo, pero es por optimizar.
-        return self.productoCompra.es_granza() 
+        return self.productoCompra.es_granza()
 
     def get_linea_de_venta_albaran_interno(self):
         """
@@ -18823,7 +18837,7 @@ class Abono(SQLObject, PRPCTOO):
 
     def set_numero_numabono(self, numero):
         """
-        Cambia el número del abono respetando el prefijo «Ay[y]» donde "y" es 
+        Cambia el número del abono respetando el prefijo «Ay[y]» donde "y" es
         el último o dos últimos dígitos del año del abono.
         Si el abono no tiene fecha le pone la actual.
         Si el número no satisface la restricción de
@@ -18862,7 +18876,7 @@ class Abono(SQLObject, PRPCTOO):
         qryabonos = Abono.select(Abono.q.numabono.startswith(prefijo),
                                  orderBy = "fecha,numabono")
         abonos_de_mi_serie = [a for a in qryabonos]
-        # Ordeno la lista por número de abono (esto puede ser un poco lento 
+        # Ordeno la lista por número de abono (esto puede ser un poco lento
         # también):
         abonos_de_mi_serie.sort(lambda a1, a2: a1.numero_numabono
                                 - a2.numero_numabono)
@@ -19835,8 +19849,8 @@ class TransporteACuenta(SQLObject, PRPCTOO):
                                       concepto = self.concepto,
                                       precio = self.precio,
                                       cantidad = 1,
-                                      descuento = 0, 
-                                      fechahoraFacturado = 
+                                      descuento = 0,
+                                      fechahoraFacturado =
                                         datetime.datetime.today())
         else:
             for servicio in self.serviciosTomados:
@@ -19909,8 +19923,8 @@ class Comision(SQLObject, PRPCTOO):
                                       concepto = self.concepto,
                                       precio = self.precio,
                                       cantidad = 1,
-                                      descuento = 0, 
-                                      fechahoraFacturado = 
+                                      descuento = 0,
+                                      fechahoraFacturado =
                                         datetime.datetime.today())
         else:
             for servicio in self.serviciosTomados:

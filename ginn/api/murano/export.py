@@ -637,7 +637,7 @@ def create_dic_clientes(fecha_ultima_actividad=None):
     de esa fecha.
     """
     fcuentas = "20160216_clientes_fjflopez.csv"
-    cuentas_clientes = build_dic_cuentas(fcuentas)
+    cuentas_contables = build_dic_cuentas(fcuentas)
     lista_campos = load_lista_campos_cliente()
     clientes = set()
     if not fecha_ultima_actividad:
@@ -653,7 +653,7 @@ def create_dic_clientes(fecha_ultima_actividad=None):
     res = {}
     for cid in clientes:
         cliente = pclases.Cliente.get(cid)
-        res[cid] = build_dic_cliente(cliente, cuentas_clientes, lista_campos)
+        res[cid] = build_dic_cliente(cliente, cuentas_contables, lista_campos)
         res[cid]['OBRAS'] = {}
         res[cid]['CONTACTOS'] = {}
         for obra in cliente.obras:
@@ -739,7 +739,10 @@ def extract_codigo_clienteproveedor(cliente):
     """
     Devuelve el código de cliente que **tendrá** en Murano: C+cliente.id
     """
-    mid = "C{}".format(cliente.id)
+    if isinstance(cliente, pclases.Cliente):
+        mid = "C{}".format(cliente.id)
+    else:
+        mid = "P{}".format(cliente.id)
     return mid
 
 
@@ -849,8 +852,8 @@ def load_lista_campos_cliente():
         cli.tipoDeCliente and cli.tipoDeCliente.descripcion or "")
     res['GEO_RequiereValidacion'] = 'validacionManual'
     # HACK: Esto que viene ahora es muy muy muy feo Hay evals de por medio:
-    res['CodigoCuenta'] = "cuentas_clientes[cliente.id]['cuenta contable']"
-    res['CodigoSeccion'] = "cuentas_clientes[cliente.id]['sección']"
+    res['CodigoCuenta'] = "cuentas_contables[cliente.id]['cuenta contable']"
+    res['CodigoSeccion'] = "cuentas_contables[cliente.id]['sección']"
     return res
 
 
@@ -928,7 +931,7 @@ def build_fila_cliente(dic_cliente, campos):
     return res
 
 
-def dump(listado, fdestclientes, fdestdomicilios, fdestcontactos):
+def dump(listado, fdestclientes, fdestdomicilios=None, fdestcontactos=None):
     """
     Convierte el diccionaro «listado» en filas para alimentar un nuevo CSV
     que incluye los nombres de los campos como cabecera de columnas.
@@ -950,20 +953,24 @@ def dump(listado, fdestclientes, fdestdomicilios, fdestcontactos):
     for cid in listado:     # ID de ginn.
         fila = build_fila_cliente(listado[cid], cabecera)
         filas_clientes.append(fila)
-        for oid in listado[cid]['OBRAS']:
-            fila_obra = build_fila_cliente(listado[cid]['OBRAS'][oid],
-                                           cabecera_domicilios)
-            filas_domicilios.append(fila_obra)
-        for oid in listado[cid]['CONTACTOS']:
-            fila_contacto = build_fila_cliente(listado[cid]['CONTACTOS'][oid],
-                                               cabecera_contactos)
-            filas_contactos.append(fila_contacto)
+        if fdestdomicilios:
+            for oid in listado[cid]['OBRAS']:
+                fila_obra = build_fila_cliente(listado[cid]['OBRAS'][oid],
+                                               cabecera_domicilios)
+                filas_domicilios.append(fila_obra)
+        if fdestcontactos:
+            for oid in listado[cid]['CONTACTOS']:
+                fila_contacto = build_fila_cliente(
+                    listado[cid]['CONTACTOS'][oid], cabecera_contactos)
+                filas_contactos.append(fila_contacto)
     generate_csv(cabecera, filas_clientes, fdestclientes,
                  limpiar_cabecera=False)
-    generate_csv(cabecera_domicilios, filas_domicilios, fdestdomicilios,
-                 limpiar_cabecera=False)
-    generate_csv(cabecera_contactos, filas_contactos, fdestcontactos,
-                 limpiar_cabecera=False)
+    if fdestdomicilios:
+        generate_csv(cabecera_domicilios, filas_domicilios, fdestdomicilios,
+                     limpiar_cabecera=False)
+    if fdestcontactos:
+        generate_csv(cabecera_contactos, filas_contactos, fdestcontactos,
+                     limpiar_cabecera=False)
 
 
 def parse(fdest):
@@ -1034,7 +1041,7 @@ def buscar_clientes_con_actividad(pclase, fecha):
 
 
 # pylint: disable=eval-used,unused-argument
-def build_dic_cliente(cliente, cuentas_clientes, lista_campos):
+def build_dic_cliente(cliente, cuentas_contables, lista_campos):
     """
     Devuelve un diccionario que representa a un cliente con los nombres de
     campo como clave y los datos del cliente como valores.
@@ -1045,7 +1052,7 @@ def build_dic_cliente(cliente, cuentas_clientes, lista_campos):
         if attr is None:
             valor = ""     # Campo sin equivalencia en ginn.
         elif isinstance(attr, str):
-            if "cuentas_clientes" in attr:
+            if "cuentas_contables" in attr:
                 try:
                     valor = eval(attr)  # Es valor del diccionario de cuentas.
                 except KeyError:
@@ -1067,61 +1074,102 @@ def build_dic_cliente(cliente, cuentas_clientes, lista_campos):
 
 
 # # Proveedores ###############################################################
-def exportar_proveedores():
+def exportar_proveedores(fdestproveedores):
     """
-    Exporta los clientes con actividad en los últimos 2 años a una tabla CSV.
-    Esta tabla posteriormente se procesa para completar información.
-    Al realizar cada importación primero se trata de leer el fichero CSV,
-    se construye un nuevo volcado combinando los datos de la base de datos
-    y el CSV y se vuelve a volcar el fichero CSV.
+    Exporta los proveedores con actividad en los últimos 2 años a una tabla
+    CSV.
+    La tabla la construye según la lista de campos del fichero que espera
+    la guía de importación y toma como fuente:
+    * Base de datos de ginn.
+    * Fichero CSV (originalmente es un Excel) con el resto de datos.
     """
-    fdest = "proveedores.csv"
-    # Me aseguro que el orden es siempre el mismo porque Murano es muy
-    # quisuilloso al respecto.
-    proveedor = pclases.Proveedor.select()[0]
-    cols_extra = ["cuenta contable", "sección", "departamento"]
-    orden_campos = ["id"] + [f.name for f in proveedor.sqlmeta.columnList]
-    orden_campos += cols_extra
-    if os.path.exists(fdest):
-        listado = parse(fdest)
-        update_listado(listado)
-    else:
-        hoy = datetime.date.today()
-        two_years_ago = datetime.date(day=hoy.day, month=hoy.month,
-                                      year=hoy.year - 2)
-        listado = create_dic_inicial_proveedores(cols_extra, two_years_ago)
-    # dump(listado, fdest, orden_campos)
+    hoy = datetime.date.today()
+    two_years_ago = datetime.date(day=hoy.day, month=hoy.month,
+                                  year=hoy.year - 2)
+    listado = create_dic_proveedores(two_years_ago)
+    dump(listado, fdestproveedores)
 
 
-def create_dic_inicial_proveedores(cols_extra,
-                                   fecha_ultima_actividad=None):
+def load_lista_campos_proveedor():
+    """
+    Devuelve la lista de campos en el orden específico que espera la guía
+    de importación de Murano. La lista de campos es según la nomenclatura
+    de Murano. La correspondencia con los campos de ginn la da el propio
+    diccionario ordenado. Si un mismo campo se corresponde con 2 ó 3 de los
+    de Murano es porque hay que separar el valor entre esos campos de Murano
+    de ser necesario.
+    """
+    res = OrderedDict()
+    res['CodigoEmpresa'] = CODEMPRESA
+    res['ClienteOProveedor'] = lambda objeto: isinstance(
+        objeto, pclases.Cliente) and 'C' or 'P'  # C=clientes. P=proveedor
+    res['CodigoClienteProveedor'] = extract_codigo_clienteproveedor
+    res['TarifaPrecio'] = None
+    res['Telefono'] = 'telefono'
+    res['Nombre'] = 'nombre'
+    res['CIFDNI'] = 'cif'
+    res['Domicilio'] = 'direccion'
+    res['Nacion'] = 'pais'
+    res['Municipio'] = 'ciudad'
+    res['Provincia'] = 'provincia'
+    res['CodigoPostal'] = 'cp'
+    res['CodigoIva'] = 'iva'
+    res['RazonSocial'] = None
+    res['email1'] = extract_email1_from_cliente
+    res['email2'] = extract_email2_from_cliente
+    res['nombre1'] = lambda cliente: cliente.contacto.split(",")[0]
+    res['nombre2'] = lambda cliente: "".join(cliente.contacto.split(",")[1:])
+    res['Comentarios'] = 'observaciones'
+    res['CodigoCondiciones'] = 'vencimiento'
+    res['CodigoTipoEfecto'] = 'documentodepago'
+    res['DiasFijos1'] = extract_diadepago1_from_cliente
+    res['DiasFijos2'] = extract_diadepago2_from_cliente
+    res['DiasFijos3'] = extract_diadepago3_from_cliente
+    res['BloqueoAlbaran'] = 'inhabilitado'
+    res['GEO_EnviaCorreoAlbaran'] = None
+    res['GEO_EnviaCorreoFactura'] = None
+    res['GEO_EnviaCorreoPacking'] = None
+    res['Fax'] = 'fax'
+    res['RemesaHabitual'] = 'nombreBanco'
+    res['GEO_RiesgoAseguradora'] = None
+    res['RiesgoMaximo'] = None
+    res['CopiasFactura'] = None
+    res['CodigoTipoClienteLC'] = lambda cli: (
+        cli.tipoDeProveedor and cli.tipoDeProveedor.descripcion or "")
+    res['GEO_RequiereValidacion'] = None
+    # HACK: Esto que viene ahora es muy muy muy feo Hay evals de por medio:
+    res['CodigoCuenta'] = "cuentas_contables[cliente.id]['cuenta contable']"
+    res['CodigoSeccion'] = "cuentas_contables[cliente.id]['sección']"
+    return res
+
+
+def create_dic_proveedores(fecha_ultima_actividad=None):
     """
     Devuelve un diccionario cuyas claves son los ID de proveedor y los valores
     son diccionarios con los campos y valores para cada proveedor.
-    Agrega campos adicionales que deben ir al CSV y no están presentes en
-    la base de datos.
     Si se especifica una fecha de última actividad se filtran los proveedores
     e ignoran aquellos que no hayan realizado un pedido u oferta después
     de esa fecha.
     """
+    fcuentas = "20160316_proveedores_fjflopez.csv"
+    cuentas_contables = build_dic_cuentas(fcuentas)
+    lista_campos = load_lista_campos_proveedor()
     proveedores = set()
     if not fecha_ultima_actividad:
         for proveedor in pclases.Proveedor.select():
             proveedores.add(proveedor.id)
     else:
-        for proveedor in buscar_proveedores_activos(pclases.PedidoCompra,
-                                                    fecha_ultima_actividad):
+        for proveedor in buscar_proveedores_activos(
+                pclases.PedidoCompra, fecha_ultima_actividad):
             proveedores.add(proveedor.id)
-        for proveedor in buscar_proveedores_activos(pclases.FacturaCompra,
-                                                    fecha_ultima_actividad):
+        for proveedor in buscar_proveedores_activos(
+                pclases.FacturaCompra, fecha_ultima_actividad):
             proveedores.add(proveedor.id)
     res = {}
     for cid in proveedores:
         proveedor = pclases.Proveedor.get(cid)
-        # Me vale la función de clientes para el diccionario del proveedor.
-        # res[cid] = build_dic_cliente(proveedor)
-        for col in cols_extra:
-            res[cid][col] = None
+        res[cid] = build_dic_cliente(proveedor, cuentas_contables,
+                                     lista_campos)
     return res
 
 

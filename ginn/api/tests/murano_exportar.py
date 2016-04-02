@@ -73,8 +73,7 @@ def main():
         murano.exportar_clientes(destclientesproveedores, destdomicilios,
                                  destcontactos)
     if args.proveedores or args.todo:
-        murano.exportar_proveedores(destclientesproveedores, destdomicilios,
-                                    destcontactos)
+        murano.exportar_proveedores(destclientesproveedores)
 
 if __name__ == "__main__":
     main()
