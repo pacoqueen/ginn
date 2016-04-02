@@ -691,13 +691,19 @@ def build_dic_obra(obra, cliente, load_lista):
                 valor = " ".join(valores)
             else:
                 valor = getattr(obra, attr)
-            res[campo] = valor
         elif attr is None:
-            res[campo] = ""     # Campo sin equivalencia en ginn.
+            valor = ""     # Campo sin equivalencia en ginn.
         elif isinstance(attr, int):
-            res[campo] = str(attr)
+            valor = str(attr)
         else:
-            res[campo] = attr(cliente)
+            valor = attr(cliente)
+        # Cambio los True y False por el valor que espera Murano:
+        if isinstance(valor, type(True)):
+            if valor:
+                valor = -1
+            else:
+                valor = 0
+        res[campo] = valor
     return res
 
 
@@ -723,6 +729,7 @@ def build_dic_cuentas(fcuentas):
             cabecera = fila     # Solo la primera vez.
         else:
             dic_cliente = dict(zip(cabecera, fila))
+            dic_cliente["id"] = int(dic_cliente["id"])
             res[dic_cliente["id"]] = dic_cliente
     fin.close()
     return res
@@ -953,9 +960,9 @@ def dump(listado, fdestclientes, fdestdomicilios, fdestcontactos):
             filas_contactos.append(fila_contacto)
     generate_csv(cabecera, filas_clientes, fdestclientes,
                  limpiar_cabecera=False)
-    generate_csv(cabecera, filas_domicilios, fdestdomicilios,
+    generate_csv(cabecera_domicilios, filas_domicilios, fdestdomicilios,
                  limpiar_cabecera=False)
-    generate_csv(cabecera, filas_contactos, fdestcontactos,
+    generate_csv(cabecera_contactos, filas_contactos, fdestcontactos,
                  limpiar_cabecera=False)
 
 
@@ -1049,6 +1056,12 @@ def build_dic_cliente(cliente, cuentas_clientes, lista_campos):
             valor = str(attr)
         else:   # Función a invocar con cliente como parámetro.
             valor = attr(cliente)
+        # Cambio los True y False por el valor que espera Murano:
+        if isinstance(valor, type(True)):
+            if valor:
+                valor = -1
+            else:
+                valor = 0
         res[campo] = valor
     return res
 
