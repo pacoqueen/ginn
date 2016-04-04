@@ -654,8 +654,10 @@ def create_dic_clientes(fecha_ultima_actividad=None):
     for cid in clientes:
         cliente = pclases.Cliente.get(cid)
         res[cid] = build_dic_cliente(cliente, cuentas_contables, lista_campos)
-        res[cid]['OBRAS'] = {}
-        res[cid]['CONTACTOS'] = {}
+        if 'OBRAS' not in res[cid]:
+            res[cid]['OBRAS'] = {}
+        if 'CONTACTOS' not in res[cid]:
+            res[cid]['CONTACTOS'] = {}
         for obra in cliente.obras:
             res[cid]['OBRAS'][obra.id] = build_dic_obra(
                 obra, cliente, load_lista_campos_domicilios)
@@ -668,6 +670,13 @@ def create_dic_clientes(fecha_ultima_actividad=None):
                 # OJO: Es posible que duplique contactos si varios clientes lo
                 # comparten. El ID será el mismo. Ya veremos qué hace Murano
                 # en ese caso.
+        # Si el cliente tiene una dirección de facturación diferente, un
+        # registro domicilio nuevo.
+        if cliente.direccionfacturacion != cliente.direccion:
+            numdomicilio = extract_numdomicilio(cliente)
+            res[cid]['OBRAS'][
+                numdomicilio] = build_dic_manual_domicilio(
+                    cliente, numdomicilio)
     return res
 
 
@@ -713,6 +722,56 @@ def build_dic_contacto(contacto, cliente, load_lista):
     por la guía de importación de Murano.
     """
     return build_dic_obra(contacto, cliente, load_lista)
+
+
+def build_dic_manual_contacto(strcontacto, cliente):
+    """
+    Devuelve un diccionario del contacto construido manualmente a partir de
+    la cadena de texto recibida.
+    """
+    import re
+    telefono = "".join(re.findall(r'\([0-9 ]+\)', strcontacto))
+    cargo = "".join(re.findall(r'\([^0-9 ]+\)', strcontacto))
+    nombre = "".join(re.findall(r'[^0-9 ]+', strcontacto))
+    correoe = "".join(re.findall(r'[^@]+@[^@]+\.[^@]+', strcontacto))
+    res = {}
+    res['CodigoEmpresa'] = CODEMPRESA
+    res['CodigoCliente'] = extract_codigo_clienteproveedor(cliente)
+    res['CodigoCargoLc'] = cargo
+    res['NombreContactoLc'] = nombre
+    res['CodigoAreaContactoLc'] = None
+    res['CodigoCortesiaLc'] = None
+    res['TelefonoContactoLc'] = telefono
+    res['Telefono2ContactoLc'] = None
+    res['Telefono3ContactoLc'] = None
+    res['FaxContactoLc'] = None     # Sin correspondencia en ginn.
+    res['EMail1'] = correoe
+    res['Email2'] = None
+    res['NumeroDomicilio'] = 0  # Los contactos genéricos van al domicilio
+    # genérico del cliente.
+    return res
+
+
+def build_dic_manual_domicilio(cliente, numdomicilio):
+    """
+    Construye y devuelve un diccionario con la información del domicilio
+    fiscal del cliente.
+    """
+    res = {}
+    res['CP'] = 'C'     # C = Cliente, P = Proveedor
+    res['CodigoEmpresa'] = CODEMPRESA
+    res['TipoDomicilio'] = 'F'  # E=Envío, F=Factura, R=Recibo
+    res['CodigoCliente'] = extract_codigo_clienteproveedor(cliente)
+    res['NumeroDomicilio'] = numdomicilio
+    # El número de domicilio de Murano que se corresponde con la obra del
+    # contacto. Incremental por cliente. El 0 no se puede usar.
+    res['RazonSocial'] = cliente.nombref
+    res['Domicilio'] = cliente.direccionfacturacion
+    res['CodigoPostal'] = cliente.cpfacturacion
+    res['Municipio'] = cliente.ciudadfacturacion
+    res['Provincia'] = cliente.provinciafacturacion
+    res['Nacion'] = cliente.paisfacturacion
+    return res
 
 
 def build_dic_cuentas(fcuentas):
@@ -779,6 +838,22 @@ def extract_diadepago3_from_cliente(cliente):
     return dia
 
 
+def extract_contacto1_from_cliente(cliente):
+    """
+    Devuelve el primero de los contactos del clientes si hubiera más de uno.
+    """
+    res = cliente.contacto.split("-")[0].strip()
+    return res
+
+
+def extract_contacto2_from_cliente(cliente):
+    """
+    Devuelve el segundo de los contactos del clientes si hubiera más de uno.
+    """
+    res = "".join(cliente.contacto.split("-")[1:])
+    return res
+
+
 def extract_email1_from_cliente(cliente):
     """
     Devuelve el primer email del cliente como cadena.
@@ -787,6 +862,8 @@ def extract_email1_from_cliente(cliente):
         email = cliente.email.split()[0]
     except IndexError:
         email = ""
+    email = email.split("/")[0]
+    email = email.split(" - ")[0]
     email = email.split(",")[0]
     email = email.split(";")[0]
     email = email.strip()
@@ -798,6 +875,7 @@ def extract_email2_from_cliente(cliente):
     Devuelve el resto de emails del cliente como cadena.
     """
     email = cliente.email.replace(",", " ").replace(";", " ")
+    email = email.replace(" - ", " ").replace("/", " ")
     email = ", ".join(email.split()[1:])
     email = email.strip()
     return email
@@ -830,8 +908,8 @@ def load_lista_campos_cliente():
     res['RazonSocial'] = 'nombref'
     res['email1'] = extract_email1_from_cliente
     res['email2'] = extract_email2_from_cliente
-    res['nombre1'] = lambda cliente: cliente.contacto.split(",")[0]
-    res['nombre2'] = lambda cliente: "".join(cliente.contacto.split(",")[1:])
+    res['nombre1'] = extract_contacto1_from_cliente
+    res['nombre2'] = extract_contacto2_from_cliente
     res['Comentarios'] = 'observaciones'
     res['CodigoCondiciones'] = 'vencimientos'
     res['CodigoTipoEfecto'] = 'documentodepago'
@@ -863,9 +941,10 @@ def load_lista_campos_domicilios():
     recibir Murano en la guía de importación de domicilios (obras).
     """
     res = OrderedDict()
-    res['CP'] = None    # C = Cliente, P = Proveedor
+    res['CP'] = lambda c: isinstance(c, pclases.Cliente) and "C" or "P"
+    # C = Cliente, P = Proveedor
     res['CodigoEmpresa'] = CODEMPRESA
-    res['TipoDomicilio'] = None         # E=Envío, F=Factura, R=Recibo
+    res['TipoDomicilio'] = lambda c: 'E'    # E=Envío, F=Factura, R=Recibo
     res['CodigoCliente'] = extract_codigo_clienteproveedor
     res['NumeroDomicilio'] = extract_numdomicilio
     # El número de domicilio de Murano que se corresponde con la obra del
@@ -1040,6 +1119,45 @@ def buscar_clientes_con_actividad(pclase, fecha):
                 yield objeto.cliente
 
 
+def idfromcontacto(str_contacto):
+    """
+    Devuelve un ID inventado a partir de la cadena de texto del contacto.
+    """
+    import md5
+    res = int("".join([i for i in md5.md5(str_contacto).hexdigest()
+                       if i.isdigit()][:4]))
+    res = -res  # Para distinguirlos de los ID reales.
+    return res
+
+
+def parse_emails(str_email):
+    """
+    Devuelve una lista con todos los emails reconocidos en la cadena de
+    entrada.
+    """
+    import re
+    match = re.findall(r'[\w\.-]+@[\w\.-]+', str_email)
+    if not match:
+        res = []
+    else:
+        res = [i for i in match]
+    return res
+
+
+def parse_contactos(contactos):
+    """
+    Devuelve una lista de contactos que han podido ser parseados de la
+    cadena de entrada.
+    """
+    res = []
+    contactos = contactos.replace("-", ",").replace("/", ",")
+    for contacto in contactos.split(","):
+        contacto = contacto.strip()
+        if contacto:
+            res.append(contacto)
+    return res
+
+
 # pylint: disable=eval-used,unused-argument
 def build_dic_cliente(cliente, cuentas_contables, lista_campos):
     """
@@ -1063,6 +1181,30 @@ def build_dic_cliente(cliente, cuentas_contables, lista_campos):
             valor = str(attr)
         else:   # Función a invocar con cliente como parámetro.
             valor = attr(cliente)
+            # Dos casos a tener en cuenta: más de 2 direcciones de correo y
+            # más de 2 contactos. En esos casos hay que crear registros
+            # adicionales en las tablas de contactos.
+            if campo == 'email2' and valor.count("@") >= 2:
+                # Solo me quedo con uno. El resto a tabla aparte.
+                emails = parse_emails(valor)
+                valor = emails[0]
+                for email in emails[1:]:
+                    if 'CONTACTOS' not in res:
+                        res['CONTACTOS'] = {}
+                    res['CONTACTOS'][idfromcontacto(email)] = (
+                        build_dic_manual_contacto(email, cliente))
+            elif campo == 'nombre2' and valor.strip():
+                # Si hay algo en valor y es susceptible de ser separado en
+                # varios contactos, lo intento.
+                # Analizo y separo los contactos. Me quedo con el primero. El
+                # resto va a una tabla aparte de contactos.
+                contactos = parse_contactos(valor)
+                valor = contactos[0]
+                for contacto in contactos[1:]:
+                    if 'CONTACTOS' not in res:
+                        res['CONTACTOS'] = {}
+                    res['CONTACTOS'][idfromcontacto(contacto)] = (
+                        build_dic_manual_contacto(contacto, cliente))
         # Cambio los True y False por el valor que espera Murano:
         if isinstance(valor, type(True)):
             if valor:
