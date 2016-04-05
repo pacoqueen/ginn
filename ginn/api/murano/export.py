@@ -854,6 +854,55 @@ def extract_contacto2_from_cliente(cliente):
     return res
 
 
+def extract_telefono1_from_cliente(cliente):
+    """
+    Devuelve un único teléfono del cliente. El resto los desprecia.
+    """
+    if cliente.telefono:
+        telefonos = cliente.telefono.lower()
+        telefonos = telefonos.replace(",", "/").replace("y", "/")
+        telefonos = telefonos.split("/")
+        telefono = telefonos[
+            max([(telefonos.index(i), len(i)) for i in telefonos],
+                key=lambda e: e[1])[0]]
+        if 1 < telefono.count("-") <= 2:
+            telefono = telefono.split("-")[0].strip()
+        _telefono = ""
+        for cifra in telefono:
+            if cifra.isdigit() or cifra == " ":
+                _telefono += cifra
+        telefono = _telefono
+        telefono = telefono[:15]    # Máx. long. en MS-SQLServer
+    else:
+        telefono = ""
+    return telefono
+
+
+def extract_ccc_cliente(cliente):
+    """
+    Devuelve la cuenta bancaria en formato 4-4-2-10
+    """
+    groups = [4, 4, 2, 10][::-1]
+    group = groups.pop(0)
+    ccc = ""
+    cuenta = cliente.cuentaOrigen and cliente.cuentaOrigen.ccc or ccc
+    if cuenta:
+        contador = 0
+        for i in cuenta[::-1]:
+            if i.isdigit():
+                contador += 1
+                ccc = i + ccc
+                if contador >= group:
+                    contador = 0
+                    try:
+                        group = groups.pop(0)
+                    except IndexError:  # Hemos terminado.
+                        break
+                    else:
+                        ccc = " " + ccc
+    return ccc
+
+
 def extract_email1_from_cliente(cliente):
     """
     Devuelve el primer email del cliente como cadena.
@@ -896,7 +945,12 @@ def load_lista_campos_cliente():
         cliente, pclases.Cliente) and 'C' or 'P'  # C=clientes. P=proveedor
     res['CodigoClienteProveedor'] = extract_codigo_clienteproveedor
     res['TarifaPrecio'] = 'tarifaID'
-    res['Telefono'] = 'telefono'
+    res['Telefono'] = extract_telefono1_from_cliente
+    # NOTE: El resto de teléfonos deberían ir a registros de contactos, pero
+    # paso. Es demasiado trabajo para apenas un par de números de teléfono que
+    # además probablemente estén repetidos en los contactos de obra. Y encima
+    # están mal estructurados. No hay ni una expresión regular que sea capaz de
+    # reconocer todas las formas posibles en que han escrito los teléfonos.
     res['Nombre'] = 'nombre'
     res['CIFDNI'] = 'cif'
     res['Domicilio'] = 'direccion'
@@ -917,12 +971,14 @@ def load_lista_campos_cliente():
     res['DiasFijos2'] = extract_diadepago2_from_cliente
     res['DiasFijos3'] = extract_diadepago3_from_cliente
     res['BloqueoAlbaran'] = 'inhabilitado'
-    res['GEO_EnviaCorreoAlbaran'] = 'enviarCorreoAlbaran'
-    res['GEO_EnviaCorreoFactura'] = 'enviarCorreoFactura'
-    res['GEO_EnviaCorreoPacking'] = 'enviarCorreoPacking'
+    res['GEO_EnviaCorreoAlbaran'] = (lambda c: c.enviarCorreoAlbaran and
+                                     extract_email1_from_cliente(c) or "")
+    res['GEO_EnviaCorreoFactura'] = (lambda c: c.enviarCorreoFactura and
+                                     extract_email1_from_cliente(c) or "")
+    res['GEO_EnviaCorreoPacking'] = (lambda c: c.enviarCorreoPacking and
+                                     extract_email1_from_cliente(c) or "")
     res['Fax'] = 'fax'
-    res['RemesaHabitual'] = lambda cli: (cli.cuentaOrigen and
-                                         cli.cuentaOrigen.get_info() or "")
+    res['RemesaHabitual'] = extract_ccc_cliente
     res['GEO_RiesgoAseguradora'] = 'riesgoAsegurado'
     res['RiesgoMaximo'] = 'riesgoConcedido'
     res['CopiasFactura'] = 'copiasFactura'
@@ -1247,7 +1303,7 @@ def load_lista_campos_proveedor():
         objeto, pclases.Cliente) and 'C' or 'P'  # C=clientes. P=proveedor
     res['CodigoClienteProveedor'] = extract_codigo_clienteproveedor
     res['TarifaPrecio'] = None
-    res['Telefono'] = 'telefono'
+    res['Telefono'] = extract_telefono1_from_cliente
     res['Nombre'] = 'nombre'
     res['CIFDNI'] = 'cif'
     res['Domicilio'] = 'direccion'
@@ -1272,7 +1328,7 @@ def load_lista_campos_proveedor():
     res['GEO_EnviaCorreoFactura'] = None
     res['GEO_EnviaCorreoPacking'] = None
     res['Fax'] = 'fax'
-    res['RemesaHabitual'] = 'nombreBanco'
+    res['RemesaHabitual'] = None  # 'nombreBanco' No acepta. Solo CCC 4-4-2-10
     res['GEO_RiesgoAseguradora'] = None
     res['RiesgoMaximo'] = None
     res['CopiasFactura'] = None
