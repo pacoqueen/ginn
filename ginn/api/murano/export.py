@@ -353,6 +353,8 @@ def determinar_codigo_definicion_cuentas(producto):
             res = ""
     else:
         res = ""
+    # Campo CódigoDefinición como máximo a 15 caracteres:
+    res = res[:15]
     return res
 
 
