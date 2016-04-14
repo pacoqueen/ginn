@@ -131,9 +131,11 @@ def exportar_productos(fdestproductos='productos.csv'):
         "unidadMedidaPrecio",  # Indica en qué se expresa el precio: unidad
         # "Específica" para rollos, balas, cajas y BB (mandar una "E") o
         # básica para el resto (mandar una "B")
-        "familia"]  # Familia a la que pertenece. Es donde se especifica el
-    # precio mínimo, por tanto el producto debe pertenecer a
-    # una familia al importarlo.
+        "familia",  # Familia a la que pertenece. Es donde se especifica el
+        # precio mínimo, por tanto el producto debe pertenecer a
+        # una familia al importarlo.
+        # ## Campos contables:
+        "CodigoDefinicion"]  # Código de grupo de contabilidad al que pertenece
     filas = []
     for prodventa in pclases.ProductoVenta.select(orderBy="descripcion"):
         fila = build_fila(prodventa, columnas)
@@ -232,6 +234,11 @@ def build_fila(producto, columnas):
             # precio mínimo, por tanto el producto debe pertenecer a
             # una familia al importarlo.
             valor = determinar_familia_murano(producto)
+        elif columna == "CodigoDefinicion":
+            # Grupo de cuentas contables al que pertenece el producto. Cada
+            # grupo debe estar dado de alta en Murano y contiene todas las
+            # cuentas para las ventas, compras, etc.
+            valor = determinar_codigo_definicion_cuentas(producto)
         else:
             campo = columna
             try:
@@ -241,6 +248,113 @@ def build_fila(producto, columnas):
         valor = muranize_valor(valor, columna, producto)
         valor = clean_valor(valor)
         res.append(valor)
+    return res
+
+
+def determinar_codigo_definicion_cuentas(producto):
+    """
+    En función del tipo de producto devolverá la cadena que identifica su
+    código de definición de cuentas.
+    Grupos a crear en Murano:
+    - FIBRA CEMENTO EMBOLSADA
+    - GEOTEXTIL PES
+    - MERCADERIAS
+    - GEOCOMPUESTOS
+    - OTROS PRODUCTOS
+    - ESCAMA DE PET
+    - GRANZA POLIPROPILENO
+    - ADITIVOS GEOTEXTILES
+    - OTROS ADITIVOS FIBRA
+    - ENSIMAJE GEOCEM
+    - ANTI UV FIBRA
+    - MASTERBACH COLORES FIBRA
+    - BLANQUEANTE FIBRA
+    - GRANZA RECICLADA
+    - OTROS APROVISIONAMIENTOS
+    - FIBRA
+    - AGUJAS LINEA GEOTEXTILES
+    - ACEITES Y LUBRICANTES FIBRA
+    - EMBALAJES  ACC .GEOTEXTILES
+    - TUBOS GEOTEXTILES
+    - PLASTICO GEOTEXTILES
+    - PLASTICOS FIBRA
+    - PLASTICOS GEOCOMPUESTOS
+    - FILTROS LINEA FIBRA
+    - FLEJES FIBRA
+    - BIGS BAGS FIBRA
+    - PALETS
+    - TINTA GEOTEXTILES
+    - CEPILLOS LINEA FIBRA
+    - BOTELLAS PROPANO
+    - BOBINA PAPEL GEOCEM
+    - CAJAS CARTON Y CANTONERAS
+    - EMBALAJES ACC. FIBRA CEMENTO
+    """
+    if isinstance(producto, pclases.ProductoCompra):
+        if producto.tipoDeMaterial:
+            tdm_desc = producto.tipoDeMaterial.descripcion
+            if tdm_desc == "Materia Prima":
+                if producto.es_granza():
+                    res = "GRANZA_POLIPROPILENO"
+                    if ("recup" in producto.descripcion.lower() or
+                            "recic" in producto.descripcion.lower()):
+                        res = "GRANZA_RECICLADA"
+                else:
+                    res = "OTROS_APROVISIONAMIENTOS"
+            elif tdm_desc == "Material adicional":
+                if "plast" in producto.descripcion.lower():
+                    # Imposible distinguir si es de geotextiles, fibra...
+                    res = "PLASTICOS"
+                elif ("tubo" in producto.descripcion.lower() or
+                        "nucleo" in producto.descripcion.lower()):
+                    res = "TUBOS_GEOTEXTILES"
+                elif "cart" in producto.descripcion.lower():
+                    res = "CAJAS_CARTON"
+                else:
+                    res = "OTROS_ADITIVOS_FIBRA"
+            elif tdm_desc == "Mantenimiento":
+                res = "ACEITES"
+                if "aguja" in producto.descripcion:
+                    res = "AGUJAS"
+            elif tdm_desc == "Repuestos geotextiles":
+                res = "ADITIVOS_GEOTEXTILES"
+            elif tdm_desc == "Repuestos fibra":
+                res = "FILTROS"
+            elif tdm_desc == "Aceites y lubricantes":
+                res = "ACEITES"
+            elif tdm_desc == "Mercancía inicial Valdemoro":
+                res = ""    # Esta famlia ya se dijo que se descartaba.
+            elif tdm_desc == "Productos comercializados":
+                res = "GEOCOMPUESTOS"
+            elif tdm_desc == "Comercializados":
+                res = "GEOCOMPUESTOS"
+            else:
+                res = "OTROS_PRODUCTOS"
+        else:
+            res = ""
+    elif isinstance(producto, pclases.ProductoVenta):
+        if producto.es_rollo():
+            res = "GEOTESAN"   # Geotextil
+        elif producto.es_rolloC():
+            res = "RESTOS_GEOTEXTILES"
+        elif producto.es_bala():
+            res = "FIBRA"    # Fibra
+        elif producto.es_bala_cable():
+            res = "CABLE"
+        elif producto.es_bigbag():
+            res = "CEMENTO"  # Fibra cemento
+        elif producto.es_bolsa() or producto.es_caja():
+            res = "CEMENTO"  # Fibra embolsada
+        elif producto.es_especial():
+            res = "GEOCOMPUESTOS"     # Comercializados
+        elif producto.es_granza():
+            res = "GRANZA"         # Granza
+        else:
+            res = ""
+    else:
+        res = ""
+    # Campo CódigoDefinición como máximo a 15 caracteres:
+    res = res[:15]
     return res
 
 
