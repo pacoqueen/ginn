@@ -657,7 +657,7 @@ def prepare_params_movstock(articulo, cantidad=1, producto=None):
     fecha = today.strftime("%Y-%m-%d %H:%M:%S")
     documento = int(today.strftime("%Y%m%d"))
     if not producto:
-        producto = articulo.producto_venta
+        producto = articulo.productoVenta
     codigo_articulo = buscar_codigo_producto(producto)
     codigo_talla = articulo.get_str_calidad()
     grupo_talla = buscar_grupo_talla(producto)
@@ -820,7 +820,7 @@ def create_bala(bala, cantidad=1, producto=None):
     # 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
-    unidad_medida1 = buscar_unidad_medida_basica(articulo.producto_venta,
+    unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
                                                  articulo)
     numero_serie_lc = bala.codigo
     peso_bruto = get_peso_bruto(articulo)
@@ -873,7 +873,7 @@ def create_bigbag(bigbag, cantidad=1, producto=None):
     # 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
-    unidad_medida1 = buscar_unidad_medida_basica(articulo.producto_venta,
+    unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
                                                  articulo)
     numero_serie_lc = bigbag.codigo
     peso_bruto = get_peso_bruto(articulo)
@@ -929,7 +929,7 @@ def create_rollo(rollo, cantidad=1, producto=None):
     # 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
-    unidad_medida1 = buscar_unidad_medida_basica(articulo.producto_venta,
+    unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
                                                  articulo)
     superficie = get_superficie(articulo)
     numero_serie_lc = rollo.codigo
@@ -983,7 +983,7 @@ def create_caja(caja, cantidad=1, producto=None):
     # 11 (salida de stock), 12 (inventario)
     mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
     # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
-    unidad_medida1 = buscar_unidad_medida_basica(articulo.producto_venta,
+    unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
                                                  articulo)
     numero_serie_lc = caja.codigo
     peso_bruto = get_peso_bruto(articulo)
