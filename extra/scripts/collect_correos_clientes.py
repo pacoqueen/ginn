@@ -12,40 +12,40 @@ from framework import pclases
 regexp = re.compile(r'[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}', re.IGNORECASE)
 
 
-csv_clientes = csv.writer(open("clientes_gtx.csv", "wb"), delimiter = ";")
-csv_proveedores = csv.writer(open("proveedores_gtx.csv", "wb"), delimiter = ";")
+csv_clientes = csv.writer(open("clientes_gtx.csv", "w"))
+csv_proveedores = csv.writer(open("proveedores_gtx.csv", "w"))
 
 clientes = []
-for c in pclases.Cliente.select():
+for c in pclases.Cliente.select(orderBy = "nombre"):
     nombre = c.nombre
     apellidos = ""
     for email in regexp.findall(c.email):
-        cliente = [email.lower(), nombre, apellidos]
+        cliente = [nombre, email.lower(), nombre, apellidos]
         if cliente not in clientes:
             clientes.append(cliente)
     for email in regexp.findall(c.contacto):
-        cliente = [email.lower(), c.contacto.replace(email.lower(), ""), ""]
+        cliente = [nombre, email.lower(), c.contacto.replace(email.lower(), ""), ""]
         if cliente not in clientes:
             clientes.append(cliente)
     for obra in c.obras:
         for contacto in obra.contactos:
             for email in regexp.findall(contacto.correoe):
-                cliente = [email.lower(), contacto.nombre, contacto.apellidos]
+                cliente = [nombre, email.lower(), contacto.nombre, contacto.apellidos]
                 if cliente not in clientes:
                     clientes.append(cliente)
 for c in clientes:
     csv_clientes.writerow(c)
 
 proveedores = []
-for p in pclases.Cliente.select():
+for p in pclases.Proveedor.select(orderBy = "nombre"):
     nombre = p.nombre
     apellidos = ""
     for email in regexp.findall(p.email):
-        proveedor = [email.lower(), nombre, apellidos]
+        proveedor = [nombre, email.lower(), nombre, apellidos]
         if proveedor not in proveedores:
             proveedores.append(proveedor)
     for email in regexp.findall(p.contacto):
-        proveedor = [email.lower(), p.contacto.replace(email.lower(), ""), ""]
+        proveedor = [nombre, email.lower(), p.contacto.replace(email.lower(), ""), ""]
         if proveedor not in proveedores:
             proveedores.append(proveedor)
 for p in proveedores:
