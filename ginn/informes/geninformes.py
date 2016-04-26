@@ -26,10 +26,7 @@
 
 # Usando ReportLab como herramienta para la generación de informes
 # en GeotexINN.
-
-
-
-############## DONE-LIST #############################
+# ############ DONE-LIST #############################
 # 27 - XI - 2005
 # A parte de hacer todos los informes que quedan. Hay varios
 # puntos que tenemos que comentar y arreglar:
@@ -46,13 +43,12 @@
 ########################################################
 
 
-
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.units import inch, cm
 import mx.DateTime
-
-import sys, os
+import sys
+import os
 from framework import pclases
 from formularios import utils
 import time
@@ -69,7 +65,7 @@ reportlab.rl_config.warnOnMissingFontGlyphs = 0
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont, TTFError
 
-fuentes_personalizadas = (('FedraSans', 'fedrasansstdmedium.ttf'), 
+fuentes_personalizadas = (('FedraSans', 'fedrasansstdmedium.ttf'),
                           ('FiraMono', 'firamonoregular.ttf'),
                           ('Miller', 'millertext.ttf'),
                           ('MillerB', 'millertextbold.ttf'),
@@ -88,14 +84,12 @@ for fuente, file_fuente in fuentes_personalizadas:
     except TTFError:
         pdfmetrics.registerFont(TTFont(fuente, os.path.join(
             os.path.dirname(os.path.realpath(__file__)), "..", "informes",
-                        file_fuente)))
-
-
+            file_fuente)))
 # Medidas fundamentales
 # Ancho y alto
-global width, height, tm , bm, lm, rm, linea
+global width, height, tm, bm, lm, rm, linea
 width, height = A4
-MAXLINEAS = 47 #47 es el numero correcto
+MAXLINEAS = 47  # 47 es el numero correcto
 MAXLINAB = 28
 # Márgenes (Considero el margen superior lo que está por debajo del
 # encabezamiento.)
@@ -103,23 +97,24 @@ tm, bm, lm, rm = (680, 56.69, 28.35, 566.92)
 # Verde Geotexan (Parnaso) en RGB
 VERDE_GTX = 0, 0.6, 0
 
-def apaisar(apaisar = True):
-    global width, height, rm, tm, MAXLINEAS # ¿Por qué globales? ¡¿POR QUÉ?!
-                                            # Repito: ¡¡¡¡¡¡ POR QUÉ !!!!!!!
+
+def apaisar(apaisar=True):
+    global width, height, rm, tm, MAXLINEAS  # ¿Por qué globales? ¡¿POR QUÉ?!
+    # Repito: ¡¡¡¡¡¡ POR QUÉ !!!!!!!
     if apaisar:
         width, height = landscape(A4)
         rm = width - 0.5 * cm
         tm = height - 5.8 * cm      # Por probar con algo de margen
         MAXLINEAS = 30              # Por poner algo, pero que sepas que esto
-                                    # NO ES CORRECTO. El número de líneas no
-                                    # es fijo.
+        # NO ES CORRECTO. El número de líneas no es fijo.
     else:
         width, height = A4
         rm = 566.92
         tm = 680
         MAXLINEAS = 47  # Por poner algo, pero que sepas que esto
-                        # NO ES CORRECTO. El número de líneas no es fijo.
+        # NO ES CORRECTO. El número de líneas no es fijo.
     return rm, tm, width, height, MAXLINEAS
+
 
 def cursiva(c,              # Canvas
             x,              # Posición X
@@ -129,7 +124,7 @@ def cursiva(c,              # Canvas
             fontSize,       # Tamaño
             fillColor,      # Color
             skewAngle,      # Ángulo de inclinación
-           ):
+            ):
     from reportlab.graphics.shapes import skewX
 
     skewMatrix = skewX(skewAngle)
@@ -145,10 +140,12 @@ def cursiva(c,              # Canvas
         x += c.stringWidth(t, fontName, fontSize)
     c.restoreState()
 
+
 def give_me_the_name_baby():
     return time.strftime("%Y%m%d%H%M%S")
 
-def escribe(cadena_original, limite = None):
+
+def escribe(cadena_original, limite=None):
     """
     Dada una cadena la convierte a un formato en el que
     ReportLab es capaz de escribir tildes.
@@ -209,12 +206,12 @@ def cambiar_tildes(cadena):
 
 def cambiar_caracteres_problematicos(cadena, strict_mode=True):
     cadena = cambiar_tildes(cadena)
-    trans_table = (("ñ", "nn"), ("Ñ", "NN"), 
-                   ("ü", "u"), ("Ü", "U"), 
-                   ("ç", "c"), ("Ç", "C"), 
-                   ("(", ""), (")", ""), 
-                   ("č", "c"), ("Č", "C"), 
-                   ("ć", "c"), ("Ć", "C"), 
+    trans_table = (("ñ", "nn"), ("Ñ", "NN"),
+                   ("ü", "u"), ("Ü", "U"),
+                   ("ç", "c"), ("Ç", "C"),
+                   ("(", ""), (")", ""),
+                   ("č", "c"), ("Č", "C"),
+                   ("ć", "c"), ("Ć", "C"),
                    ("'", ""))
     if not strict_mode:
         trans_table = trans_table[2:]   # Respeto la ñ y Ñ
@@ -222,7 +219,7 @@ def cambiar_caracteres_problematicos(cadena, strict_mode=True):
         cadena = cadena.replace(mala, buena)
     return cadena
 
-def sigLinea(valor = 15, actual = None):
+def sigLinea(valor=15, actual=None):
     if actual == None:
         actual = linea
     return actual - valor
@@ -350,7 +347,7 @@ def dibujar_cif_prns(c, lm, linea, datos_empresa):
                 datos_empresa.cif)))
     c.restoreState()
 
-def dibujar_bvqi_prns(c, rm, linea, datos_empresa, texto = ""):
+def dibujar_bvqi_prns(c, rm, linea, datos_empresa, texto=""):
     """
     Coloca el logotipo de calidad de Bureau Veritas junto con los
     textos obligatorios de marcado CE de fibra y geotextiles según
@@ -368,7 +365,7 @@ def dibujar_bvqi_prns(c, rm, linea, datos_empresa, texto = ""):
                     datos_empresa.logoiso2),
                 #rm-1.2*inch, height - 3*cm, 3.3*cm, 1.85*cm)
                 rm-1.2*inch, linea + 1*cm, 3.3*cm, 1.85*cm)
-    linea_fib = linea 
+    linea_fib = linea
     linea_gtx = linea_fib + 0.25*cm
     # Marcado CE Geotextiles
     anchotexto = c.stringWidth(
@@ -412,24 +409,24 @@ def dibujar_bvqi_prns(c, rm, linea, datos_empresa, texto = ""):
         c.drawImage(os.path.join(os.path.dirname(
                     os.path.realpath(__file__)), '..', 'imagenes',
                     "CE.png"),
-                posx + anchosemitexto, 
-                linea_fib, 
-                0.40*cm, 
+                posx + anchosemitexto,
+                linea_fib,
+                0.40*cm,
                 0.20*cm)
     except IOError:     # W8
         c.drawImage(os.path.join(os.path.dirname(
                     os.path.realpath(__file__)), '..', 'imagenes',
                     "CE.gif"),
-                posx + anchosemitexto, 
-                linea_fib, 
-                0.40*cm, 
+                posx + anchosemitexto,
+                linea_fib,
+                0.40*cm,
                 0.20*cm)
     c.setFont("Times-Bold", 18)
     c.drawRightString(rm, linea_gtx + 8 # +8 => tamaño fuente texto marcado CE.
                       + 2, escribe(texto))
     c.restoreState()
 
-def dibujar_linea_prns(c, y, ancho = A4[1]):
+def dibujar_linea_prns(c, y, ancho=A4[1]):
     """
     Dibuja una línea horizontal verde separadora partiendo del extremo
     izquierdo del canvas y hasta la posición «x» recibida. Si no se
@@ -441,7 +438,7 @@ def dibujar_linea_prns(c, y, ancho = A4[1]):
     c.line(0, y, ancho, y)
     c.restoreState()
 
-def cabecera(c, texto, fecha = None, apaisado = False):
+def cabecera(c, texto, fecha=None, apaisado=False):
     """
     Dibuja la cabecera del informe
     """
@@ -473,7 +470,7 @@ def cabecera(c, texto, fecha = None, apaisado = False):
         c.drawRightString(xFecha, yFecha, escribe(fecha))
         c.setFillColorRGB(0, 0, 0)
 
-def pie(c, actualPagina, totalPagina, apaisado = False):
+def pie(c, actualPagina, totalPagina, apaisado=False):
     """
     Pone el número de página y una línea en el pie
     """
@@ -498,18 +495,18 @@ def pie(c, actualPagina, totalPagina, apaisado = False):
     c.drawCentredString(x, linea, escribe(label))
     c.setFillColorRGB(0, 0, 0)
 
-def existencias_no_nulas(hasta = None, exportar_a_csv_a = None, 
+def existencias_no_nulas(hasta=None, exportar_a_csv_a=None,
                          ventana_padre = None):
     """
     Imprime un informe de existencias al día actual si "hasta" es None
     o hasta la fecha indicada.
     Esta función deja obsoleta a la anterior, que ahora se llama _existencias.
-    Si ventana_padre viene instanciado se muestra un diálogo de progreso 
+    Si ventana_padre viene instanciado se muestra un diálogo de progreso
     modal hijo de la ventana "padre_dialogo".
     """
     if ventana_padre:
         from formularios.ventana_progreso import VentanaProgreso
-        vpro = VentanaProgreso(padre = ventana_padre)
+        vpro = VentanaProgreso(padre=ventana_padre)
         vpro.mostrar()
         vpro.set_valor(0.0, "Inicializando...")
     if hasta == None:
@@ -542,7 +539,7 @@ def existencias_no_nulas(hasta = None, exportar_a_csv_a = None,
     datos = []
     productos = pclases.ProductoCompra.select(pclases.AND(
                         pclases.ProductoCompra.q.controlExistencias == True,
-                        pclases.ProductoCompra.q.obsoleto == False, 
+                        pclases.ProductoCompra.q.obsoleto == False,
                         pclases.ProductoCompra.q.existencias != 0),
                     orderBy = "descripcion")
     total_valoracion = 0
@@ -688,7 +685,7 @@ def existencias_no_nulas(hasta = None, exportar_a_csv_a = None,
                   "",
                   "%s €" % (utils.float2str(total_salidas)),
                   ))
-    generated_files = imprimir2(archivo = nomarchivo,
+    generated_files = imprimir2(archivo=nomarchivo,
                      titulo = titulo,
                      campos = campos,
                      datos = datos,
@@ -712,12 +709,12 @@ def existencias_no_nulas(hasta = None, exportar_a_csv_a = None,
             pass    # Se recibió ventana, pero ya fue destruida.
     return generated_files
 
-def existencias(hasta = None, exportar_a_csv_a = None, ventana_padre = None):
+def existencias(hasta=None, exportar_a_csv_a=None, ventana_padre=None):
     """
     Imprime un informe de existencias al día actual si "hasta" es None
     o hasta la fecha indicada.
     Esta función deja obsoleta a la anterior, que ahora se llama _existencias.
-    Si se recibe "padre" se mostrará una ventana de progreso modal hija de la 
+    Si se recibe "padre" se mostrará una ventana de progreso modal hija de la
     ventana padre que se indica.
     """
     if hasta == None:
@@ -747,7 +744,7 @@ def existencias(hasta = None, exportar_a_csv_a = None, ventana_padre = None):
     datos = []
     productos = pclases.ProductoCompra.select(pclases.AND(
             pclases.ProductoCompra.q.controlExistencias == True,
-            pclases.ProductoCompra.q.obsoleto == False), 
+            pclases.ProductoCompra.q.obsoleto == False),
         orderBy = "descripcion")
     total_valoracion = 0
     total_pendiente = 0
@@ -759,7 +756,7 @@ def existencias(hasta = None, exportar_a_csv_a = None, ventana_padre = None):
         tot = productos.count()
     if ventana_padre:
         from formularios.ventana_progreso import VentanaProgreso
-        vpro = VentanaProgreso(padre = ventana_padre)
+        vpro = VentanaProgreso(padre=ventana_padre)
         vpro.mostrar()
         vpro.set_valor(0.0, "Procesando...")
     for p in productos:
@@ -768,13 +765,13 @@ def existencias(hasta = None, exportar_a_csv_a = None, ventana_padre = None):
         if pclases.DEBUG:
             try:
                 print "[{0:>6.2%}]".format(i/tot),
-                print "{i:.0f} de {tot:.0f}\t|".format(**locals()), 
+                print "{i:.0f} de {tot:.0f}\t|".format(**locals()),
             except SyntaxError: #Python 2.5. Don't bother, man!
                 print "[%.2f]" % (i/tot),
-                print "%.0f de %.0f\t|" % (i, tot), 
+                print "%.0f de %.0f\t|" % (i, tot),
             print p.get_puid(), p.descripcion
         if ventana_padre:
-            vpro.set_valor(i/tot, "Procesando %s...\t[%s]" % (p.descripcion, 
+            vpro.set_valor(i/tot, "Procesando %s...\t[%s]" % (p.descripcion,
                                                               p.get_puid()))
         existencias, valoracion, existencias_1_enero, stock_entradas\
             , valoracion_entradas, stock_salidas, valoracion_salidas\
@@ -891,25 +888,25 @@ def existencias(hasta = None, exportar_a_csv_a = None, ventana_padre = None):
                   "%s €" % (utils.float2str(total_salidas)),
                   ))
     vpro.ocultar()
-    return imprimir2(archivo = nomarchivo,
-                     titulo = titulo,
-                     campos = campos,
-                     datos = datos,
-                     fecha = fecha,
-                     cols_a_derecha = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-                     graficos = [],
-                     apaisado = True,
-                     sobrecampos = (("Stock inicial", 71 - 3),
-                                    ("Entradas", 84 - 3),
-                                    ("Salidas", 96 -3)),
-                     lineas_verticales = ((61, True),
-                                          (61 + 6 + 7, True),
-                                          (61 + 2 * (6 + 7), True),
-                                          (22, True),
-                                          (22 + 7 + 7 + 8, True), ),
+    return imprimir2(archivo=nomarchivo,
+                     titulo=titulo,
+                     campos=campos,
+                     datos=datos,
+                     fecha=fecha,
+                     cols_a_derecha=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+                     graficos=[],
+                     apaisado=True,
+                     sobrecampos=(("Stock inicial", 71 - 3),
+                                  ("Entradas", 84 - 3),
+                                  ("Salidas", 96 -3)),
+                     lineas_verticales=((61, True),
+                                        (61 + 6 + 7, True),
+                                        (61 + 2 * (6 + 7), True),
+                                        (22, True),
+                                        (22 + 7 + 7 + 8, True), ),
                      exportar_a_csv_a = exportar_a_csv_a)
 
-def repuestos_no_nulos(hasta = None, exportar_a_csv_a = None):
+def repuestos_no_nulos(hasta=None, exportar_a_csv_a=None):
     """
     Imprime un informe de existencias al día actual si "hasta" es None
     o hasta la fecha indicada.
@@ -939,7 +936,7 @@ def repuestos_no_nulos(hasta = None, exportar_a_csv_a = None):
     datos = []
     productos = pclases.ProductoCompra.select(pclases.AND(
             pclases.ProductoCompra.q.controlExistencias == True,
-            pclases.ProductoCompra.q.existencias != 0, 
+            pclases.ProductoCompra.q.existencias != 0,
             pclases.ProductoCompra.q.obsoleto == False),
         orderBy = "descripcion")
     tipos_repuestos = pclases.TipoDeMaterial.select(pclases.OR(
@@ -1018,7 +1015,7 @@ def repuestos(hasta = None, exportar_a_csv_a = None):
     datos = []
     productos = pclases.ProductoCompra.select(pclases.AND(
             pclases.ProductoCompra.q.controlExistencias == True,
-            pclases.ProductoCompra.q.obsoleto == False), 
+            pclases.ProductoCompra.q.obsoleto == False),
         orderBy = "descripcion")
     tipos_repuestos = pclases.TipoDeMaterial.select(pclases.OR(
         pclases.TipoDeMaterial.q.descripcion.contains("repuesto"),
@@ -1294,7 +1291,7 @@ def _existencias(hasta = None):
     return nomarchivo
 
 
-def existencias_productos(informe, fecha, hasta = None, almacen = None, 
+def existencias_productos(informe, fecha, hasta = None, almacen = None,
                           ruta_csv = None):
     """
     Crea un informe relativo a los geotextiles o balas bajo mínimos.
@@ -1335,7 +1332,7 @@ def existencias_productos(informe, fecha, hasta = None, almacen = None,
                      pclases.ProductoVenta.select(orderBy = "descripcion")
                      if p.es_bala() or p.es_bigbag() or p.es_bala_cable()
                          or p.es_bolsa()]
-        productos.sort(lambda p1, p2: 
+        productos.sort(lambda p1, p2:
             int(p1.lineaDeProduccionID - p2.lineaDeProduccionID))
         productos += ["total"]
         unidad = "kg"
@@ -1369,9 +1366,9 @@ def existencias_productos(informe, fecha, hasta = None, almacen = None,
         c.drawRightString(xMinimo, linea, escribe('Mínimo'))
         c.drawRightString(xStock, linea, escribe('Existencias'))
         c.drawRightString(xExist, linea, escribe('Bultos'))
-        csv_cabecera = (("Descripción", 0), 
-                        ("Mínimo", 0), 
-                        ("Existencias", 0), 
+        csv_cabecera = (("Descripción", 0),
+                        ("Mínimo", 0),
+                        ("Existencias", 0),
                         ("Bultos", 0))
 
         linea = linea -2
@@ -1452,9 +1449,9 @@ def existencias_productos(informe, fecha, hasta = None, almacen = None,
                                   escribe("%s m²" % utils.float2str(metros2)))
                 c.drawRightString(xExist, linea,
                                   escribe("%d" % bultos))
-                csv_data.append(("Geotextiles B (varios productos)", 
-                                 peso_gtxb, 
-                                 metros2, 
+                csv_data.append(("Geotextiles B (varios productos)",
+                                 peso_gtxb,
+                                 metros2,
                                  bultos))
                 unidad = None   # Para que no entren tampoco en el total.
                 c.restoreState()
@@ -1482,8 +1479,8 @@ def existencias_productos(informe, fecha, hasta = None, almacen = None,
                                   escribe("%s" % utils.float2str(p.minimo, 1)))
                 # En rojo si está por debajo del mínimo
                 #stock = p.get_stock(hasta, almacen = almacen)
-                stock = p.get_stock_A(hasta, almacen = almacen) # Nada de 
-                    # rollos defectuosos (remember: rollos X, largo inferior, 
+                stock = p.get_stock_A(hasta, almacen = almacen) # Nada de
+                    # rollos defectuosos (remember: rollos X, largo inferior,
                     # no los quiero).
                 if stock != None and stock < p.minimo:
                     c.setFillColorRGB(255, 0, 0)
@@ -1491,12 +1488,12 @@ def existencias_productos(informe, fecha, hasta = None, almacen = None,
                     stock = 0
                 try:
                     strstock = utils.float2str(stock, 1)
-                except ValueError:  
+                except ValueError:
                     strstock = "-"
                 c.drawRightString(xStock, linea,
                                   escribe("%s %s"%(strstock, unidad_producto)))
-                bultos = p.get_existencias_A(hasta, almacen = almacen)# Nada 
-                    # de rollos defectuosos (remember: rollos X, largo 
+                bultos = p.get_existencias_A(hasta, almacen = almacen)# Nada
+                    # de rollos defectuosos (remember: rollos X, largo
                     # inferior, no los quiero).
                 c.drawRightString(xExist, linea, escribe(bultos))
                 c.setFillColorRGB(0, 0, 0)
@@ -1719,7 +1716,7 @@ def albaran(composan, cliente, envio, general, lineas, observaciones, destino,
         if datos_empresa.bvqi:
             dibujar_bvqi_prns(c, rm, height-3*cm, datos_empresa, 'Albarán')
         dibujar_cif_prns(c, lm, height - 3.8*cm, datos_empresa)
-        # === línea horizontal 
+        # === línea horizontal
         dibujar_linea_prns(c, height - 3.9*cm)
         c.setFont("Helvetica", 8)
         if datos_empresa.direccion != datos_empresa.dirfacturacion:
@@ -1891,13 +1888,13 @@ def albaran(composan, cliente, envio, general, lineas, observaciones, destino,
                 linea = sigLinea(10)
             #c.drawRightString(xcantidad, linea,
             #                  escribe("%s %s" % (
-            #                    utils.float2str(l['cantidad']), 
+            #                    utils.float2str(l['cantidad']),
             #                    l['unidad'])))
-            el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 10, 
+            el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 10,
                                     rm-1.8*inch, xcantidad,
-                                    linea, 
-                                    "%s %s" % (utils.float2str(l['cantidad']), 
-                                               l['unidad']), 
+                                    linea,
+                                    "%s %s" % (utils.float2str(l['cantidad']),
+                                               l['unidad']),
                                     alineacion = 1)
             el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 10, rm-inch+2,
                                                 rm - 2, linea, l['numped'])
@@ -2009,7 +2006,7 @@ def albaranValorado(cliente,
                     observaciones,
                     destino,
                     transporte,
-                    conformeT, 
+                    conformeT,
                     valorar_con_iva = True):
     """
     Con los datos de entrada genera el albarán.
@@ -2677,9 +2674,9 @@ def albaranEntrada(general, lineas, observaciones):
 ################ Pedido de compra ########################
 
 def pedidoCompra(general, proveedor, lineas, entregas, observaciones,
-                 formapago, direntrega0, direntrega1, direntrega2, 
-                 responsable0, responsable1, portes0, portes1, 
-                 mostrar_precios = True, observaciones0 = "", 
+                 formapago, direntrega0, direntrega1, direntrega2,
+                 responsable0, responsable1, portes0, portes1,
+                 mostrar_precios = True, observaciones0 = "",
                  observaciones1 = ""):
     """
     Con los datos de entrada genera el impreso.
@@ -2726,7 +2723,7 @@ def pedidoCompra(general, proveedor, lineas, entregas, observaciones,
     dibujar_cif_prns(c, lm, height - 4.2*cm, datos_empresa)
     dibujar_linea_prns(c, height - 4.5*cm)
     # La cabecera
-    #c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+    #c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)),
     #                         '..', 'imagenes', datos_empresa.logo),
     #            lm+0.5*inch, height - 1.5*inch, 1.5*inch, 1.5*inch)
     c.setFont("Helvetica-Bold", 18)
@@ -2734,13 +2731,13 @@ def pedidoCompra(general, proveedor, lineas, entregas, observaciones,
     fuente = "Helvetica"
     tamano = 8
     #if datos_empresa.bvqi:
-    #    c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+    #    c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)),
     #                             '..', 'imagenes', datos_empresa.logoiso1),
     #                rm-1.75*inch, tm+0.65*inch, width = 119, height = 65)
     #    c.setFont(fuente, tamano - 2)
-    #    c.drawCentredString(rm-0.94*inch, tm+0.66*inch, 
+    #    c.drawCentredString(rm-0.94*inch, tm+0.66*inch,
     #                        escribe('Geotextiles CE 1035-CPD-ES033858'))
-    #    c.drawCentredString(rm-0.94*inch, tm+0.56*inch, 
+    #    c.drawCentredString(rm-0.94*inch, tm+0.56*inch,
     #                        escribe('Fibra CE 1035-CPD-9003712'))
     c.setFont(fuente, tamano)
     linea = height-15
@@ -2947,13 +2944,13 @@ def pedidoCompra(general, proveedor, lineas, entregas, observaciones,
           "del día 10 del mes siguiente al del suministro. En caso contrario "\
           "el procedimiento de aceptación y pago de la factura se pospondrá "\
           "al mes siguiente." % (
-            datos_empresa.nombre, 
-            datos_empresa.direccion, 
-            datos_empresa.cp, 
-            datos_empresa.ciudad, 
-            datos_empresa.provincia, 
+            datos_empresa.nombre,
+            datos_empresa.direccion,
+            datos_empresa.cp,
+            datos_empresa.ciudad,
+            datos_empresa.provincia,
             datos_empresa.pais)
-    # TODO: Calcular en cuántas líneas tengo que dividir el texto para que 
+    # TODO: Calcular en cuántas líneas tengo que dividir el texto para que
     #       quepa en el ancho del folio.
     c.saveState()
     fuente, tamanno = "Helvetica-Oblique", 8    # "Times-Italic", 10
@@ -2965,7 +2962,7 @@ def pedidoCompra(general, proveedor, lineas, entregas, observaciones,
     import textwrap
     txt = textwrap.wrap(txt, len(txt) / numlineas)
     for i in range(numlineas):
-        c.drawCentredString((lm+.5*inch) + ((rm - (lm+0.5*inch))/2), 
+        c.drawCentredString((lm+.5*inch) + ((rm - (lm+0.5*inch))/2),
                             finDatos - 0.4*cm - (i * (tamanno + 2)),
                             escribe(txt[i]))
     c.restoreState()
@@ -3066,19 +3063,19 @@ def pedidoCompra(general, proveedor, lineas, entregas, observaciones,
     rectangulo(c, (izq, aux), (der, aba), color_relleno = (0.8, 1.0, 0.6))
     linea = aux - 0.5 * cm
     if observaciones0 != None:
-        lineas_agregadas = agregarFila(izq + 0.1 * cm, linea, der, 
+        lineas_agregadas = agregarFila(izq + 0.1 * cm, linea, der,
                                        escribe(observaciones0), c,
                                        fuente, tamano)
         for i in xrange(lineas_agregadas):
             linea = sigLinea()
     if observaciones1 != None:
-        lineas_agregadas = agregarFila(izq + 0.1 * cm, linea, der, 
+        lineas_agregadas = agregarFila(izq + 0.1 * cm, linea, der,
                                        escribe(observaciones1), c,
                                        fuente, tamano)
         for i in xrange(lineas_agregadas):
             linea = sigLinea()
     if observaciones != None:
-        lineas_agregadas = agregarFila(izq + 0.1 * cm, linea, der, 
+        lineas_agregadas = agregarFila(izq + 0.1 * cm, linea, der,
                                        escribe(observaciones), c,
                                        fuente, tamano)
         for i in xrange(lineas_agregadas):
@@ -3152,8 +3149,8 @@ def factura(cliente,
             vencimiento,
             texto,
             totales,
-            impuesto = 1.21, 
-            orden_ventanas = None, 
+            impuesto = 1.21,
+            orden_ventanas = None,
             es_copia = False):
     """
     Con los datos de entrada genera la factura.
@@ -3215,7 +3212,11 @@ def factura(cliente,
     impuesto --> valor numerico con el impuesto aplicado. Con arancel se pone
                  a 0 automaticamente
     """
-    if orden_ventanas is None:  # Solo si no recibo el parámetro miro la 
+    # CWT: Es para un caso especial de un cliente. Requisitos de los bancos.
+    # Para detectar este caso particular nos fijamos en el CIF. Es el único
+    # que cumple estas dos características: Todo números y 15 cifras exactas.
+    ocultar_texto_adicional_arancel = mostrar_nif = lambda c: len(c['cif']) == 15 and c['cif'].isdigit()
+    if orden_ventanas is None:  # Solo si no recibo el parámetro miro la
                                 # configuración general.
         try:
             orden_ventanas = pclases.config.get_orden_ventanas()
@@ -3231,19 +3232,19 @@ def factura(cliente,
     nombre_chachi = cliente['nombre'].replace(" ", "_")
     nombre_chachi = abreviar(nombre_chachi, 10)
     nombre_chachi = cambiar_caracteres_problematicos(nombre_chachi)
-    nomarchivo = os.path.join(gettempdir(), 
+    nomarchivo = os.path.join(gettempdir(),
         "factura_%s_%s.pdf" % (nombre_chachi, give_me_the_name_baby()))
     if es_copia:
         numcopia = 1
-        nomarchivo = "%s_COPIA%d.pdf" % (nomarchivo.replace(".pdf", ""), 
+        nomarchivo = "%s_COPIA%d.pdf" % (nomarchivo.replace(".pdf", ""),
                                          numcopia)
-        while os.path.exists(nomarchivo) and numcopia < 100: 
-            # ¿Más de 100 copias? No creo. 
+        while os.path.exists(nomarchivo) and numcopia < 100:
+            # ¿Más de 100 copias? No creo.
             _numcopia = numcopia
             numcopia += 1
             nomarchivo = "%s_COPIA%d.pdf" % (
                 nomarchivo.replace(".pdf", "").replace(
-                    "_COPIA%d" % _numcopia, ""), 
+                    "_COPIA%d" % _numcopia, ""),
                 numcopia)
     c = canvas.Canvas(nomarchivo)
     c.setTitle("factura %s %s" % (cliente['nombre'], factdata['fecha']))
@@ -3255,7 +3256,7 @@ def factura(cliente,
     for linea in _lineas:
         lineas.append(linea)
         if linea.has_key("descuento"):
-            tiene_descuento = (linea['descuento'] != "" and 
+            tiene_descuento = (linea['descuento'] != "" and
                                float(linea['descuento']) != 0)
             if tiene_descuento:
                 lineas.append({})
@@ -3364,8 +3365,12 @@ def factura(cliente,
         c.line(rm, linea-8, rm, linea-10-15)
         c.drawString(xLocalTitulo + 14, linea - 20,
                      escribe('Cliente: %s' % (cliente['numcli'])))
+        cifnif = "CIF"
+        if mostrar_nif(cliente):
+            # CWT: Caso especial
+            cifnif = "NIF"
         c.drawString(width/2 + 10, linea - 20,
-                     escribe('CIF: %s' % (cliente['cif'])))
+                     escribe('%s: %s' % (cifnif, cliente['cif'])))
         c.restoreState()
 
         linea = sigLinea(32) # Ponía 10. Después ponía 35. Se queda en 32.
@@ -3373,8 +3378,8 @@ def factura(cliente,
         txti, txtd = "Dirección de correspondencia:", "Dirección fiscal:"
         if orden_ventanas == "fc":
             txti, txtd = txtd, txti
-        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos 
-        # de algunos clientes, pero vienen repletos de tabuladores, que se 
+        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos
+        # de algunos clientes, pero vienen repletos de tabuladores, que se
         # convierten después en cuadrados negros en el PDF.
         txti,txtd=txti.replace("\t", "").strip(),txtd.replace("\t", "").strip()
         c.drawString(xLocalTitulo, linea-1, escribe(txti))
@@ -3409,8 +3414,8 @@ def factura(cliente,
         txti, txtd = cliente['nombre'], cliente['nombref']
         if orden_ventanas == "fc":
             txti, txtd = txtd, txti
-        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos 
-        # de algunos clientes, pero vienen repletos de tabuladores, que se 
+        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos
+        # de algunos clientes, pero vienen repletos de tabuladores, que se
         # convierten después en cuadrados negros en el PDF.
         txti,txtd=txti.replace("\t", "").strip(),txtd.replace("\t", "").strip()
         el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 10, xLocal,
@@ -3426,8 +3431,8 @@ def factura(cliente,
         txti, txtd = cliente['direccion'], cliente['direccionf']
         if orden_ventanas == "fc":
             txti, txtd = txtd, txti
-        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos 
-        # de algunos clientes, pero vienen repletos de tabuladores, que se 
+        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos
+        # de algunos clientes, pero vienen repletos de tabuladores, que se
         # convierten después en cuadrados negros en el PDF.
         txti,txtd=txti.replace("\t", "").strip(),txtd.replace("\t", "").strip()
         el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 10, xLocal,
@@ -3442,8 +3447,8 @@ def factura(cliente,
         txti, txtd = cliente['localidad'], cliente['localidadf']
         if orden_ventanas == "fc":
             txti, txtd = txtd, txti
-        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos 
-        # de algunos clientes, pero vienen repletos de tabuladores, que se 
+        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos
+        # de algunos clientes, pero vienen repletos de tabuladores, que se
         # convierten después en cuadrados negros en el PDF.
         txti,txtd=txti.replace("\t", "").strip(),txtd.replace("\t", "").strip()
         el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 10, xLocal,
@@ -3455,12 +3460,12 @@ def factura(cliente,
         c.drawString(xLocalTitulo, linea, escribe('CP:'))
         c.drawString(xFactTitulo, linea, escribe('CP:'))
         c.setFont("Helvetica", 10)
-        txti, txtd = ("%s %s" % (cliente['cp'], cliente['provincia']), 
+        txti, txtd = ("%s %s" % (cliente['cp'], cliente['provincia']),
                       "%s %s" % (cliente['cpf'], cliente['provinciaf']))
         if orden_ventanas == "fc":
             txti, txtd = txtd, txti
-        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos 
-        # de algunos clientes, pero vienen repletos de tabuladores, que se 
+        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos
+        # de algunos clientes, pero vienen repletos de tabuladores, que se
         # convierten después en cuadrados negros en el PDF.
         txti,txtd=txti.replace("\t", "").strip(),txtd.replace("\t", "").strip()
         el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 10, xLocal,
@@ -3476,8 +3481,8 @@ def factura(cliente,
         txti, txtd = cliente['pais'], cliente['paisf']
         if orden_ventanas == "fc":
             txti, txtd = txtd, txti
-        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos 
-        # de algunos clientes, pero vienen repletos de tabuladores, que se 
+        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos
+        # de algunos clientes, pero vienen repletos de tabuladores, que se
         # convierten después en cuadrados negros en el PDF.
         txti,txtd=txti.replace("\t", "").strip(),txtd.replace("\t", "").strip()
         el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 10, xLocal,
@@ -3569,8 +3574,8 @@ def factura(cliente,
         if lineas != None:
             for l in lineas:
                 if not l:
-                    continue    # Es una línea nula que emula la que ocupa el 
-                                # descuento. No hay que hacer nada salvo 
+                    continue    # Es una línea nula que emula la que ocupa el
+                                # descuento. No hay que hacer nada salvo
                                 # saltar a la siguiente.
                 # Chapuza formatos (refactorizar ya y mirar el lenguaje de
                 # marcas de ReportLab. No reinventes la rueda).
@@ -3615,10 +3620,10 @@ def factura(cliente,
                     unidad = ""
                 cantidad_sin_cero = "%s %s" % (cantidad_sin_cero, unidad)
                 # i 10096
-                el_encogedor_de_fuentes_de_doraemon(c, fuente, tamanno, 
-                                                    xcantidad - 15, 
+                el_encogedor_de_fuentes_de_doraemon(c, fuente, tamanno,
+                                                    xcantidad - 15,
                                                     xdescripcion - 3,
-                                                    linea, cantidad_sin_cero, 
+                                                    linea, cantidad_sin_cero,
                                                     1)
                 # c.drawRightString(xdescripcion-5, linea,
                 #                   escribe(cantidad_sin_cero))
@@ -3742,33 +3747,33 @@ def factura(cliente,
             borde_der_obs = rm - 2.2*inch
             hlinea = 8
             sizefont = 8
-            topeinferior = bm + inch + 30   # Sacado del rectángulo de 
+            topeinferior = bm + inch + 30   # Sacado del rectángulo de
                                             # unas líneas más arriba.
             lineas_sumadas = 0
-            while ((linea - lineas_sumadas*hlinea) > topeinferior 
+            while ((linea - lineas_sumadas*hlinea) > topeinferior
                    and sizefont < 12):  # CWT: Antes era 18 el máximo.
                 sizefont += 1
                 hlinea += 1
-                lineas_sumadas = agregarFila(borde_izq_obs, 
-                                             linea, 
-                                             borde_der_obs, 
-                                             texto, 
+                lineas_sumadas = agregarFila(borde_izq_obs,
+                                             linea,
+                                             borde_der_obs,
+                                             texto,
                                              c,
-                                             "Times-Roman", 
-                                             sizefont, 
-                                             altura_linea = hlinea, 
+                                             "Times-Roman",
+                                             sizefont,
+                                             altura_linea = hlinea,
                                              simular = True)
             sizefont -= 1
             hlinea -= 1
-            lineas_sumadas = agregarFila(borde_izq_obs, 
-                                         linea, 
-                                         borde_der_obs, 
-                                         texto, 
+            lineas_sumadas = agregarFila(borde_izq_obs,
+                                         linea,
+                                         borde_der_obs,
+                                         texto,
                                          c,
-                                         "Times-Roman", 
-                                         sizefont, 
-                                         altura_linea = hlinea, 
-                                         simular = False, 
+                                         "Times-Roman",
+                                         sizefont,
+                                         altura_linea = hlinea,
+                                         simular = False,
                                          subrayador_fosforito = (1, 1, 0) )
             #agregarFila(lm + 0.6*inch, linea, rm-2.2*inch, texto, c,
             #            "Times-Roman", 8)
@@ -3779,10 +3784,14 @@ def factura(cliente,
             if arancel != None and arancel.strip() != "":
                 rectangulo(c, (lm+0.5*inch, bm+inch+21), (rm, bm+inch+7),
                            'ARANCEL:')
-                c.drawString(lm+1.4*inch, bm+inch+11,
-                    escribe(arancel+'  Exención del I.V.A. Art. 25 1.a Ley 3'\
-                                    '7/1992 de 29 de Diciembre del I.V.A.'))
-
+                if not ocultar_texto_adicional_arancel(cliente):
+                    c.drawString(lm+1.4*inch, bm+inch+11,
+                        escribe(arancel +
+                            '  Exención del I.V.A. Art. 25 1.a Ley 3'
+                            '7/1992 de 29 de Diciembre del I.V.A.'))
+                else:
+                    c.drawString(lm+1.4*inch, bm+inch+11,
+                        escribe(arancel))
 
             # -- Totales
             if totales['irpf'] != "0 %":
@@ -4001,7 +4010,7 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
                  a 0 automaticamente
     """
 
-    if orden_ventanas is None:  # Solo si no recibo el parámetro miro la 
+    if orden_ventanas is None:  # Solo si no recibo el parámetro miro la
                                 # configuración general.
         try:
             orden_ventanas = pclases.config.get_orden_ventanas()
@@ -4026,7 +4035,7 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
     for linea in _lineas:
         lineas.append(linea)
         if linea.has_key("descuento"):
-            tiene_descuento = (linea['descuento'] != "" and 
+            tiene_descuento = (linea['descuento'] != "" and
                                float(linea['descuento']) != 0)
             if tiene_descuento:
                 lineas.append({})
@@ -4061,7 +4070,7 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
             anchosemitexto = c.stringWidth(
                                 escribe('Geotextiles '),
                                 "Courier", 8)
-            posx = (width - anchotexto)/2 
+            posx = (width - anchotexto)/2
             cursiva(c, posx,
                     linea,
                     escribe('Geotextiles    1035-CPD-ES033858'),
@@ -4089,7 +4098,7 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
             anchosemitexto = c.stringWidth(
                                 escribe('Fibra '),
                                 "Courier", 8)
-            posx = (width - anchotexto)/2 
+            posx = (width - anchotexto)/2
             cursiva(c, posx,
                     linea - 8,
                     escribe('Fibra    1035-CPD-9003712'),
@@ -4169,8 +4178,8 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
         txti, txtd = "Dirección de correspondencia:", "Dirección fiscal:"
         if orden_ventanas == "fc":
             txti, txtd = txtd, txti
-        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos 
-        # de algunos clientes, pero vienen repletos de tabuladores, que se 
+        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos
+        # de algunos clientes, pero vienen repletos de tabuladores, que se
         # convierten después en cuadrados negros en el PDF.
         txti,txtd=txti.replace("\t", "").strip(),txtd.replace("\t", "").strip()
         c.drawString(xLocalTitulo, linea-1, escribe(txti))
@@ -4190,8 +4199,8 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
         txti, txtd = cliente['nombre'], cliente['nombref']
         if orden_ventanas == "fc":
             txti, txtd = txtd, txti
-        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos 
-        # de algunos clientes, pero vienen repletos de tabuladores, que se 
+        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos
+        # de algunos clientes, pero vienen repletos de tabuladores, que se
         # convierten después en cuadrados negros en el PDF.
         txti,txtd=txti.replace("\t", "").strip(),txtd.replace("\t", "").strip()
         el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 10, xLocal,
@@ -4207,8 +4216,8 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
         txti, txtd = cliente['direccion'], cliente['direccionf']
         if orden_ventanas == "fc":
             txti, txtd = txtd, txti
-        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos 
-        # de algunos clientes, pero vienen repletos de tabuladores, que se 
+        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos
+        # de algunos clientes, pero vienen repletos de tabuladores, que se
         # convierten después en cuadrados negros en el PDF.
         txti,txtd=txti.replace("\t", "").strip(),txtd.replace("\t", "").strip()
         el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 10, xLocal,
@@ -4223,8 +4232,8 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
         txti, txtd = cliente['localidad'], cliente['localidadf']
         if orden_ventanas == "fc":
             txti, txtd = txtd, txti
-        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos 
-        # de algunos clientes, pero vienen repletos de tabuladores, que se 
+        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos
+        # de algunos clientes, pero vienen repletos de tabuladores, que se
         # convierten después en cuadrados negros en el PDF.
         txti,txtd=txti.replace("\t", "").strip(),txtd.replace("\t", "").strip()
         el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 10, xLocal,
@@ -4236,12 +4245,12 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
         c.drawString(xLocalTitulo, linea, escribe('CP:'))
         c.drawString(xFactTitulo, linea, escribe('CP:'))
         c.setFont("Helvetica", 10)
-        txti, txtd = ("%s %s" % (cliente['cp'], cliente['provincia']), 
+        txti, txtd = ("%s %s" % (cliente['cp'], cliente['provincia']),
                       "%s %s" % (cliente['cpf'], cliente['provinciaf']))
         if orden_ventanas == "fc":
             txti, txtd = txtd, txti
-        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos 
-        # de algunos clientes, pero vienen repletos de tabuladores, que se 
+        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos
+        # de algunos clientes, pero vienen repletos de tabuladores, que se
         # convierten después en cuadrados negros en el PDF.
         txti,txtd=txti.replace("\t", "").strip(),txtd.replace("\t", "").strip()
         el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 10, xLocal,
@@ -4257,8 +4266,8 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
         txti, txtd = cliente['pais'], cliente['paisf']
         if orden_ventanas == "fc":
             txti, txtd = txtd, txti
-        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos 
-        # de algunos clientes, pero vienen repletos de tabuladores, que se 
+        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos
+        # de algunos clientes, pero vienen repletos de tabuladores, que se
         # convierten después en cuadrados negros en el PDF.
         txti,txtd=txti.replace("\t", "").strip(),txtd.replace("\t", "").strip()
         el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 10, xLocal,
@@ -4372,10 +4381,10 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
                     else:
                         raise ValueError, msg
                 # i 10096
-                el_encogedor_de_fuentes_de_doraemon(c, fuente, tamanno, 
-                                                    xcantidad - 15, 
+                el_encogedor_de_fuentes_de_doraemon(c, fuente, tamanno,
+                                                    xcantidad - 15,
                                                     xdescripcion - 3,
-                                                    linea, cantidad_sin_cero, 
+                                                    linea, cantidad_sin_cero,
                                                     1)
                 # c.drawRightString(xdescripcion-5, linea,
                 #                   escribe(cantidad_sin_cero))
@@ -4588,7 +4597,7 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
 
 def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
           vencimiento, texto, totales, impuesto = 1.21,
-          facturas_abonadas = None, 
+          facturas_abonadas = None,
           orden_ventanas = None):
     """
     Con los datos de entrada genera la factura.
@@ -4643,7 +4652,7 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
                  a 0 automaticamente
     """
     datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
-    if orden_ventanas is None:  # Solo si no recibo el parámetro miro la 
+    if orden_ventanas is None:  # Solo si no recibo el parámetro miro la
                                 # configuración general.
         try:
             orden_ventanas = pclases.config.get_orden_ventanas()
@@ -4744,8 +4753,8 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
         txti, txtd = "Dirección de correspondencia:", "Dirección fiscal:"
         if orden_ventanas == "fc":
             txti, txtd = txtd, txti
-        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos 
-        # de algunos clientes, pero vienen repletos de tabuladores, que se 
+        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos
+        # de algunos clientes, pero vienen repletos de tabuladores, que se
         # convierten después en cuadrados negros en el PDF.
         txti,txtd=txti.replace("\t", "").strip(),txtd.replace("\t", "").strip()
         c.drawString(xLocalTitulo, linea-1,escribe(txti))
@@ -4766,8 +4775,8 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
         txti, txtd = cliente['nombre'], cliente['nombref']
         if orden_ventanas == "fc":
             txti, txtd = txtd, txti
-        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos 
-        # de algunos clientes, pero vienen repletos de tabuladores, que se 
+        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos
+        # de algunos clientes, pero vienen repletos de tabuladores, que se
         # convierten después en cuadrados negros en el PDF.
         txti,txtd=txti.replace("\t", "").strip(),txtd.replace("\t", "").strip()
         el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 10, xLocal,
@@ -4782,8 +4791,8 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
         txti, txtd = cliente['direccion'], cliente['direccionf']
         if orden_ventanas == "fc":
             txti, txtd = txtd, txti
-        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos 
-        # de algunos clientes, pero vienen repletos de tabuladores, que se 
+        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos
+        # de algunos clientes, pero vienen repletos de tabuladores, que se
         # convierten después en cuadrados negros en el PDF.
         txti,txtd=txti.replace("\t", "").strip(),txtd.replace("\t", "").strip()
         el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 10, xLocal,
@@ -4798,8 +4807,8 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
         txti, txtd = cliente['localidad'], cliente['localidadf']
         if orden_ventanas == "fc":
             txti, txtd = txtd, txti
-        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos 
-        # de algunos clientes, pero vienen repletos de tabuladores, que se 
+        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos
+        # de algunos clientes, pero vienen repletos de tabuladores, que se
         # convierten después en cuadrados negros en el PDF.
         txti,txtd=txti.replace("\t", "").strip(),txtd.replace("\t", "").strip()
         el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 10, xLocal,
@@ -4811,12 +4820,12 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
         c.drawString(xLocalTitulo, linea, escribe('CP:'))
         c.drawString(xFactTitulo, linea, escribe('CP:'))
         c.setFont("Helvetica", 10)
-        txti, txtd = ("%s %s" % (cliente['cp'], cliente['provincia']), 
+        txti, txtd = ("%s %s" % (cliente['cp'], cliente['provincia']),
                       "%s %s" % (cliente['cpf'], cliente['provinciaf']))
         if orden_ventanas == "fc":
             txti, txtd = txtd, txti
-        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos 
-        # de algunos clientes, pero vienen repletos de tabuladores, que se 
+        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos
+        # de algunos clientes, pero vienen repletos de tabuladores, que se
         # convierten después en cuadrados negros en el PDF.
         txti,txtd=txti.replace("\t", "").strip(),txtd.replace("\t", "").strip()
         el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 10, xLocal,
@@ -4831,8 +4840,8 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
         txti, txtd = cliente['pais'], cliente['paisf']
         if orden_ventanas == "fc":
             txti, txtd = txtd, txti
-        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos 
-        # de algunos clientes, pero vienen repletos de tabuladores, que se 
+        # Aprovecho para limpiar datos. No sé de dónde habrán sacado los datos
+        # de algunos clientes, pero vienen repletos de tabuladores, que se
         # convierten después en cuadrados negros en el PDF.
         txti,txtd=txti.replace("\t", "").strip(),txtd.replace("\t", "").strip()
         el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 10, xLocal,
@@ -4892,10 +4901,10 @@ def abono(cliente, factdata, lineasAbono, lineasDevolucion, arancel,
                                         5, autodec = True)
                 # XXX Si no es un float, que salte la excepción.
                 # i 10096
-                el_encogedor_de_fuentes_de_doraemon(c, fuente, tamanno, 
-                                                    xcantidad - 15, 
+                el_encogedor_de_fuentes_de_doraemon(c, fuente, tamanno,
+                                                    xcantidad - 15,
                                                     xdescripcion - 3,
-                                                    linea, cantidad_sin_cero, 
+                                                    linea, cantidad_sin_cero,
                                                     1)
                 # c.drawRightString(xdescripcion-5, linea,
                 #                   escribe(cantidad_sin_cero))
@@ -5243,7 +5252,7 @@ def crm_generar_pdf_detalles_factura(factura):
     una_linea = -12
     tm, bm, lm, rm = (680, 56.69, 28.35, 566.92)
     nomarchivo = os.path.join(gettempdir(),
-        "crm_factura_%s_%s.pdf" % (factura.numfactura.replace("/", "_"), 
+        "crm_factura_%s_%s.pdf" % (factura.numfactura.replace("/", "_"),
                                    give_me_the_name_baby()))
     c = canvas.Canvas(nomarchivo)
     c.setPageSize(A4)
@@ -5253,12 +5262,12 @@ def crm_generar_pdf_detalles_factura(factura):
     lineas = []
         # Datos de factura
     lineas.append(("Factura %s" % factura.numfactura, "Helvetica-Bold", 12))
-    lineas.append(("    Cliente: %s" % factura.cliente.nombre, 
+    lineas.append(("    Cliente: %s" % factura.cliente.nombre,
                    fuente, tamanno))
     if factura.obra and not factura.obra.generica:
-        lineas.append(("    Obra: %s" % factura.obra.get_str_obra(), 
+        lineas.append(("    Obra: %s" % factura.obra.get_str_obra(),
                        fuente, tamanno))
-    lineas.append(("    Fecha: %s" % utils.str_fecha(factura.fecha), 
+    lineas.append(("    Fecha: %s" % utils.str_fecha(factura.fecha),
                    fuente, tamanno))
     lineas.append(("    Total: %s €" % utils.float2str(
         factura.calcular_importe_total()), fuente, tamanno))
@@ -5269,14 +5278,14 @@ def crm_generar_pdf_detalles_factura(factura):
     lineas.append(("    Pendiente de cobro: %s €" % utils.float2str(
         factura.calcular_pendiente_cobro()), fuente, tamanno))
     if factura.observaciones:
-        lineas.append(("    Observaciones: %s" % factura.observaciones, 
+        lineas.append(("    Observaciones: %s" % factura.observaciones,
                        fuente, tamanno))
         # Datos de contactos:
     if factura.obra and factura.obra.contactos:
         lineas.append(("", fuente, tamanno))
         lineas.append(("    Contactos:", "Helvetica-Bold", 10))
         for contacto in factura.obra.contactos:
-            lineas.append(("        %s" % contacto.get_str_contacto(), 
+            lineas.append(("        %s" % contacto.get_str_contacto(),
                            fuente, tamanno))
         # Anotaciones
     if factura.notas:
@@ -5287,15 +5296,15 @@ def crm_generar_pdf_detalles_factura(factura):
         for nota in notas:
             txtnota = nota.get_str_nota()
             lineas.append((txtnota, fuente, tamanno))
-        # Vencimientos: 
+        # Vencimientos:
     if factura.vencimientosCobro or factura.cobros:
         vtoscobros = factura.emparejar_vencimientos()
         lineas.append(("", fuente, tamanno))
         lineas.append(("Vencimientos y cobros:", "Helvetica-Bold", 10))
         txtvto = ""
         for vto in vtoscobros['vtos']:
-            txtvto += "%s (%s €) [%s]" % (utils.str_fecha(vto.fecha), 
-                                          utils.float2str(vto.importe), 
+            txtvto += "%s (%s €) [%s]" % (utils.str_fecha(vto.fecha),
+                                          utils.float2str(vto.importe),
                                           vto.observaciones)
             lineas.append((txtvto, fuente, tamanno))
             if vtoscobros[vto]:
@@ -5306,17 +5315,17 @@ def crm_generar_pdf_detalles_factura(factura):
                         pagare_o_confirming = "%s %s, de %s €."\
                             " Recibido el %s. Vence el %s."\
                             " Fecha de cobro: %s" % (
-                            isinstance(poc, pclases.PagareCobro) and "Pagaré" 
-                                or "Confirming", 
-                            poc.codigo, 
-                            utils.float2str(poc.cantidad), 
-                            utils.str_fecha(poc.fechaRecepcion), 
-                            utils.str_fecha(poc.fechaCobro), 
+                            isinstance(poc, pclases.PagareCobro) and "Pagaré"
+                                or "Confirming",
+                            poc.codigo,
+                            utils.float2str(poc.cantidad),
+                            utils.str_fecha(poc.fechaRecepcion),
+                            utils.str_fecha(poc.fechaCobro),
                             utils.str_fecha(poc.fechaCobrado))
                     txtcobros = " * Cobrado el %s (%s €). %s [%s]" % (
-                        utils.str_fecha(cobro.fecha), 
-                        utils.float2str(cobro.importe), 
-                        pagare_o_confirming, 
+                        utils.str_fecha(cobro.fecha),
+                        utils.float2str(cobro.importe),
+                        pagare_o_confirming,
                         cobro.observaciones)
                     lineas.append((txtcobros, "Helvetica-Oblique", tamanno))
         if None in vtoscobros.keys():    # Hay cobros sin vencimientos:
@@ -5324,7 +5333,7 @@ def crm_generar_pdf_detalles_factura(factura):
             txtcobros = []
             for cobro in vtoscobros[None]:
                 txtcobros.append("%s (%s €)" % (
-                    utils.str_fecha(cobro.fecha), 
+                    utils.str_fecha(cobro.fecha),
                     utils.float2str(cobro.importe)))
             txtcobros = "; ".join(txtcobros)
             lineas.append((txtcobros, fuente, tamanno))
@@ -5470,7 +5479,7 @@ def listado_clientes(clientes):
     dibujar_linea_divisoria = False
     for cli in clientes:
         if dibujar_linea_divisoria:
-            datos.append(("---", "---", "---", "---", "---", 
+            datos.append(("---", "---", "---", "---", "---",
                           "---", "---", "---", "---", "---"))
         else:
             dibujar_linea_divisoria = True  # Me salto el primero.
@@ -5504,22 +5513,22 @@ def listado_clientes(clientes):
             asegurado = " - "
         else:
             asegurado = "%s €" % utils.float2str(asegurado, 2)
-        datos.append(("Riesgo asegurado: %s" % asegurado, 
+        datos.append(("Riesgo asegurado: %s" % asegurado,
                       "", "", "", "", "", "", "", "", ""))
         concedido = cli.riesgoConcedido
         if concedido < 0:
             concedido = " - "
         else:
             concedido = "%s €" % utils.float2str(concedido, 2)
-        datos.append(("Riesgo concedido: %s" % concedido, 
+        datos.append(("Riesgo concedido: %s" % concedido,
                       "", "", "", "", "", "", "", "", ""))
         for obra in cli.obras:
-            datos.append(("Obra: %s" % obra.nombre, 
-                          "", 
-                          obra.get_str_direccion(), 
+            datos.append(("Obra: %s" % obra.nombre,
+                          "",
+                          obra.get_str_direccion(),
                           "", "", "", "", "", "", ""))
             for contacto in obra.contactos:
-                datos.append(("* %s" % contacto.get_str_contacto(), 
+                datos.append(("* %s" % contacto.get_str_contacto(),
                               "", "", "", "", "", "", "", "", ""))
         comerciales_y_pedidos = cli.buscar_comerciales()
         for comercial in comerciales_y_pedidos:
@@ -5527,8 +5536,8 @@ def listado_clientes(clientes):
                 continue # Me salto los pedidos sin comercial (comercial None).
             pedidos = comerciales_y_pedidos[comercial]
             datos.append(("Comercial: %s (%d pedidos)" % (
-                            comercial.get_nombre_completo(), 
-                            len(pedidos)), 
+                            comercial.get_nombre_completo(),
+                            len(pedidos)),
                           "", "", "", "", "", "", "", "", ""))
     datos.append(("", "", "", "", "", "", "---", "---", "---", "---"))
     datos.append(("", "", "", "", "", "", "TOTAL",
@@ -5669,8 +5678,8 @@ def ventas(datos, fecha = None):
               ('Albarán', 4),
               ('Transporte', 5),
               ('Destino', 12),
-              ('Factura', 4), 
-              ('Forma de pago', 7), 
+              ('Factura', 4),
+              ('Forma de pago', 7),
               ('Cobro real', 7)]
     return imprimir2(archivo, titulo, campos, datos, fecha,
                      cols_a_derecha = (2, 3, 4), apaisado = True)
@@ -6077,8 +6086,8 @@ def agregarFila(origen,
                 tamano,
                 a_derecha = False,
                 altura_linea = 10,
-                centrado = False, 
-                simular = False, 
+                centrado = False,
+                simular = False,
                 subrayador_fosforito = None):
     """
     Intenta escribir el texto en el espacio comprendido entre
@@ -6089,10 +6098,10 @@ def agregarFila(origen,
     Si a_derecha == True, dibuja el texto alineado a la derecha.
     altura_linea es la altura de la línea (en positivo).
 
-    Si «simular» es True no escribe nada, simplemente devuelve las líneas 
+    Si «simular» es True no escribe nada, simplemente devuelve las líneas
     que se sumarían en caso de hacerlo.
 
-    Si «subrayador_fosforito» es una tupla de tres números entre 0 y 1, 
+    Si «subrayador_fosforito» es una tupla de tres números entre 0 y 1,
     subraya las líneas escritas en el color RGB de la tupla.
     """
     #print "fuente", fuente
@@ -6115,7 +6124,7 @@ def agregarFila(origen,
     lineasSumadas = 1
     hoja.saveState()
     hoja.setFont(fuente, tamano)
-    # ------------------------------------------------------------------- 
+    # -------------------------------------------------------------------
     def make_subrayado(color_rgb, hoja, x, y, cadena, alto):
         #global fuente, tamano
         if color_rgb and cadena:
@@ -6123,27 +6132,27 @@ def agregarFila(origen,
             hoja.saveState()
             hoja.setFillColorRGB(*(color_rgb))
             hoja.setStrokeColorRGB(*(color_rgb))
-            hoja.rect(x, 
-                      y - 4, 
-                      ancho, 
-                      alto, 
+            hoja.rect(x,
+                      y - 4,
+                      ancho,
+                      alto,
                       stroke = 0, fill = 1)
             hoja.restoreState()
-    # ------------------------------------------------------------------- 
+    # -------------------------------------------------------------------
     if longitud < longitudLimite:
         if a_derecha:
             try:
                 if not simular:
-                    make_subrayado(subrayador_fosforito, hoja, limite - 0.1*cm, linea, 
+                    make_subrayado(subrayador_fosforito, hoja, limite - 0.1*cm, linea,
                                    cadena, altura_linea)
                     hoja.drawRightString(limite - 0.1 * cm, linea, cadena)
             except KeyError:
                 # Alguna tilde dando por culo y el texto no se ha filtrado
                 # por "escribe". Lo intento yo aquí.
                 if not simular:
-                    make_subrayado(subrayador_fosforito, hoja, limite - 0.1*cm, linea, 
+                    make_subrayado(subrayador_fosforito, hoja, limite - 0.1*cm, linea,
                                    escribe(cadena), altura_linea)
-                    hoja.drawRightString(limite - 0.1 * cm, linea, 
+                    hoja.drawRightString(limite - 0.1 * cm, linea,
                                          escribe(cadena))
         elif centrado:
             izquierda = limite - 0.1 * cm
@@ -6151,26 +6160,26 @@ def agregarFila(origen,
             centro_x = (derecha + izquierda) / 2.0
             try:
                 if not simular:
-                    make_subrayado(subrayador_fosforito, hoja, 
-                                   centro_x - limite/2.0, 
+                    make_subrayado(subrayador_fosforito, hoja,
+                                   centro_x - limite/2.0,
                                    linea, cadena, altura_linea)
                     hoja.drawCentredString(centro_x, linea, cadena)
             except KeyError:
                 # Alguna tilde dando por culo y el texto no se ha filtrado
                 # por "escribe". Lo intento yo aquí.
                 if not simular:
-                    make_subrayado(subrayador_fosforito, hoja, centro_x - limite/2.0, 
+                    make_subrayado(subrayador_fosforito, hoja, centro_x - limite/2.0,
                                    linea, escribe(cadena), altura_linea)
                     hoja.drawCentredString(centro_x, linea, escribe(cadena))
         else:
             try:
                 if not simular:
-                    make_subrayado(subrayador_fosforito, hoja, origen, linea, 
+                    make_subrayado(subrayador_fosforito, hoja, origen, linea,
                                    cadena, altura_linea)
                     hoja.drawString(origen, linea, cadena)
             except KeyError:
                 if not simular:
-                    make_subrayado(subrayador_fosforito, hoja, origen, linea, 
+                    make_subrayado(subrayador_fosforito, hoja, origen, linea,
                                    escribe(cadena), altura_linea)
                     hoja.drawString(origen, linea, escribe(cadena))
     else:
@@ -6200,12 +6209,12 @@ def agregarFila(origen,
             if a_derecha:
                 try:
                     if not simular:
-                        make_subrayado(subrayador_fosforito, hoja, limite - 0.1*cm, linea, 
+                        make_subrayado(subrayador_fosforito, hoja, limite - 0.1*cm, linea,
                                        cadena1, altura_linea)
                         hoja.drawRightString(limite - 0.1 * cm, linea, cadena1)
                 except KeyError:
                     if not simular:
-                        make_subrayado(subrayador_fosforito, hoja, limite - 0.1*cm, linea, 
+                        make_subrayado(subrayador_fosforito, hoja, limite - 0.1*cm, linea,
                                        escribe(cadena1), altura_linea)
                         hoja.drawRightString(limite - 0.1 * cm, linea,
                                          escribe(cadena1))
@@ -6215,25 +6224,25 @@ def agregarFila(origen,
                 centro_x = (derecha + izquierda) / 2
                 try:
                     if not simular:
-                        make_subrayado(subrayador_fosforito, hoja, centro_x - limite/2.0, 
+                        make_subrayado(subrayador_fosforito, hoja, centro_x - limite/2.0,
                                        cadena, limite, altura_linea)
                         hoja.drawCentredString(centro_x, linea, cadena)
                 except KeyError:
                     # Alguna tilde dando por culo y el texto no se ha filtrado
                     # por "escribe". Lo intento yo aquí.
                     if not simular:
-                        make_subrayado(subrayador_fosforito, hoja, centro_x - limite/2.0, 
+                        make_subrayado(subrayador_fosforito, hoja, centro_x - limite/2.0,
                                        escribe(cadena), limite, altura_linea)
                         hoja.drawCentredString(centro_x, linea, escribe(cadena))
             else:
                 try:
                     if not simular:
-                        make_subrayado(subrayador_fosforito, hoja, origen, linea, 
+                        make_subrayado(subrayador_fosforito, hoja, origen, linea,
                                        cadena1, altura_linea)
                         hoja.drawString(origen, linea, cadena1)
                 except KeyError:
                     if not simular:
-                        make_subrayado(subrayador_fosforito, hoja, origen, linea, 
+                        make_subrayado(subrayador_fosforito, hoja, origen, linea,
                                        escribe(cadena1), altura_linea)
                         hoja.drawString(origen, linea, escribe(cadena1))
             linea -= altura_linea
@@ -6243,12 +6252,12 @@ def agregarFila(origen,
         if a_derecha:
             try:
                 if not simular:
-                    make_subrayado(subrayador_fosforito, hoja, limite - 0.1*cm, linea, 
+                    make_subrayado(subrayador_fosforito, hoja, limite - 0.1*cm, linea,
                                    cadena, altura_linea)
                     hoja.drawRightString(limite - 0.1 * cm, linea, cadena)
             except KeyError:
                 if not simular:
-                    make_subrayado(subrayador_fosforito, hoja, limite - 0.1*cm, linea, 
+                    make_subrayado(subrayador_fosforito, hoja, limite - 0.1*cm, linea,
                                    cadena, altura_linea)
                     hoja.drawRightString(limite - 0.1 * cm, linea, cadena)
         elif centrado:
@@ -6257,25 +6266,25 @@ def agregarFila(origen,
             centro_x = (derecha + izquierda) / 2
             try:
                 if not simular:
-                    make_subrayado(subrayador_fosforito, hoja, centro_x - limite/2.0, 
+                    make_subrayado(subrayador_fosforito, hoja, centro_x - limite/2.0,
                                    linea, cadena, altura_linea)
                     hoja.drawCentredString(centro_x, linea, cadena)
             except KeyError:
                 # Alguna tilde dando por culo y el texto no se ha filtrado
                 # por "escribe". Lo intento yo aquí.
                 if not simular:
-                    make_subrayado(subrayador_fosforito, hoja, centro_x - limite/2.0, 
+                    make_subrayado(subrayador_fosforito, hoja, centro_x - limite/2.0,
                                    linea, escribe(cadena), altura_linea)
                     hoja.drawCentredString(centro_x, linea, escribe(cadena))
         else:
             try:
                 if not simular:
-                    make_subrayado(subrayador_fosforito, hoja, origen, linea, 
+                    make_subrayado(subrayador_fosforito, hoja, origen, linea,
                                    cadena, altura_linea)
                     hoja.drawString(origen, linea, cadena)
             except KeyError:
                 if not simular:
-                    make_subrayado(subrayador_fosforito, hoja, origen, linea, 
+                    make_subrayado(subrayador_fosforito, hoja, origen, linea,
                                    cadena, altura_linea)
                     hoja.drawString(origen, linea, cadena)
     hoja.restoreState()
@@ -6313,8 +6322,8 @@ def exportar_a_csv(ruta, cabecera, datos):
 
 def parse_fuente(cad, hoja):
     """
-    Si la cadena contiene algo de la forma [fuente=%s] intenta reconocer  
-    la fuente y devuelve la misma cadena sin la subcadena 
+    Si la cadena contiene algo de la forma [fuente=%s] intenta reconocer
+    la fuente y devuelve la misma cadena sin la subcadena
     reconocida.
     La subcadena debe ser de la forma "nombre fuente::tamaño"
     Fuentes reconocidas (al menos):
@@ -6361,7 +6370,7 @@ def imprimir2(archivo,
               sobrecampos = (),
               lineas_verticales = (),
               exportar_a_csv_a = None,
-              cols_centradas = (), 
+              cols_centradas = (),
               pijama = False):
     """
     Veamos, veamos. La idea es tener este método y pasarle chorrecientos
@@ -6441,9 +6450,9 @@ def imprimir2(archivo,
     se abre directamente con el programa relacionado, NO SE DEVUELVE, SE RECIBE
     EL NOMBRE DEL FICHERO DESTINO.
 
-    «pijama» es un parámetro de última hornada que sirve para irte a la cama a 
-    soñar con la teniente Ellen Ripley. También vale para que las líneas se 
-    dibujen con color de fondo alternativo al estilo de los viejos rollos de 
+    «pijama» es un parámetro de última hornada que sirve para irte a la cama a
+    soñar con la teniente Ellen Ripley. También vale para que las líneas se
+    dibujen con color de fondo alternativo al estilo de los viejos rollos de
     papel contínuo en verde-blanco.
     """
     if exportar_a_csv_a:
@@ -6558,17 +6567,17 @@ def imprimir2(archivo,
     linea = sigLinea()
     for dato in datos:
         # LE PIYAMA
-        # Hay que hacerlo ANTES de escribir porque no hay manera de ordenar 
-        # capas en el canvas. ¿Problema? Que no sé el alto de la fila hasta 
+        # Hay que hacerlo ANTES de escribir porque no hay manera de ordenar
+        # capas en el canvas. ¿Problema? Que no sé el alto de la fila hasta
         # que no termine de escribir todas las columnas.
         if pijama:
             xizq = lm - 4   #OJO: HARCODED. Ver def cabecera.
             xder = rm
-            draw_fondo_pijama(hoja, 
-                              xizq, linea, 
-                              xder,  
-                              datos.index(dato), 
-                              dato, xcampo, fuente, tamanno, 
+            draw_fondo_pijama(hoja,
+                              xizq, linea,
+                              xder,
+                              datos.index(dato),
+                              dato, xcampo, fuente, tamanno,
                               cols_a_derecha, cols_centradas)
         # EOLP
 
@@ -6629,14 +6638,14 @@ def imprimir2(archivo,
                         hoja.setFillColor(colors.gray)
                     elif keycad_rgb in d[i]:
                         desde = d[i].index(keycad_rgb) + len(keycad_rgb)
-                        hasta = d[i].index(endkeycad_rgb) 
+                        hasta = d[i].index(endkeycad_rgb)
                         strcolor = d[i][desde:hasta]
                         d[i] = d[i][:desde] + d[i][hasta:]
                         d[i] = d[i].replace(keycad_rgb, "")
                         d[i] = d[i].replace(endkeycad_rgb, "")
                         r, g, b = map(float, strcolor.split(","))
                         hoja.setFillColorRGB(r, g, b)
-                    # XXX: Cambio de fuente. 
+                    # XXX: Cambio de fuente.
                     old_fuente = fuente
                     old_tamanno = tamanno
                     d[i], fuente, tamanno = parse_fuente(d[i], hoja)
@@ -6663,7 +6672,7 @@ def imprimir2(archivo,
             fuente = old_fuente
             tamanno = old_tamanno
             # Si he cambiado de color, vuelvo al negro.
-            hoja.setFillColor(colors.black) 
+            hoja.setFillColor(colors.black)
 
         contLinea += max(lineasASaltar)
         if contLinea >= MAXLINEAS:
@@ -6747,18 +6756,18 @@ def imprimir2(archivo,
     rm, tm, width, height, MAXLINEAS = apaisar(False)
     return archivo+'.pdf'
 
-def draw_fondo_pijama(c, x0, y0, x1, contador, 
-                      datos_col, xcoords, fuente, tamanno, 
-                      cols_a_derecha, cols_centradas, 
+def draw_fondo_pijama(c, x0, y0, x1, contador,
+                      datos_col, xcoords, fuente, tamanno,
+                      cols_a_derecha, cols_centradas,
                       rgbcolor = (0.8, 0.9, 0.7)):
     """
-    Dibuja un rectángulo del color recibido entre las coordenadas (x0, y0) y 
+    Dibuja un rectángulo del color recibido entre las coordenadas (x0, y0) y
     (x1, y0 + #líneas de texto * altura) siempre que el contador sea impar.
-    La coordenada "y" final puede no coincidir con la recibida si para 
+    La coordenada "y" final puede no coincidir con la recibida si para
     mostrar los textos de «datos_col» se necesita más de una línea.
     """
     if contador % 2:
-        # Miro la altura final con la ayuda de 
+        # Miro la altura final con la ayuda de
         # el_encogedor_de_fuentes_de_doraemon
         d = list(datos_col)
         xcampo = xcoords
@@ -6785,7 +6794,7 @@ def draw_fondo_pijama(c, x0, y0, x1, contador,
                                         fuente,
                                         tamanno,
                                         a_derecha = i in cols_a_derecha,
-                                        centrado = i in cols_centradas, 
+                                        centrado = i in cols_centradas,
                                         simular = True)
             lineasASaltar.append(lineasSumadas)
         lineas = (max(lineasASaltar))
@@ -6799,8 +6808,8 @@ def draw_fondo_pijama(c, x0, y0, x1, contador,
         c.setFillColorRGB(r, g, b)
         c.setStrokeColorRGB(r, g, b)
         c.setLineWidth(1)
-        c.rect(x0+1, y0 - 7, 
-               abs(x1-x0-2), h + 5, 
+        c.rect(x0+1, y0 - 7,
+               abs(x1-x0-2), h + 5,
                fill = 1)
         c.restoreState()
 
@@ -7277,10 +7286,10 @@ def packingListBalas(datos, numpagina = 1, titulo = "Packing list"):
                                         xProducto - 0.5*cm, linea,
                                         'Nº DE LOTE: %s' % (datos['lote']))
     #c.drawString(xDestino, linea, escribe('Nº DE LOTE: ' + datos['lote']))
-    el_encogedor_de_fuentes_de_doraemon(c, "Helvetica-Bold", 10, 
+    el_encogedor_de_fuentes_de_doraemon(c, "Helvetica-Bold", 10,
                                     xProducto - 0.5*cm, xTipo - 2.75*cm, linea,
                                     escribe('PRODUCTO: '+datos['producto']))
-    #c.drawString(xProducto - 0.5*cm, linea, 
+    #c.drawString(xProducto - 0.5*cm, linea,
     #             escribe('PRODUCTO: ' + datos['producto']))
     c.drawString(xTipo - 2.75*cm, linea, escribe('TIPO: '+ datos['tipo']))
     # XXX: Código de barras EAN del producto
@@ -7297,8 +7306,8 @@ def packingListBalas(datos, numpagina = 1, titulo = "Packing list"):
     xPeso1 = xBala1 + 2.75 * cm
     xCode1 = ((xPeso1 + rm) / 2.0) + 1*cm
     xCode = [xCode1]
-    xBala = [xBala1] 
-    xPeso = [xPeso1] 
+    xBala = [xBala1]
+    xPeso = [xPeso1]
     c.setFont("Helvetica", 8)
     c.drawCentredString(xBala1, linea, escribe('CÓDIGO'))
     c.drawCentredString(xPeso1, linea, escribe('CANTIDAD'))
@@ -7306,24 +7315,24 @@ def packingListBalas(datos, numpagina = 1, titulo = "Packing list"):
     linea = sigLinea(25)
     i = 0
     balaskeys = list(balas)
-    balaskeys.sort(lambda b1, b2: ((b1[0] < b2[0] and -1) 
-                                   or (b1[0] > b2[0] and 1) 
+    balaskeys.sort(lambda b1, b2: ((b1[0] < b2[0] and -1)
+                                   or (b1[0] > b2[0] and 1)
                                    or 0))
     for b in balaskeys:
-        # XXX: Código de trazabilidad en packing list 
+        # XXX: Código de trazabilidad en packing list
         #      (para Laura Moncho -domher-)
         #anchocodigo = 7.0 * cm
         codigodomenech = b[4]
-        # XXX: DOMENECH (Copiado de domenech_h_etiquetasBalasEtiquetadora 
+        # XXX: DOMENECH (Copiado de domenech_h_etiquetasBalasEtiquetadora
         #                NO MOAR COPYPASTA PLZ!):
         barcodedomenech = code128.Code128(codigodomenech,
                                           #xdim = 0.0205 * inch,
-                                          xdim=0.01*cm+(0.005*cm*((11/2)+1)), 
+                                          xdim=0.01*cm+(0.005*cm*((11/2)+1)),
                                             #* ((balaskeys.index(b) / 2) + 1)),
                                           #height = 0.95 * cm)
                                           height = 10 + (0.25*cm * 1))
                                             #* (balaskeys.index(b)%2)))
-        ydom = linea 
+        ydom = linea
         xdom = xCode[i] - (barcodedomenech.width / 2.0)
         barcodedomenech.drawOn(c, xdom, ydom)
         c.saveState()
@@ -7484,8 +7493,8 @@ def packingListEAN(datos, numpagina = 1, titulo = "Packing list"):
     se usará para diferenciar los archivos generados (ya que
     se crearán todos a la vez y probablemente con la misma
     fecha y hora).
-    BACKUP: Este a mí me funciona. Por tanto lo copio para poder jugar con el 
-    otro, a ver si Laura Moncho se compra una buena pistola de código de 
+    BACKUP: Este a mí me funciona. Por tanto lo copio para poder jugar con el
+    otro, a ver si Laura Moncho se compra una buena pistola de código de
     barras.
     """
     from barcode import code128
@@ -7534,10 +7543,10 @@ def packingListEAN(datos, numpagina = 1, titulo = "Packing list"):
                                         xProducto - 0.5*cm, linea,
                                         'Nº DE LOTE: %s' % (datos['lote']))
     #c.drawString(xDestino, linea, escribe('Nº DE LOTE: ' + datos['lote']))
-    el_encogedor_de_fuentes_de_doraemon(c, "Helvetica-Bold", 10, 
+    el_encogedor_de_fuentes_de_doraemon(c, "Helvetica-Bold", 10,
                                     xProducto - 0.5*cm, xTipo - 2.75*cm, linea,
                                     escribe('PRODUCTO: '+datos['producto']))
-    #c.drawString(xProducto - 0.5*cm, linea, 
+    #c.drawString(xProducto - 0.5*cm, linea,
     #             escribe('PRODUCTO: ' + datos['producto']))
     c.drawString(xTipo - 2.75*cm, linea, escribe('TIPO: '+ datos['tipo']))
     # XXX: Código de barras EAN del producto
@@ -7566,18 +7575,18 @@ def packingListEAN(datos, numpagina = 1, titulo = "Packing list"):
     linea = sigLinea(25)
     i = 0
     for b in balas:
-        # XXX: Código de trazabilidad en packing list 
+        # XXX: Código de trazabilidad en packing list
         #      (para Laura Moncho -domher-)
         #anchocodigo = 7.0 * cm
         codigodomenech = b[4]
-        # XXX: DOMENECH (Copiado de domenech_h_etiquetasBalasEtiquetadora 
+        # XXX: DOMENECH (Copiado de domenech_h_etiquetasBalasEtiquetadora
         #                NO MOAR COPYPASTA PLZ!):
         barcodedomenech = code128.Code128(codigodomenech,
                                           #xdim = 0.0205 * inch,
                                           xdim = 0.0105 * inch,
                                           #height = 0.95 * cm)
                                           height = 10)
-        ydom = linea 
+        ydom = linea
         xdom = (xCode[i] + xBala[i])/2.0 - (barcodedomenech.width / 2.0)
         barcodedomenech.drawOn(c, xdom, ydom)
         c.saveState()
@@ -7652,7 +7661,7 @@ def prueba2():
 
 def abreviar(cad, l = 8):
     """
-    Acorta una cadena hasta dejarla en una longitud «l» intentando 
+    Acorta una cadena hasta dejarla en una longitud «l» intentando
     respetar la primera palabra.
     """
     separadores = (" ", "_", ",", ".")
@@ -7936,7 +7945,7 @@ def chequeCaixa(cantidad, destinatario, euros, fecha):
 
 def generar_etiqueta_pale(pales, tipo = 3):
     """
-    Genera una etiqueta por cada palé recibido (o del único recibido si el 
+    Genera una etiqueta por cada palé recibido (o del único recibido si el
     parámetro no es una lista) del tipo especificado:
     0: Etiqueta completa
     1: Etiqueta sin nombre empresa.
@@ -7955,13 +7964,13 @@ def generar_etiqueta_pale(pales, tipo = 3):
         ancho = 12.55 * cm
         alto = 8.4 * cm
         nomarchivo = os.path.join(gettempdir(),
-                                  "etiq_pale_%s_%d.pdf" % (give_me_the_name_baby(), 
+                                  "etiq_pale_%s_%d.pdf" % (give_me_the_name_baby(),
                                                            tipo))
         c = canvas.Canvas(nomarchivo, pagesize = (ancho, alto))
         for pale in pales:
             # 1.1.- Preparo datos en función del tipo de etiqueta.
             data = generar_data_pale(pale, tipo)
-            # 1.2.- Imprimo datos en canvas. (Las medidas van en función del tipo 
+            # 1.2.- Imprimo datos en canvas. (Las medidas van en función del tipo
             #       y se determinan dentro de la función).
             pintar_data_pale(c, data, ancho, alto, tipo)
             # 1.3.- Guardo canvas.
@@ -7975,31 +7984,31 @@ def generar_etiqueta_pale(pales, tipo = 3):
 
 def calcular_posiciones_etiqueta_pale(ancho, alto, tipo = 0):
     """
-    Devuelve un diccionario de posiciones, fuentes y tamaños donde se 
+    Devuelve un diccionario de posiciones, fuentes y tamaños donde se
     dibujarán los textos de la etiqueta en función del tipo recibido.
     """
     res = {}
     res['código'] = (ancho / 2.0, 2*cm, ancho - 0.5*cm, "Courier-Bold", 20)
     res['partida'] = (ancho / 2.0, 1*cm, ancho - 0.5*cm, "Courier-Bold", 18)
-    res['marcado'] = (ancho - 3*cm, alto-1.5*cm, ancho - 0.5*cm, 
+    res['marcado'] = (ancho - 3*cm, alto-1.5*cm, ancho - 0.5*cm,
                       "Helvetica-Bold", 10)
     if tipo >= 1:
         res['producto'] = (ancho / 2.0, 5*cm, ancho, "Courier-Bold", 14)
         res['fibra'] = (ancho / 2.0, 4*cm, ancho, "Courier-Bold", 14)
         if tipo >= 2:
-            res['empresa'] = (ancho / 2.0, 6*cm, ancho-0.5*cm, 
+            res['empresa'] = (ancho / 2.0, 6*cm, ancho-0.5*cm,
                               "Times-Bold", 22)
     return res
 
 def pintar_data_pale(c, data, ancho, alto, tipo = 0):
     """
-    Escribe en el canvas, en las posiciones indicadas por el tipo de 
+    Escribe en el canvas, en las posiciones indicadas por el tipo de
     etiqueta, los datos del palé recibidos en «data».
     """
     sizes = calcular_posiciones_etiqueta_pale(ancho, alto, tipo)
     for campo in data:
         # CWT: Ya no vamos a pintar el código debajo del código de barras:
-        if campo == "código": 
+        if campo == "código":
             continue
         x, y, anchotexto, fuente, tamanno = sizes[campo]
         cadena = data[campo]
@@ -8020,19 +8029,19 @@ def pintar_data_pale(c, data, ancho, alto, tipo = 0):
     anchomarcado = 2 * cm / 2.0
     altomarcado = 1.64 * cm / 2.0
     try:
-        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.png'), 
-                sizes['marcado'][0] - anchomarcado / 2.0, 
-                sizes['marcado'][1] + 0.35*cm, 
+        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.png'),
+                sizes['marcado'][0] - anchomarcado / 2.0,
+                sizes['marcado'][1] + 0.35*cm,
                 width = anchomarcado, height = altomarcado)
     except IOError:     # W8
-        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.gif'), 
-                sizes['marcado'][0] - anchomarcado / 2.0, 
-                sizes['marcado'][1] + 0.35*cm, 
+        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.gif'),
+                sizes['marcado'][0] - anchomarcado / 2.0,
+                sizes['marcado'][1] + 0.35*cm,
                 width = anchomarcado, height = altomarcado)
 
 def generar_data_pale(pale, tipo = 0):
     """
-    Devuelve un diccionario de datos de palé que se van a mostrar en la 
+    Devuelve un diccionario de datos de palé que se van a mostrar en la
     etiqueta. Todos los datos van ya como texto.
     """
     res = {}
@@ -8041,7 +8050,7 @@ def generar_data_pale(pale, tipo = 0):
     #res['partida'] = pale.partidaCem and pale.partidaCem.codigo or ""
     res['partida'] = "%s bolsas. %s" % (
         pale.codigo, pale.partidaCem and pale.partidaCem.codigo or "")
-    #res['marcado'] = "9003712-1035"    # (jmadrid) El número no era así. Es: 
+    #res['marcado'] = "9003712-1035"    # (jmadrid) El número no era así. Es:
     res['marcado'] = "1035-CPD-9003712"
     if tipo >= 1:
         pv = pale.productoVenta
@@ -8056,7 +8065,7 @@ def generar_data_pale(pale, tipo = 0):
             # CWT: dtex = "%s dtex" % utils.float2str(ceb.dtex, autodec = True)
             # CWT: corte = "%d mm" % ceb.corte
         except AttributeError:
-            res['fibra'] = "" 
+            res['fibra'] = ""
             # CWT: dtex = ""
             # CWT: corte = ""
         if tipo >= 2:
@@ -8069,7 +8078,7 @@ def generar_data_pale(pale, tipo = 0):
 
 def generar_etiqueta_caja(cajas, tipo = 0):
     """
-    Genera una etiqueta por cada caja recibida (o de la única recibido si el 
+    Genera una etiqueta por cada caja recibida (o de la única recibido si el
     parámetro no es una lista) del tipo especificado:
     0: Etiqueta completa
     1: Etiqueta sin nombre empresa.
@@ -8085,13 +8094,13 @@ def generar_etiqueta_caja(cajas, tipo = 0):
     ancho = 12.55 * cm
     alto = 8.4 * cm
     nomarchivo = os.path.join(gettempdir(),
-                              "etiq_caja_%s_%d.pdf" % (give_me_the_name_baby(), 
+                              "etiq_caja_%s_%d.pdf" % (give_me_the_name_baby(),
                                                        tipo))
     c = canvas.Canvas(nomarchivo, pagesize = (ancho, alto))
     for caja in cajas:
         # 1.1.- Preparo datos en función del tipo de etiqueta.
         data = generar_data_caja(caja, tipo)
-        # 1.2.- Imprimo datos en canvas. (Las medidas van en función del tipo 
+        # 1.2.- Imprimo datos en canvas. (Las medidas van en función del tipo
         #       y se determinan dentro de la función).
         pintar_data_caja(c, data, ancho, alto, tipo)
         # 1.3.- Guardo canvas.
@@ -8102,30 +8111,30 @@ def generar_etiqueta_caja(cajas, tipo = 0):
 
 def calcular_posiciones_etiqueta_caja(ancho, alto, tipo = 0):
     """
-    Devuelve un diccionario de posiciones, fuentes y tamaños donde se 
+    Devuelve un diccionario de posiciones, fuentes y tamaños donde se
     dibujarán los textos de la etiqueta en función del tipo recibido.
     """
     res = {}
     res['código'] = (ancho / 2.0, 2*cm, ancho - 0.5*cm, "Courier-Bold", 20)
-    res['marcado'] = (ancho/2.0, alto-1.5*cm, ancho/2.0 - 0.20*cm, 
+    res['marcado'] = (ancho/2.0, alto-1.5*cm, ancho/2.0 - 0.20*cm,
                       "Helvetica-Bold", 10)
     res['descripción'] = (ancho / 2.0, 4.20*cm, ancho, "Courier-Bold", 14)
     res['partida'] = (ancho / 4.0, 1*cm, ancho / 2.0, "Courier-Bold", 12)
     res['palé'] = (3*ancho / 4.0, 1*cm, ancho / 2.0, "Courier-Bold", 12)
     if tipo >= 1:
-        res['marcado'] = (ancho - 3*cm, alto-1.5*cm, ancho - 0.5*cm, 
+        res['marcado'] = (ancho - 3*cm, alto-1.5*cm, ancho - 0.5*cm,
                           "Helvetica-Bold", 10)
         res['descripción'] = (ancho / 2.0, 5.20*cm, ancho, "Courier-Bold", 14)
         res['producto'] = (ancho / 2.0, 4.35*cm, ancho, "Courier-Bold", 14)
         res['fibra'] = (ancho / 2.0, 3.5*cm, ancho, "Courier-Bold", 14)
         if tipo >= 2:
-            res['empresa'] = (ancho / 2.0, 6*cm, ancho-0.5*cm, 
+            res['empresa'] = (ancho / 2.0, 6*cm, ancho-0.5*cm,
                               "Times-Bold", 22)
     return res
 
 def pintar_data_caja(c, data, ancho, alto, tipo = 0):
     """
-    Escribe en el canvas, en las posiciones indicadas por el tipo de 
+    Escribe en el canvas, en las posiciones indicadas por el tipo de
     etiqueta, los datos de la caja recibida en «data».
     """
     sizes = calcular_posiciones_etiqueta_caja(ancho, alto, tipo)
@@ -8149,24 +8158,24 @@ def pintar_data_caja(c, data, ancho, alto, tipo = 0):
     anchomarcado = 2 * cm / 2.0
     altomarcado = 1.64 * cm / 2.0
     try:
-        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.png'), 
-                sizes['marcado'][0] - anchomarcado / 2.0, 
-                sizes['marcado'][1] + 0.35*cm, 
+        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.png'),
+                sizes['marcado'][0] - anchomarcado / 2.0,
+                sizes['marcado'][1] + 0.35*cm,
                 width = anchomarcado, height = altomarcado)
     except IOError:     # W8
-        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.gif'), 
-                sizes['marcado'][0] - anchomarcado / 2.0, 
-                sizes['marcado'][1] + 0.35*cm, 
+        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', 'CE.gif'),
+                sizes['marcado'][0] - anchomarcado / 2.0,
+                sizes['marcado'][1] + 0.35*cm,
                 width = anchomarcado, height = altomarcado)
 
 def generar_data_caja(caja, tipo = 0):
     """
-    Devuelve un diccionario de datos de caja que se van a mostrar en la 
+    Devuelve un diccionario de datos de caja que se van a mostrar en la
     etiqueta. Todos los datos van ya como texto.
     """
     res = {}
     res['código'] = caja.codigo
-    res['partida'] = (caja.partidaCem and 
+    res['partida'] = (caja.partidaCem and
         "Partida %s" % caja.partidaCem.codigo or "")
     res['marcado'] = "1035-CPD-9003712"
     res['descripción'] = "Caja de %d bolsas" % (caja.numbolsas)
@@ -8184,7 +8193,7 @@ def generar_data_caja(caja, tipo = 0):
             # CWT: dtex = "%s dtex" % utils.float2str(ceb.dtex, autodec = True)
             # CWT: corte = "%d mm" % ceb.corte
         except AttributeError:
-            res['fibra'] = "" 
+            res['fibra'] = ""
             # CWT: dtex = ""
             # CWT: corte = ""
         if tipo >= 2:
@@ -8511,7 +8520,7 @@ def domenech_v_etiquetasBalasEtiquetadora(balas, seriep = None, numped = None):
     El formato completo es:
     * 3 dígitos: serie del pedido, completado con ceros por la derecha.
     * 6 dígitos: número de pedido, completado con ceros por la derecha.
-    * 6 dígitos: código de producto: (Solían ser 7 hasta verano'08. Confirmado 
+    * 6 dígitos: código de producto: (Solían ser 7 hasta verano'08. Confirmado
                                       6 en octubre de 2008)
          - 007336 FIBRA PP 6.7 Dtx NATURAL.
          - 007337 FIBRA PP 6.7 Dtx NEGRO.
@@ -8563,7 +8572,7 @@ def domenech_v_etiquetasBalasEtiquetadora(balas, seriep = None, numped = None):
         if temp == []:
             break
         #rectangulo(c, (izq, arriba), (der, abajo))
-        # Saco etiqueta Doménech Hermanos fuera del cuadro para darle más 
+        # Saco etiqueta Doménech Hermanos fuera del cuadro para darle más
         # espacio.
         rectangulo(c, (izq - 1.40*cm, arriba), (der, abajo))
         c.setFont("Helvetica-Bold", 26)
@@ -9373,7 +9382,7 @@ def pendiente_servir(tipo, porpedido, porproducto, nombrecliente = ""):
               ('Pendiente',      8),
               ('Stock total',    8),
               ('Fecha',          7),
-              ('entrega',       12), 
+              ('entrega',       12),
               ('Forma de pago', 11) ]
     datos = []
     for fila in porpedido:
@@ -9397,7 +9406,7 @@ def pendiente_servir(tipo, porpedido, porproducto, nombrecliente = ""):
                      campos,
                      datos,
                      fecha = mx.DateTime.localtime().strftime('%d/%m/%Y'),
-                     cols_a_derecha = (4, 5), 
+                     cols_a_derecha = (4, 5),
                      apaisado = True)
 
 def consumo_fibra_produccion_gtx(datos, fecha = None):
@@ -9692,8 +9701,8 @@ def producido_produccion(datos, fecha = None, grafico = None):
     archivo = os.path.join(gettempdir(),
         'producido_produccion_%s' % give_me_the_name_baby())
     titulo = 'Producción: Productos terminados.'
-    campos = [('Producto', 32), ('Cantidad', 18), ('Bultos', 15), 
-              ('Kg teóricos', 13), ('Horas teóricas', 11), 
+    campos = [('Producto', 32), ('Cantidad', 18), ('Bultos', 15),
+              ('Kg teóricos', 13), ('Horas teóricas', 11),
               ("Horas reales", 11)]
     if grafico == None:
         graficos = []
@@ -9707,7 +9716,7 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
     Crea etiquetas para los rollos de
     un parte de la línea de geotextil.
     Una por etiqueta del tamaño estándar de la impresora GEMINI: 12.55 x 8.4.
-    «hook» es una función con la misma interfaz que esta para generar 
+    «hook» es una función con la misma interfaz que esta para generar
     etiquetas alternativas según la configuración del producto.
     """
     if hook:
@@ -9738,7 +9747,7 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
             merger.write(open(combinado, "wb"))
             nomarchivo = combinado
     else:   # Etiqueta de geotextiles por defecto
-        # Voy a tratar de reescribir esto regla en mano a ver si consigo 
+        # Voy a tratar de reescribir esto regla en mano a ver si consigo
         # cuadrarlo bien en la etiquetadora GEMINI.
         global linea, tm, lm, rm, bm
         x, y = lm, tm  # @UnusedVariable
@@ -9756,7 +9765,7 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
             if mostrar_marcado and not rollo['defectuoso']:
                 try:
                     c.drawImage(os.path.join(os.path.dirname(
-                                os.path.realpath(__file__)), 
+                                os.path.realpath(__file__)),
                                 '..', 'imagenes', 'CE.png'),
                             width/2 - (2 * cm / 2),
                             height - 0.3 * cm - 0.1 * cm - 1.64 * cm,
@@ -9764,7 +9773,7 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
                             height = 1.64 * cm)
                 except IOError:
                     c.drawImage(os.path.join(os.path.dirname(
-                                os.path.realpath(__file__)), 
+                                os.path.realpath(__file__)),
                                 '..', 'imagenes', 'CE.gif'),
                             width/2 - (2 * cm / 2),
                             height - 0.3 * cm - 0.1 * cm - 1.64 * cm,
@@ -9774,9 +9783,9 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
                 c.drawCentredString(width/2, height - 2.7 * cm ,
                                     "1035-CPD-ES033858")
             if rollo['defectuoso']:
-                # DONE: If 'defectuoso' hay que quitar el marcado CE y poner 
+                # DONE: If 'defectuoso' hay que quitar el marcado CE y poner
                 # las medidas reales y una marca especial en la etiqueta.
-                # El rollo se puede obtener a partir del ID que viene en 
+                # El rollo se puede obtener a partir del ID que viene en
                 # idrollo y vale != 0
                 idrollo = rollo['idrollo']
                 rollobd = rollo['objeto']
@@ -9791,12 +9800,12 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
                     rollo['descripcion'] = producto.nombre
                     rollo['densidad'] = utils.float2str(prollo.densidad)
                     rollo['ancho'] = "%s m" % (campos.ancho) # Ancho se supone
-                        # fijo. Los rollos no tienen campo ancho. Es el del 
+                        # fijo. Los rollos no tienen campo ancho. Es el del
                         # producto.
-                    rollo['peso'] = "%s kg" % (utils.float2str(prollo.peso)) 
-                                    # Peso total. No teórico sin embalaje como 
+                    rollo['peso'] = "%s kg" % (utils.float2str(prollo.peso))
+                                    # Peso total. No teórico sin embalaje como
                                     # en las etiquetas originales.
-                    rollo['m2'] = "%s m²" % (utils.float2str(campos.ancho 
+                    rollo['m2'] = "%s m²" % (utils.float2str(campos.ancho
                                                              * largo))
                     rollo['mlin'] = "%s m" % (utils.float2str(largo))
                     rollo['nrollo'] = str(prollo.numrollo)
@@ -9812,7 +9821,7 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
                              " -> Si 'defectuoso' es True, el rollo DE"\
                              "BE existir y ser del tipo plcases.Rollo "\
                              "o pclases.RolloDefectuoso."
-                    raise TypeError, txterr 
+                    raise TypeError, txterr
                 c.drawImage(os.path.join(
                                 os.path.dirname(os.path.realpath(__file__)),
                                 '..', 'imagenes', 'none.png'),
@@ -9820,9 +9829,9 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
                             height - 0.6 * cm - 0.2 * cm - 0.82 * cm,
                             width = 1 * cm,
                             height = 0.82 * cm)
-                # CWT: No debe aparecer el motivo en la etiqueta. Pensaba que 
-                # así se identificarían mejor, pero no. No debe aparecer nada 
-                # que indique que el rollo es malo salvo el logotipo de la 
+                # CWT: No debe aparecer el motivo en la etiqueta. Pensaba que
+                # así se identificarían mejor, pero no. No debe aparecer nada
+                # que indique que el rollo es malo salvo el logotipo de la
                 # "bolaspa".
                 # c.setFont("Helvetica", 14)
                 # el_encogedor_de_fuentes_de_doraemon(
@@ -9866,7 +9875,7 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
                 c.drawImage(
                     nombreficheroean13, 10.5*cm, 0.5*cm, width = 1.5*cm)
             from barcode import code39
-            codigobarras = code39.Extended39(rollo['codigo39'], 
+            codigobarras = code39.Extended39(rollo['codigo39'],
                                              xdim = 0.065 * cm)
             #codigobarras.drawOn(c, 3.5 * cm, 2.9 * cm)
             codigobarras.drawOn(c, 0.6 * cm, 0.9 * cm)
@@ -10692,17 +10701,17 @@ def escribir_cuerpo_presupuesto(c, medidas, fuentes, presupuesto, una_linea):
 
         if not presupuesto.comercial:
             elabajofirmante = {
-                'nombre': datos_empresa.nombreResponsableCompras, 
-                'correoe': datos_empresa.emailResponsableCompras, 
-                'telefono': datos_empresa.telefonoResponsableCompras, 
+                'nombre': datos_empresa.nombreResponsableCompras,
+                'correoe': datos_empresa.emailResponsableCompras,
+                'telefono': datos_empresa.telefonoResponsableCompras,
                 'cargo': None}
         else:
             comercial = presupuesto.comercial
             elabajofirmante = {
-                'nombre': (comercial.empleado.nombre 
-                            + " " + comercial.empleado.apellidos), 
-                'correoe': comercial.correoe, 
-                'telefono': comercial.telefono, 
+                'nombre': (comercial.empleado.nombre
+                            + " " + comercial.empleado.apellidos),
+                'correoe': comercial.correoe,
+                'telefono': comercial.telefono,
                 'cargo': comercial.cargo}
         c.drawString(medidas['firmado0'][0], medidas['firmado0'][1],
                      escribe(elabajofirmante['nombre']))
@@ -10882,7 +10891,7 @@ def informe_marcado_ce(producto,
     # Pruebas en orden en que aparecerán en el listado.
     pruebas = ("Gramaje", "Compresion", "Longitudinal", "Transversal",
                "AlargamientoLongitudinal", "AlargamientoTransversal",
-               "Perforacion", "Espesor", "Permeabilidad", "Poros", 
+               "Perforacion", "Espesor", "Permeabilidad", "Poros",
                "Piramidal")
     trans = {'Gramaje': 'gramaje',
              'Longitudinal': 'longitudinal',
@@ -10893,7 +10902,7 @@ def informe_marcado_ce(producto,
              'Perforacion': 'perforacion',
              'Espesor': 'espesor',
              'Permeabilidad': 'permeabilidad',
-             'Poros': 'poros', 
+             'Poros': 'poros',
              'Piramidal': 'piramidal'
             }  # "Traducción" de la prueba al nombre del campo en la partida.
     dic_pruebas = {
@@ -10906,7 +10915,7 @@ def informe_marcado_ce(producto,
         'Perforacion': 'pruebasPerforacion',
         'Espesor': 'pruebasEspesor',
         'Permeabilidad': 'pruebasPermeabilidad',
-        'Poros': 'pruebasPoros', 
+        'Poros': 'pruebasPoros',
         'Piramidal': 'pruebasPiramidal'
        } #"Traducción" de la prueba al nombre del campo de la lista de pruebas.
     cer = producto.camposEspecificosRollo
@@ -10998,7 +11007,7 @@ def informe_marcado_ce(producto,
     #                       CAROLINA, en Estados Unidos.»                     #
     ##                                                                       ##
 
-    datos.append(("---", ) * (3 + len(pruebas))) # 3 por las tres columnas que 
+    datos.append(("---", ) * (3 + len(pruebas))) # 3 por las tres columnas que
         # no son valores de pruebas, sino el cód. de partida, prod. y fecha.
     datos.append(("", "Desv. típica", "")
         + tuple([utils.float2str(m, 4, autodec = True) for m in calsigmas]))
@@ -11058,7 +11067,7 @@ def informe_marcado_ce(producto,
               ('Piram.', 6))
     return imprimir2(archivo, titulo, campos, datos,
                      cols_a_derecha = range(3, 3+len(pruebas)),
-                     lineas_verticales = 
+                     lineas_verticales =
                         ((sum([c[1] for c in campos[:3]]), True), ),
                      fecha = "Fecha impresión: %s" % (
                         utils.str_fecha(mx.DateTime.localtime())),
@@ -11458,7 +11467,7 @@ def calcular_medidas_cmr():
     return dic
 
 def escribir_info_cmr(c, a, m, f, lugar_entrega = "", transportista = "",
-                      porteadores = "", lugar_carga_linea1 = "", 
+                      porteadores = "", lugar_carga_linea1 = "",
                       lugar_carga_linea2 = ""):
     #cmr_control(c, m['marco'], f)
     cmr_control(c, m['doc'], f)
@@ -11569,8 +11578,8 @@ def cmr_entrega(c, m, f, lugar_entrega):
                                             alineacion = 0)
         i += 1
 
-def cmr_fecha(c, m, f, a, 
-              lugar_de_carga_linea1 = "", 
+def cmr_fecha(c, m, f, a,
+              lugar_de_carga_linea1 = "",
               lugar_de_carga_linea2 = ""):
     rectangulo(c, m[0], m[1],
                texto = 'Lugar y fecha de la carga de la mercancía',
@@ -11740,7 +11749,7 @@ def cmr_estipulaciones(c, m, f):
                alinTxtX = None, alinTxtY = 'arriba', doble = False)
     offset = 0.5*cm
     c.line(m[0][0], m[0][1] - offset, m[1][0], m[0][1] - offset)
-    # CWT: Solo hay que dejar el último punto que me envió jpedrero. Sustituye 
+    # CWT: Solo hay que dejar el último punto que me envió jpedrero. Sustituye
     # al resto, no lo complementa como yo pensaba.
     #lineas_agregadas = agregarFila(m[0][0] + 0.1 * cm, m[0][1] - 1*cm,
     #    m[1][0],
@@ -11780,12 +11789,12 @@ def cmr_estipulaciones(c, m, f):
     #            "carga-descarga de la mercancía serán por cuenta respectiva d"\
     #            "el cargador o expedidor y del destinatario."),
     #    c, f['pequeña']['fuente'], f['pequeña']['tamaño'])
-    lineas_agregadas = 1 
+    lineas_agregadas = 1
     lineas_agregadas += agregarFila(m[0][0] + 0.1 * cm,
         m[0][1] - (1*cm + 0.35 * cm * lineas_agregadas), m[1][0],
         escribe("Sometimiento a arbitraje."),
         c, f['pequeña']['fuente'], f['pequeña']['tamaño'])
-    lineas_agregadas += 1   # Para hacer más hueco y que quede el texto más 
+    lineas_agregadas += 1   # Para hacer más hueco y que quede el texto más
                             # homogéneo en el hueco.
     lineas_agregadas += agregarFila(m[0][0] + 0.1 * cm,
         m[0][1] - (1*cm + 0.35 * cm * lineas_agregadas), m[1][0],
@@ -11796,7 +11805,7 @@ def cmr_estipulaciones(c, m, f):
                 "conforme a lo establecido en la Ley 15/1987 de Ordenación "
                 "de los Transportes Terrestres y sus normas de desarrollo."),
         #c, f['pequeña']['fuente'], f['pequeña']['tamaño'])
-        c, f['pequeña']['fuente'], f['pequeña']['tamaño'] + 2, 
+        c, f['pequeña']['fuente'], f['pequeña']['tamaño'] + 2,
         altura_linea = 15)
 
 def cmr_bruto(c, m, f):
@@ -11842,7 +11851,7 @@ def cmr_debido(c, m, f):
     rectangulo(c, (m[1][0] - 1*cm, m[0][1] - 0.8*cm), (m[1][0] - 0.5*cm,
                m[0][1] - 1.3*cm))
 
-def cmr(albaran, lugar = "", transportista = "", porteadores = "", 
+def cmr(albaran, lugar = "", transportista = "", porteadores = "",
         lugar_carga = ""):
     """
     Crea un PDF con el CMR del albarán de salida recibido.
@@ -11868,24 +11877,24 @@ def cmr(albaran, lugar = "", transportista = "", porteadores = "",
                'cabecera_negrita': {'fuente': "Times-Bold", 'tamaño': 12},
                'pie': {'fuente': "Times-Roman", 'tamaño': 8}}
     c.setFont(fuentes['normal']['fuente'], fuentes['normal']['tamaño'])
-    # NUEVO: Lugar de carga. Si viene vacío uso los datos de la empresa 
+    # NUEVO: Lugar de carga. Si viene vacío uso los datos de la empresa
     # que se usan (usaban) en el segundo albarán...
     if not lugar_carga:
-        # ... pero si hay un almacén relacionado con el albarán, uso el del 
+        # ... pero si hay un almacén relacionado con el albarán, uso el del
         # albarán.
         almacenalbaran = albaran.almacenOrigen
         if almacenalbaran != None:
             linea1 = almacenalbaran.direccion
-            linea2 = "%s - %s (%s)" % (almacenalbaran.cp, 
-                                       almacenalbaran.ciudad, 
+            linea2 = "%s - %s (%s)" % (almacenalbaran.cp,
+                                       almacenalbaran.ciudad,
                                        almacenalbaran.provincia)
             lugar_carga = "\n".join((linea1, linea2))
         else:
             try:
                 dde = pclases.DatosDeLaEmpresa.select()[0]
                 linea1 = dde.diralbaran2
-                linea2 = "%s - %s (%s)" % (dde.cpalbaran2, 
-                                           dde.ciualbaran2, 
+                linea2 = "%s - %s (%s)" % (dde.cpalbaran2,
+                                           dde.ciualbaran2,
                                            dde.proalbaran2)
                 lugar_carga = "\n".join((linea1, linea2))
             except IndexError:
@@ -12027,7 +12036,7 @@ def pruebines2():
                 'nrollo':str(r.numrollo),
                 'partida':str(r.partida.numpartida),
                 'codigo': producto.codigo,
-                'codigo39': r.codigo, 
+                'codigo39': r.codigo,
                 'defectuoso': r.rollob}
     nomarchivo = etiquetasRollosEtiquetadora([elemento], True)
     abrir_pdf(nomarchivo)

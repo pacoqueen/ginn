@@ -245,7 +245,7 @@ class AlbaranesDeSalida(Ventana):
         """
         Oculta los otros 3 expanders de la página para no ocupar tanto sitio.
         """
-        expanders = (self.wids['expander1'], self.wids['expander2'], 
+        expanders = (self.wids['expander1'], self.wids['expander2'],
                      self.wids['expander3'], self.wids['expander4'])
         for ex in expanders:
             if ex != expander:
@@ -351,7 +351,7 @@ class AlbaranesDeSalida(Ventana):
                               r.get_existencias(), r.get_stock()))
         idproducto = utils.dialogo_resultado(filas_res,
                         titulo = 'Seleccione producto',
-                        cabeceras = ('ID Interno', 'Código', 'Nombre', 
+                        cabeceras = ('ID Interno', 'Código', 'Nombre',
                                      'Descripción', 'Existencias', 'Stock'),
                         padre = self.wids['ventana'])
         if idproducto < 0:
@@ -1111,7 +1111,7 @@ class AlbaranesDeSalida(Ventana):
             elif a.es_caja():
                 cantidad += a.peso
         if pclases.DEBUG:
-            myprint(" ==> Fin iteraciones sobre articulos_anadidos.", 
+            myprint(" ==> Fin iteraciones sobre articulos_anadidos.",
                     time.time() - antes)
         return cantidad
 
@@ -1213,7 +1213,7 @@ class AlbaranesDeSalida(Ventana):
         #ldv = pclases.LineaDeVenta.get(idldv)
         ldv = pclases.getObjetoPUID(idldv)
         if pclases.DEBUG:
-            myprint("Soy redistribuir_ldv. Vamos con", 
+            myprint("Soy redistribuir_ldv. Vamos con",
                     ldv.producto.descripcion)
         if (not self.objeto.bloqueado and
               ((ldv.facturaVenta == None or not ldv.facturaVenta.bloqueada)
@@ -1291,7 +1291,7 @@ class AlbaranesDeSalida(Ventana):
                 # primero de la lista.
             self.modificado = False
             self.nuevo = False
-            albaran.notificador.activar(self.aviso_actualizacion)   # Activo 
+            albaran.notificador.activar(self.aviso_actualizacion)   # Activo
                                                             # la notificación
         except Exception:
             albaran = None
@@ -1698,7 +1698,7 @@ class AlbaranesDeSalida(Ventana):
         model = self.wids['tv_abonado'].get_model()
         model.clear()
         ldds = albaran.lineasDeDevolucion
-        padres_abonos = {} # abono: {'iter': iter del treeView, 
+        padres_abonos = {} # abono: {'iter': iter del treeView,
                            #         'productos': {producto: iter_del_producto}
         for ldd in ldds:
             abono = ldd.abono
@@ -1938,7 +1938,7 @@ class AlbaranesDeSalida(Ventana):
                                 'blanco para ver una lista completa.\n'
                                 '(Atención: Ver la lista completa puede '
                                 'resultar lento si el número de elementos '
-                                'es muy alto)', 
+                                'es muy alto)',
                         padre = self.wids['ventana'])
                 return
             ## Un único resultado
@@ -2016,7 +2016,7 @@ class AlbaranesDeSalida(Ventana):
         albaran.telefono = self.wids['e_telf'].get_text()
         albaran.direccion = self.wids['e_direccion'].get_text()
         buff = self.wids['tv_observaciones'].get_buffer()
-        albaran.observaciones = buff.get_text(buff.get_start_iter(), 
+        albaran.observaciones = buff.get_text(buff.get_start_iter(),
                                               buff.get_end_iter())
         self.guardar_transportista(None)
         albaran.transportistaID = utils.combo_get_value(self.wids['cbe_dni'])
@@ -2035,7 +2035,7 @@ class AlbaranesDeSalida(Ventana):
 
     def buscar_fecha(self, boton):
         self.wids['e_fecha'].set_text(utils.str_fecha(utils.mostrar_calendario(
-            fecha_defecto = self.objeto and self.objeto.fecha or None, 
+            fecha_defecto = self.objeto and self.objeto.fecha or None,
             padre = self.wids['ventana'])))
 
     def refinar_busqueda_pedido(self, pedidos):
@@ -2262,7 +2262,7 @@ class AlbaranesDeSalida(Ventana):
                     # irá completando las líneas de arriba a abajo.
                     if (not ldp.albaraneada     # Queda algo por servir
                         or (ldp.cantidad < 0
-                            and ldp.cantidadPedida 
+                            and ldp.cantidadPedida
                                     - ldp.cantidadServida != 0)):
                             # CWT: O tiene cantidad negativa por un abono made
                             #      in BP y no se ha añadido ya a un albarán.
@@ -2329,11 +2329,11 @@ class AlbaranesDeSalida(Ventana):
                     txtnoalb += '\n      - '.join(
                             ["Producto %s. Cantidad %.2f."
                              "Albarán de salida número %s"
-                                    % (get_nombre_producto(ldp), 
-                                       ldp.cantidad, 
+                                    % (get_nombre_producto(ldp),
+                                       ldp.cantidad,
                                        ", ".join(utils.unificar(
-                                           [a.numalbaran for a 
-                                               in ldp.albaranesSalida 
+                                           [a.numalbaran for a
+                                               in ldp.albaranesSalida
                                                if a != None])))
                              for ldp in not_included])  # FEO
                     utils.dialogo_info(titulo = 'LÍNEAS NO ALBARANEADAS',
@@ -2576,8 +2576,8 @@ class AlbaranesDeSalida(Ventana):
         """
         if not utils.dialogo(texto = 'Se eliminará el albarán actual y todas'
                                      ' sus relaciones con ventas, pedidos, '
-                                     'etc.\n¿Está seguro?', 
-                             titulo = 'BORRAR ALBARÁN', 
+                                     'etc.\n¿Está seguro?',
+                             titulo = 'BORRAR ALBARÁN',
                              padre = self.wids['ventana']):
             return
         albaran = self.objeto
@@ -2941,9 +2941,9 @@ class AlbaranesDeSalida(Ventana):
             antes = time.time()
         for ldv in albaran.lineasDeVenta:
             productoVenta = ldv.productoVenta
-            if (productoVenta # and productoVenta.articulos <--- ESTO ES 
+            if (productoVenta # and productoVenta.articulos <--- ESTO ES
                     # LENTÍSIMO con productos con muchos artículos. Intuyo
-                    # que el ORM hace un select para cada uno de los 
+                    # que el ORM hace un select para cada uno de los
                     # artículos tan solo para evaluar que su len() es o no 0
                 and tiene_articulos(productoVenta) # <-- Optimización
                 and self.usuario
@@ -3185,14 +3185,14 @@ class AlbaranesDeSalida(Ventana):
                             texto = "Lugar de entrega:",
                             padre = self.wids['ventana'],
                             textview = True,
-                            valor_por_defecto = self.objeto.nombre 
-                                                + "\n" 
-                                                + self.objeto.direccion 
-                                                + "\n" 
-                                                + self.objeto.cp 
-                                                + "\n" 
-                                                + self.objeto.ciudad 
-                                                + " " 
+                            valor_por_defecto = self.objeto.nombre
+                                                + "\n"
+                                                + self.objeto.direccion
+                                                + "\n"
+                                                + self.objeto.cp
+                                                + "\n"
+                                                + self.objeto.ciudad
+                                                + " "
                                                 + self.objeto.pais)
         if lugar_entrega != None:
             transportista = utils.dialogo_entrada(titulo = "CMR",
@@ -3228,7 +3228,7 @@ class AlbaranesDeSalida(Ventana):
             for fpl in fichero_packing_list:
                 adjuntos.append(fpl)
             texto_adjuntos.append("copia de %d packing list%s" % (
-                len(fichero_packing_list), 
+                len(fichero_packing_list),
                 len(fichero_packing_list) > 1 and "s" or ""))
         texto_adjuntos = ": " + ", ".join(texto_adjuntos) + "."
         correos = email.replace(",", " ").replace(";", " ").strip().split()
@@ -3295,7 +3295,7 @@ class AlbaranesDeSalida(Ventana):
         if adjuntos == []:
             texto = "Albarán %s generado e imprimido. Fecha de salida de "\
                     "la mercancía del almacén: %s." % (
-                            self.objeto.numalbaran, 
+                            self.objeto.numalbaran,
                             utils.str_fecha(mx.DateTime.localtime()))
         else:
             texto = "Adjunto la siguiente documentación en formato PDF "\
@@ -3496,7 +3496,7 @@ class AlbaranesDeSalida(Ventana):
                              'color': str(campos.color),
                              'peso': utils.float2str(bala.pesobala),
                              'lote': bala.lote.codigo,
-                             'tipo': campos.tipoMaterialBala 
+                             'tipo': campos.tipoMaterialBala
                                 and str(campos.tipoMaterialBala.descripcion)
                                 or "",
                              'longitud': str(campos.corte),
@@ -3636,8 +3636,8 @@ class AlbaranesDeSalida(Ventana):
         fcmp = lambda x,y:[(x[-1]<y[-1] and -1) or (x[-1]>y[-1] and 1) or 0][0]
         balas.sort(fcmp)
         while balas:
-            numfilas = [(len(balas)/4.0) % 1 > 0 
-                        and int((len(balas)/4.0) + 1) 
+            numfilas = [(len(balas)/4.0) % 1 > 0
+                        and int((len(balas)/4.0) + 1)
                         or int(len(balas)/4.0)][0]
             balas_aux.append(balas.pop(i))
             i = [i+numfilas-1<len(balas) and i+numfilas-1 or 0][0]
@@ -3709,7 +3709,7 @@ class AlbaranesDeSalida(Ventana):
             else:
                 self.logger.error("El artículo ID %d no es ni fibra ni "
                                   "geotextil (ni geocompuesto/comercializado)."
-                                    % (articulo.id), 
+                                    % (articulo.id),
                                   exc_info = True)
         try:
             res = ', '.join(["%d" % (lote) for lote in lotes])
@@ -4238,7 +4238,7 @@ class AlbaranesDeSalida(Ventana):
                 try:
                     assert numfactura == numfactura2, "Número de factura "\
                             "precalculado y obtenido al actualizar el "\
-                            "contador difieren: %s != %s." % (numfactura, 
+                            "contador difieren: %s != %s." % (numfactura,
                                                               numfactura2)
                 except AssertionError, msg:
                     self.logger.error("%salbaranes_salida::generar_factura ->"
@@ -4427,7 +4427,7 @@ class AlbaranesDeSalida(Ventana):
                     else:
                         self.logger.warning("Albarán actual: %s. Albarán "
                                 "descargado: %s. IGNORO ALBARÁN." % (
-                                    self.objeto.numalbaran, 
+                                    self.objeto.numalbaran,
                                     albaran.numalbaran))
                         utils.dialogo_info(titulo = "ALBARÁN INCORRECTO",
                                 texto = "El albarán descargado (%s) no "
@@ -4480,7 +4480,7 @@ def get_str_pedidos_albaranes(factura):
             if ldv.pedidoVenta.numpedido not in peds:
                 peds[ldv.pedidoVenta.numpedido] = []
             if ldv.albaranSalida != None:
-                if (not ldv.albaranSalida.numalbaran 
+                if (not ldv.albaranSalida.numalbaran
                         in peds[ldv.pedidoVenta.numpedido]):
                     peds[ldv.pedidoVenta.numpedido].append(
                             ldv.albaranSalida.numalbaran)
@@ -4627,6 +4627,9 @@ def imprimir_factura(factura, usuario = None, abrir = True, es_copia = False,
                    # 'pago': factura.cliente.vencimientos,
                    'pago': str(factura.get_plazo_pago(default = "")),
                    'documento': "; ".join(documentosDePago)}
+    # CWT: Caso especial requerido por las empresas de crédito:
+    if factura.cliente.textoComplementarioFormaDePago:
+        vencimiento['pago'] += " %s" % factura.cliente.textoComplementarioFormaDePago
     from formularios import numerals
     totalfra = factura.calcular_total()
     totales = {}
@@ -4730,7 +4733,7 @@ def ajustar_existencias(ldv, cantidad_anterior = None):
     sale del almacén en la LDV.
     Si el parámetro opcional cantidad_anterior es distinto de None (se
     usa al cambiar la cantidad de la LDV con posterioridad) la cantidad
-    a restar a las existencias es la cantidad actual menos la 
+    a restar a las existencias es la cantidad actual menos la
     cantidad_anterior.
     Siempre ajusta las existencias aunque el campo controlExistencias esté
     a False y el producto es un producto de compra, solo que en ese caso
@@ -4905,7 +4908,7 @@ def es_venta_rollos_c(ldv_o_producto):
     except AttributeError:
         res = False
     if pclases.DEBUG and pclases.VERBOSE:
-        myprint("albaranes_de_salida::es_venta_rollos_c ->", res, "Tiempo:", 
+        myprint("albaranes_de_salida::es_venta_rollos_c ->", res, "Tiempo:",
                 time.time() - antes)
     return res
 

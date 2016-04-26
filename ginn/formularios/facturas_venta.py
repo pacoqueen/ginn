@@ -64,7 +64,7 @@
 ##  + Comprobar restricciones al crear una factura.
 ##  + Comprobar restricciones al cambiar número o fecha a una fra.
 ##  + Agregar, quitar y crear nuevas LDV y servicios.
-##  + ¿Entry con albaranes y pedidos que contiene la factura? ¿listado con 
+##  + ¿Entry con albaranes y pedidos que contiene la factura? ¿listado con
 ##    códigos internos de productos?
 ##  + Totales y vencimientos y pagos.
 ##  + DONE: Desechado el colorear todas líneas completas del
@@ -112,7 +112,7 @@ class FacturasVenta(Ventana):
         """
         self.usuario = usuario
         self._objetoreciencreado = None
-        Ventana.__init__(self, 'facturas_venta.glade', objeto, 
+        Ventana.__init__(self, 'facturas_venta.glade', objeto,
                          usuario = self.usuario)
         if self.objeto and not isinstance(self.objeto, pclases.FacturaVenta):
             # Debe ser un número de factura en vez de un pclases. Lo intento:
@@ -177,11 +177,11 @@ class FacturasVenta(Ventana):
         try:
             condicion = condicion and (
                     utils.parse_porcentaje(
-                        self.wids['e_descuento'].get_text()) 
+                        self.wids['e_descuento'].get_text())
                     / 100.0 == factura.descuento)
             condicion = condicion and (
                     utils.parse_porcentaje(
-                        self.wids['e_iva'].get_text(), fraccion = True) 
+                        self.wids['e_iva'].get_text(), fraccion = True)
                     == factura.iva)
             condicion = condicion and (
                     utils.parse_porcentaje(
@@ -243,7 +243,7 @@ class FacturasVenta(Ventana):
             for cell in col.get_cell_renderers():
                 cell.set_property("xalign", 1.0)
         cols = (('Código', 'gobject.TYPE_STRING', True, True, False, None),
-                ('Descripción', 'gobject.TYPE_STRING', 
+                ('Descripción', 'gobject.TYPE_STRING',
                                                     False, True, False, None),
                 ('Cantidad', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Precio', 'gobject.TYPE_STRING', False, True, False, None),
@@ -545,38 +545,38 @@ class FacturasVenta(Ventana):
         if pclases.DEBUG:
             tiempos.append(time.time())
             myprint("\tfacturas_venta::rellenar_widgets -> ",
-                    "Empiezo a medir tiempos...", 
+                    "Empiezo a medir tiempos...",
                     tiempos[-1] - antes)
         self.rellenar_lista_obras()
         if pclases.DEBUG:
             tiempos.append(time.time())
             myprint("\tfacturas_venta::rellenar_widgets -> ",
-                    "rellenar_lista_obras() = ", 
+                    "rellenar_lista_obras() = ",
                     tiempos[-1] - antes)
         utils.combo_set_from_db(self.wids['cbe_obra'], factura.obraID)
         self.rellenar_contenido()
         if pclases.DEBUG:
             tiempos.append(time.time())
             myprint("\tfacturas_venta::rellenar_widgets -> ",
-                    "rellenar_contenido() = ", 
+                    "rellenar_contenido() = ",
                     tiempos[-1] - antes)
         self.rellenar_servicios()
         if pclases.DEBUG:
             tiempos.append(time.time())
             myprint("\tfacturas_venta::rellenar_widgets -> ",
-                    "rellenar_servicios() = ", 
+                    "rellenar_servicios() = ",
                     tiempos[-1] - antes)
         self.rellenar_abonos()
         if pclases.DEBUG:
             tiempos.append(time.time())
             myprint("\tfacturas_venta::rellenar_widgets -> ",
-                    "rellenar_abonos() = ", 
+                    "rellenar_abonos() = ",
                     tiempos[-1] - antes)
         self.wids['e_estado'].set_text(self.objeto.get_str_estado())
         if pclases.DEBUG:
             tiempos.append(time.time())
             myprint("\tfacturas_venta::rellenar_widgets -> ",
-                    "...set_text(self.objeto.get_str_estado())", 
+                    "...set_text(self.objeto.get_str_estado())",
                     tiempos[-1] - antes)
         self.objeto.make_swap()
         if pclases.DEBUG:
@@ -769,7 +769,7 @@ class FacturasVenta(Ventana):
         lista de ventas sin pedido, albarán ni factura
         asociada.
         El diccionario, por tanto, quedará:
-        {'pedidos': {IDpedido: [IDldv, IDldv, IDldv...], 
+        {'pedidos': {IDpedido: [IDldv, IDldv, IDldv...],
                      IDpedido2: [...], ...},
          'albaranes': {IDalbarán: [IDldv, ...], ...},
          'pendientes': [IDldv, IDldv, ...]}
@@ -797,10 +797,10 @@ class FacturasVenta(Ventana):
         Devuelve una lista con las LDV contenidas
         en ldvs que no pertenezcan a ninguna factura.
         """
-        res = [ldv for ldv in obj.lineasDeVenta 
+        res = [ldv for ldv in obj.lineasDeVenta
                 if ldv.facturaVentaID == None and ldv.prefacturaID == None]
         if isinstance(obj, pclases.AlbaranSalida):
-            res += [srv for srv in obj.servicios 
+            res += [srv for srv in obj.servicios
                     if srv.facturaVentaID == None and srv.prefacturaID == None]
         return res
 
@@ -818,8 +818,8 @@ class FacturasVenta(Ventana):
             """ % (cliente.id))
         srvs = pclases.Servicio.select("""
             (factura_venta_id IS NULL AND prefactura_id IS NULL)
-            AND (albaran_salida_id IN (SELECT id FROM albaran_salida 
-                                       WHERE cliente_id = %d 
+            AND (albaran_salida_id IN (SELECT id FROM albaran_salida
+                                       WHERE cliente_id = %d
                                        AND albaran_salida.facturable = True))
         """ % (cliente.id))
         for ldv in ldvs:
@@ -841,7 +841,7 @@ class FacturasVenta(Ventana):
                       utils.float2str(ldv.descuento, 3, autodec = True),
                       utils.float2str(totlinea, 3, autodec = True),
                       ldv.pedidoVenta and ldv.pedidoVenta.numpedido or '-',
-                      ldv.albaranSalida and ldv.albaranSalida.numalbaran 
+                      ldv.albaranSalida and ldv.albaranSalida.numalbaran
                                                                     or '-',
                       ldv.id))
 
@@ -1140,7 +1140,7 @@ class FacturasVenta(Ventana):
                             % (abs(ldv.cantidad - ldv.cantidad_albaraneada),
                                ldv.cantidad,
                                ldv.cantidad_albaraneada))
-            if abs(ldv.cantidad_total_solicitada_del_producto 
+            if abs(ldv.cantidad_total_solicitada_del_producto
                     - ldv.cantidad_albaraneada) > tolerancia:
                 # TODO: La tolerancia es hasta que encuentre el error de
                 # cálculo que hace que aunque las cantidades sean
@@ -1164,9 +1164,9 @@ class FacturasVenta(Ventana):
                        ldv.cantidad_albaraneada,
                        ldv.cantidad,
                        ldv.productoVentaID and (ldv.productoVenta.es_rollo()
-                                                and "m²" or "kg") 
+                                                and "m²" or "kg")
                                             or ldv.productoCompra.unidad,
-                       ldv.productoVentaID and ldv.productoVenta.nombre 
+                       ldv.productoVentaID and ldv.productoVenta.nombre
                                             or ldv.producto.descripcion)
                 if not utils.dialogo(titulo = "ALBARÁN INCONSISTENTE",
                                      texto = txt,
@@ -1252,9 +1252,9 @@ class FacturasVenta(Ventana):
         """
         factura = self.objeto
             # Datos a pedir: Cliente y número de factura.
-        clientes = [(c.id, c.nombre) for c 
+        clientes = [(c.id, c.nombre) for c
                     in pclases.Cliente.select(
-                        pclases.Cliente.q.inhabilitado == False, 
+                        pclases.Cliente.q.inhabilitado == False,
                         orderBy='nombre')]
         idcliente = utils.dialogo_combo('SELECCIONE CLIENTE',
                 'Seleccione un cliente. Si no encuentra el cliente buscado, '
@@ -1408,14 +1408,14 @@ class FacturasVenta(Ventana):
         # HACK:
         clientes = [str(c.id) for c in cliente.contador.clientes]
         clientes = ','.join(clientes)
-        facturas = [f for f 
+        facturas = [f for f
                     in pclases.FacturaVenta.select("cliente_id IN (%s)" % (
                         clientes))]
-        facturas = [f for f in facturas 
-                    if f.numfactura.startswith(cliente.contador.prefijo) 
+        facturas = [f for f in facturas
+                    if f.numfactura.startswith(cliente.contador.prefijo)
                         and f.numfactura.endswith(cliente.contador.sufijo)]
         try:
-            numero = int(numfactura.replace(cliente.contador.prefijo, 
+            numero = int(numfactura.replace(cliente.contador.prefijo,
                             "").replace(cliente.contador.sufijo, ""))
         except:
             numero = 0
@@ -1610,7 +1610,7 @@ class FacturasVenta(Ventana):
 
     def buscar_fecha(self):
         fecha = utils.str_fecha(utils.mostrar_calendario(
-            fecha_defecto = self.objeto and self.objeto.fecha or None, 
+            fecha_defecto = self.objeto and self.objeto.fecha or None,
             padre = self.wids['ventana']))
         return fecha
 
@@ -1626,9 +1626,9 @@ class FacturasVenta(Ventana):
             self.objeto.make_swap()
             self.wids['e_fecha'].set_text(utils.str_fecha(self.objeto.fecha))
             self.objeto.notificador.activar(self.aviso_actualizacion)
-            pclases.Auditoria.modificado(self.objeto, self.usuario, 
+            pclases.Auditoria.modificado(self.objeto, self.usuario,
                     __file__,
-                    "Fecha de factura cambiado de %s a %s." 
+                    "Fecha de factura cambiado de %s a %s."
                         % (utils.str_fecha(fechanterior),
                            utils.str_fecha(self.objeto.fecha)))
         else:
@@ -1726,9 +1726,9 @@ class FacturasVenta(Ventana):
                 self.wids['e_fecha'].set_text(
                     utils.str_fecha(self.objeto.fecha))
                 self.objeto.notificador.activar(self.aviso_actualizacion)
-                pclases.Auditoria.modificado(self.objeto, self.usuario, 
+                pclases.Auditoria.modificado(self.objeto, self.usuario,
                         __file__,
-                        "Número de factura cambiado de %s a %s." 
+                        "Número de factura cambiado de %s a %s."
                             % (numanterior, self.objeto.numfactura))
             else:
                 utils.dialogo_info(titulo = "ERROR EN NÚMERO DE FACTURA",
@@ -1768,8 +1768,8 @@ class FacturasVenta(Ventana):
         # PLAN: Probablemente haya que imponer la misma restricción que en
         # chequear_cambio_fecha. Pero como "si funciona, no lo toques" y
         # hasta el momento no ha fallado; se queda como está hasta nuevo aviso.
-        facturas.sort(lambda f1, f2: (f1.fecha < f2.fecha and -1) or 
-                                     (f1.fecha > f2.fecha and 1) or 
+        facturas.sort(lambda f1, f2: (f1.fecha < f2.fecha and -1) or
+                                     (f1.fecha > f2.fecha and 1) or
                                      (f1.get_numero_numfactura_contador()
                                         - f2.get_numero_numfactura_contador()))
         # Divido la lista en dos tomando como eje EL NUEVO NÚMERO DE FACTURA:
@@ -2028,7 +2028,7 @@ class FacturasVenta(Ventana):
             rollos = pclases.CamposEspecificosRollo.select(
                     pclases.CamposEspecificosRollo.q.codigoComposan == txt)
             productos = [p.id for p in prods]
-            productos += [p.productosVenta[0].id 
+            productos += [p.productosVenta[0].id
                           for p in rollos
                           if p.productosVenta[0].id not in productos]
         return productos
@@ -2192,7 +2192,7 @@ class FacturasVenta(Ventana):
                           servicio.concepto,
                           servicio.precio,
                           servicio.descuento,
-                          servicio.precio * (1.0 - servicio.descuento) 
+                          servicio.precio * (1.0 - servicio.descuento)
                                                         * servicio.cantidad,
                           servicio.id))
         self.rellenar_totales()
@@ -2217,11 +2217,11 @@ class FacturasVenta(Ventana):
         filas = [(s.id,
                   s.concepto,
                   s.precio,
-                  (s.facturaVenta and s.facturaVenta.numfactura) 
+                  (s.facturaVenta and s.facturaVenta.numfactura)
                         or (s.prefactura and s.prefactura.numfactura) or '',
-                  (s.facturaVenta and s.facturaVenta.cliente 
+                  (s.facturaVenta and s.facturaVenta.cliente
                    and s.facturaVenta.cliente.nombre) or
-                  (s.prefactura and s.prefactura.cliente 
+                  (s.prefactura and s.prefactura.cliente
                    and s.prefactura.cliente.nombre) or '')
                   for s in servicios]
         res = utils.dialogo_resultado(filas,
@@ -2264,7 +2264,7 @@ class FacturasVenta(Ventana):
         factura = self.objeto
         estimado = False
         fecha = utils.mostrar_calendario(padre = self.wids['ventana'])
-        cantidad = (float(utils.float2str(factura.importeTotal, 2)) 
+        cantidad = (float(utils.float2str(factura.importeTotal, 2))
                     / (len(factura.vencimientosCobro) + 1.0))
         for vto in factura.vencimientosCobro:
             vto.importe = cantidad
@@ -2324,7 +2324,7 @@ class FacturasVenta(Ventana):
                 padre = self.wids['ventana'])
             return
         idvto = int(
-            self.wids['tv_vencimientos'].get_model()[path][-1].split(',')[0]) 
+            self.wids['tv_vencimientos'].get_model()[path][-1].split(',')[0])
                                                                         # WTF?
             # Al escribirlo no parecía tan lioso. Lo juro.
         if idvto > 0:    # Es -1 si no había.
@@ -2336,9 +2336,9 @@ class FacturasVenta(Ventana):
             vto = pclases.VencimientoCobro(fecha = fecha,
                     facturaVenta = factura,
                     importe = 0,
-                    observaciones = factura.cliente 
+                    observaciones = factura.cliente
                                      and factura.cliente.textoformacobro or "",
-                    cuentaOrigen = factura.cliente 
+                    cuentaOrigen = factura.cliente
                                      and factura.cliente.cuentaOrigen or None)
             pclases.Auditoria.nuevo(vto, self.usuario, __file__)
         self.rellenar_vencimientos()        # Para no sobrecargar mucho la red
@@ -2402,7 +2402,7 @@ class FacturasVenta(Ventana):
             pclases.Auditoria.modificado(cobro,
                 self.usuario, __file__,
                 "Fecha del cobro %s de fra. %s cambiado a %s."
-                    % (cobro.puid, self.objeto.numfactura, 
+                    % (cobro.puid, self.objeto.numfactura,
                         utils.str_fecha(cobro.fecha)))
             if cobro.pagareCobro:
                 cobro.pagareCobro.fechaCobrado = cobro.fecha
@@ -2410,7 +2410,7 @@ class FacturasVenta(Ventana):
                 pclases.Auditoria.modificado(cobro.pagareCobro,
                     self.usuario, __file__,
                     "Fecha de %s del pagaré de fra. %s cambiada a %s."
-                        % (cobro.puid, self.objeto.numfactura, 
+                        % (cobro.puid, self.objeto.numfactura,
                             utils.str_fecha(cobro.pagareCobro.fechaCobrado)))
             elif cobro.confirming:
                 cobro.confirming.fechaCobrado = cobro.fecha
@@ -2744,11 +2744,11 @@ class FacturasVenta(Ventana):
             else:
                 if self.usuario:
                     permisos = self.usuario.get_permiso(ventana)
-                    condicion_modificacion = (condicion_modificacion and 
-                        (permisos.escritura or (permisos.nuevo 
-                                                and self.objeto 
+                    condicion_modificacion = (condicion_modificacion and
+                        (permisos.escritura or (permisos.nuevo
+                                                and self.objeto
                                                  == self._objetoreciencreado)))
-                    condicion_modificacion = (condicion_modificacion 
+                    condicion_modificacion = (condicion_modificacion
                                               or self.usuario.nivel <= 2)
                 if not condicion_modificacion and self.usuario != None:
                     utils.dialogo_info(titulo = "OPERACIÓN NO PERMITIDA",
@@ -3072,6 +3072,9 @@ class FacturasVenta(Ventana):
                        # 'pago': factura.cliente.vencimientos,
                        'pago': str(factura.get_plazo_pago(default = "")),
                        'documento': "; ".join(documentosDePago)}
+        # CWT: Caso especial requerido por las empresas de crédito:
+        if self.objeto.cliente.textoComplementarioFormaDePago:
+            vencimiento['pago'] += " %s" % self.objeto.cliente.textoComplementarioFormaDePago
         from formularios import numerals
         total = self.wids['e_total'].get_text()
         total = total.replace('€', '')
@@ -3196,7 +3199,7 @@ class FacturasVenta(Ventana):
                   a.numabono,
                   utils.str_fecha(a.fecha))
                  for a in abonos if a.facturaDeAbono != None]
-        fas = utils.dialogo_resultado(filas, 
+        fas = utils.dialogo_resultado(filas,
                 'SELECCIONE UNA FACTURA DE ABONO DEL CLIENTE',
                 cabeceras = ('ID', 'Fecha de factura de abono',
                              'Número de abono', 'Fecha del abono'),
@@ -3355,7 +3358,7 @@ def enviar_factura_por_correo(archivo,
                 padre = padre,
                 valor_por_defecto = "; ".join((diremail, remitente)))
             if correos:
-                correos = correos.replace(",", " ").replace(";", 
+                correos = correos.replace(",", " ").replace(";",
                                                         " ").strip().split()
                 correos = utils.unificar([c.lower().strip() for c in correos])
                 try:

@@ -813,12 +813,17 @@ class FormaDePago(SQLObject, PRPCTOO):
         Si se especifica un cliente, usa el texto complementario de la
         forma de pago que se le pusiera en la ficha.
         """
-        res = "%s, %d D. F. F." % (self.documentoDePago.documento, self.plazo)
+        texto_dias = "D. F. F."
+        if cliente and cliente.textoComplementarioFormaDePago:
+            texto_dias = ""
+        res = "%s, %d %s" % (self.documentoDePago.documento, self.plazo,
+                             texto_dias)
         try:
             if cliente and cliente.textoComplementarioFormaDePago:
                 res += " " + cliente.textoComplementarioFormaDePago
         except (TypeError, AttributeError):
             pass
+        res = utils.eliminar_dobles_espacios(res)
         return res
 
     def porDefecto(cls):

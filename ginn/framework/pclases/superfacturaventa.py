@@ -116,7 +116,7 @@ class SuperFacturaVenta:
         if incluir_servicios:
             for srv in self.servicios:
                 if not incluir_nones:
-                    if (srv.albaranSalidaID 
+                    if (srv.albaranSalidaID
                             and srv.albaranSalida not in albaranes):
                         albaranes.append(srv.albaranSalida)
                 else:
@@ -165,16 +165,16 @@ class SuperFacturaVenta:
         if redondeo is False:   # No redondea ANTES de hacer la suma. Pero el
             # resultado, al implicar un FixedPoint que viene del IVA, será
             # también un FixedPoint de 2 decimales.
-            total = (subtotal 
+            total = (subtotal
                      + float(self.cargo)    # Porque es de tipo Decimal
-                     + tot_dto 
+                     + tot_dto
                      + tot_iva
-                     + abonos 
+                     + abonos
                      + irpf)
         else:
-            subtotales = (subtotal, 
-                          float(self.cargo), 
-                          tot_dto, 
+            subtotales = (subtotal,
+                          float(self.cargo),
+                          tot_dto,
                           tot_iva,
                           abonos,
                           irpf)
@@ -187,7 +187,7 @@ class SuperFacturaVenta:
                 # In [33]: nums= (13425.705, 0.705, 1.705, 2.705, 3.705, 5.705, 425.705)
                 # In [34]: for n in nums:
                 #    ....:     print round(n, 2), myround(n)
-                #    ....:     
+                #    ....:
                 # 13425.7 13425.71
                 # 0.7 0.71
                 # 1.71 1.71
@@ -302,7 +302,7 @@ class SuperFacturaVenta:
         total_iva = utils.ffloat((
                 subtotal + tot_dto + cargo + abonos) * self.iva)
         return total_iva
-    
+
 
     def emparejar_vencimientos(self):
         """
@@ -441,7 +441,7 @@ class SuperFacturaVenta:
             lineas = self.lineasDeVenta + self.servicios
         elif isinstance(self, FacturaDeAbono):
             try:
-                lineas = (self.abono.lineasDeAbono 
+                lineas = (self.abono.lineasDeAbono
                           + self.abono.lineasDeDevolucion)
             except AttributeError:
                 # ¿Factura de abono sin abono? Puede ser... Raro, pero posible.
@@ -482,7 +482,7 @@ class SuperFacturaVenta:
             lineas = self.lineasDeVenta + self.servicios
         elif isinstance(self, FacturaDeAbono):
             try:
-                lineas = (self.abono.lineasDeAbono 
+                lineas = (self.abono.lineasDeAbono
                           + self.abono.lineasDeDevolucion)
             except AttributeError:
                 # ¿Factura de abono sin abono? Puede ser... Raro, pero posible.
@@ -1000,8 +1000,8 @@ class SuperFacturaVenta:
                     if DEBUG:
                         myprint("pclases::superfacturaventa -> Excepción"
                                 "capturada al determinar vencimientos del"
-                                "cliente:\n", 
-                                msg, 
+                                "cliente:\n",
+                                msg,
                                 "\nSe asume que no tiene datos suficientes.")
         # Si finalmente hemos encontrado información, paso a calcular los días
         # de vencimiento.
@@ -1109,7 +1109,7 @@ def check_mes_posterior(f1, f2):
 
 def check_lunes(vto):
     """
-    Comprueba si la forma de pago es la del primer lunes del mes 
+    Comprueba si la forma de pago es la del primer lunes del mes
     siguiente y ajusta el vencimiento en ese caso.
     """
     docpago = vto.get_documentoDePago()
@@ -1121,7 +1121,7 @@ def check_lunes(vto):
             diasemana = vto.fecha.weekday()
         fecha_vto = vto.fecha
         while not(diasemana == 0 # == Lunes en ambas libs.
-                  and check_mes_posterior(fecha_vto, fecha_original)): 
+                  and check_mes_posterior(fecha_vto, fecha_original)):
             try:
                 vto.fecha += mx.DateTime.oneDay
             except TypeError:

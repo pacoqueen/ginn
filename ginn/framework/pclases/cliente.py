@@ -67,9 +67,9 @@ class Cliente(SQLObject, PRPCTOO):
     cuentasBancariasCliente = MultipleJoin('CuentaBancariaCliente')
     documentos = MultipleJoin('Documento')
     prefacturas = MultipleJoin('Prefactura')
-    obras = RelatedJoin('Obra', 
-                        joinColumn='cliente_id', 
-                        otherColumn='obra_id', 
+    obras = RelatedJoin('Obra',
+                        joinColumn='cliente_id',
+                        otherColumn='obra_id',
                         intermediateTable='obra__cliente')
     cobros = MultipleJoin("Cobro")
     concentracionesRemesa = MultipleJoin("ConcentracionRemesa")
@@ -87,7 +87,7 @@ class Cliente(SQLObject, PRPCTOO):
 
     def get_documentoDePago(self, strict_mode = False):
         """
-        Devuelve un objeto DocumentoDePago que se relaciona unívocamente con 
+        Devuelve un objeto DocumentoDePago que se relaciona unívocamente con
         el texto que tiene el cliente en el documento de pago.
         None si no lo puede determinar.
         """
@@ -95,57 +95,58 @@ class Cliente(SQLObject, PRPCTOO):
 
     def get_texto_forma_cobro(self):
         """
-        Devuelve un texto que representa la forma de cobro del cliente. 
-        Por ejemplo:  efectivo, pagaré 90 D.F.F., transferencia banco 
+        Devuelve un texto que representa la forma de cobro del cliente.
+        Por ejemplo:  efectivo, pagaré 90 D.F.F., transferencia banco
         1234-23-...
         """
         formapago = ""
-        if (self.documentodepago != None 
-                and self.documentodepago.strip() != "" 
+        if (self.documentodepago != None
+                and self.documentodepago.strip() != ""
                 and self.documentodepago.strip() != "0"):
             formapago = "%s, " % (self.documentodepago)
-        if (self.vencimientos != None 
-                and self.vencimientos.strip() != "" 
+        if (self.vencimientos != None
+                and self.vencimientos.strip() != ""
                 and self.vencimientos.strip() != "0"):
             formapago += "%s " % (self.vencimientos)
-        if (self.diadepago != None 
-                and self.diadepago.strip() != "" 
+        if (self.diadepago != None
+                and self.diadepago.strip() != ""
                 and self.diadepago.strip() != "-"):
             formapago += "los días %s" % (self.diadepago)
-        if len(formapago) > 0:
-            formapago += ". "
+        # if len(formapago) > 0:
+        #     formapago += ". "
         try:
             txtcompl = self.textoComplementarioFormaDePago
         except AttributeError:
             txtcompl = ""
         if formapago and txtcompl:
             formapago += " " + txtcompl
+        formapago = utils.eliminar_dobles_espacios(formapago)
         return formapago
 
     textoformacobro = property(get_texto_forma_cobro)
 
     def get_iva_norm(self, fecha = None):
         """
-        Devuelve el iva normalizado (i.e. como fracción de 1) 
+        Devuelve el iva normalizado (i.e. como fracción de 1)
         del cliente.
-        NOTAS: Temporal hasta que el IVA de la BD se guarde correctamente 
+        NOTAS: Temporal hasta que el IVA de la BD se guarde correctamente
         y corrija las funciones donde se usa.
-        Si se especifica fecha y el cliente tiene el IVA estándar, se compara 
-        la fecha con el 1 de julio de 2.010 que fue cuando entró en vigor la 
-        ley del nuevo IVA al 18%, o con el 1 de septiembre de 2012 que se 
-        volvió a cambiar al 21%. Se hace así para el cálculo de los abonos, 
+        Si se especifica fecha y el cliente tiene el IVA estándar, se compara
+        la fecha con el 1 de julio de 2.010 que fue cuando entró en vigor la
+        ley del nuevo IVA al 18%, o con el 1 de septiembre de 2012 que se
+        volvió a cambiar al 21%. Se hace así para el cálculo de los abonos,
         donde no se guarda el IVA, sino que se determina a partir del cliente.
         """
         if self.iva == None:
             # Aprovecho para quitar los Nones del IVA de los clientes.
-            self.iva = 0.21 
+            self.iva = 0.21
         iva = self.iva
         if iva > 1:
             iva /= 100.0
-        if (iva == 0.21 and fecha 
+        if (iva == 0.21 and fecha
             and fecha < mx.DateTime.DateTimeFrom(2010, 7, 1)):
             iva = 0.16  # IVA estándar oficial antes del 1 de julio de 2.010
-        elif (iva == 0.21 and fecha 
+        elif (iva == 0.21 and fecha
             and fecha >= mx.DateTime.DateTimeFrom(2010, 7, 1)
             and fecha < mx.DateTime.DateTimeFrom(2012, 9, 1)):
             iva = 0.18  # IVA estándar oficial antes del 1 de sept. de 2.012
@@ -153,10 +154,10 @@ class Cliente(SQLObject, PRPCTOO):
 
     def get_fechas_vtos_por_defecto(self, fecha):
         """
-        Devuelve una lista ordenada de fechas de vencimientos a 
-        partir de los vencimientos, día de pago y tomando la 
+        Devuelve una lista ordenada de fechas de vencimientos a
+        partir de los vencimientos, día de pago y tomando la
         fecha recibida como base.
-        En caso de que el proveedor no tenga la información necesaria 
+        En caso de que el proveedor no tenga la información necesaria
         devuelve una lista vacía.
         """
         res = []
@@ -175,8 +176,8 @@ class Cliente(SQLObject, PRPCTOO):
                 while True:
                     try:
                         res[-1] = mx.DateTime.DateTimeFrom(
-                                    day = diacobro, 
-                                    month = res[-1].month, 
+                                    day = diacobro,
+                                    month = res[-1].month,
                                     year = res[-1].year)
                         break
                     except:
@@ -191,14 +192,14 @@ class Cliente(SQLObject, PRPCTOO):
                     mes = res[-1].month + 1; anno = res[-1].year
                     if mes > 12:
                         mes = 1; anno += 1
-                    res[-1] = mx.DateTime.DateTimeFrom(day = diacobro, 
-                                                       month = mes, 
+                    res[-1] = mx.DateTime.DateTimeFrom(day = diacobro,
+                                                       month = mes,
                                                        year = anno)
                 while res[-1].day_of_week >= 5:
                     res[-1] += mx.DateTime.oneDay
         res.sort()
         return res
- 
+
     def get_vencimientos(self, fecha_base = mx.DateTime.localtime()):
         """
         Devuelve una lista con los días naturales de los vencimientos
@@ -206,16 +207,16 @@ class Cliente(SQLObject, PRPCTOO):
         - Si el cliente tiene "30", devuelve [30].
         - Si no tiene, devuelve [].
         - Si tiene "30-60", devuelve [30, 60].
-        - Si tiene "90 D.F.F." (90 días a partir de fecha factura), 
+        - Si tiene "90 D.F.F." (90 días a partir de fecha factura),
           devuelve [90].
-        - Si tiene "30-120 D.R.F." (30 y 120 días a partir de fecha de 
+        - Si tiene "30-120 D.R.F." (30 y 120 días a partir de fecha de
           recepción de factura) devuelve [30, 120]. etc.
-        - ¡NUEVO! Si tiene "120 D.U.D.M.F.F." (120 días a contar a partir del 
-          último día del mes de la fecha de factura) devuelve 120 + los días 
-          que haya entre la fecha «fecha_base» y el fin de mes, con objeto de 
-          que sean sumados a la fecha de factura desde la ventana que me 
+        - ¡NUEVO! Si tiene "120 D.U.D.M.F.F." (120 días a contar a partir del
+          último día del mes de la fecha de factura) devuelve 120 + los días
+          que haya entre la fecha «fecha_base» y el fin de mes, con objeto de
+          que sean sumados a la fecha de factura desde la ventana que me
           invoca.
-        En definitiva, filtra todo el texto y devuelve los números que 
+        En definitiva, filtra todo el texto y devuelve los números que
         encuentre en cliente.vencimientos (por norma general).
         """
         res = []
@@ -230,8 +231,8 @@ class Cliente(SQLObject, PRPCTOO):
                 if "UDM" in cadena:
                     try:
                         findemes = mx.DateTime.DateTimeFrom(
-                            day = -1, 
-                            month = fecha_base.month, 
+                            day = -1,
+                            month = fecha_base.month,
                             year = fecha_base.year)
                     except Exception, msg:
                         print "ERROR: pclases::Cliente::get_vencimientos() -> "\
@@ -265,7 +266,7 @@ class Cliente(SQLObject, PRPCTOO):
     def es_extranjero(self):
         """
         Devuelve True si el cliente es extranjero.
-        Para ello mira si el país del cliente es diferente al 
+        Para ello mira si el país del cliente es diferente al
         de la empresa. Si no se encuentran datos de la empresa
         devuelve True si el país no es España.
         """
@@ -279,11 +280,11 @@ class Cliente(SQLObject, PRPCTOO):
         return res
 
     extranjero = property(es_extranjero)
-    
+
     def get_facturas(self, fechaini = None, fechafin = None):
         """
-        Devuelve las facturas del cliente entre las dos 
-        fechas recibidas (incluidas). Si ambas son None no 
+        Devuelve las facturas del cliente entre las dos
+        fechas recibidas (incluidas). Si ambas son None no
         aplicará rango de fecha en la búsqueda.
         """
         criterio = (FacturaVenta.q.clienteID == self.id)
@@ -294,14 +295,14 @@ class Cliente(SQLObject, PRPCTOO):
         if fechafin:
             criterio = AND(criterio, FacturaVenta.q.fecha <= fechafin)
             criteriopre = AND(criteriopre, Prefactura.q.fecha >= fechaini)
-        return ([f for f in FacturaVenta.select(criterio)] 
+        return ([f for f in FacturaVenta.select(criterio)]
                 + [f for f in Prefactura.select(criterio)])
 
     def calcular_comprado(self, fechaini = None, fechafin = None):
         """
         Devuelve el importe total de ventas al cliente
-        entre las fechas indicadas. Si las fechas son None no 
-        impondrá rangos en la búsqueda. No se consideran 
+        entre las fechas indicadas. Si las fechas son None no
+        impondrá rangos en la búsqueda. No se consideran
         pedidos ni albaranes, solo compras ya facturadas.
         """
         total = 0
@@ -312,15 +313,15 @@ class Cliente(SQLObject, PRPCTOO):
 
     def calcular_cobrado(self, fechaini = None, fechafin = None):
         """
-        Devuelve el importe total de compras cobradas al cliente  
-        entre las fechas indicadas. Si las fechas son None no 
-        impondrá rangos en la búsqueda. No se consideran 
+        Devuelve el importe total de compras cobradas al cliente
+        entre las fechas indicadas. Si las fechas son None no
+        impondrá rangos en la búsqueda. No se consideran
         pedidos ni albaranes, solo compras ya facturadas.
         De todas esas facturas, suma el importe de los pagos
-        relacionadas con las mismas. _No tiene en cuenta_ las 
-        fechas de los cobros, solo las fechas de las facturas 
-        a las que corresponden esos cobros (ya que la consulta 
-        base es de facturas, lo lógico es saber cuánto de esas 
+        relacionadas con las mismas. _No tiene en cuenta_ las
+        fechas de los cobros, solo las fechas de las facturas
+        a las que corresponden esos cobros (ya que la consulta
+        base es de facturas, lo lógico es saber cuánto de esas
         facturas está pagado, sea en las fechas que sea).
         Si no hay facturas o no hay cobros, devuelve 0.0.
         """
@@ -337,8 +338,8 @@ class Cliente(SQLObject, PRPCTOO):
         # OPTIMIZACIÓN:
         if facturas:
             csql = """
-                SELECT SUM(cobro.importe) 
-                  FROM cobro 
+                SELECT SUM(cobro.importe)
+                  FROM cobro
                   WHERE factura_venta_id IN (%s);
             """ % (", ".join([str(f.id) for f in facturas]))
             try:
@@ -356,7 +357,7 @@ class Cliente(SQLObject, PRPCTOO):
 
     def calcular_pendiente_cobro(self, fechaini = None, fechafin = None):
         """
-        Devuelve el importe total pendiente de cobro del cliente. Para ello 
+        Devuelve el importe total pendiente de cobro del cliente. Para ello
         _ignora los vencimientos_ y simplemente devuelve la diferencia
         entre el importe total facturado y el importe total de los
         cobros relacionados con esas facturas.
@@ -366,16 +367,16 @@ class Cliente(SQLObject, PRPCTOO):
         pendiente = total - cobrado
         return pendiente
 
-    def calcular_pendiente_cobro_vencido(self, 
-                                         fechaini = None, 
-                                         fechafin = None, 
+    def calcular_pendiente_cobro_vencido(self,
+                                         fechaini = None,
+                                         fechafin = None,
                                          fecha_base = mx.DateTime.today()):
         """
-        Calcula el pendiente de cobro[1] de los vencimientos vencidos en 
+        Calcula el pendiente de cobro[1] de los vencimientos vencidos en
         fecha_base de las facturas entre fechaini y fechafin.
-        [1] Los cobros también se filtran por fecha_base. Si son posteriores, 
+        [1] Los cobros también se filtran por fecha_base. Si son posteriores,
         no se tienen en cuenta.
-        Devuelve el pendiente de cobro y un diccionario de facturas, pendiente 
+        Devuelve el pendiente de cobro y un diccionario de facturas, pendiente
         vencido y cobrado (por ese orden en cada clave del diccionario).
         """
         vencido = 0.0
@@ -389,22 +390,22 @@ class Cliente(SQLObject, PRPCTOO):
             cobrado += cobrf
             #if vencf - cobrf > 0:
             tot_vtos = sum([v.importe for v in f.vencimientosCobro])
-            if (round(tot_vtos - cobrf) != 0):  # No me intersan las 
+            if (round(tot_vtos - cobrf) != 0):  # No me intersan las
                                                 # diferencias de céntimos
                 dicfacturas[f] = (vencf, cobrf)
         return vencido - cobrado, dicfacturas
 
-    def DEPRECATED_calcular_credito_disponible(self, 
-                                               cache_pdte_cobro = None, 
+    def DEPRECATED_calcular_credito_disponible(self,
+                                               cache_pdte_cobro = None,
                                                base = 0.0):
         """
         Riesgo concedido - pendiente de cobro.
-        OJO: No usar cache_pdte_cobro si no se está completamente seguro de 
-        la certeza de los datos, en cuyo caso es preferible dejar que 
+        OJO: No usar cache_pdte_cobro si no se está completamente seguro de
+        la certeza de los datos, en cuyo caso es preferible dejar que
         se calcule dentro de la rutina aunque tarde más.
-        El valor "base" se sumará al pendiente de cobro y sirve para contar 
-        la cantidad que se está a punto de facturar, ya que si el límite es, 
-        por ejemplo, 11k € y se va a sacar una factura de 11.5k €, SOBREPASA 
+        El valor "base" se sumará al pendiente de cobro y sirve para contar
+        la cantidad que se está a punto de facturar, ya que si el límite es,
+        por ejemplo, 11k € y se va a sacar una factura de 11.5k €, SOBREPASA
         el límite y no debería dejar sacarla.
         """
         if self.riesgoConcedido==-1: # Ignorar. Devuelvo un máximo arbitrario.
@@ -425,7 +426,7 @@ class Cliente(SQLObject, PRPCTOO):
     def __cutrecache_caducada(self, *args):
         """
         De momento vamos a hacer suposiciones de tiempo.
-        Queridos profesores de la facultad. En estos 10 años no me he olvidado 
+        Queridos profesores de la facultad. En estos 10 años no me he olvidado
         de vuestros consejos. PERO.
         """
         try:
@@ -440,23 +441,23 @@ class Cliente(SQLObject, PRPCTOO):
                 expired = False
         return expired
 
-    def UNOPTIMIZED_calcular_credito_disponible(self, 
-                                     impagado = None, 
-                                     sin_documentar = None, 
-                                     sin_vencer = None, 
+    def UNOPTIMIZED_calcular_credito_disponible(self,
+                                     impagado = None,
+                                     sin_documentar = None,
+                                     sin_vencer = None,
                                      base = 0.0):
         """
         Devuelve el máximo del importe que puede servirse a un cliente.
-        sin_documentar y sin_vencer se pueden instanciar a una cantidad si 
+        sin_documentar y sin_vencer se pueden instanciar a una cantidad si
         ya se ha calculado anteriormente, para ahorrar tiempo aquí.
-        Si el cliente no tiene riesgo concedido, no se tiene en cuenta el 
+        Si el cliente no tiene riesgo concedido, no se tiene en cuenta el
         crédito.
         Si no,
             si el cliente tiene facturas impagadas, es CERO.
             si no, riesgo = (S(fras. sin documentar) + S(pdtes. vencimiento))
-        El valor "base" se sumará al pendiente de cobro y sirve para contar 
-        la cantidad que se está a punto de facturar, ya que si el límite es, 
-        por ejemplo, 11k € y se va a sacar una factura de 11.5k €, SOBREPASA 
+        El valor "base" se sumará al pendiente de cobro y sirve para contar
+        la cantidad que se está a punto de facturar, ya que si el límite es,
+        por ejemplo, 11k € y se va a sacar una factura de 11.5k €, SOBREPASA
         el límite y no debería dejar sacarla.
         """
         if DEBUG and VERBOSE:
@@ -466,7 +467,7 @@ class Cliente(SQLObject, PRPCTOO):
         if self.riesgoConcedido==-1: # Ignorar. Devuelvo un máximo arbitrario.
             credito = sys.maxint
         else:
-            tempcache = {} # Intentémoslo. Deberían hacerse 1/4 menos de 
+            tempcache = {} # Intentémoslo. Deberían hacerse 1/4 menos de
                             # llamadas a get_estado **contra** la BD.
             if impagado is None:
                 if DEBUG and VERBOSE:
@@ -502,16 +503,16 @@ class Cliente(SQLObject, PRPCTOO):
             clara = time.time() - bacall                        # XXX
             print "[Cliente.calcular_credito_disponible]"\
                   " Tiempo transcurrido: %.2f segundos" % clara # XXX
-        # Pruebas ANTES de optimización: 
+        # Pruebas ANTES de optimización:
         # >>> from framework import pclases
         # >>> for c in pclases.Cliente.select(pclases.Cliente.q.nombre.contains("CETCO")):
         # >>>     print c.nombre, c.calcular_credito_disponible()
-        # CETCO IBERIA, S.L.U. Tiempo transcurrido: 25.51 segundos (etc.) 
-        # XXX 
+        # CETCO IBERIA, S.L.U. Tiempo transcurrido: 25.51 segundos (etc.)
+        # XXX
         return credito
 
-    def _calcular_credito_disponible(self, 
-                                     base = 0.0, 
+    def _calcular_credito_disponible(self,
+                                     base = 0.0,
                                      fecha = None):
         if not fecha:
             fecha = mx.DateTime.today()
@@ -523,34 +524,34 @@ class Cliente(SQLObject, PRPCTOO):
             credito = sys.maxint
         return credito
 
-    def calcular_credito_disponible(self, 
-                                    impagado = None, 
-                                    sin_documentar = None, 
-                                    sin_vencer = None, 
+    def calcular_credito_disponible(self,
+                                    impagado = None,
+                                    sin_documentar = None,
+                                    sin_vencer = None,
                                     base = 0.0):
         ########## La Chapucaché:
         """
-        < ¿caché? >---sí-->< ¿caducada? >---no-->[Devolver caché] 
+        < ¿caché? >---sí-->< ¿caducada? >---no-->[Devolver caché]
              |no                 |sí                    ^
              |-------------------·                      |
              v                                          |
          [calcular]------->[actualizar caché]-----------·
         """
-        if ((not hasattr(self, "tiempocache"))    # Primera vez. O bien 
-            or self.__cutrecache_caducada(impagado, 
-                                          sin_documentar, 
-                                          sin_vencer, 
+        if ((not hasattr(self, "tiempocache"))    # Primera vez. O bien
+            or self.__cutrecache_caducada(impagado,
+                                          sin_documentar,
+                                          sin_vencer,
                                           base)): # (sort of) fallo de caché
-            if (impagado != None or sin_documentar != None 
+            if (impagado != None or sin_documentar != None
                     or sin_vencer != None):     # Aprovecho los precálculos
                 credito = self.UNOPTIMIZED_calcular_credito_disponible(
-                                                        impagado, 
-                                                        sin_documentar, 
-                                                        sin_vencer, 
+                                                        impagado,
+                                                        sin_documentar,
+                                                        sin_vencer,
                                                         base)
             else:
                 credito = self._calcular_credito_disponible(base)
-            self.__actualizar_cache_credito(credito, impagado, sin_documentar, 
+            self.__actualizar_cache_credito(credito, impagado, sin_documentar,
                                             sin_vencer, base)
         return self.valorcache
 
@@ -562,7 +563,7 @@ class Cliente(SQLObject, PRPCTOO):
     def calcular_sin_documentar(self, cache = {}):
         sin_documentar = self.get_facturas_sin_doc_pago(cache = cache)
         # total = sum([f.calcular_importe_total() for f in sin_documentar])
-        total = sum([f.calcular_importe_no_documentado() 
+        total = sum([f.calcular_importe_no_documentado()
                         for f in sin_documentar])
         return total
 
@@ -573,8 +574,8 @@ class Cliente(SQLObject, PRPCTOO):
 
     def get_facturas_vencidas_impagadas(self):
         """
-        Devuelve las facturas vencidas e impagadas (con documento de cobro 
-        vencido o directamente sin documento de cobro y sin pagos 
+        Devuelve las facturas vencidas e impagadas (con documento de cobro
+        vencido o directamente sin documento de cobro y sin pagos
         relacionados).
         """
         if DEBUG:
@@ -589,20 +590,20 @@ class Cliente(SQLObject, PRPCTOO):
 
     def get_facturas_vencidas_sin_documento_de_cobro(self):
         """
-        Devuelve las facturas vencidas y sin documento de cobro 
+        Devuelve las facturas vencidas y sin documento de cobro
         ni sin pagos relacionados.
         """
         if DEBUG:
             print " --> Soy get_facturas_vencidas_sin_documento_de_cobro."\
                   " Toc-toc. Entrando..."
         impagadas = []
-        # El criterio es muy fácil. El importe cubierto por los documentos de 
-        # cobro o cobros en general (registros cobro) es menor al de los 
+        # El criterio es muy fácil. El importe cubierto por los documentos de
+        # cobro o cobros en general (registros cobro) es menor al de los
         # vencimientos totales.
-        # Si la factura no ha vencido (ninguna fecha de vencimiento supera a 
-        # la actual) no se tiene en cuenta. Para considerarla vencida, todos 
-        # los vencimientos deben haber expirado -esto es para evitar el caso 
-        # en que se ha cumplido el primer vencimiento y el segundo cobro 
+        # Si la factura no ha vencido (ninguna fecha de vencimiento supera a
+        # la actual) no se tiene en cuenta. Para considerarla vencida, todos
+        # los vencimientos deben haber expirado -esto es para evitar el caso
+        # en que se ha cumplido el primer vencimiento y el segundo cobro
         # aún no está cubierto por un doc. de pago-.
         for fra in self.facturasVenta:
             if fra.esta_vencida():
@@ -634,7 +635,7 @@ class Cliente(SQLObject, PRPCTOO):
 
     def buscar_comerciales(self):
         """
-        Devuelve un diccionario con los comerciales que han trabajado con el 
+        Devuelve un diccionario con los comerciales que han trabajado con el
         cliente y el listado de pedidos que los relaciona.
         """
         res = {}
@@ -649,7 +650,7 @@ class Cliente(SQLObject, PRPCTOO):
     def crear_obra_generica(self):
         """
         Crea la obra genérica con los datos del cliente.
-        Si ya tiene (alg)una creada y el nombre es el mismo, usa esa como 
+        Si ya tiene (alg)una creada y el nombre es el mismo, usa esa como
         genérica y completa la información de la misma.
         """
         if self.obras:
@@ -657,38 +658,38 @@ class Cliente(SQLObject, PRPCTOO):
                 if o.nombre.strip() == self.nombre.strip():
                     o.generica = True
                     break
-        obra_generica = [o for o in self.obras 
+        obra_generica = [o for o in self.obras
                          if o.nombre == self.nombre and o.generica]
         try:
             obra_generica = obra_generica[0]
         except:
-            obra_generica = Obra(nombre = self.nombre, 
-                                direccion = self.direccion, 
-                                cp = self.cp,  
-                                ciudad = self.ciudad, 
-                                provincia = self.provincia, 
-                                fechainicio = mx.DateTime.localtime(), 
-                                fechafin = None, 
+            obra_generica = Obra(nombre = self.nombre,
+                                direccion = self.direccion,
+                                cp = self.cp,
+                                ciudad = self.ciudad,
+                                provincia = self.provincia,
+                                fechainicio = mx.DateTime.localtime(),
+                                fechafin = None,
                                 observaciones = "Obra genérica del cliente %s."
-                                    % (self.get_puid()), 
-                                pais = self.pais, 
+                                    % (self.get_puid()),
+                                pais = self.pais,
                                 generica = True)
             self.addObra(obra_generica)
         else:
-            obra_generica.direccion = self.direccion 
-            obra_generica.cp = self.cp  
-            obra_generica.ciudad = self.ciudad 
-            obra_generica.provincia = self.provincia 
+            obra_generica.direccion = self.direccion
+            obra_generica.cp = self.cp
+            obra_generica.ciudad = self.ciudad
+            obra_generica.provincia = self.provincia
             obra_generica.pais = self.pais
-            obra_generica.fechainicio = mx.DateTime.localtime() 
-            obra_generica.fechafin = None 
+            obra_generica.fechainicio = mx.DateTime.localtime()
+            obra_generica.fechafin = None
             obra_generica.observaciones = "Obra genérica del cliente %s."% (
-                                            self.get_puid()) 
+                                            self.get_puid())
         return obra_generica
 
     def _get_obras_genericas(self):
         """
-        Devuelve un listado de obras genéricas relacionadas con el cliente 
+        Devuelve un listado de obras genéricas relacionadas con el cliente
         ordenado por ID.
         """
         obras = [o for o in self.obras if o.generica]
@@ -697,11 +698,11 @@ class Cliente(SQLObject, PRPCTOO):
 
     def get_obra_generica(self):
         """
-        Devuelve la obra genérica relacionada con el cliente. Si no hay 
+        Devuelve la obra genérica relacionada con el cliente. Si no hay
         ninguna, la crea. Si hay varias devuelve la de ID más bajo.
-        OJO: Esto puede permitir -si así lo fuerza el usuario- que varios 
-        clientes tengan la misma obra genérica, o que un cliente tenga 
-        relación con una obra genérica de otro cliente. Pero en el fondo da 
+        OJO: Esto puede permitir -si así lo fuerza el usuario- que varios
+        clientes tengan la misma obra genérica, o que un cliente tenga
+        relación con una obra genérica de otro cliente. Pero en el fondo da
         igual porque lo importante es que al menos haya una obra por cliente.
         POSTCONDICIÓN: Siempre devuelve una obra.
         """
@@ -711,10 +712,10 @@ class Cliente(SQLObject, PRPCTOO):
         except IndexError:
             obra = self.crear_obra_generica()
         return obra
-    
+
     def get_contactos_obras(self):
         """
-        Devuelve todos los contactos del cliente relacionados a través de 
+        Devuelve todos los contactos del cliente relacionados a través de
         sus obras.
         """
         contactos = []
@@ -728,14 +729,14 @@ class Cliente(SQLObject, PRPCTOO):
     def get_facturas_sin_doc_pago(self, cache = {}):
         """
         Facturas sin documento de pago Y NO VENCIDAS.
-        Siempre se inentará primero buscar en el diccionario recibido. Si ahí 
+        Siempre se inentará primero buscar en el diccionario recibido. Si ahí
         no está la factura (por si PUID), entonces se consulta a la BD.
         """
         res = []
         for f in self.get_facturas_y_abonos():
             try:
                 estado_factura = cache[f.puid]
-                if VERBOSE: 
+                if VERBOSE:
                     print "pclases.py::Cliente.get_facturas_sin_doc_pago -> Hit!"
             except KeyError:
                 estado_factura = f.get_estado()
@@ -792,7 +793,7 @@ class Cliente(SQLObject, PRPCTOO):
         for f in self.get_facturas_y_abonos():
             try:
                 estado_factura = cache[f.puid]
-                if VERBOSE: 
+                if VERBOSE:
                     print "pclases.py::Cliente.get_facturas_cobradas -> Hit!"
             except KeyError:
                 estado_factura = f.get_estado()
@@ -802,7 +803,7 @@ class Cliente(SQLObject, PRPCTOO):
 
     def get_facturas_y_abonos(self):
         """
-        Iterador que devuelve cada vez una factura, prefactura o factura de 
+        Iterador que devuelve cada vez una factura, prefactura o factura de
         abono hasta agotar todas las del cliente.
         """
         for fra in self.facturasVenta:
@@ -829,8 +830,8 @@ class Cliente(SQLObject, PRPCTOO):
                     clase_cliente.q.nombre == empresa.nombre)[0]
         except IndexError:  # Pues la creo.
             try:
-                empresa = Cliente(nombre = empresa.nombre, 
-                                  tarifa = None, 
+                empresa = Cliente(nombre = empresa.nombre,
+                                  tarifa = None,
                                   contador = None,
                                   cliente = None)
                 Auditoria.nuevo(empresa, None, __file__)
@@ -849,7 +850,7 @@ class Cliente(SQLObject, PRPCTOO):
         Calificación del cliente en una escala de 1 a 5.
         0 = Cliente no evaluado: Es nuevo o no hay datos suficientes todavía.
         1 = Cliente con riesgo concedido cero por parte de la empresa.
-        2 = Cliente con impagos en la actualidad.
+       2 = Cliente con impagos en la actualidad.
         3 = El cliente suele pagar con retraso.
         4 = El cliente paga a tiempo los vencimientos.
         5 = Cliente que cumple con los vencimientos y su facturación en
@@ -861,9 +862,9 @@ class Cliente(SQLObject, PRPCTOO):
             rating = None
         if rating != None:
             return rating
-        # ^^^ Por si algún día decido que se pueda almacenar en la BD y editar 
+        # ^^^ Por si algún día decido que se pueda almacenar en la BD y editar
         # por el usuario, en cuyo caso su opinión prevalecerá sobre el cálculo.
-        # Ya meteré algún botoncico para "resetearlo" a None y que se vuelva a 
+        # Ya meteré algún botoncico para "resetearlo" a None y que se vuelva a
         # recalcular a partir de sus datos de facturación.
         quality = 0
         if self.riesgoConcedido == 0.0:
@@ -877,14 +878,14 @@ class Cliente(SQLObject, PRPCTOO):
                     quality = 3
                 elif exceso_plazo == None:
                     quality = 0
-                else: 
+                else:
                     quality = 4
-                    # Si además de pagar bien, su facturación es superior a la 
+                    # Si además de pagar bien, su facturación es superior a la
                     # media, entonces es un cinco estrellas.
-                    pda = mx.DateTime.DateFrom(day = 1, month = 1, 
+                    pda = mx.DateTime.DateFrom(day = 1, month = 1,
                             year = mx.DateTime.today().year)
-                    if (self.calcular_facturado(fini = pda) >= 
-                            (Cliente.calcular_facturacion(fini = pda) 
+                    if (self.calcular_facturado(fini = pda) >=
+                            (Cliente.calcular_facturacion(fini = pda)
                                 / Cliente.selectBy(
                                     inhabilitado = False).count())):
                         quality = 5
@@ -898,7 +899,7 @@ class Cliente(SQLObject, PRPCTOO):
         """
         plazos = []
         for f in self.facturasVenta:
-            plazo = f.get_plazo_pagado() 
+            plazo = f.get_plazo_pagado()
             if plazo != None:
                 plazo_ini = f.get_plazo_pago(default = 0)
                 try:
@@ -906,7 +907,7 @@ class Cliente(SQLObject, PRPCTOO):
                 except TypeError:   # plazo_ini es una lista de días.
                     plazo_ini.sort()
                     plazo -= plazo_ini[-1]  # Me quedo con el día más lejano
-                        # porque seguramente lo demás sea el día de pago, no 
+                        # porque seguramente lo demás sea el día de pago, no
                         # el plazo entre vencimientos.
                 plazos.append(plazo)
         if plazos:
@@ -921,44 +922,44 @@ class Cliente(SQLObject, PRPCTOO):
         """
         res = 0.0
         if fini and not ffin:
-            fras = FacturaVenta.select(AND(FacturaVenta.q.fecha >= fini, 
+            fras = FacturaVenta.select(AND(FacturaVenta.q.fecha >= fini,
                 FacturaVenta.q.clienteID == self.id))
         elif not fini and ffin:
-            fras = FacturaVenta.select(AND(FacturaVenta.q.fecha < ffin, 
+            fras = FacturaVenta.select(AND(FacturaVenta.q.fecha < ffin,
                 FacturaVenta.q.clienteID == self.id))
         elif fini and ffin:
-            fras = FacturaVenta.select(AND(FacturaVenta.q.fecha >= fini, 
-                FacturaVenta.q.fecha < ffin, 
+            fras = FacturaVenta.select(AND(FacturaVenta.q.fecha >= fini,
+                FacturaVenta.q.fecha < ffin,
                 FacturaVenta.q.clienteID == self.id))
         else:   # not fini and not ffin
             fras = FacturaVenta.select(AND(
                 FacturaVenta.q.clienteID == self.id))
         res = sum([f.calcular_importe_total() for f in fras])
         return res
-        
+
     @staticmethod
     def calcular_facturacion(fini = None, ffin = None):
         """
-        Calcula la facturación bruta de todos los clientes entre las fechas 
+        Calcula la facturación bruta de todos los clientes entre las fechas
         recibidas.
         """
         res = 0.0
         if fini and not ffin:
-            fras = FacturaVenta.select(AND(FacturaVenta.q.fecha >= fini, 
-                FacturaVenta.q.clienteID == Cliente.q.id, 
+            fras = FacturaVenta.select(AND(FacturaVenta.q.fecha >= fini,
+                FacturaVenta.q.clienteID == Cliente.q.id,
                 Cliente.q.inhabilitado == False))
         elif not fini and ffin:
-            fras = FacturaVenta.select(AND(FacturaVenta.q.fecha < ffin, 
-                FacturaVenta.q.clienteID == Cliente.q.id, 
+            fras = FacturaVenta.select(AND(FacturaVenta.q.fecha < ffin,
+                FacturaVenta.q.clienteID == Cliente.q.id,
                 Cliente.q.inhabilitado == False))
         elif fini and ffin:
-            fras = FacturaVenta.select(AND(FacturaVenta.q.fecha >= fini, 
-                FacturaVenta.q.fecha < ffin, 
-                FacturaVenta.q.clienteID == Cliente.q.id, 
+            fras = FacturaVenta.select(AND(FacturaVenta.q.fecha >= fini,
+                FacturaVenta.q.fecha < ffin,
+                FacturaVenta.q.clienteID == Cliente.q.id,
                 Cliente.q.inhabilitado == False))
         else:   # not fini and not ffin
             fras = FacturaVenta.select(AND(
-                FacturaVenta.q.clienteID == Cliente.q.id, 
+                FacturaVenta.q.clienteID == Cliente.q.id,
                 Cliente.q.inhabilitado == False))
         res = sum([f.calcular_importe_total() for f in fras])
         return res
@@ -972,9 +973,9 @@ class Cliente(SQLObject, PRPCTOO):
         """
         plazo = utils.parse_numero(self.formadepago)
         docu = self.get_documentoDePago()
-        fdps = FormaDePago.select(AND(FormaDePago.q.activa == True, 
-                                      FormaDePago.q.plazo == plazo, 
-                                      FormaDePago.q.documentoDePago == docu), 
+        fdps = FormaDePago.select(AND(FormaDePago.q.activa == True,
+                                      FormaDePago.q.plazo == plazo,
+                                      FormaDePago.q.documentoDePago == docu),
                                   orderBy = "id")
         try:
             fdp = fdps[0]
@@ -988,6 +989,7 @@ class Cliente(SQLObject, PRPCTOO):
         Establece los atributos referentes a la forma de pago del cliente de
         acuerdo al objeto FormaDePago recibido.
         """
-        self.vencimientos = self.formadepago = "%d D.F.F." % fdp.plazo
+        self.vencimientos = self.formadepago = "%d %s" % (fdp.plazo,
+                self.textoComplementarioFormaDePago or "D. F. F.")
         self.documentodepago = fdp.documentoDePago.documento
 
