@@ -660,7 +660,12 @@ class FacturasDeEntrada(Ventana):
                                 "No puede modificar el precio." % numalb,
                         padre = self.wids['ventana'])
             else:
+                precio_anterior = s.qprecio
                 s.qprecio = precio
+                pclases.Auditoria.modificado(self.objeto, self.usuario,
+                        __file__,
+                        "Precio transporte cambiado de {} a {}.".format(
+                            precio_anterior, s.qprecio))
         self.rellenar_widgets()
 
     def cambiar_descripcion(self, cell, path, texto):

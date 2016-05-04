@@ -3954,8 +3954,13 @@ class AlbaranesDeSalida(Ventana):
                 idtac = model[path][-1]
                 #tac = pclases.TransporteACuenta.get(idtac)
                 tac = pclases.getObjetoPUID(idtac)
+                precio_anterior = tac.precio
                 tac.precio = precio
                 tac.syncUpdate()
+                pclases.Auditoria.modificado(self.objeto, self.usuario,
+                        __file__,
+                        "Precio transporte cambiado de {} a {}.".format(
+                            precio_anterior, tac.precio))
                 # BUGFIX: GINN-75
                 for st in tac.serviciosTomados:
                     st.precio = precio / len(tac.serviciosTomados)
