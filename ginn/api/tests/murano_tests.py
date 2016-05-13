@@ -7,7 +7,8 @@ ERRCODENOTFOUND = 1
 ERRCODENOTIMPLEMENTED = 2
 ERRFILENOTFOUND = 3
 
-import sys, os
+import sys
+import os
 import logging
 logging.basicConfig(filename = "%s.log" % (
     ".".join(os.path.basename(__file__).split(".")[:-1])),
@@ -76,7 +77,7 @@ def prueba_rollo(codigo = None):
         # Para probar, consumiré la partida de carga completa:
         if r.articulo.parteDeProduccion.partidaCarga:
             for b in r.articulo.parteDeProduccion.partidaCarga.balas:
-                # El almacén donde estaba la bala **antes** de consumirla está 
+                # El almacén donde estaba la bala **antes** de consumirla está
                 # en Murano. En ginn el almacén es None. Confiamos en Murano
                 # (mediante la función delete_articulo del módulo murano)
                 # para buscar e indicar de qué almacén debe consumir la bala.
@@ -260,7 +261,7 @@ def main():
             default = 0, type = int)
     parser.add_argument("-o", "--codigo", dest = "codigo", nargs = "+",
             help = "Especifica el código del artículo a insertar. "
-                   "**No tiene en cuenta los consumos.**", 
+                   "**No tiene en cuenta los consumos.**",
             default = None, type = str)
     parser.add_argument("-f", "--file_source", dest = "file_source",
             help = "Lee los códigos a insertar desde un fichero de texto."
@@ -291,9 +292,9 @@ def main():
         for codigo in pbar:
             pbar.set_description("Insertando sin consumos %s" % (codigo))
             prueba_codigo(codigo)
-    if args.file_source: 
+    if args.file_source:
         pbar = tqdm(parse_file(args.file_source),
-                    total = file_len(args.file_source))
+                    total=file_len(args.file_source))
         for codigo in pbar:
             pbar.set_description("Insertando con consumos %s" % (codigo))
             prueba_codigo(codigo, consumir = True)

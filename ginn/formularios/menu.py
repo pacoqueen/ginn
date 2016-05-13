@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-###############################################################################
+# #############################################################################
 # Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
@@ -21,39 +21,42 @@
 # You should have received a copy of the GNU General Public License           #
 # along with GeotexInn; if not, write to the Free Software                    #
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA  #
-###############################################################################
+# #############################################################################
 
 
-###################################################################
-## menu.py - Menú de acceso a módulos y ventanas.
-###################################################################
-## NOTAS:
-##  
-###################################################################
-## Changelog:
-## 27 de abril de 2006 -> Inicio.
-## 5 de mayo -> It's alive! Alive! 
-## 27 de mayo de 2006 -> Tenemos log.
-###################################################################
-## NOTAS:
-## Si una ventana no pertenece a ningún módulo no aparecerá en los
-## permisos ni en el menú. A efectos prácticos, no existirá para 
-## los usuarios aunque esté en la BD y tenga relación con alguno 
-## a través de la tabla "permisos".
-###################################################################
-## + Cambiar todos los print "WARNING... " de todos los .py por un 
-## mensaje en el LOG.
-## - PLAN: Crear una ventana para copias de seguridad.
-## - PLAN: Mostrar ventana en tiempo real cuando cambie la salida 
-##   del programa (señal de que algo ha pasado, probablemente una 
-##   excepción no capturada de la que no se mostrará la ventana 
-##   de enviar bugreport hasta cerrar el programa).
-###################################################################
+# #################################################################
+#  menu.py - Menú de acceso a módulos y ventanas.
+# #################################################################
+#  NOTAS:
+#
+# #################################################################
+#  Changelog:
+#  27 de abril de 2006 -> Inicio.
+#  5 de mayo -> It's alive! Alive!
+#  27 de mayo de 2006 -> Tenemos log.
+# #################################################################
+#  NOTAS:
+#  Si una ventana no pertenece a ningún módulo no aparecerá en los
+#  permisos ni en el menú. A efectos prácticos, no existirá para
+#  los usuarios aunque esté en la BD y tenga relación con alguno
+#  a través de la tabla "permisos".
+# #################################################################
+#  + Cambiar todos los print "WARNING... " de todos los .py por un
+#  mensaje en el LOG.
+#  - PLAN: Crear una ventana para copias de seguridad.
+#  - PLAN: Mostrar ventana en tiempo real cuando cambie la salida
+#    del programa (señal de que algo ha pasado, probablemente una
+#    excepción no capturada de la que no se mostrará la ventana
+#    de enviar bugreport hasta cerrar el programa).
+# #################################################################
 
 import pygtk
 pygtk.require('2.0')
-import gtk, gobject
-import os, sys, traceback
+import gtk
+import gobject
+import on_select
+import sys
+import traceback
 from lib.myprint import myprint
 from framework import pclases
 from formularios import utils
@@ -62,65 +65,66 @@ from framework.configuracion import ConfigConexion, parse_params
 from formularios import custom_widgets
 from formularios.ventana import install_bug_hook, abrir_gajim
 
-__version__ = '6.0.1'
+__version__ = '6.0.3'
 __version_info__ = tuple(
-    [int(num) for num in __version__.split()[0].split('.')] + 
-    [txt.replace("(", "").replace(")", "") for txt in __version__.split()[1:]]
-    )
+    [int(num) for num in __version__.split()[0].split('.')] +
+    [txt.replace("(", "").replace(")", "") for txt in __version__.split()[1:]])
 
 
 # Major: Versiones mayores. Cambios significativos en funcionalidades.
-# Minor: Versión menor (subversiones). Cambios en tablas, nuevas ventanas... 
+# Minor: Versión menor (subversiones). Cambios en tablas, nuevas ventanas...
 #        cosas así
-# Revision: Revisiones. Pequeños incrementos, bugfixes, retoques en el código. 
+# Revision: Revisiones. Pequeños incrementos, bugfixes, retoques en el código.
 #           Prácticamente ++ con cada commit del cvs.
-# Las builds, obviamente no son compilaciones. En este caso representa el 
-# número de actualizaciones más o menos "estables" del CVS, calculado con un 
-# simple `grep -c "* " doc/ChangeLog` (es decir, se admiten pucherazos, 
-# imprecisiones, bailes de cifras, señores pequeñitos y hasta a Bizcoché y 
+# Las builds, obviamente no son compilaciones. En este caso representa el
+# número de actualizaciones más o menos "estables" del CVS, calculado con un
+# simple `grep -c "* " doc/ChangeLog` (es decir, se admiten pucherazos,
+# imprecisiones, bailes de cifras, señores pequeñitos y hasta a Bizcoché y
 # Ojos de huever).
 # ROADMAP:
-# 0.x: Primera versión de prototipos (branch geotexinn del CVS). 
+# 0.x: Primera versión de prototipos (branch geotexinn del CVS).
 # 1.0: Branch geotexinn02 del CVS.
-# 1.4b: Pasaré a la versión 1.4 beta cuando acabe el laboratorio. 
-# 1.5b: Versión para integración con LOGIC. 
-# 1.6b: Versión para nóminas. 
-# 1.7b: Cuando agregue las cosas que han ido quedando pendiente del módulo de 
-#       administración. 
-# 1.8b: Versión para prueba de nóminas, resultados marcado CE, balas y rollos 
-#       X, consultas, listados pendientes y el resto de "hitos" importantes 
+# 1.4b: Pasaré a la versión 1.4 beta cuando acabe el laboratorio.
+# 1.5b: Versión para integración con LOGIC.
+# 1.6b: Versión para nóminas.
+# 1.7b: Cuando agregue las cosas que han ido quedando pendiente del módulo de
+#       administración.
+# 1.8b: Versión para prueba de nóminas, resultados marcado CE, balas y rollos
+#       X, consultas, listados pendientes y el resto de "hitos" importantes
 #       que aún quedan por implementar (que no deben ser muchos más de éstos).
-# 1.9b: Cuando cierre "todas" las incidencias, bugs y etiquetas TO-DO|FIX-ME. 
+# 1.9b: Cuando cierre "todas" las incidencias, bugs y etiquetas TO-DO|FIX-ME.
 #       (versión estable)
 # 1.9.impar : Inestables.
 # 1.9.par : Estables.
-# 2.0rc: Versión 2.0 release candidate coincidiendo con la puesta en 
+# 2.0rc: Versión 2.0 release candidate coincidiendo con la puesta en
 #        producción.
 # 2.0: Versión 2.0 cuando acabe fase de pruebas.
-# 2.0.1: Tal vez debería hacer un fork para nuevas funcionalidades generales 
-#        (tickets, IRPF...) mientras congelo la RC, pero prefiero una sola 
+# 2.0.1: Tal vez debería hacer un fork para nuevas funcionalidades generales
+#        (tickets, IRPF...) mientras congelo la RC, pero prefiero una sola
 #        rama de código, que los merge de CVS son muy duros.
 
-#os.environ['LANG'] = "es_ES"
-#os.environ['LANGUAGE'] = 'es_ES'
-#os.chdir(os.path.dirname(os.path.realpath(sys.argv[0])))
+# os.environ['LANG'] = "es_ES"
+# os.environ['LANGUAGE'] = 'es_ES'
+# os.chdir(os.path.dirname(os.path.realpath(sys.argv[0])))
 if pclases.DEBUG:
     myprint(os.environ)
     myprint(os.getcwd())
     myprint(os.path.realpath(sys.argv[0]))
 
+
 class MetaF:
     """
-    "Metafichero" para almacenar la salida de errores y poder 
+    "Metafichero" para almacenar la salida de errores y poder
     enviar informes de error.
     """
     def __init__(self):
         self.t = ''
 
     def write(self, t):
-        errores_a_ignorar = ("GtkWarning", "with become" , "PangoWarning", 
-            "main loop already active", 
-            "Warning: g_main_context_prepare() called recursively")
+        errores_a_ignorar = ("GtkWarning", "with become", "PangoWarning",
+                             "main loop already active",
+                             "Warning: g_main_context_prepare()"
+                             " called recursively")
         for error in errores_a_ignorar:
             if error in t:
                 return
@@ -148,7 +152,7 @@ class MetaF:
 
     def contains(self, palabras):
         """
-        Devuelve True si todas las palabras recibidas están en el texto 
+        Devuelve True si todas las palabras recibidas están en el texto
         del "metafichero".
         """
         if isinstance(palabras, (list, tuple)):
@@ -163,13 +167,13 @@ class MetaF:
 
 
 class Menu:
-    def __init__(self, user = None, passwd = None, fconfig = None):
+    def __init__(self, user=None, passwd=None, fconfig=None):
         """
-        user: Usuario. Si es None se solicitará en la ventana de 
+        user: Usuario. Si es None se solicitará en la ventana de
         autentificación.
-        passwd: Contraseña. Si es None, se solicitaré en la ventana de 
+        passwd: Contraseña. Si es None, se solicitaré en la ventana de
         autentificación.
-        Si user y passwd son distintos a None, no se mostrará la ventana de 
+        Si user y passwd son distintos a None, no se mostrará la ventana de
         autentificación a no ser que sean incorrectos.
         """
         self.fconfig = fconfig
@@ -185,57 +189,57 @@ class Menu:
         if pclases.VERBOSE:
             myprint("Cargando gestor de mensajes...")
         self.__gm = gestor_mensajes.GestorMensajes(self.usuario)
-        # DONE: Dividir la ventana en expansores con los módulos del programa 
-        # (categorías) y dentro de ellos un IconView con los iconos de cada 
+        # DONE: Dividir la ventana en expansores con los módulos del programa
+        # (categorías) y dentro de ellos un IconView con los iconos de cada
         # ventana. Poner también en lo alto del VBox el icono de la aplicación.
         # (Ya va siendo hora de un poquito de eyecandy).
         if pclases.VERBOSE:
             myprint("Cargando menú principal...")
         self.construir_ventana()
-        utils.escribir_barra_estado(self.statusbar, 
-                                    "Menú iniciado", 
-                                    self.logger, 
+        utils.escribir_barra_estado(self.statusbar,
+                                    "Menú iniciado",
+                                    self.logger,
                                     self.usuario.usuario)
 
     def get_usuario(self):
         return self.usuario
 
-    def salir(self, 
-              boton, 
-              event = None, 
-              mostrar_ventana = True, 
-              ventana = None):
+    def salir(self,
+              boton,
+              event=None,
+              mostrar_ventana=True,
+              ventana=None):
         """
-        Muestra una ventana de confirmación y 
+        Muestra una ventana de confirmación y
         sale de la ventana cerrando el bucle
         local de gtk_main.
         Si mostrar_ventana es False, sale directamente
         sin preguntar al usuario.
         """
         res = False
-        if event == None:
+        if event is None:
             # Me ha invocado el botón
-            if (not mostrar_ventana 
-                or utils.dialogo('¿Desea cerrar el menú principal?', 
-                                 'SALIR', 
-                                 padre = ventana, 
-                                 icono = gtk.STOCK_QUIT)):
+            if (not mostrar_ventana or
+                utils.dialogo('¿Desea cerrar el menú principal?',
+                              'SALIR',
+                              padre=ventana,
+                              icono=gtk.STOCK_QUIT)):
                 ventana.destroy()
                 self.logger.warning("LOGOUT: %s" % (self.usuario.usuario))
                 res = False
             else:
                 res = True
         else:
-            res = (not mostrar_ventana 
-                   or not utils.dialogo('¿Desea cerrar el menú principal?', 
-                                        'SALIR', 
-                                        padre = ventana, 
+            res = (not mostrar_ventana
+                   or not utils.dialogo('¿Desea cerrar el menú principal?',
+                                        'SALIR',
+                                        padre = ventana,
                                         icono = gtk.STOCK_QUIT))
-            if not res: 
+            if not res:
                 try:
                     self.logger.warning("LOGOUT: %s" % (self.usuario.usuario))
                 except IOError:
-                    pass    # El fichero de log se ha cerrado por algún 
+                    pass    # El fichero de log se ha cerrado por algún
                             # motivo. Mutis por el foro.
         return res
 
@@ -246,7 +250,7 @@ class Menu:
         self.ventana.resize(800, 600)
         self.ventana.set_title('Menú GINN')
         self.ventana.set_icon(gtk.gdk.pixbuf_new_from_file(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+            os.path.join(os.path.dirname(os.path.realpath(__file__)),
                          "..", "imagenes", 'logo_w.xpm')))
         self.ventana.set_border_width(10)
         self.ventana.connect("delete_event", self.salir, True, self.ventana)
@@ -257,26 +261,26 @@ class Menu:
         imagen = gtk.Image()
         config = ConfigConexion()
         pixbuf_logo = gtk.gdk.pixbuf_new_from_file(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+            os.path.join(os.path.dirname(os.path.realpath(__file__)),
                          '..', 'imagenes', config.get_logo()))
         pixbuf_logo = escalar_a(300, 200, pixbuf_logo)
         imagen.set_from_pixbuf(pixbuf_logo)
         self.cabecera.pack_start(imagen, fill=True, expand=False)
         texto = gtk.Label("""
-        <big><big><big><b>%s</b></big>        
+        <big><big><big><b>%s</b></big>
 
-        <u>Menú de acceso a módulos de la aplicación</u></big>        
+        <u>Menú de acceso a módulos de la aplicación</u></big>
 
-        <i>v.%s</i></big>         
-        <small><b>%s</b> en <b>%s</b></small>         
-        """ % (config.get_title(), __version__, config.get_dbname(), 
+        <i>v.%s</i></big>
+        <small><b>%s</b> en <b>%s</b></small>
+        """ % (config.get_title(), __version__, config.get_dbname(),
                config.get_host()))
         texto.set_justify(gtk.JUSTIFY_CENTER)
         texto.set_use_markup(True)
         event_box = gtk.EventBox()
             # Porque el gtk.Label no permite cambiar el background.
         event_box.add(texto)
-        event_box.modify_bg(gtk.STATE_NORMAL, 
+        event_box.modify_bg(gtk.STATE_NORMAL,
                             event_box.get_colormap().alloc_color("white"))
         half_header = gtk.VBox()
         half_header.add(event_box)
@@ -342,17 +346,17 @@ class Menu:
         for modulo in modulos_sorted:
             if modulos[modulo]:
                 fichicono = os.path.join(
-                    os.path.dirname(os.path.realpath(__file__)), 
+                    os.path.dirname(os.path.realpath(__file__)),
                     '..', 'imagenes', modulo.icono)
                 pixbuf = gtk.gdk.pixbuf_new_from_file(fichicono)
                 model.append([modulo.nombre, pixbuf])
         # Módulo favoritos
         pixbuf = gtk.gdk.pixbuf_new_from_file(
             os.path.join(
-                os.path.dirname(os.path.realpath(__file__)), 
+                os.path.dirname(os.path.realpath(__file__)),
                 '..', 'imagenes', "favoritos.png"))
         iterfav = model.append(("Favoritos", pixbuf))
-        
+
         contenedor = gtk.ScrolledWindow()
         icon_view = gtk.IconView(model)
         icon_view.set_text_column(0)
@@ -363,21 +367,21 @@ class Menu:
         icon_view.set_columns(1)
         icon_view.set_item_width(110)
         icon_view.set_size_request(140, -1)
-        
+
         contenedor.add(icon_view)
         self.content_box = gtk.HBox(False)
         self.content_box.pack_start(contenedor, fill=True, expand=False)
-        #icon_view.select_path((0,)) 
+        #icon_view.select_path((0,))
         icon_view.select_path(model.get_path(iterfav))
-            # Al seleccionar una categoría se creará el frame 
-        # Sanity check. 
+            # Al seleccionar una categoría se creará el frame
+        # Sanity check.
         if hasattr(icon_view, "scroll_to_path"):    # Si pygtk >= 2.8
             icon_view.scroll_to_path(model.get_path(iterfav), False, 0, 0)
         else:
             # ¿No hay equivalente en pyGTK 2.6?
             pass
-        return self.content_box 
- 
+        return self.content_box
+
     def on_select(self, icon_view, model=None):
         selected = icon_view.get_selected_items()
         if len(selected) == 0: return
@@ -393,36 +397,36 @@ class Menu:
         else:
             modulo = "Favoritos"
         self.current_frame = self.create_frame(modulo)
-        utils.escribir_barra_estado(self.statusbar, category, self.logger, 
+        utils.escribir_barra_estado(self.statusbar, category, self.logger,
                                     self.usuario.usuario)
         self.content_box.pack_end(self.current_frame, fill=True, expand=True)
         self.ventana.show_all()
-        
+
     def create_frame(self, modulo):
         if modulo != "Favoritos":
             frame = gtk.Frame(modulo.descripcion)
-            frame.add(self.construir_modulo(modulo.descripcion, 
-                            [p.ventana for p in self.get_usuario().permisos 
+            frame.add(self.construir_modulo(modulo.descripcion,
+                            [p.ventana for p in self.get_usuario().permisos
                              if p.permiso and p.ventana.modulo == modulo]))
         else:
             frame = gtk.Frame("Ventanas más usadas")
             usuario = self.get_usuario()
             stats = pclases.Estadistica.select(
              pclases.Estadistica.q.usuarioID == usuario.id, orderBy = "-veces")
-            # Se filtran las ventanas en las que ya no tiene permisos aunque 
+            # Se filtran las ventanas en las que ya no tiene permisos aunque
             # estén en favoritos.
-            stats = [s for s in stats 
-                     if usuario.get_permiso(s.ventana) 
+            stats = [s for s in stats
+                     if usuario.get_permiso(s.ventana)
                          and usuario.get_permiso(s.ventana).permiso][:9]
-            stats.sort(lambda s1, s2: (s1.ultimaVez > s2.ultimaVez and -1) 
-                                      or (s1.ultimaVez < s2.ultimaVez and 1) 
+            stats.sort(lambda s1, s2: (s1.ultimaVez > s2.ultimaVez and -1)
+                                      or (s1.ultimaVez < s2.ultimaVez and 1)
                                       or 0)
             ventanas = [s.ventana for s in stats]
-            frame.add(self.construir_modulo("Ventanas más usadas", 
-                                            ventanas, 
+            frame.add(self.construir_modulo("Ventanas más usadas",
+                                            ventanas,
                                             False))
-        return frame        
-        
+        return frame
+
     def cutmaister(self, texto, MAX = 20):
         """
         Si el texto tiene una longitud superior a 20 caracteres de ancho lo
@@ -451,52 +455,52 @@ class Menu:
             res = texto
         res = "\n".join([s.center(MAX) for s in res.split("\n")])
         return res
-    
+
     def construir_modulo(self, nombre, ventanas, ordenar = True):
         """
         Crea un IconView con las
         ventanas que contiene el módulo.
         Recibe una lista de objetos ventana de pclases.
-        Si «ordenar» es False usa el orden de la lista de ventanas 
+        Si «ordenar» es False usa el orden de la lista de ventanas
         recibidas. En otro caso las organiza por orden alfabético.
         """
         model = gtk.ListStore(str, gtk.gdk.Pixbuf, str, str)
         # ventanas.sort(key=lambda v: v.descripcion)
-        # En Python2.3 parece ser que no estaba la opción de especificar 
+        # En Python2.3 parece ser que no estaba la opción de especificar
         # la clave de ordenación.
         if ordenar:
-            ventanas.sort(lambda s1, s2: 
-                            (s1.descripcion>s2.descripcion and 1) or 
+            ventanas.sort(lambda s1, s2:
+                            (s1.descripcion>s2.descripcion and 1) or
                             (s1.descripcion<s2.descripcion and -1) or 0)
         for ventana in ventanas:
             try:
                 pixbuf = gtk.gdk.pixbuf_new_from_file(
                     os.path.join(
-                                 os.path.dirname(os.path.realpath(__file__)), 
+                                 os.path.dirname(os.path.realpath(__file__)),
                                  '..', 'imagenes', ventana.icono))
-            except (gobject.GError, AttributeError, TypeError):  
+            except (gobject.GError, AttributeError, TypeError):
                 # Icono es "" o None (NULL en la tabla).
                 pixbuf = gtk.gdk.pixbuf_new_from_file(
                     os.path.join(
-                                 os.path.dirname(os.path.realpath(__file__)), 
+                                 os.path.dirname(os.path.realpath(__file__)),
                                  '..', 'imagenes', 'dorsia.png'))
-            model.append((self.cutmaister(ventana.descripcion), 
+            model.append((self.cutmaister(ventana.descripcion),
                           pixbuf, ventana.fichero, ventana.clase))
-            # El model tiene: nombre (descripción), icono, archivo, clase, 
+            # El model tiene: nombre (descripción), icono, archivo, clase,
             # descripción detallada (hint).
-            # NOTA: No se pueden mostrar hints en el IconView (al menos yo no 
+            # NOTA: No se pueden mostrar hints en el IconView (al menos yo no
             #       sé cómo), así que ahora lo que tiene es el icono.
         contenedor = gtk.ScrolledWindow()
         iview = gtk.IconView(model)
         iview.set_text_column(0)
         iview.set_pixbuf_column(1)
         iview.set_item_width(180)
-        iview.connect('selection-changed', self.mostrar_item_seleccionado, 
+        iview.connect('selection-changed', self.mostrar_item_seleccionado,
                       model)
         contenedor.add(iview)
         #iview.connect('item-activated', self.abrir, model)
-        # HACK: PyGTK 2.28 en Windows con python 2.7 no reconoce el 
-        # gtk.gdk._2BUTTON_PRESS y se pierde el doble clic que abre las 
+        # HACK: PyGTK 2.28 en Windows con python 2.7 no reconoce el
+        # gtk.gdk._2BUTTON_PRESS y se pierde el doble clic que abre las
         # ventanas. No llega a lanzarse nunca la señal "item-activated".
         # Esto es un pequeño apaño muy chapu.
         def button_press(widget, event):
@@ -508,7 +512,7 @@ class Menu:
             widget.clics = 0
             return True
         def button_release(widget, event):
-            if widget.clics >= 2:
+            if hasattr(widget, "clics") and widget.clics >= 2:
                 # Este es el segundo. Lanzo el item-activated
                 try:
                     paths = widget.get_selected_items()
@@ -521,7 +525,7 @@ class Menu:
                     widget.clics = 0
             return True
         def key_pressed(widget, event):
-            # Abro ventanas también con espacio y ENTER porque he desactivado 
+            # Abro ventanas también con espacio y ENTER porque he desactivado
             # el item-activated.
             if (event.keyval == gtk.gdk.keyval_from_name("Return")
                 or event.keyval == gtk.gdk.keyval_from_name("KP_Enter")):
@@ -565,7 +569,7 @@ class Menu:
         self.ventana.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         exec "import %s" % archivo
         gobject.timeout_add(10000, self.volver_a_cursor_original)
-        if archivo == "usuarios": 
+        if archivo == "usuarios":
             from formularios import usuarios
             v = usuarios.Usuarios(self.get_usuario())  # @UnusedVariable
         elif archivo == "ventana_usuario":
@@ -576,33 +580,33 @@ class Menu:
         if archivo.endswith('.py'):  # Al importar no hay que indicar extensión
             archivo = archivo[:archivo.rfind('.py')]
         if clase == 'gajim' and archivo == 'gajim':
-            utils.escribir_barra_estado(self.statusbar, 
-                                        "Iniciar: gajim...", 
-                                        self.logger, 
+            utils.escribir_barra_estado(self.statusbar,
+                                        "Iniciar: gajim...",
+                                        self.logger,
                                         self.usuario.usuario)
             abrir_gajim()
         elif clase == 'acerca_de' and archivo == 'acerca_de':
-            utils.escribir_barra_estado(self.statusbar, 
-                                        'Abrir: "acerca de..."', 
-                                        self.logger, 
+            utils.escribir_barra_estado(self.statusbar,
+                                        'Abrir: "acerca de..."',
+                                        self.logger,
                                         self.usuario.usuario)
             self.acerca_de()
         elif 'usuario' in archivo:
-            utils.escribir_barra_estado(self.statusbar, 
-                                        "Cargando: %s.py" % archivo, 
-                                        self.logger, 
+            utils.escribir_barra_estado(self.statusbar,
+                                        "Cargando: %s.py" % archivo,
+                                        self.logger,
                                         self.usuario.usuario)
             self.abrir_ventana_usuario(archivo)
         elif "pruebas_periodicas" in clase:
-            utils.escribir_barra_estado(self.statusbar, 
-                                        "Pruebas de coherencia de datos", 
-                                        self.logger, 
+            utils.escribir_barra_estado(self.statusbar,
+                                        "Pruebas de coherencia de datos",
+                                        self.logger,
                                         self.usuario.usuario)
             self.abrir_pruebas_coherencia()
         else:
-            utils.escribir_barra_estado(self.statusbar, 
-                                        "Cargando: %s.py" % archivo, 
-                                        self.logger, 
+            utils.escribir_barra_estado(self.statusbar,
+                                        "Cargando: %s.py" % archivo,
+                                        self.logger,
                                         self.usuario.usuario)
             self.abrir_ventana_modulo_python(archivo, clase)
 
@@ -610,26 +614,26 @@ class Menu:
         try:
             self.ventana.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
             while gtk.events_pending(): gtk.main_iteration(False)
-            # HACK: Debe haber una forma mejor de hacerlo. De momento me 
-            #       aprovecho de que el mainloop no va a atender al 
-            #       timeout aunque se cumpla el tiempo, ya que está 
-            #       ocupado en abrir la ventana, con lo que el cursor 
-            #       sale del "busy" justo cuando debe, al abrirse la 
+            # HACK: Debe haber una forma mejor de hacerlo. De momento me
+            #       aprovecho de que el mainloop no va a atender al
+            #       timeout aunque se cumpla el tiempo, ya que está
+            #       ocupado en abrir la ventana, con lo que el cursor
+            #       sale del "busy" justo cuando debe, al abrirse la
             #       ventana.
-            v = None 
+            v = None
             gobject.timeout_add(5000, self.volver_a_cursor_original)
-            # NOTA: OJO: TODO: Usuario harcoded. Cambiar en cuanto sea 
+            # NOTA: OJO: TODO: Usuario harcoded. Cambiar en cuanto sea
             #                  posible.
-            if ((self.get_usuario().usuario == "geotextil" or 
-                 self.get_usuario().usuario == "fibra" or 
-                 self.get_usuario().nivel >= 3) 
+            if ((self.get_usuario().usuario == "geotextil" or
+                 self.get_usuario().usuario == "fibra" or
+                 self.get_usuario().nivel >= 3)
                 and "partes_de_fabricacion" in archivo
                 and self.get_usuario().usuario != "cemento"):
                 exec "import %s" % archivo
                 v = eval('%s.%s' % (archivo, clase))
                 try:
                     v(permisos = "rx", usuario = self.get_usuario())
-                except TypeError:   # La ventana no soporta el modelo 
+                except TypeError:   # La ventana no soporta el modelo
                                     # antiguo de permisos.
                     v(usuario = self.get_usuario())
                 #v.wids['ventana'].set_icon_from_filename(icowindow)
@@ -644,9 +648,9 @@ class Menu:
                     self._lanzar_ventana(archivo, clase)
         except:
             self.ventana.window.set_cursor(None)
-            utils.escribir_barra_estado(self.statusbar, 
-                "Error detectado. Iniciando informe por correo.", 
-                self.logger, 
+            utils.escribir_barra_estado(self.statusbar,
+                "Error detectado. Iniciando informe por correo.",
+                self.logger,
                 self.usuario.usuario)
             self.enviar_correo_error_ventana()
 
@@ -658,21 +662,21 @@ class Menu:
         v = eval('%s.%s' % (archivo, clase))
         v(usuario = self.get_usuario())
         #v.wids['ventana'].set_icon_from_filename(icowindow)
-        # Podría incluso guardar los objetos ventana que se van 
-        # abriendo para controlar... no sé, algo, contar las ventanas 
+        # Podría incluso guardar los objetos ventana que se van
+        # abriendo para controlar... no sé, algo, contar las ventanas
         # abiertas o qué se yo.
 
     def __lanzar_ventana(self, archivo, clase):
         """
         EXPERIMENTAL
-        Da violaciones de segmento en GNU/Linux y salta excepción en Windows. 
+        Da violaciones de segmento en GNU/Linux y salta excepción en Windows.
         DISASTER!
         """
         #self._lanzar_ventana(archivo, clase)
         #return
         # XXX
         from multiprocessing import Process
-        v = Process(target = importar_e_instanciar, 
+        v = Process(target = importar_e_instanciar,
                     args = (archivo, clase, self.get_usuario()))
         try:
             self.ventanas_abiertas.append(v)
@@ -682,16 +686,16 @@ class Menu:
         # Esto debería ir en otra función al salir:
         for v in self.ventanas_abiertas:
             v.join()
-            
+
     def lanzar_ventana(self, archivo, clase):
         """
         VERY PRETTY EXPERIMENTAL
         """
-        # La idea es que los datos que requieren las ventanas que vienen desde 
-        # el menú se pasen por un pipe en lugar de acceder de forma compartida 
-        # por el fork (no hay exec multiplataforma). De este modo el menú y la 
-        # nueva ventana serán procesos completamente indepentientes. No se 
-        # necesitan compartir más datos una vez abierta la ventana. Así que 
+        # La idea es que los datos que requieren las ventanas que vienen desde
+        # el menú se pasen por un pipe en lugar de acceder de forma compartida
+        # por el fork (no hay exec multiplataforma). De este modo el menú y la
+        # nueva ventana serán procesos completamente indepentientes. No se
+        # necesitan compartir más datos una vez abierta la ventana. Así que
         # guay. No más segfaults en el join ni excepciones de pickle.
         from formularios import launcher
         launcher.run(archivo, clase, self.usuario, self.fconfig)
@@ -703,11 +707,11 @@ class Menu:
             texto += "%s\n" % e
         tb = sys.exc_info()[2]
         texto += "Línea %s\n" % tb.tb_lineno
-        info = MetaF() 
+        info = MetaF()
         traceback.print_tb(tb, file = info)
         texto += "%s\n" % info
         enviar_correo(texto, self.get_usuario())
-   
+
     def abrir_pruebas_coherencia(self):
         if os.name == 'posix':
             w = gtk.Window()
@@ -717,7 +721,7 @@ class Menu:
             tv = gtk.TextView()
             scroll.add(tv)
             def forzar_iter_gtk(*args, **kw):
-                while gtk.events_pending(): 
+                while gtk.events_pending():
                     gtk.main_iteration(False)
             def printstdout(msg):
                 tv.get_buffer().insert_at_cursor(msg)
@@ -756,7 +760,7 @@ class Menu:
                 except:
                     pass
             else:
-                utils.dialogo_info('NO IMPLEMENTADO', 
+                utils.dialogo_info('NO IMPLEMENTADO',
                                    'Funcionalidad no implementada.\n'
                                    'Debe lanzar manualmente su cliente de '
                                    'correo.\nCorreo-e seleccionado: %s' % uri,
@@ -768,8 +772,8 @@ class Menu:
                 except:
                     pass
             else:
-                utils.dialogo_info('NO IMPLEMENTADO', 
-                                   'Funcionalidad no implementada.\nDebe lanzar manualmente su navegador web.\nURL seleccionada: %s' % uri, 
+                utils.dialogo_info('NO IMPLEMENTADO',
+                                   'Funcionalidad no implementada.\nDebe lanzar manualmente su navegador web.\nURL seleccionada: %s' % uri,
                                    self.ventana)
 
     def acerca_de(self):
@@ -780,16 +784,16 @@ class Menu:
         vacerca.set_version(__version__)
         vacerca.set_comments('Software ERP para Geotexan')
         vacerca.set_authors(['Francisco José Rodríguez Bogado '
-                             '<rodriguez.bogado@gmail.com>', 
+                             '<rodriguez.bogado@gmail.com>',
                              'Diego Muñoz Escalante <escalant3@gmail.com>'])
         config = ConfigConexion()
         logo = gtk.gdk.pixbuf_new_from_file(os.path.join(
-                os.path.dirname(os.path.realpath(__file__)), 
+                os.path.dirname(os.path.realpath(__file__)),
                 '..', 'imagenes', config.get_logo()))
         logo = escalar_a(300, 200, logo)
         vacerca.set_logo(logo)
         vacerca.set_license(open(os.path.join(
-                os.path.dirname(os.path.realpath(__file__)), 
+                os.path.dirname(os.path.realpath(__file__)),
                 '..', 'gpl.txt')).read())
         vacerca.set_website('http://ginn.sf.net')
         vacerca.set_artists(['Iconos gartoon por Kuswanto (a.k.a. Zeus) '
@@ -803,7 +807,7 @@ class Menu:
 def enviar_correo(texto, usuario = None):
     """
     Envía **silenciosamente** un correo electrónico con el texto recibido.
-    Si no se puede enviar o no se recibe usuario, se guarda el texto en 
+    Si no se puede enviar o no se recibe usuario, se guarda el texto en
     disco.
     """
     import smtplib
@@ -814,18 +818,18 @@ def enviar_correo(texto, usuario = None):
         gmail_user = "practicas.geotexan@gmail.com" # Utilizo una cuenta "genérica"
         gmail_pwd = "20mesa20" # FIXME !!!
     gmail_from = gmail_user
-    gmail_to = ['frbogado@geotexan.com'] 
+    gmail_to = ['frbogado@geotexan.com']
     gmail_subject = "Geotex-INN: Informe de error"
     gmail_text = texto
-    # TODO: No estaría de más meter algo de información extra del tipo: 
-    #       fecha, hora (aunque esté en la cabecera del correo), IP, nombre 
+    # TODO: No estaría de más meter algo de información extra del tipo:
+    #       fecha, hora (aunque esté en la cabecera del correo), IP, nombre
     #       usuario, host, etc...
 
     # Prepare actual message
     message = """\From: %s\nTo: %s\nSubject: %s\n\n%s
     """ % (gmail_from, ", ".join(gmail_to), gmail_subject, gmail_text)
     try:
-        #server = smtplib.SMTP(SERVER) 
+        #server = smtplib.SMTP(SERVER)
         server = smtplib.SMTP("smtp.gmail.com", 587) #or port 465 doesn't seem to work!
         server.ehlo()
         server.starttls()
@@ -835,10 +839,10 @@ def enviar_correo(texto, usuario = None):
         server.close()
     except:
         guardar_error_a_log(usuario, texto)
-        
+
 def guardar_error_a_log(usuario, texto):
     """
-    Guarda el texto en el log de la aplicación. Si no se recibe usuario (es 
+    Guarda el texto en el log de la aplicación. Si no se recibe usuario (es
     None) utiliza el registrado en pclases.
     """
     from ventana import get_ginn_logger
@@ -855,62 +859,62 @@ def guardar_error_a_log(usuario, texto):
 
 def escalar_a(ancho, alto, pixbuf):
     """
-    Devuelve un pixbuf escalado en proporción para que como máximo tenga 
+    Devuelve un pixbuf escalado en proporción para que como máximo tenga
     de ancho y alto las medidas recibidas.
     """
     if pixbuf.get_width() > ancho:
         nuevo_ancho = ancho
-        nuevo_alto = int(pixbuf.get_height() 
+        nuevo_alto = int(pixbuf.get_height()
                          * ((1.0 * ancho) / pixbuf.get_width()))
         colorspace = pixbuf.get_property("colorspace")
         has_alpha = pixbuf.get_property("has_alpha")
         bits_per_sample = pixbuf.get_property("bits_per_sample")
-        pixbuf2 = gtk.gdk.Pixbuf(colorspace, 
-                                 has_alpha, 
-                                 bits_per_sample, 
-                                 nuevo_ancho, 
+        pixbuf2 = gtk.gdk.Pixbuf(colorspace,
+                                 has_alpha,
+                                 bits_per_sample,
+                                 nuevo_ancho,
                                  nuevo_alto)
-        pixbuf.scale(pixbuf2, 
-                     0, 0, 
-                     nuevo_ancho, nuevo_alto, 
+        pixbuf.scale(pixbuf2,
                      0, 0,
-                     (1.0 * nuevo_ancho) / pixbuf.get_width(), 
-                     (1.0 * nuevo_alto) / pixbuf.get_height(), 
+                     nuevo_ancho, nuevo_alto,
+                     0, 0,
+                     (1.0 * nuevo_ancho) / pixbuf.get_width(),
+                     (1.0 * nuevo_alto) / pixbuf.get_height(),
                      gtk.gdk.INTERP_BILINEAR)
         pixbuf = pixbuf2
     if pixbuf.get_height() > alto:
         nuevo_alto = alto
-        nuevo_ancho = int(pixbuf.get_width() 
+        nuevo_ancho = int(pixbuf.get_width()
                           * ((1.0 * alto) / pixbuf.get_height()))
         colorspace = pixbuf.get_property("colorspace")
         has_alpha = pixbuf.get_property("has_alpha")
         bits_per_sample = pixbuf.get_property("bits_per_sample")
-        pixbuf2 = gtk.gdk.Pixbuf(colorspace, 
-                                 has_alpha, 
-                                 bits_per_sample, 
-                                 nuevo_ancho, 
+        pixbuf2 = gtk.gdk.Pixbuf(colorspace,
+                                 has_alpha,
+                                 bits_per_sample,
+                                 nuevo_ancho,
                                  nuevo_alto)
-        pixbuf.scale(pixbuf2, 
-                     0, 0, 
-                     nuevo_ancho, nuevo_alto, 
+        pixbuf.scale(pixbuf2,
                      0, 0,
-                     (1.0 * nuevo_ancho) / pixbuf.get_width(), 
-                     (1.0 * nuevo_alto) / pixbuf.get_height(), 
+                     nuevo_ancho, nuevo_alto,
+                     0, 0,
+                     (1.0 * nuevo_ancho) / pixbuf.get_width(),
+                     (1.0 * nuevo_alto) / pixbuf.get_height(),
                      gtk.gdk.INTERP_BILINEAR)
         pixbuf = pixbuf2
     return pixbuf
 
 
 def main():
-    # Si hay ficheros de estilo gtk, los cargo por orden: General de la 
-    # aplicación y específico del usuario en WIN y UNIX. Se machacan opciones 
+    # Si hay ficheros de estilo gtk, los cargo por orden: General de la
+    # aplicación y específico del usuario en WIN y UNIX. Se machacan opciones
     # por ese orden.
     GTKRC2 = ".gtkrc-2.0" # Depende de la versión...
     GTKRC = "gtkrc"
     gtk.rc_parse(os.path.join(
         os.path.dirname(__file__), "..", GTKRC))
     gtk.rc_parse(os.path.join(
-        os.path.dirname(__file__),"..", GTKRC2))    # Si no existe se ignora  
+        os.path.dirname(__file__),"..", GTKRC2))    # Si no existe se ignora
                                                     # de manera silenciosa.
     if "HOME" in os.environ:
         gtk.rc_parse(os.path.join(os.environ["HOME"], GTKRC))
@@ -918,17 +922,17 @@ def main():
     if "HOMEPATH" in os.environ:
         gtk.rc_parse(os.path.join(os.environ["HOMEPATH"], GTKRC))
         gtk.rc_parse(os.path.join(os.environ["HOMEPATH"], GTKRC2))
-    # Ver http://www.pygtk.org/docs/pygtk/class-gtkrcstyle.html para la 
-    # referencia de estilos. Ejemplo: 
-    # bogado@cpus006:~/Geotexan/geotexinn02/formularios$ cat ../gtkrc 
+    # Ver http://www.pygtk.org/docs/pygtk/class-gtkrcstyle.html para la
+    # referencia de estilos. Ejemplo:
+    # bogado@cpus006:~/Geotexan/geotexinn02/formularios$ cat ../gtkrc
     # style 'blanco_y_negro' { bg[NORMAL] = '#FFFFFF'
-    #                          fg[NORMAL] = '#000000' 
-    #                          base[NORMAL] = '#FFFFFF' 
-    #                          text[NORMAL] = '#000000' 
+    #                          fg[NORMAL] = '#000000'
+    #                          base[NORMAL] = '#FFFFFF'
+    #                          text[NORMAL] = '#000000'
     #                        }
     # class '*' style 'blanco_y_negro'
     ##
-    user, passwd, modulo, clase, fconfig, verbose, debug, obj_puid = parse_params() 
+    user, passwd, modulo, clase, fconfig, verbose, debug, obj_puid = parse_params()
     #salida = MetaF()
     #sys.stdout = salida
     errores = MetaF()
@@ -937,17 +941,17 @@ def main():
     m.mostrar()
     if not errores.vacio() and not errores.contains(
             ["Logged from file menu.py", "Bad file descriptor"]):
-        # Me quito de en medio los errores de volcado a log (IOError 9) que 
-        # aparecen a veces por... ¿Samba? ¿Clientes Windows? No lo sé. 
+        # Me quito de en medio los errores de volcado a log (IOError 9) que
+        # aparecen a veces por... ¿Samba? ¿Clientes Windows? No lo sé.
         myprint("Se han detectado algunos errores en segundo plano durante "
                 "la ejecución.")
-        enviar_correo('Errores en segundo plano. La stderr contiene:\n%s' 
-                        % (errores), 
+        enviar_correo('Errores en segundo plano. La stderr contiene:\n%s'
+                        % (errores),
                       m.get_usuario())
 
 def read_changelog():
     """
-    Carga el ChangeLog de git del fichero ChangeLog.git.txt o ejecuta un 
+    Carga el ChangeLog de git del fichero ChangeLog.git.txt o ejecuta un
     git-log directamente si no lo encuentra.
     """
     try:
@@ -956,7 +960,7 @@ def read_changelog():
     except IOError:
         gitcommand = 'git log | grep -v "commit " | grep -v "Author:" | egrep -v "$^" | grep -v "Merge: "'
         f = os.popen(gitcommand)
-    content = " ".join([l.replace("\n", " ").replace("Date: ", " |") 
+    content = " ".join([l.replace("\n", " ").replace("Date: ", " |")
                         for l in f.readlines()])
     f.close()
     return content
@@ -966,7 +970,7 @@ def importar_e_instanciar(archivo, clase, usuario):
     exec "import %s" % archivo
     v = eval('%s.%s' % (archivo, clase))
     v(usuario = usuario)
-    
+
 
 if __name__ == '__main__':
     # Import Psyco if available

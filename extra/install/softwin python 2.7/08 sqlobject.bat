@@ -10,6 +10,6 @@ echo [global] > "%APPDATA%\Subversion\servers"
 echo http-proxy-host=192.168.0.239 >> "%APPDATA%\Subversion\servers"
 echo http-proxy-port=8080 >> "%APPDATA%\Subversion\servers"
 SET Path="%ProgramFiles%\SlikSvn\bin\";%Path%
-%SYSTEMDRIVE%\Python27\Scripts\easy_install.exe -U SQLObject
+%SYSTEMDRIVE%\Python27\Scripts\easy_install.exe -U SQLObject==1.6
 REM pause
 
