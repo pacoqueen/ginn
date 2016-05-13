@@ -10,30 +10,31 @@ ERRFILENOTFOUND = 3
 import sys
 import os
 import logging
-logging.basicConfig(filename = "%s.log" % (
+logging.basicConfig(filename="%s.log" % (
     ".".join(os.path.basename(__file__).split(".")[:-1])),
-    format = "%(asctime)s %(levelname)-8s : %(message)s",
-    level = logging.DEBUG)
+    format="%(asctime)s %(levelname)-8s : %(message)s",
+    level=logging.DEBUG)
 import argparse
 # Desde el framework se hacen algunas cosas sucias con los argumentos,
 # así que tengo que hacer una importación limpia a posteriori.
 _argv, sys.argv = sys.argv, []
 ruta_ginn = os.path.abspath(os.path.join(
-        os.path.dirname(__file__), "..", "..", "..", "ginn"))
+    os.path.dirname(__file__), "..", "..", "..", "ginn"))
 sys.path.append(ruta_ginn)
 from framework import pclases
 from api import murano
 from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
 sys.argv = _argv
 
-def prueba_bala(codigo = None):
+
+def prueba_bala(codigo=None):
     if not codigo:
-        b = pclases.Bala.select(orderBy = "-id")[0]
+        b = pclases.Bala.select(orderBy="-id")[0]
     else:
-        b = pclases.Bala.selectBy(codigo = codigo)[0]
+        b = pclases.Bala.selectBy(codigo=codigo)[0]
     logging.info("Insertando bala %s (%s) [%s]..." % (b.codigo,
-        b.articulo.productoVenta.descripcion,
-        b.puid))
+                 b.articulo.productoVenta.descripcion,
+                 b.puid))
     murano.create_bala(b)
     if b.articulo.parteDeProduccion:
         # TODO: PORASQUI. ¿Se podría calcular la parte proporcional, o es demasiado para unas pruebas?
