@@ -33,47 +33,48 @@ def prueba_bala(codigo=None):
     else:
         b = pclases.Bala.selectBy(codigo=codigo)[0]
     logging.info("Insertando bala %s (%s) [%s]..." % (b.codigo,
-                 b.articulo.productoVenta.descripcion,
-                 b.puid))
+                 b.articulo.productoVenta.descripcion, b.puid))
     murano.create_bala(b)
     if b.articulo.parteDeProduccion:
-        # TODO: PORASQUI. ¿Se podría calcular la parte proporcional, o es demasiado para unas pruebas?
+        # TODO: PORASQUI. ¿Se podría calcular la parte proporcional, o es
+        # demasiado para unas pruebas?
         logging.warning(
             "WARNING: Considerando consumos del parte de producción completo.")
         for c in b.articulo.parteDeProduccion.consumos:
             if c.silo:
                 logging.info("Consumiendo %f de %s (%s)..." % (c.cantidad,
-                    c.productoCompra.descripcion,
-                    c.silo.nombre))
+                             c.productoCompra.descripcion,
+                             c.silo.nombre))
             else:
                 logging.info("Consumiendo %f de %s..." % (c.cantidad,
-                                                c.productoCompra.descripcion))
-            murano.consumir(c.productoCompra, c.cantidad, consumo = c)
+                             c.productoCompra.descripcion))
+            murano.consumir(c.productoCompra, c.cantidad, consumo=c)
 
-def prueba_rollo(codigo = None):
+
+def prueba_rollo(codigo=None):
     """
     Si no se especifica, manda el último rollo (A) fabricado.
     """
     if not codigo:
-        r = pclases.Rollo.select(orderBy = "-id")[0]
+        r = pclases.Rollo.select(orderBy="-id")[0]
     else:
         try:
-            r = pclases.Rollo.selectBy(codigo = codigo)[0]
+            r = pclases.Rollo.selectBy(codigo=codigo)[0]
         except IndexError:  # Será un rollo B entonces.
             try:
-                r = pclases.RolloDefectuoso.selectBy(codigo = codigo)[0]
+                r = pclases.RolloDefectuoso.selectBy(codigo=codigo)[0]
             except IndexError:  # Es un rollo C. No queda otra.
-                r = pclases.RolloC.selectBy(codigo = codigo)[0]
+                r = pclases.RolloC.selectBy(codigo=codigo)[0]
     logging.info("Insertando rollo %s (%s) [%s]..." % (r.codigo,
-        r.articulo.productoVenta.descripcion,
-        r.puid))
+                 r.articulo.productoVenta.descripcion,
+                 r.puid))
     murano.create_rollo(r)
     if r.articulo.parteDeProduccion:
         logging.warning(
             "WARNING: Considerando consumos del parte de producción completo.")
         for c in r.articulo.parteDeProduccion.consumos:
             logging.info("Consumiendo %f de %s..." % (c.cantidad,
-                                               c.productoCompra.descripcion))
+                         c.productoCompra.descripcion))
             murano.consumir(c.productoCompra, c.cantidad)
         # Para probar, consumiré la partida de carga completa:
         if r.articulo.parteDeProduccion.partidaCarga:
@@ -87,14 +88,15 @@ def prueba_rollo(codigo = None):
                 logging.info("Consumiendo %s (%s)..." % (b.codigo, b.puid))
                 murano.delete_articulo(b.articulo)
 
-def prueba_pale(codigo = None):
+
+def prueba_pale(codigo=None):
     if not codigo:
-        p = pclases.Pale.select(orderBy = "-id")[0]
+        p = pclases.Pale.select(orderBy="-id")[0]
     else:
-        p = pclases.Pale.selectBy(codigo = codigo)[0]
+        p = pclases.Pale.selectBy(codigo=codigo)[0]
     logging.info("Insertando pale %s (%s) [%s]..." % (p.codigo,
-        p.productoVenta.descripcion,
-        p.puid))
+                 p.productoVenta.descripcion,
+                 p.puid))
     murano.create_pale(p)
     if p.parteDeProduccion:
         logging.warning(
@@ -108,14 +110,15 @@ def prueba_pale(codigo = None):
             logging.info("Consumiendo %s (%s)..." % (bb.codigo, bb.puid))
             murano.delete_articulo(bb.articulo)
 
-def prueba_bigbag(codigo = None):
+
+def prueba_bigbag(codigo=None):
     if not codigo:
-        bb = pclases.Bigbag.select(orderBy = "-id")[0]
+        bb = pclases.Bigbag.select(orderBy="-id")[0]
     else:
-        bb = pclases.Bigbag.selectBy(codigo = codigo)[0]
+        bb = pclases.Bigbag.selectBy(codigo=codigo)[0]
     logging.info("Insertando bigbag %s (%s) [%s]..." % (bb.codigo,
-        bb.articulo.productoVenta.descripcion,
-        bb.puid))
+                 bb.articulo.productoVenta.descripcion,
+                 bb.puid))
     murano.create_bigbag(bb)
     if bb.articulo.parteDeProduccion:
         logging.warning(
@@ -123,16 +126,17 @@ def prueba_bigbag(codigo = None):
         for c in bb.articulo.parteDeProduccion.consumos:
             if c.silo:
                 logging.info("Consumiendo %f de %s (%s)..." % (c.cantidad,
-                    c.productoCompra.descripcion,
-                    c.silo.nombre))
+                             c.productoCompra.descripcion,
+                             c.silo.nombre))
             else:
                 logging.info("Consumiendo %f de %s..." % (c.cantidad,
-                                                c.productoCompra.descripcion))
-            murano.consumir(c.productoCompra, c.cantidad, consumo = c)
+                             c.productoCompra.descripcion))
+            murano.consumir(c.productoCompra, c.cantidad, consumo=c)
     # Los partes de reembolsado se ignoran. Solo la fibra fabricada
     # directamente para almacenar en bigbags en lugar de en balas.
 
-def prueba_codigo(codigo, consumir = False):
+
+def prueba_codigo(codigo, consumir=False):
     mapping = {pclases.PREFIJO_ROLLO: pclases.Rollo,
                pclases.PREFIJO_BALA: pclases.Bala,
                pclases.PREFIJO_BIGBAG: pclases.Bigbag,
@@ -146,7 +150,7 @@ def prueba_codigo(codigo, consumir = False):
         if codigo.startswith(prefijo):
             clase_pclases = mapping[prefijo]
             try:
-                objeto = clase_pclases.selectBy(codigo = codigo)[0]
+                objeto = clase_pclases.selectBy(codigo=codigo)[0]
             except IndexError:
                 logging.error("El código %s no se encuentra en ginn." % (
                     codigo))
