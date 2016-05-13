@@ -54,6 +54,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import gobject
+import os
 import sys
 import traceback
 from lib.myprint import myprint
