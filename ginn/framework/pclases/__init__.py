@@ -19049,7 +19049,7 @@ class LineaDeAbono(SQLObject, PRPCTOO):
         Devuelve el proveedor relacionado con la LDD. Al proveedor se llega
         a través del producto devuelto.
         """
-        proveedor = self.producto.proveedor
+        proveedor = self.producto and self.producto.proveedor or None
         return proveedor
 
     proveedor = property(get_proveedor)
