@@ -1174,14 +1174,12 @@ def existe_articulo(articulo):
     trazabilidad.
     Recibe un objeto artículo de ginn.
     """
-    try:
-        numero_serie_lc = articulo.codigo
-    except AttributeError:
-        numero_serie_lc = pclases.Articulo.get_articulo(articulo)
+    if not isinstance(articulo, pclases.Articulo):
         # Por error o por pruebas he recibido directamente el código del
         # artículo.
+        articulo = pclases.Articulo.get_articulo(articulo)
     c = Connection()
-    codalmacen = get_codalmacen_articulo(c, numero_serie_lc)
+    codalmacen = get_codalmacen_articulo(c, articulo)
     res = bool(codalmacen)
     return res
 
