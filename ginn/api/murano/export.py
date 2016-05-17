@@ -238,7 +238,7 @@ def build_fila(producto, columnas):
             # Grupo de cuentas contables al que pertenece el producto. Cada
             # grupo debe estar dado de alta en Murano y contiene todas las
             # cuentas para las ventas, compras, etc.
-            valor = determinar_codigo_definicion_cuentas(producto)
+            valor = determinar_cod_def_cuentas(producto)
         else:
             campo = columna
             try:
@@ -251,7 +251,80 @@ def build_fila(producto, columnas):
     return res
 
 
-def determinar_codigo_definicion_cuentas(producto):
+def determinar_cod_def_cuentas_pc(producto):
+    """
+    Devuelve el código de definición de cuenta del producto de compra.
+    """
+    if producto.tipoDeMaterial:
+        tdm_desc = producto.tipoDeMaterial.descripcion
+        if tdm_desc == "Materia Prima":
+            if producto.es_granza():
+                res = "GRANZA_POLIPROPILENO"
+                if ("recup" in producto.descripcion.lower() or
+                        "recic" in producto.descripcion.lower()):
+                    res = "GRANZA_RECICLADA"
+            else:
+                res = "OTROS_APROVISIONAMIENTOS"
+        elif tdm_desc == "Material adicional":
+            if "plast" in producto.descripcion.lower():
+                # Imposible distinguir si es de geotextiles, fibra...
+                res = "PLASTICOS"
+            elif ("tubo" in producto.descripcion.lower() or
+                  "nucleo" in producto.descripcion.lower()):
+                res = "TUBOS_GEOTEXTILES"
+            elif "cart" in producto.descripcion.lower():
+                res = "CAJAS_CARTON"
+            else:
+                res = "OTROS_ADITIVOS_FIBRA"
+        elif tdm_desc == "Mantenimiento":
+            res = "ACEITES"
+            if "aguja" in producto.descripcion:
+                res = "AGUJAS"
+        elif tdm_desc == "Repuestos geotextiles":
+            res = "ADITIVOS_GEOTEXTILES"
+        elif tdm_desc == "Repuestos fibra":
+            res = "FILTROS"
+        elif tdm_desc == "Aceites y lubricantes":
+            res = "ACEITES"
+        elif tdm_desc == "Mercancía inicial Valdemoro":
+            res = ""    # Esta famlia ya se dijo que se descartaba.
+        elif tdm_desc == "Productos comercializados":
+            res = "GEOCOMPUESTOS"
+        elif tdm_desc == "Comercializados":
+            res = "GEOCOMPUESTOS"
+        else:
+            res = "OTROS_PRODUCTOS"
+    else:
+        res = ""
+    return res
+
+
+def determinar_cod_def_cuentas_pv(producto):
+    """
+    Devuelve el código de definición de cuentas del producto de venta.
+    """
+    if producto.es_rollo():
+        res = "GEOTESAN"   # Geotextil
+    elif producto.es_rolloC():
+        res = "RESTOS_GEOTEXTILES"
+    elif producto.es_bala():
+        res = "FIBRA"    # Fibra
+    elif producto.es_bala_cable():
+        res = "CABLE"
+    elif producto.es_bigbag():
+        res = "CEMENTO"  # Fibra cemento
+    elif producto.es_bolsa() or producto.es_caja():
+        res = "CEMENTO"  # Fibra embolsada
+    elif producto.es_especial():
+        res = "GEOCOMPUESTOS"     # Comercializados
+    elif producto.es_granza():
+        res = "GRANZA"         # Granza
+    else:
+        res = ""
+    return res
+
+
+def determinar_cod_def_cuentas(producto):
     """
     En función del tipo de producto devolverá la cadena que identifica su
     código de definición de cuentas.
@@ -291,66 +364,9 @@ def determinar_codigo_definicion_cuentas(producto):
     - EMBALAJES ACC. FIBRA CEMENTO
     """
     if isinstance(producto, pclases.ProductoCompra):
-        if producto.tipoDeMaterial:
-            tdm_desc = producto.tipoDeMaterial.descripcion
-            if tdm_desc == "Materia Prima":
-                if producto.es_granza():
-                    res = "GRANZA_POLIPROPILENO"
-                    if ("recup" in producto.descripcion.lower() or
-                            "recic" in producto.descripcion.lower()):
-                        res = "GRANZA_RECICLADA"
-                else:
-                    res = "OTROS_APROVISIONAMIENTOS"
-            elif tdm_desc == "Material adicional":
-                if "plast" in producto.descripcion.lower():
-                    # Imposible distinguir si es de geotextiles, fibra...
-                    res = "PLASTICOS"
-                elif ("tubo" in producto.descripcion.lower() or
-                        "nucleo" in producto.descripcion.lower()):
-                    res = "TUBOS_GEOTEXTILES"
-                elif "cart" in producto.descripcion.lower():
-                    res = "CAJAS_CARTON"
-                else:
-                    res = "OTROS_ADITIVOS_FIBRA"
-            elif tdm_desc == "Mantenimiento":
-                res = "ACEITES"
-                if "aguja" in producto.descripcion:
-                    res = "AGUJAS"
-            elif tdm_desc == "Repuestos geotextiles":
-                res = "ADITIVOS_GEOTEXTILES"
-            elif tdm_desc == "Repuestos fibra":
-                res = "FILTROS"
-            elif tdm_desc == "Aceites y lubricantes":
-                res = "ACEITES"
-            elif tdm_desc == "Mercancía inicial Valdemoro":
-                res = ""    # Esta famlia ya se dijo que se descartaba.
-            elif tdm_desc == "Productos comercializados":
-                res = "GEOCOMPUESTOS"
-            elif tdm_desc == "Comercializados":
-                res = "GEOCOMPUESTOS"
-            else:
-                res = "OTROS_PRODUCTOS"
-        else:
-            res = ""
+        res = determinar_cod_def_cuentas_pc(producto)
     elif isinstance(producto, pclases.ProductoVenta):
-        if producto.es_rollo():
-            res = "GEOTESAN"   # Geotextil
-        elif producto.es_rolloC():
-            res = "RESTOS_GEOTEXTILES"
-        elif producto.es_bala():
-            res = "FIBRA"    # Fibra
-        elif producto.es_bala_cable():
-            res = "CABLE"
-        elif producto.es_bigbag():
-            res = "CEMENTO"  # Fibra cemento
-        elif producto.es_bolsa() or producto.es_caja():
-            res = "CEMENTO"  # Fibra embolsada
-        elif producto.es_especial():
-            res = "GEOCOMPUESTOS"     # Comercializados
-        elif producto.es_granza():
-            res = "GRANZA"         # Granza
-        else:
-            res = ""
+        res = determinar_cod_def_cuentas_pv(producto)
     else:
         res = ""
     # Campo CódigoDefinición como máximo a 15 caracteres:

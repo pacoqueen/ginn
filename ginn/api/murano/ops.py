@@ -575,7 +575,11 @@ def genera_guid(conexion):
 
 def get_mov_posicion(conexion, codigo_articulo):
     """
-    GUID del movimiento de stock asociado al movimiento de número de serie.
+    Devuelve el GUID del movimiento de stock asociado al movimiento de número
+    de serie. Si el número de serie (el código de artículo) no está en Murano,
+    lanza una excepción.
+    Si está activado el modo de depuración, devuelve un GUID simulado
+    aleatorio.
     """
     try:
         mov_posicion = conexion.run_sql(r"""SELECT TOP 1 MovPosicion
@@ -715,7 +719,7 @@ def get_cantidad_dimension_especifica(articulo):
     elif articulo.es_bala():
         # unidades = articulo.get_peso()
         unidades = get_peso_bruto(articulo)  # En dimensión específica: kg
-    # XXX ### XXX ### XXX ### XXX ### XXX ### XXX ### XXX ### XXX ### XXX ##
+    # XxX ### XxX ### XxX ### XxX ### XxX ### XxX ### XxX ### XxX ### XxX ##
     # BUG: [Murano] Si mando un número entero (los m² siempre son enteros)
     # en el peso (que entra como Unidades en la TmpIME y MovStock) sí lo
     # hace bien Murano. Pero si no, la coma la interpreta como separador
@@ -724,7 +728,7 @@ def get_cantidad_dimension_especifica(articulo):
     # TODO: FIXME: Hasta que no se arregle, mando número entero multiplicado
     # por 100 y en Murano se vuelve a dividir entre 100 para que se quede la
     # cantidad correcta en kilos.
-    unidades = int(unidades * 100)  # XXX ### XXX ### XXX ### XXX ### XXX ##
+    unidades = int(unidades * 100)  # XxX ### XxX ### XxX ### XxX ### XxX ##
     return unidades
 
 
@@ -1134,6 +1138,21 @@ def update_calidad(articulo, calidad):
     # TODO: Ojo porque si cambio a calidad C probablemente implique un cambio
     # de producto.
     raise NotImplementedError("Función no disponible por el momento.")
+
+
+def existe_articulo(articulo):
+    """
+    Devuelve True si el artículo ya existe en Murano. False en caso contrario.
+    Se considera que si un artículo ha salido del almacén, sigue existiendo
+    en Murano. Esto evita que se dupliquen códigos y se respete la
+    trazabilidad.
+    Recibe un objeto artículo de ginn.
+    """
+    numero_serie_lc = articulo.codigo
+    c = Connection()
+    codalmacen = get_codalmacen_articulo(c, numero_serie_lc)
+    res = bool(codalmacen)
+    return res
 
 
 def create_articulo(articulo, cantidad=1, producto=None):
