@@ -1148,7 +1148,11 @@ def existe_articulo(articulo):
     trazabilidad.
     Recibe un objeto artículo de ginn.
     """
-    numero_serie_lc = articulo.codigo
+    try:
+        numero_serie_lc = articulo.codigo
+    except AttributeError:
+        numero_serie_lc = articulo  # Por error o por pruebas he recibido
+        # directamente el código del artículo.
     c = Connection()
     codalmacen = get_codalmacen_articulo(c, numero_serie_lc)
     res = bool(codalmacen)
