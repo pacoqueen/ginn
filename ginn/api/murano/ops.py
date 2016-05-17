@@ -794,54 +794,59 @@ def create_bala(bala, cantidad=1, producto=None):
     Si cantidad es -1 realiza la baja de almacén de la bala.
     """
     articulo = bala.articulo
-    try:
-        partida = bala.lote.codigo
-    except AttributeError:
-        partida = ""  # Balas C no tienen lote. No pasa nada. Murano traga.
-    unidad_medida = "KG"
-    comentario = ("Bala ginn: [%s]" % bala.get_info())[:40]
-    ubicacion = "Almac. de fibra."[:15]
-    numero_serie_lc = ""
-    # Sage me indica que no informe de la serie en el movimiento de stock para
-    # solucionar lo del registro duplicado creado por Murano.
-    (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
-     codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
-     unidades, precio, importe, unidades2, unidad_medida2,
-     factor_conversion, origen_movimiento) = prepare_params_movstock(
-        articulo, cantidad, producto)   # pylint: disable=bad-continuation
-    id_proceso_IME = crear_proceso_IME(c)
-    sql_movstock = SQL_STOCK % (database,
-                                CODEMPRESA, ejercicio, periodo, fecha,
-                                documento, codigo_articulo, codigo_almacen,
-                                partida, grupo_talla, codigo_talla,
-                                tipo_movimiento, unidades, unidad_medida,
-                                precio, importe, unidades2, unidad_medida2,
-                                factor_conversion, comentario, ubicacion,
-                                origen_movimiento, numero_serie_lc,
-                                id_proceso_IME)
-    c.run_sql(sql_movstock)
-    origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
-    # 11 (salida de stock), 12 (inventario)
-    mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
-    # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
-    unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
-                                                 articulo)
-    numero_serie_lc = bala.codigo
-    peso_bruto = get_peso_bruto(articulo)
-    peso_neto = get_peso_neto(articulo)
-    sql_movserie = SQL_SERIE % (database,
-                                CODEMPRESA, codigo_articulo, numero_serie_lc,
-                                fecha, origen_documento, ejercicio, documento,
-                                mov_posicion_origen, codigo_talla,
-                                codigo_almacen, ubicacion, partida,
-                                unidad_medida1, comentario, id_proceso_IME,
-                                # articulo.peso, articulo.peso_sin,
-                                peso_bruto, peso_neto,
-                                0.0,  # Metros cuadrados. Decimal NOT NULL
-                                ""   # Código palé. Varchar NOT NULL
-                                )  # pylint: disable=bad-continuation
-    c.run_sql(sql_movserie)
-    fire(id_proceso_IME)
+    if existe_articulo(articulo) and cantidad:
+        logging.warning("La bala %s ya existe en Murano. Se ignora.",
+                        bala.codigo)
+    else:
+        try:
+            partida = bala.lote.codigo
+        except AttributeError:
+            partida = ""  # Balas C no tienen lote. No pasa nada. Murano traga.
+        unidad_medida = "KG"
+        comentario = ("Bala ginn: [%s]" % bala.get_info())[:40]
+        ubicacion = "Almac. de fibra."[:15]
+        numero_serie_lc = ""
+        # Sage me indica que no informe de la serie en el movimiento de stock
+        # para solucionar lo del registro duplicado creado por Murano.
+        (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
+         codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
+         unidades, precio, importe, unidades2, unidad_medida2,
+         factor_conversion, origen_movimiento) = prepare_params_movstock(
+            articulo, cantidad, producto)   # pylint: disable=bad-continuation
+        id_proceso_IME = crear_proceso_IME(c)
+        sql_movstock = SQL_STOCK % (database,
+                                    CODEMPRESA, ejercicio, periodo, fecha,
+                                    documento, codigo_articulo, codigo_almacen,
+                                    partida, grupo_talla, codigo_talla,
+                                    tipo_movimiento, unidades, unidad_medida,
+                                    precio, importe, unidades2, unidad_medida2,
+                                    factor_conversion, comentario, ubicacion,
+                                    origen_movimiento, numero_serie_lc,
+                                    id_proceso_IME)
+        c.run_sql(sql_movstock)
+        origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
+        # 11 (salida de stock), 12 (inventario)
+        mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
+        # En el movimiento de serie la UnidadMedida1_ es la básica:ROLLO,BALA..
+        unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
+                                                     articulo)
+        numero_serie_lc = bala.codigo
+        peso_bruto = get_peso_bruto(articulo)
+        peso_neto = get_peso_neto(articulo)
+        sql_movserie = SQL_SERIE % (database,
+                                    CODEMPRESA, codigo_articulo,
+                                    numero_serie_lc, fecha, origen_documento,
+                                    ejercicio, documento, mov_posicion_origen,
+                                    codigo_talla, codigo_almacen, ubicacion,
+                                    partida, unidad_medida1, comentario,
+                                    id_proceso_IME,
+                                    # articulo.peso, articulo.peso_sin,
+                                    peso_bruto, peso_neto,
+                                    0.0,  # Metros cuadrados. Decimal NOT NULL
+                                    ""   # Código palé. Varchar NOT NULL
+                                    )  # pylint: disable=bad-continuation
+        c.run_sql(sql_movserie)
+        fire(id_proceso_IME)
 
 
 def create_bigbag(bigbag, cantidad=1, producto=None):
@@ -850,51 +855,57 @@ def create_bigbag(bigbag, cantidad=1, producto=None):
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
     """
     articulo = bigbag.articulo
-    partida = bigbag.loteCem.codigo
-    comentario = ("Bigbag ginn: [%s]" % bigbag.get_info())[:40]
-    numero_serie_lc = ""
-    # Sage me indica que no informe de la serie en el movimiento de stock para
-    # solucionar lo del registro duplicado creado por Murano.
-    ubicacion = "Almac. de fibra."[:15]
-    unidad_medida = "KG"
-    (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
-     codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
-     unidades, precio, importe, unidades2, unidad_medida2,
-     factor_conversion, origen_movimiento) = prepare_params_movstock(
-        articulo, cantidad, producto)  # pylint: disable=bad-continuation
-    id_proceso_IME = crear_proceso_IME(c)
-    sql_movstock = SQL_STOCK % (database,
-                                CODEMPRESA, ejercicio, periodo, fecha,
-                                documento, codigo_articulo, codigo_almacen,
-                                partida, grupo_talla, codigo_talla,
-                                tipo_movimiento, unidades, unidad_medida,
-                                precio, importe, unidades2, unidad_medida2,
-                                factor_conversion, comentario, ubicacion,
-                                origen_movimiento, numero_serie_lc,
-                                id_proceso_IME)
-    c.run_sql(sql_movstock)
-    origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
-    # 11 (salida de stock), 12 (inventario)
-    mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
-    # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
-    unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
-                                                 articulo)
-    numero_serie_lc = bigbag.codigo
-    peso_bruto = get_peso_bruto(articulo)
-    peso_neto = get_peso_neto(articulo)
-    sql_movserie = SQL_SERIE % (database,
-                                CODEMPRESA, codigo_articulo, numero_serie_lc,
-                                fecha, origen_documento, ejercicio, documento,
-                                mov_posicion_origen, codigo_talla,
-                                codigo_almacen, ubicacion, partida,
-                                unidad_medida1, comentario, id_proceso_IME,
-                                # articulo.peso, articulo.peso_sin,
-                                peso_bruto, peso_neto,
-                                0.0,  # Metros cuadrados. Decimal NOT NULL
-                                ""   # Código palé. Varchar NOT NULL
-                                )  # pylint: disable=bad-continuation
-    c.run_sql(sql_movserie)
-    fire(id_proceso_IME)
+    if existe_articulo(articulo) and cantidad:
+        logging.warning("El bigbag %s ya existe en Murano. Se ignora.",
+                        articulo.codigo)
+    else:
+        partida = bigbag.loteCem.codigo
+        comentario = ("Bigbag ginn: [%s]" % bigbag.get_info())[:40]
+        numero_serie_lc = ""
+        # Sage me indica que no informe de la serie en el movimiento de stock
+        # para solucionar lo del registro duplicado creado por Murano.
+        ubicacion = "Almac. de fibra."[:15]
+        unidad_medida = "KG"
+        (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
+         codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
+         unidades, precio, importe, unidades2, unidad_medida2,
+         factor_conversion, origen_movimiento) = prepare_params_movstock(
+            articulo, cantidad, producto)  # pylint: disable=bad-continuation
+        id_proceso_IME = crear_proceso_IME(c)
+        sql_movstock = SQL_STOCK % (database,
+                                    CODEMPRESA, ejercicio, periodo, fecha,
+                                    documento, codigo_articulo, codigo_almacen,
+                                    partida, grupo_talla, codigo_talla,
+                                    tipo_movimiento, unidades, unidad_medida,
+                                    precio, importe, unidades2, unidad_medida2,
+                                    factor_conversion, comentario, ubicacion,
+                                    origen_movimiento, numero_serie_lc,
+                                    id_proceso_IME)
+        c.run_sql(sql_movstock)
+        origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
+        # 11 (salida de stock), 12 (inventario)
+        mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
+        # En movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
+        unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
+                                                     articulo)
+        numero_serie_lc = bigbag.codigo
+        peso_bruto = get_peso_bruto(articulo)
+        peso_neto = get_peso_neto(articulo)
+        sql_movserie = SQL_SERIE % (database,
+                                    CODEMPRESA, codigo_articulo,
+                                    numero_serie_lc,
+                                    fecha, origen_documento, ejercicio,
+                                    documento,
+                                    mov_posicion_origen, codigo_talla,
+                                    codigo_almacen, ubicacion, partida,
+                                    unidad_medida1, comentario, id_proceso_IME,
+                                    # articulo.peso, articulo.peso_sin,
+                                    peso_bruto, peso_neto,
+                                    0.0,  # Metros cuadrados. Decimal NOT NULL
+                                    ""   # Código palé. Varchar NOT NULL
+                                    )  # pylint: disable=bad-continuation
+        c.run_sql(sql_movserie)
+        fire(id_proceso_IME)
 
 
 def create_rollo(rollo, cantidad=1, producto=None):
@@ -903,55 +914,61 @@ def create_rollo(rollo, cantidad=1, producto=None):
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
     """
     articulo = rollo.articulo
-    try:
-        partida = rollo.partida.codigo
-    except AttributeError:
-        partida = ""   # DONE: Los rollos C no tienen partida. No pasa nada.
-    comentario = ("Rollo ginn: [%s]" % rollo.get_info())[:40]
-    numero_serie_lc = ""
-    # Sage me indica que no informe de la serie en el movimiento de stock para
-    # solucionar lo del registro duplicado creado por Murano.
-    ubicacion = "Almac. de geotextiles."[:15]
-    unidad_medida = "M2"
-    (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
-     codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
-     unidades, precio, importe, unidades2, unidad_medida2,
-     factor_conversion, origen_movimiento) = prepare_params_movstock(
-        articulo, cantidad, producto)  # pylint: disable=bad-continuation
-    id_proceso_IME = crear_proceso_IME(c)
-    sql_movstock = SQL_STOCK % (database,
-                                CODEMPRESA, ejercicio, periodo, fecha,
-                                documento, codigo_articulo, codigo_almacen,
-                                partida, grupo_talla, codigo_talla,
-                                tipo_movimiento, unidades, unidad_medida,
-                                precio, importe, unidades2, unidad_medida2,
-                                factor_conversion, comentario, ubicacion,
-                                origen_movimiento, numero_serie_lc,
-                                id_proceso_IME)
-    c.run_sql(sql_movstock)
-    origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
-    # 11 (salida de stock), 12 (inventario)
-    mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
-    # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
-    unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
-                                                 articulo)
-    superficie = get_superficie(articulo)
-    numero_serie_lc = rollo.codigo
-    peso_bruto = get_peso_bruto(articulo)
-    peso_neto = get_peso_neto(articulo)
-    sql_movserie = SQL_SERIE % (database,
-                                CODEMPRESA, codigo_articulo, numero_serie_lc,
-                                fecha, origen_documento, ejercicio, documento,
-                                mov_posicion_origen, codigo_talla,
-                                codigo_almacen, ubicacion, partida,
-                                unidad_medida1, comentario, id_proceso_IME,
-                                # articulo.peso, articulo.peso_sin,
-                                peso_bruto, peso_neto, superficie,
-                                # Metros cuadrados. Decimal NOT NULL
-                                ""   # Código palé. Varchar NOT NULL
-                                )  # pylint: disable=bad-continuation
-    c.run_sql(sql_movserie)
-    fire(id_proceso_IME)
+    if existe_articulo(articulo) and cantidad:
+        logging.warning("El rollo %s ya existe en Murano. Se ignora.",
+                        articulo.codigo)
+    else:
+        try:
+            partida = rollo.partida.codigo
+        except AttributeError:
+            partida = ""   # DONE: Los rollos C no tienen partida. No pasa nada
+        comentario = ("Rollo ginn: [%s]" % rollo.get_info())[:40]
+        numero_serie_lc = ""
+        # Sage me indica que no informe de la serie en el movimiento de stock
+        # para solucionar lo del registro duplicado creado por Murano.
+        ubicacion = "Almac. de geotextiles."[:15]
+        unidad_medida = "M2"
+        (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
+         codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
+         unidades, precio, importe, unidades2, unidad_medida2,
+         factor_conversion, origen_movimiento) = prepare_params_movstock(
+            articulo, cantidad, producto)  # pylint: disable=bad-continuation
+        id_proceso_IME = crear_proceso_IME(c)
+        sql_movstock = SQL_STOCK % (database,
+                                    CODEMPRESA, ejercicio, periodo, fecha,
+                                    documento, codigo_articulo, codigo_almacen,
+                                    partida, grupo_talla, codigo_talla,
+                                    tipo_movimiento, unidades, unidad_medida,
+                                    precio, importe, unidades2, unidad_medida2,
+                                    factor_conversion, comentario, ubicacion,
+                                    origen_movimiento, numero_serie_lc,
+                                    id_proceso_IME)
+        c.run_sql(sql_movstock)
+        origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
+        # 11 (salida de stock), 12 (inventario)
+        mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
+        # En movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
+        unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
+                                                     articulo)
+        superficie = get_superficie(articulo)
+        numero_serie_lc = rollo.codigo
+        peso_bruto = get_peso_bruto(articulo)
+        peso_neto = get_peso_neto(articulo)
+        sql_movserie = SQL_SERIE % (database,
+                                    CODEMPRESA, codigo_articulo,
+                                    numero_serie_lc,
+                                    fecha, origen_documento, ejercicio,
+                                    documento,
+                                    mov_posicion_origen, codigo_talla,
+                                    codigo_almacen, ubicacion, partida,
+                                    unidad_medida1, comentario, id_proceso_IME,
+                                    # articulo.peso, articulo.peso_sin,
+                                    peso_bruto, peso_neto, superficie,
+                                    # Metros cuadrados. Decimal NOT NULL
+                                    ""   # Código palé. Varchar NOT NULL
+                                    )  # pylint: disable=bad-continuation
+        c.run_sql(sql_movserie)
+        fire(id_proceso_IME)
 
 
 def create_caja(caja, cantidad=1, producto=None):
@@ -960,52 +977,58 @@ def create_caja(caja, cantidad=1, producto=None):
     Si cantidad es 1, realiza un decremento.
     """
     articulo = caja.articulo
-    partida = caja.partidaCem.codigo
-    unidad_medida = "KG"
-    comentario = ("Caja ginn: [%s]" % caja.get_info())[:40]
-    ubicacion = "Almac. de fibra embolsada."[:15]
-    numero_serie_lc = ""
-    # Sage me indica que no informe de la serie en el movimiento de stock para
-    # solucionar lo del registro duplicado creado por Murano.
-    (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
-     codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
-     unidades, precio, importe, unidades2, unidad_medida2,
-     factor_conversion, origen_movimiento) = prepare_params_movstock(
-        articulo, cantidad, producto)  # pylint: disable=bad-continuation
-    id_proceso_IME = crear_proceso_IME(c)
-    sql_movstock = SQL_STOCK % (database,
-                                CODEMPRESA, ejercicio, periodo, fecha,
-                                documento, codigo_articulo, codigo_almacen,
-                                partida, grupo_talla, codigo_talla,
-                                tipo_movimiento, unidades, unidad_medida,
-                                precio, importe, unidades2, unidad_medida2,
-                                factor_conversion, comentario, ubicacion,
-                                origen_movimiento, numero_serie_lc,
-                                id_proceso_IME)
-    c.run_sql(sql_movstock)
-    origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
-    # 11 (salida de stock), 12 (inventario)
-    mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
-    # En el movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
-    unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
-                                                 articulo)
-    numero_serie_lc = caja.codigo
-    peso_bruto = get_peso_bruto(articulo)
-    peso_neto = get_peso_neto(articulo)
-    sql_movserie = SQL_SERIE % (database,
-                                CODEMPRESA, codigo_articulo, numero_serie_lc,
-                                fecha, origen_documento, ejercicio, documento,
-                                mov_posicion_origen, codigo_talla,
-                                codigo_almacen, ubicacion, partida,
-                                unidad_medida1, comentario, id_proceso_IME,
-                                # articulo.peso, articulo.peso_sin,
-                                peso_bruto, peso_neto,
-                                0.0,   # Metros cuadrados. Decimal NOT NULL
-                                caja.pale and caja.pale.codigo or ""
-                                # Código palé. Varchar NOT NULL
-                                )  # pylint: disable=bad-continuation
-    c.run_sql(sql_movserie)
-    fire(id_proceso_IME)
+    if existe_articulo(articulo) and cantidad:
+        logging.warning("La caja %s ya existe en Murano. Se ignora.",
+                        articulo.codigo)
+    else:
+        partida = caja.partidaCem.codigo
+        unidad_medida = "KG"
+        comentario = ("Caja ginn: [%s]" % caja.get_info())[:40]
+        ubicacion = "Almac. de fibra embolsada."[:15]
+        numero_serie_lc = ""
+        # Sage me indica que no informe de la serie en el movimiento de stock
+        # para solucionar lo del registro duplicado creado por Murano.
+        (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
+         codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
+         unidades, precio, importe, unidades2, unidad_medida2,
+         factor_conversion, origen_movimiento) = prepare_params_movstock(
+            articulo, cantidad, producto)  # pylint: disable=bad-continuation
+        id_proceso_IME = crear_proceso_IME(c)
+        sql_movstock = SQL_STOCK % (database,
+                                    CODEMPRESA, ejercicio, periodo, fecha,
+                                    documento, codigo_articulo, codigo_almacen,
+                                    partida, grupo_talla, codigo_talla,
+                                    tipo_movimiento, unidades, unidad_medida,
+                                    precio, importe, unidades2, unidad_medida2,
+                                    factor_conversion, comentario, ubicacion,
+                                    origen_movimiento, numero_serie_lc,
+                                    id_proceso_IME)
+        c.run_sql(sql_movstock)
+        origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
+        # 11 (salida de stock), 12 (inventario)
+        mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
+        # En movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
+        unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
+                                                     articulo)
+        numero_serie_lc = caja.codigo
+        peso_bruto = get_peso_bruto(articulo)
+        peso_neto = get_peso_neto(articulo)
+        sql_movserie = SQL_SERIE % (database,
+                                    CODEMPRESA, codigo_articulo,
+                                    numero_serie_lc,
+                                    fecha, origen_documento, ejercicio,
+                                    documento,
+                                    mov_posicion_origen, codigo_talla,
+                                    codigo_almacen, ubicacion, partida,
+                                    unidad_medida1, comentario, id_proceso_IME,
+                                    # articulo.peso, articulo.peso_sin,
+                                    peso_bruto, peso_neto,
+                                    0.0,   # Metros cuadrados. Decimal NOT NULL
+                                    caja.pale and caja.pale.codigo or ""
+                                    # Código palé. Varchar NOT NULL
+                                    )  # pylint: disable=bad-continuation
+        c.run_sql(sql_movserie)
+        fire(id_proceso_IME)
 
 
 def create_pale(pale, cantidad=1, producto=None):
@@ -1016,6 +1039,9 @@ def create_pale(pale, cantidad=1, producto=None):
     # Los palés se crean automáticamente al crear las cajas con el código de
     # palé informado. No hay que crear movimiento de stock ni de número de
     # serie para eso.
+    # El palé no es más que un campo en las tablas de movimientos de stock, de
+    # modo que no es necesario siquiera comprobar si existe. Lo que se
+    # comprobarán serán sus cajas una a una para evitar duplicados.
     i = 0
     cajas = pale.cajas
     totcajas = len(cajas)
@@ -1151,8 +1177,9 @@ def existe_articulo(articulo):
     try:
         numero_serie_lc = articulo.codigo
     except AttributeError:
-        numero_serie_lc = articulo  # Por error o por pruebas he recibido
-        # directamente el código del artículo.
+        numero_serie_lc = pclases.Articulo.get_articulo(articulo)
+        # Por error o por pruebas he recibido directamente el código del
+        # artículo.
     c = Connection()
     codalmacen = get_codalmacen_articulo(c, numero_serie_lc)
     res = bool(codalmacen)
@@ -1166,8 +1193,6 @@ def create_articulo(articulo, cantidad=1, producto=None):
     objeto producto, se ignora el actual del artículo, se reemplaza en ginn
     por el recibido y se da de alta así en Murano.
     """
-    # TODO: Check que compruebe si el artículo ya existía para no duplicarlo.
-    # TODO: Hacer en todos los create_*, pero solo si es una inserción.
     # TODO: ¿Y al descontar existencias? ¿Comprobar también que existan antes?
     # De todos modos el proceso de importación devolverá error si la serie
     # está duplicada.
@@ -1175,23 +1200,28 @@ def create_articulo(articulo, cantidad=1, producto=None):
         delta = 1
     else:
         delta = -1
-    for i in range(abs(cantidad)):  # pylint: disable=unused-variable
-        if articulo.es_bala():
-            create_bala(articulo.bala, delta, producto)
-        elif articulo.es_balaCable():
-            create_bala(articulo.balaCable, delta, producto)
-        elif articulo.es_bigbag():
-            create_bigbag(articulo.bigbag, delta, producto)
-        elif articulo.es_caja():
-            create_caja(articulo.caja, delta, producto)
-        elif articulo.es_rollo():
-            create_rollo(articulo.rollo, delta, producto)
-        elif articulo.es_rolloC():
-            create_rollo(articulo.rolloC, delta, producto)
-        else:
-            raise ValueError("El artículo %s no es bala, bala de cable, "
-                             "bigbag, caja, rollo ni rollo C."
-                             % (articulo.puid))
+    assert articulo is not None, "Debe especificarse un artículo."
+    if not existe_articulo(articulo):
+        for i in range(abs(cantidad)):  # pylint: disable=unused-variable
+            if articulo.es_bala():
+                create_bala(articulo.bala, delta, producto)
+            elif articulo.es_balaCable():
+                create_bala(articulo.balaCable, delta, producto)
+            elif articulo.es_bigbag():
+                create_bigbag(articulo.bigbag, delta, producto)
+            elif articulo.es_caja():
+                create_caja(articulo.caja, delta, producto)
+            elif articulo.es_rollo():
+                create_rollo(articulo.rollo, delta, producto)
+            elif articulo.es_rolloC():
+                create_rollo(articulo.rolloC, delta, producto)
+            else:
+                raise ValueError("El artículo %s no es bala, bala de cable, "
+                                 "bigbag, caja, rollo ni rollo C."
+                                 % (articulo.puid))
+    else:
+        logging.warning("El código %s ya existe en Murano. Se ignora.",
+                        articulo.codigo)
 
 
 def update_producto(articulo, producto):

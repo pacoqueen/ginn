@@ -9461,6 +9461,34 @@ class Articulo(SQLObject, PRPCTOO):
 
         return cad
 
+
+    @staticmethod
+    def get_articulo(codigo):
+        """
+        Devuelve el objeto artículo correspondiente al código recibido o
+        None si no se encuentra.
+        """
+        mapping = {PREFIJO_ROLLO: Rollo,
+                   PREFIJO_BALA: Bala,
+                   PREFIJO_BIGBAG: Bigbag,
+                   PREFIJO_PALE: Pale,
+                   PREFIJO_CAJA: Caja,
+                   PREFIJO_BALACABLE: BalaCable,
+                   PREFIJO_ROLLOC: RolloC,
+                   PREFIJO_ROLLODEFECTUOSO: RolloDefectuoso}
+        objeto = None
+        for prefijo in mapping:
+            if codigo.startswith(prefijo):
+                clase_pclases = mapping[prefijo]
+                try:
+                    objeto = clase_pclases.selectBy(codigo=codigo)[0]
+                except IndexError:
+                    objeto = None
+                else:
+                    objeto = objeto.articulo
+                    break
+        return objeto
+
     def es_clase_a(self):
         """
         Devuelve True si el artículo es de clase A.
