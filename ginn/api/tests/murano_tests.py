@@ -40,11 +40,14 @@ def prueba_bala(codigo=None):
     if not codigo:
         b = pclases.Bala.select(orderBy="-id")[0]
     else:
-        b = pclases.Bala.selectBy(codigo=codigo)[0]
+        try:
+            b = pclases.Bala.selectBy(codigo=codigo)[0]
+        except IndexError:  # Debe ser una bala de cable (serie Z).
+            b = pclases.BalaCable.selectBy(codigo=codigo)[0]
     logging.info("Insertando bala %s (%s) [%s]...", b.codigo,
                  b.articulo.productoVenta.descripcion, b.puid)
     murano.create_bala(b)
-    if b.articulo.parteDeProduccion:
+    if hasattr(b, "parteDeProduccion") and b.articulo.parteDeProduccion:
         # TODO: PORASQUI. ¿Se podría calcular la parte proporcional, o es
         # demasiado para unas pruebas?
         logging.warning(
