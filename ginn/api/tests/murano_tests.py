@@ -279,8 +279,22 @@ def parse_file(fsource):
     else:
         for l in f.readlines():
             for codigo in l.strip().upper().split():
-                yield codigo
+                if codigo == "#":   # Comentario. Ignoro el resto de la línea
+                    break
+                else:
+                    yield codigo
     f.close()
+
+
+def file_len(fsource):
+    """
+    Devuelve el número de códigos del fichero fuente.
+    """
+    res = 0
+    # pylint:disable=unused-variable
+    for codigo in parse_file(fsource):
+        res += 1
+    return res
 
 
 def main():
@@ -343,26 +357,6 @@ def main():
         for codigo in pbar:
             pbar.set_description("Insertando con consumos %s" % (codigo))
             prueba_codigo(codigo, consumir=True)
-
-
-def file_len(fsource):
-    """
-    Función generadora. Lee los códigos a insertar de un fichero de texto.
-    Devuelve un código en cada iteración.
-    """
-    res = 0
-    try:
-        f = open(fsource)
-    except IOError:
-        print("El fichero %s no existe." % (fsource))
-        sys.exit(ERRFILENOTFOUND)
-    else:
-        for l in f.readlines():
-            # pylint: disable=unused-variable
-            for codigo in l.strip().upper().split():
-                res += 1
-    f.close()
-    return res
 
 
 if __name__ == "__main__":

@@ -1105,15 +1105,15 @@ def consulta_cliente(nombre=None, cif=None):
     return res
 
 
-def consultar_producto(producto=None, nombre=None):
+def consultar_producto(producto=None, nombre=None, ean=None):
     """
     Busca un producto por nombre, si se especifica el parámetro.
+    Si no, y lo que recibe es el código EAN, busca por ese código.
     En otro caso, busca por el código `[PC|PV]id`. Se debe recibir el objeto
     producto de pclases.
     Devuelve una lista de productos coincidentes.
     """
-    assert not producto == nombre == None    # NOQA
-    # TODO: Permitir la búsqueda por código EAN.
+    assert not producto == nombre == ean == None    # NOQA
     c = Connection()
     if nombre:
         try:
@@ -1133,6 +1133,11 @@ def consultar_producto(producto=None, nombre=None):
         except TypeError:   # res es None. Error con la base de datos
             if DEBUG:
                 res = []
+    elif ean:   # Busco por código EAN (CodigoAlternativo)
+        sql = "SELECT * FROM %s.dbo.Articulos WHERE " % (c.get_database())
+        where = r"CodigoAlternativo = '%s';" % (ean)
+        sql += where
+        res = c.run_sql(sql)
     else:   # Busco por el código de Murano: PC|PV + ID
         idmurano = get_codigo_articulo_murano(producto)
         sql = "SELECT * FROM %s.dbo.Articulos WHERE " % (c.get_database())
