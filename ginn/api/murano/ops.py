@@ -717,7 +717,8 @@ def get_cantidad_dimension_especifica(articulo):
     if articulo.es_rollo() or articulo.es_rollo_defectuoso():
         # Los rollos C no tienen m² definidos. Se tratan al peso.
         unidades = get_superficie(articulo)  # En dimensión específica: m²
-    elif articulo.es_bala() or articulo.es_bala_cable():
+    elif (articulo.es_bala() or articulo.es_bala_cable() or
+            articulo.es_rollo_c()):
         # unidades = articulo.get_peso()
         unidades = get_peso_bruto(articulo)  # En dimensión específica: kg
     # XxX ### XxX ### XxX ### XxX ### XxX ### XxX ### XxX ### XxX ### XxX ##
