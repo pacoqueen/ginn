@@ -34,6 +34,7 @@ sys.path.append(RUTA_GINN)
 from framework import pclases   # pylint: disable=import-error
 
 
+# DocumentoUnico a «No» para evitar error con decimales.
 SQL_STOCK = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
                CodigoEmpresa,
                Ejercicio,
@@ -114,7 +115,7 @@ SQL_STOCK = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
                -- NULL,
                0,
                0,
-               -1 --,
+               0 --,
                -- NULL,
                -- NULL
                );"""    # NOQA
