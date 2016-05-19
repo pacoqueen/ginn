@@ -29,7 +29,7 @@ from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
 sys.argv = _argv
 
 
-def insertar_pv(guid_proceso):
+def insertar_pvs(guid_proceso):
     """
     Selecciona todos los artículos de productos de venta y devuelve la lista
     de instrucciones SQL a ejecutar para lanzarlas contra las tablas TmpIME
@@ -47,7 +47,7 @@ def insertar_pv(guid_proceso):
     return res
 
 
-def insertar_pc(guid_proceso):
+def insertar_pcs(guid_proceso):
     """
     Selecciona todos los productos de compra y devuelve una lista de
     instrucciones SQL de movimiento de stock para lanzarlas contra las
@@ -106,15 +106,15 @@ def main():
         murano.ops.DEBUG = True
         guid_proceso = murano.ops.simulate_guid()
     print("Insertando productos de compra...")
-    sql_pc = insertar_pc(guid_proceso)
+    sql_pcs = insertar_pcs(guid_proceso)
     print("Insertando productos de venta...")
-    sql_pv = insertar_pv(guid_proceso)
+    sql_pvs = insertar_pvs(guid_proceso)
     if args.run:
         print("Lanzando proceso de importación...")
-        ejecutar_proceso(con, sql_pv, sql_pc, guid_proceso)
+        ejecutar_proceso(con, sql_pvs, sql_pcs, guid_proceso)
     else:
         print("Consultas SQL generadas:")
-        for sql in sql_pc + sql_pv:
+        for sql in sql_pcs + sql_pvs:
             print(sql)
 
 
