@@ -718,8 +718,8 @@ def get_cantidad_dimension_especifica(articulo):
         # Los rollos C no tienen m² definidos. Se tratan al peso.
         unidades = get_superficie(articulo)  # En dimensión específica: m²
     elif (articulo.es_bala() or articulo.es_bala_cable() or
-            articulo.es_rollo_c() or articulo.es_bigbag() or
-            articulo.es_caja()):
+          articulo.es_rollo_c() or articulo.es_bigbag() or
+          articulo.es_caja()):
         # unidades = articulo.get_peso()
         unidades = get_peso_bruto(articulo)  # En dimensión específica: kg
     # XxX ### XxX ### XxX ### XxX ### XxX ### XxX ### XxX ### XxX ### XxX ##
@@ -790,7 +790,8 @@ def estimar_precio_coste(articulo, precio_kg):
     return peso * precio_kg
 
 
-def create_bala(bala, cantidad=1, producto=None):
+def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
+                simulate=False):
     """
     Crea una bala en las tablas temporales de Murano.
     Recibe un objeto bala de ginn.
@@ -816,7 +817,10 @@ def create_bala(bala, cantidad=1, producto=None):
          unidades, precio, importe, unidades2, unidad_medida2,
          factor_conversion, origen_movimiento) = prepare_params_movstock(
             articulo, cantidad, producto)   # pylint: disable=bad-continuation
-        id_proceso_IME = crear_proceso_IME(c)
+        if not guid_proceso:
+            id_proceso_IME = crear_proceso_IME(c)
+        else:
+            id_proceso_IME = guid_proceso
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
                                     documento, codigo_articulo, codigo_almacen,
@@ -848,11 +852,16 @@ def create_bala(bala, cantidad=1, producto=None):
                                     0.0,  # Metros cuadrados. Decimal NOT NULL
                                     ""   # Código palé. Varchar NOT NULL
                                     )  # pylint: disable=bad-continuation
-        c.run_sql(sql_movserie)
-        fire(id_proceso_IME)
+        if simulate:
+            res = sql_movserie
+        else:
+            res = c.run_sql(sql_movserie)
+            fire(id_proceso_IME)
+        return res
 
 
-def create_bigbag(bigbag, cantidad=1, producto=None):
+def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
+                  simulate=False):
     """
     Crea un bigbag en Murano a partir de la información del bigbag en ginn.
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
@@ -874,7 +883,10 @@ def create_bigbag(bigbag, cantidad=1, producto=None):
          unidades, precio, importe, unidades2, unidad_medida2,
          factor_conversion, origen_movimiento) = prepare_params_movstock(
             articulo, cantidad, producto)  # pylint: disable=bad-continuation
-        id_proceso_IME = crear_proceso_IME(c)
+        if not guid_proceso:
+            id_proceso_IME = crear_proceso_IME(c)
+        else:
+            id_proceso_IME = guid_proceso
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
                                     documento, codigo_articulo, codigo_almacen,
@@ -907,11 +919,16 @@ def create_bigbag(bigbag, cantidad=1, producto=None):
                                     0.0,  # Metros cuadrados. Decimal NOT NULL
                                     ""   # Código palé. Varchar NOT NULL
                                     )  # pylint: disable=bad-continuation
-        c.run_sql(sql_movserie)
-        fire(id_proceso_IME)
+        if simulate:
+            res = sql_movserie
+        else:
+            res = c.run_sql(sql_movserie)
+            fire(id_proceso_IME)
+        return res
 
 
-def create_rollo(rollo, cantidad=1, producto=None):
+def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
+                 simulate=False):
     """
     Crea un rollo en Murano a partir de la información del rollo en ginn.
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
@@ -936,7 +953,10 @@ def create_rollo(rollo, cantidad=1, producto=None):
          unidades, precio, importe, unidades2, unidad_medida2,
          factor_conversion, origen_movimiento) = prepare_params_movstock(
             articulo, cantidad, producto)  # pylint: disable=bad-continuation
-        id_proceso_IME = crear_proceso_IME(c)
+        if not guid_proceso:
+            id_proceso_IME = crear_proceso_IME(c)
+        else:
+            id_proceso_IME = guid_proceso
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
                                     documento, codigo_articulo, codigo_almacen,
@@ -970,11 +990,16 @@ def create_rollo(rollo, cantidad=1, producto=None):
                                     # Metros cuadrados. Decimal NOT NULL
                                     ""   # Código palé. Varchar NOT NULL
                                     )  # pylint: disable=bad-continuation
-        c.run_sql(sql_movserie)
-        fire(id_proceso_IME)
+        if simulate:
+            res = sql_movserie
+        else:
+            res = c.run_sql(sql_movserie)
+            fire(id_proceso_IME)
+        return res
 
 
-def create_caja(caja, cantidad=1, producto=None):
+def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
+                simulate=False):
     """
     Crea una caja en Murano a partir de la información del objeto caja en ginn.
     Si cantidad es 1, realiza un decremento.
@@ -996,7 +1021,10 @@ def create_caja(caja, cantidad=1, producto=None):
          unidades, precio, importe, unidades2, unidad_medida2,
          factor_conversion, origen_movimiento) = prepare_params_movstock(
             articulo, cantidad, producto)  # pylint: disable=bad-continuation
-        id_proceso_IME = crear_proceso_IME(c)
+        if not guid_proceso:
+            id_proceso_IME = crear_proceso_IME(c)
+        else:
+            id_proceso_IME = guid_proceso
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
                                     documento, codigo_articulo, codigo_almacen,
@@ -1030,8 +1058,12 @@ def create_caja(caja, cantidad=1, producto=None):
                                     caja.pale and caja.pale.codigo or ""
                                     # Código palé. Varchar NOT NULL
                                     )  # pylint: disable=bad-continuation
-        c.run_sql(sql_movserie)
-        fire(id_proceso_IME)
+        if simulate:
+            res = sql_movserie
+        else:
+            res = c.run_sql(sql_movserie)
+            fire(id_proceso_IME)
+        return res
 
 
 def create_pale(pale, cantidad=1, producto=None):
@@ -1192,7 +1224,8 @@ def existe_articulo(articulo):
     return res
 
 
-def create_articulo(articulo, cantidad=1, producto=None):
+def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
+                    simulate=False):
     """
     Crea un artículo nuevo en Murano con el producto recibido. Si no se
     recibe ninguno, se usa el que tenga asociado en ginn. Si se recibe un
@@ -1210,17 +1243,23 @@ def create_articulo(articulo, cantidad=1, producto=None):
     if not existe_articulo(articulo):
         for i in range(abs(cantidad)):  # pylint: disable=unused-variable
             if articulo.es_bala():
-                create_bala(articulo.bala, delta, producto)
+                create_bala(articulo.bala, delta, producto,
+                            guid_proceso=guid_proceso, simulate=simulate)
             elif articulo.es_balaCable():
-                create_bala(articulo.balaCable, delta, producto)
+                create_bala(articulo.balaCable, delta, producto,
+                            guid_proceso=guid_proceso, simulate=simulate)
             elif articulo.es_bigbag():
-                create_bigbag(articulo.bigbag, delta, producto)
+                create_bigbag(articulo.bigbag, delta, producto,
+                              guid_proceso=guid_proceso, simulate=simulate)
             elif articulo.es_caja():
-                create_caja(articulo.caja, delta, producto)
+                create_caja(articulo.caja, delta, producto,
+                            guid_proceso=guid_proceso, simulate=simulate)
             elif articulo.es_rollo():
-                create_rollo(articulo.rollo, delta, producto)
+                create_rollo(articulo.rollo, delta, producto,
+                             guid_proceso=guid_proceso, simulate=simulate)
             elif articulo.es_rolloC():
-                create_rollo(articulo.rolloC, delta, producto)
+                create_rollo(articulo.rolloC, delta, producto,
+                             guid_proceso=guid_proceso, simulate=simulate)
             else:
                 raise ValueError("El artículo %s no es bala, bala de cable, "
                                  "bigbag, caja, rollo ni rollo C."
@@ -1238,7 +1277,8 @@ def update_producto(articulo, producto):
     create_articulo(articulo, producto=producto)
 
 
-def update_stock(producto, delta, almacen):
+def update_stock(producto, delta, almacen, guid_proceso=None,
+                 simulate=False):
     """
     Incrementa o decrementa el stock del producto en la cantidad recibida en
     en el parámetro «delta».
@@ -1276,7 +1316,10 @@ def update_stock(producto, delta, almacen):
     origen_movimiento = "F"  # E = Entrada de Stock (entrada directa),
     # F (fabricación), I (inventario),
     # M (rechazo fabricación), S (Salida stock)
-    id_proceso_IME = crear_proceso_IME(c)
+    if not guid_proceso:
+        id_proceso_IME = crear_proceso_IME(c)
+    else:
+        id_proceso_IME = guid_proceso
     # En el movimiento de stock la unidad principal (unidad_medida) es la que
     # sea. En la segunda unidad (unidad_mediad2) mandamos "", que es lo que
     # me devolverá buscar_unidad_medida_basica para todo lo que no sea un
