@@ -1257,7 +1257,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
             elif articulo.es_rollo():
                 create_rollo(articulo.rollo, delta, producto,
                              guid_proceso=guid_proceso, simulate=simulate)
-            elif articulo.es_rollo_defecuoso():
+            elif articulo.es_rollo_defectuoso():
                 create_rollo(articulo.rolloDefectuoso, delta, producto,
                              guid_proceso=guid_proceso, simulate=simulate)
             elif articulo.es_rolloC():
