@@ -953,7 +953,7 @@ def create_rollo(rollo, cantidad=1, producto=None):
         # En movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
         unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
                                                      articulo)
-        superficie = get_superficie(articulo)
+        superficie = get_superficie(articulo) or 0
         numero_serie_lc = rollo.codigo
         peso_bruto = get_peso_bruto(articulo)
         peso_neto = get_peso_neto(articulo)
