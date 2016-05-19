@@ -59,15 +59,16 @@ def insertar_pc(guid_proceso):
                    total=prodscompra.count()):
         for almacen in pclases.Almacen.select():
             cantidad = pc.get_existencias(almacen)
-            try:
-                sql = murano.ops.update_stock(pc, cantidad, almacen,
-                                              guid_proceso=guid_proceso,
-                                              simulate=True)
-            except AssertionError:
-                print("El producto PC{} ({}) no se encuentra"
-                      "en Murano.".format(pc.id, pc.descripcion),
-                      file=sys.stderr)
-                continue
+            if cantidad > 0:
+                try:
+                    sql = murano.ops.update_stock(pc, cantidad, almacen,
+                                                  guid_proceso=guid_proceso,
+                                                  simulate=True)
+                except AssertionError:
+                    print("El producto PC{} ({}) no se encuentra"
+                          "en Murano.".format(pc.id, pc.descripcion),
+                          file=sys.stderr)
+                    continue
             res.append(sql)
     return res
 
