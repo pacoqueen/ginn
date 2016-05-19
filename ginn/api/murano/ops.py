@@ -1334,8 +1334,12 @@ def update_stock(producto, delta, almacen, guid_proceso=None,
                                 factor_conversion, comentario, ubicacion,
                                 origen_movimiento, numero_serie_lc,
                                 id_proceso_IME)
-    c.run_sql(sql_movstock)
-    fire(id_proceso_IME)
+    if simulate:
+        res = sql_movstock
+    else:
+        res = c.run_sql(sql_movstock)
+        fire(id_proceso_IME)
+    return res
 
 
 def delete_articulo(articulo):
