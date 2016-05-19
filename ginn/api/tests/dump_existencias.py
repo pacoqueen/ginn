@@ -53,8 +53,10 @@ def insertar_pc(guid_proceso):
     TmpIME de MSSQLServer.
     """
     res = []
-    for pc in tqdm(pclases.ProductoCompra.select(),
-                   total=pclases.ProductoCompra.select().count()):
+    prodscompra = pclases.ProductoCompra.select(
+        pclases.ProductoCompra.q.existencias > 0)
+    for pc in tqdm(prodscompra,
+                   total=prodscompra.count()):
         for almacen in pclases.Almacen.select():
             cantidad = pc.get_existencias(almacen)
             try:
