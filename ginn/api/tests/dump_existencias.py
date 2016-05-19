@@ -64,7 +64,7 @@ def insertar_pc(guid_proceso):
                     sql = murano.ops.update_stock(pc, cantidad, almacen,
                                                   guid_proceso=guid_proceso,
                                                   simulate=True)
-                except AssertionError:
+                except (AssertionError, IndexError):
                     print("El producto PC{} ({}) no se encuentra"
                           "en Murano.".format(pc.id, pc.descripcion),
                           file=sys.stderr)
