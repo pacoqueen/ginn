@@ -38,7 +38,8 @@ def insertar_pv(guid_proceso):
     de serie y movimiento de stock.
     """
     res = []
-    articulos = pclases.Articulo.select(pclases.Articulo.q.almacen is not None)
+    articulos = pclases.Articulo.select(
+        pclases.Articulo.q.almacen != None)  # NOQA
     for articulo in tqdm(articulos, total=articulos.count()):
         sql = murano.ops.create_articulo(articulo, guid_proceso=guid_proceso,
                                          simulate=True)
