@@ -38,8 +38,8 @@ def insertar_pv(guid_proceso):
     de serie y movimiento de stock.
     """
     res = []
-    for articulo in tqdm(pclases.Articulo.select(),
-                         total=pclases.Articulo.select().count()):
+    articulos = pclases.Articulo.select(pclases.Articulo.q.almacen is not None)
+    for articulo in tqdm(articulos, total=articulos.count()):
         sql = murano.ops.create_articulo(articulo, guid_proceso=guid_proceso,
                                          simulate=True)
         res.append(sql)
@@ -55,8 +55,7 @@ def insertar_pc(guid_proceso):
     res = []
     prodscompra = pclases.ProductoCompra.select(
         pclases.ProductoCompra.q.existencias > 0)
-    for pc in tqdm(prodscompra,
-                   total=prodscompra.count()):
+    for pc in tqdm(prodscompra, total=prodscompra.count()):
         for almacen in pclases.Almacen.select():
             cantidad = pc.get_existencias(almacen)
             if cantidad > 0:
