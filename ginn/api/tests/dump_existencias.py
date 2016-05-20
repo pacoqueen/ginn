@@ -41,8 +41,17 @@ def insertar_pvs(guid_proceso):
     articulos = pclases.Articulo.select(
         pclases.Articulo.q.almacen != None)  # NOQA
     for articulo in tqdm(articulos, total=articulos.count()):
-        sqls = murano.ops.create_articulo(articulo, guid_proceso=guid_proceso,
-                                          simulate=True)
+        try:
+            sqls = murano.ops.create_articulo(articulo,
+                                              guid_proceso=guid_proceso,
+                                              simulate=True)
+        # pylint: disable=broad-except
+        except Exception as e:
+            strer = "El artículo {} no se pudo insertar. Excepción: {}".format(
+                articulo.puid, e)
+            logging.error(strer)
+            print(strer, file=sys.stderr)
+            sqls = None
         if sqls:
             for sql in sqls:
                 res.append(sql)
@@ -126,6 +135,9 @@ def main():
     sql_pcs = insertar_pcs(guid_proceso)
     print("Insertando productos de venta...")
     sql_pvs = insertar_pvs(guid_proceso)
+    if args.fdest:
+        with open(args.fdest, 'w') as f:
+            f.write('\n'.join(sql_pvs + sql_pcs))
     if args.run:
         print("Lanzando proceso de importación...")
         ejecutar_proceso(con, sql_pvs, sql_pcs, guid_proceso)
@@ -133,11 +145,6 @@ def main():
         print("Consultas SQL generadas:")
         for sql in sql_pcs + sql_pvs:
             print(sql)
-    if args.fdest:
-        f = open(fdest)
-        f.writelines(sql_pcs)
-        f.writelines(sql_pvs)
-        f.close()
 
 
 if __name__ == "__main__":
