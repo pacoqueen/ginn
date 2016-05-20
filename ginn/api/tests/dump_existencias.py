@@ -103,6 +103,8 @@ def main():
                         help="Conecta a MSSQLServer y ejecuta el proceso "
                              "Murano. Por defecto solo simula.",
                         default=False)
+    parser.add_argument("-o", "--output", dest="fdest",
+                        help="Vuelca las consultas SQL a un fichero.")
     args = parser.parse_args()
     # # Volcado
     if args.run:
@@ -114,7 +116,7 @@ def main():
         con.run_sql("DELETE FROM TmpIME_MovimientoStock;")
         con.run_sql("DELETE FROM MovimientoArticuloSerie;")
         con.run_sql("DELETE FROM MovimientoStock;")
-        con.run_sql("DELETE FROM ArticulosSerie;")
+        con.run_sql("DELETE FROM ArticulosSeries;")
     else:
         print("Simulando conexión a la base de datos...")
         murano.connection.DEBUG = True
@@ -131,6 +133,11 @@ def main():
         print("Consultas SQL generadas:")
         for sql in sql_pcs + sql_pvs:
             print(sql)
+    if args.fdest:
+        f = open(fdest)
+        f.writelines(sql_pcs)
+        f.writelines(sql_pvs)
+        f.close()
 
 
 if __name__ == "__main__":
