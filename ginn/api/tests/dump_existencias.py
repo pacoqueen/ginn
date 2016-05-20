@@ -43,8 +43,13 @@ def insertar_pvs(guid_proceso):
     for articulo in tqdm(articulos, total=articulos.count()):
         sqls = murano.ops.create_articulo(articulo, guid_proceso=guid_proceso,
                                           simulate=True)
-        for sql in sqls:
-            res.append(sql)
+        if sqls:
+            for sql in sqls:
+                res.append(sql)
+        else:
+            logging.warning("El artículo %s (%s) no generó SQL."
+                            " ¿Ya existe en Murano?", articulo.puid,
+                            articulo.codigo)
     return res
 
 
@@ -104,15 +109,20 @@ def main():
         print("Conectando a la base de datos...")
         con = murano.connection.Connection()
         guid_proceso = murano.ops.generar_guid(con)
+        print("Limpiando stock actual...")
+        con.run_sql("DELETE FROM TmpIME_MovimientoSerie;")
+        con.run_sql("DELETE FROM TmpIME_MovimientoStock;")
+        con.run_sql("DELETE FROM MovimientoArticuloSerie;")
+        con.run_sql("DELETE FROM MovimientoStock;")
     else:
         print("Simulando conexión a la base de datos...")
         murano.connection.DEBUG = True
         murano.ops.DEBUG = True
         guid_proceso = murano.ops.simulate_guid()
-    print("Insertando productos de venta...")
-    sql_pvs = insertar_pvs(guid_proceso)
     print("Insertando productos de compra...")
     sql_pcs = insertar_pcs(guid_proceso)
+    print("Insertando productos de venta...")
+    sql_pvs = insertar_pvs(guid_proceso)
     if args.run:
         print("Lanzando proceso de importación...")
         ejecutar_proceso(con, sql_pvs, sql_pcs, guid_proceso)
