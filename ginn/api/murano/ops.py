@@ -1260,9 +1260,9 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
     # De todos modos el proceso de importación devolverá error si la serie
     # está duplicada.
     if cantidad < 0:
-        delta = 1
-    else:
         delta = -1
+    else:
+        delta = 1
     assert articulo is not None, "Debe especificarse un artículo."
     res = None
     if not existe_articulo(articulo):
