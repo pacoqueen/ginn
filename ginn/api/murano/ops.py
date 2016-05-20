@@ -1452,6 +1452,9 @@ def fire(guid_proceso, ignore_errors=False):
                      guid_proceso)
         logging.error(strerr)
     else:
+        if retCode:
+            strerr = "¡PROCESO DE IMPORTACIÓN %s CON ERRORES!" % (guid_proceso)
+            logging.error(strerr)
         # Después de cada proceso hay que invocar al cálculo que acumula los
         # campos personalizados:
         # FIXED: No ejecuta el cálculo. Era por las '' alrededor del guid.

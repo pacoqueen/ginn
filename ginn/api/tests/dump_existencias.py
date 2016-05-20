@@ -97,7 +97,7 @@ def ejecutar_proceso(connection, sql_pv, sql_pc, guid_proceso):
     sqls = sql_pv + sql_pc
     for sql in tqdm(sqls):
         connection.run_sql(sql)
-    res = murano.ops.fire(guid_proceso)
+    res = murano.ops.fire(guid_proceso, ignore_errors=True)
     return res
 
 
