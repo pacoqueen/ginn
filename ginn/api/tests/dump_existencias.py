@@ -103,16 +103,16 @@ def main():
     if args.run:
         print("Conectando a la base de datos...")
         con = murano.connection.Connection()
-        guid_proceso = murano.ops.genera_guid(con)
+        guid_proceso = murano.ops.generar_guid(con)
     else:
         print("Simulando conexión a la base de datos...")
         murano.connection.DEBUG = True
         murano.ops.DEBUG = True
         guid_proceso = murano.ops.simulate_guid()
-    print("Insertando productos de compra...")
-    sql_pcs = insertar_pcs(guid_proceso)
     print("Insertando productos de venta...")
     sql_pvs = insertar_pvs(guid_proceso)
+    print("Insertando productos de compra...")
+    sql_pcs = insertar_pcs(guid_proceso)
     if args.run:
         print("Lanzando proceso de importación...")
         ejecutar_proceso(con, sql_pvs, sql_pcs, guid_proceso)
