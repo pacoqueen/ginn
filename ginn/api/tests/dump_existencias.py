@@ -71,12 +71,12 @@ def insertar_pcs(guid_proceso):
                                                    guid_proceso=guid_proceso,
                                                    simulate=True)
                 except (AssertionError, IndexError):
-                    print("El producto PC{} ({}) no se encuentra"
+                    print("El producto PC{} ({}) no se encuentra "
                           "en Murano.".format(pc.id, pc.descripcion),
                           file=sys.stderr)
                     continue
-            for sql in sqls:
-                res.append(sql)
+                for sql in sqls:
+                    res.append(sql)
     return res
 
 
@@ -114,6 +114,7 @@ def main():
         con.run_sql("DELETE FROM TmpIME_MovimientoStock;")
         con.run_sql("DELETE FROM MovimientoArticuloSerie;")
         con.run_sql("DELETE FROM MovimientoStock;")
+        con.run_sql("DELETE FROM ArticulosSerie;")
     else:
         print("Simulando conexión a la base de datos...")
         murano.connection.DEBUG = True
