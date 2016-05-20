@@ -41,9 +41,10 @@ def insertar_pvs(guid_proceso):
     articulos = pclases.Articulo.select(
         pclases.Articulo.q.almacen != None)  # NOQA
     for articulo in tqdm(articulos, total=articulos.count()):
-        sql = murano.ops.create_articulo(articulo, guid_proceso=guid_proceso,
-                                         simulate=True)
-        res.append(sql)
+        sqls = murano.ops.create_articulo(articulo, guid_proceso=guid_proceso,
+                                          simulate=True)
+        for sql in sqls:
+            res.append(sql)
     return res
 
 
@@ -61,15 +62,16 @@ def insertar_pcs(guid_proceso):
             cantidad = pc.get_existencias(almacen)
             if cantidad > 0:
                 try:
-                    sql = murano.ops.update_stock(pc, cantidad, almacen,
-                                                  guid_proceso=guid_proceso,
-                                                  simulate=True)
+                    sqls = murano.ops.update_stock(pc, cantidad, almacen,
+                                                   guid_proceso=guid_proceso,
+                                                   simulate=True)
                 except (AssertionError, IndexError):
                     print("El producto PC{} ({}) no se encuentra"
                           "en Murano.".format(pc.id, pc.descripcion),
                           file=sys.stderr)
                     continue
-            res.append(sql)
+            for sql in sqls:
+                res.append(sql)
     return res
 
 
@@ -78,9 +80,11 @@ def ejecutar_proceso(connection, sql_pv, sql_pc, guid_proceso):
     Ejecuta todas las instrucciones INSERT de productos de venta y de compra
     y posteriormente lanza el proceso de importación de Murano.
     """
-    for sql in tqdm(sql_pv, sql_pc):
+    sqls = sql_pv + sql_pc
+    for sql in tqdm(sqls):
         connection.run_sql(sql)
-        murano.ops.fire(guid_proceso)
+    res = murano.ops.fire(guid_proceso)
+    return res
 
 
 def main():

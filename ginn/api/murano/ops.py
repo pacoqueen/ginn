@@ -796,6 +796,8 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
     Crea una bala en las tablas temporales de Murano.
     Recibe un objeto bala de ginn.
     Si cantidad es -1 realiza la baja de almacén de la bala.
+    Si simulate es True, devuelve las dos consultas SQL generadas. En otro
+    caso, el valor de ejecutar el proceso de importación.
     """
     articulo = bala.articulo
     if existe_articulo(articulo) and cantidad:
@@ -830,7 +832,10 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
                                     factor_conversion, comentario, ubicacion,
                                     origen_movimiento, numero_serie_lc,
                                     id_proceso_IME)
-        c.run_sql(sql_movstock)
+        if simulate:
+            res = [sql_movstock]
+        else:
+            c.run_sql(sql_movstock)
         origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
         # 11 (salida de stock), 12 (inventario)
         mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
@@ -853,10 +858,10 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
                                     ""   # Código palé. Varchar NOT NULL
                                     )  # pylint: disable=bad-continuation
         if simulate:
-            res = sql_movserie
+            res.append(sql_movserie)
         else:
-            res = c.run_sql(sql_movserie)
-            fire(id_proceso_IME)
+            c.run_sql(sql_movserie)
+            res = fire(id_proceso_IME)
         return res
 
 
@@ -896,7 +901,10 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
                                     factor_conversion, comentario, ubicacion,
                                     origen_movimiento, numero_serie_lc,
                                     id_proceso_IME)
-        c.run_sql(sql_movstock)
+        if simulate:
+            res = [sql_movstock]
+        else:
+            c.run_sql(sql_movstock)
         origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
         # 11 (salida de stock), 12 (inventario)
         mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
@@ -920,10 +928,10 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
                                     ""   # Código palé. Varchar NOT NULL
                                     )  # pylint: disable=bad-continuation
         if simulate:
-            res = sql_movserie
+            res.append(sql_movserie)
         else:
-            res = c.run_sql(sql_movserie)
-            fire(id_proceso_IME)
+            c.run_sql(sql_movserie)
+            res = fire(id_proceso_IME)
         return res
 
 
@@ -966,7 +974,10 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
                                     factor_conversion, comentario, ubicacion,
                                     origen_movimiento, numero_serie_lc,
                                     id_proceso_IME)
-        c.run_sql(sql_movstock)
+        if simulate:
+            res = [sql_movstock]
+        else:
+            c.run_sql(sql_movstock)
         origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
         # 11 (salida de stock), 12 (inventario)
         mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
@@ -991,10 +1002,10 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
                                     ""   # Código palé. Varchar NOT NULL
                                     )  # pylint: disable=bad-continuation
         if simulate:
-            res = sql_movserie
+            res.append(sql_movserie)
         else:
-            res = c.run_sql(sql_movserie)
-            fire(id_proceso_IME)
+            c.run_sql(sql_movserie)
+            res = fire(id_proceso_IME)
         return res
 
 
@@ -1034,7 +1045,10 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
                                     factor_conversion, comentario, ubicacion,
                                     origen_movimiento, numero_serie_lc,
                                     id_proceso_IME)
-        c.run_sql(sql_movstock)
+        if simulate:
+            res = [sql_movstock]
+        else:
+            c.run_sql(sql_movstock)
         origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
         # 11 (salida de stock), 12 (inventario)
         mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
@@ -1059,14 +1073,15 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
                                     # Código palé. Varchar NOT NULL
                                     )  # pylint: disable=bad-continuation
         if simulate:
-            res = sql_movserie
+            res.append(sql_movserie)
         else:
-            res = c.run_sql(sql_movserie)
-            fire(id_proceso_IME)
+            c.run_sql(sql_movserie)
+            res = fire(id_proceso_IME)
         return res
 
 
-def create_pale(pale, cantidad=1, producto=None):
+def create_pale(pale, cantidad=1, producto=None, guid_proceso=None,
+                simulate=False):
     """
     Crea un palé con todas sus cajas en Murano a partir del palé de ginn.
     Si cantidad es -1 saca el palé del almacén.
@@ -1089,7 +1104,8 @@ def create_pale(pale, cantidad=1, producto=None):
         if VERBOSE:
             cajas.set_description("Creando caja %s... (%d/%d)" % (
                 caja.codigo, i, totcajas))
-        create_caja(caja, cantidad=cantidad, producto=producto)
+        create_caja(caja, cantidad=cantidad, producto=producto,
+                    guid_proceso=guid_proceso, simulate=simulate)
     # No es necesario. Cada caja lanza su proceso y el palé no crea
     # registros en la base de datos. No hay que lanzar ninún proceso adicional.
     # fire(id_proceso_IME)
@@ -1338,10 +1354,10 @@ def update_stock(producto, delta, almacen, guid_proceso=None,
                                 origen_movimiento, numero_serie_lc,
                                 id_proceso_IME)
     if simulate:
-        res = sql_movstock
+        res = [sql_movstock]
     else:
-        res = c.run_sql(sql_movstock)
-        fire(id_proceso_IME)
+        c.run_sql(sql_movstock)
+        res = fire(id_proceso_IME)
     return res
 
 
@@ -1457,3 +1473,4 @@ def fire(guid_proceso):
         logging.info(strverbose)
         if VERBOSE and DEBUG:
             print(strverbose)
+    return retCode
