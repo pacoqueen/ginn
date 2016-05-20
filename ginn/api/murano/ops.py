@@ -73,9 +73,9 @@ SQL_STOCK = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
                -- MovIdentificadorIME,
                StatusTraspasadoIME,
                TipoImportacionIME,
-               DocumentoUnico --,
+               DocumentoUnico,
                -- FechaRegistro,
-               -- MovPosicion
+               MovPosicion
                )
            VALUES (
                %d,      -- código empresa
@@ -115,9 +115,9 @@ SQL_STOCK = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
                -- NULL,
                0,
                0,
-               0 --,
+               0,
                -- NULL,
-               -- NULL
+               '%s'     -- GUID MovPosicion
                );"""    # NOQA
 
 SQL_SERIE = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoSerie](
@@ -560,7 +560,7 @@ def buscar_factor_conversion(producto):
     return factor_conversion
 
 
-def genera_guid(conexion):
+def generar_guid(conexion):
     """
     Devuelve un GUID de SQLServer o simula uno en modo depuración.
     """
@@ -636,7 +636,7 @@ def crear_proceso_IME(conexion):
     """
     Crea un proceso de importación con guid único.
     """
-    guid_proceso = genera_guid(conexion)
+    guid_proceso = generar_guid(conexion)
     conexion.run_sql(r"""
         INSERT INTO %s.dbo.Iniciador_tmpIME(IdProcesoIME, EstadoIME,
                                             sysUsuario, sysUserName,
@@ -823,6 +823,7 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
             id_proceso_IME = crear_proceso_IME(c)
         else:
             id_proceso_IME = guid_proceso
+        guid_movposicion = generar_guid(c)
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
                                     documento, codigo_articulo, codigo_almacen,
@@ -831,14 +832,15 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
                                     precio, importe, unidades2, unidad_medida2,
                                     factor_conversion, comentario, ubicacion,
                                     origen_movimiento, numero_serie_lc,
-                                    id_proceso_IME)
+                                    id_proceso_IME, guid_movposicion)
         if simulate:
             res = [sql_movstock]
         else:
             c.run_sql(sql_movstock)
         origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
         # 11 (salida de stock), 12 (inventario)
-        mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
+        # mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
+        mov_posicion_origen = guid_movposicion
         # En el movimiento de serie la UnidadMedida1_ es la básica:ROLLO,BALA..
         unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
                                                      articulo)
@@ -892,6 +894,7 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
             id_proceso_IME = crear_proceso_IME(c)
         else:
             id_proceso_IME = guid_proceso
+        guid_movposicion = generar_guid(c)
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
                                     documento, codigo_articulo, codigo_almacen,
@@ -900,14 +903,15 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
                                     precio, importe, unidades2, unidad_medida2,
                                     factor_conversion, comentario, ubicacion,
                                     origen_movimiento, numero_serie_lc,
-                                    id_proceso_IME)
+                                    id_proceso_IME, guid_movposicion)
         if simulate:
             res = [sql_movstock]
         else:
             c.run_sql(sql_movstock)
         origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
         # 11 (salida de stock), 12 (inventario)
-        mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
+        # mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
+        mov_posicion_origen = guid_movposicion
         # En movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
         unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
                                                      articulo)
@@ -965,6 +969,7 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
             id_proceso_IME = crear_proceso_IME(c)
         else:
             id_proceso_IME = guid_proceso
+        guid_movposicion = generar_guid(c)
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
                                     documento, codigo_articulo, codigo_almacen,
@@ -973,14 +978,15 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
                                     precio, importe, unidades2, unidad_medida2,
                                     factor_conversion, comentario, ubicacion,
                                     origen_movimiento, numero_serie_lc,
-                                    id_proceso_IME)
+                                    id_proceso_IME, guid_movposicion)
         if simulate:
             res = [sql_movstock]
         else:
             c.run_sql(sql_movstock)
         origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
         # 11 (salida de stock), 12 (inventario)
-        mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
+        # mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
+        mov_posicion_origen = guid_movposicion
         # En movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
         unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
                                                      articulo)
@@ -1036,6 +1042,7 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
             id_proceso_IME = crear_proceso_IME(c)
         else:
             id_proceso_IME = guid_proceso
+        guid_movposicion = generar_guid(c)
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
                                     documento, codigo_articulo, codigo_almacen,
@@ -1044,14 +1051,15 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
                                     precio, importe, unidades2, unidad_medida2,
                                     factor_conversion, comentario, ubicacion,
                                     origen_movimiento, numero_serie_lc,
-                                    id_proceso_IME)
+                                    id_proceso_IME, guid_movposicion)
         if simulate:
             res = [sql_movstock]
         else:
             c.run_sql(sql_movstock)
         origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
         # 11 (salida de stock), 12 (inventario)
-        mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
+        # mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
+        mov_posicion_origen = guid_movposicion
         # En movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
         unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
                                                      articulo)
@@ -1353,6 +1361,7 @@ def update_stock(producto, delta, almacen, guid_proceso=None,
     # me devolverá buscar_unidad_medida_basica para todo lo que no sea un
     # producto con código de trazabilidad.
     unidad_medida2 = buscar_unidad_medida_basica(producto)
+    guid_movposicion = generar_guid(c)
     sql_movstock = SQL_STOCK % (database,
                                 CODEMPRESA, ejercicio, periodo, fecha,
                                 documento, codigo_articulo, codigo_almacen,
@@ -1361,7 +1370,7 @@ def update_stock(producto, delta, almacen, guid_proceso=None,
                                 precio, importe, unidades2, unidad_medida2,
                                 factor_conversion, comentario, ubicacion,
                                 origen_movimiento, numero_serie_lc,
-                                id_proceso_IME)
+                                id_proceso_IME, guid_movposicion)
     if simulate:
         res = [sql_movstock]
     else:
