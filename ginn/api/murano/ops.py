@@ -1256,29 +1256,37 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
     else:
         delta = -1
     assert articulo is not None, "Debe especificarse un artículo."
+    res = None
     if not existe_articulo(articulo):
         for i in range(abs(cantidad)):  # pylint: disable=unused-variable
             if articulo.es_bala():
-                create_bala(articulo.bala, delta, producto,
-                            guid_proceso=guid_proceso, simulate=simulate)
+                res = create_bala(articulo.bala, delta, producto,
+                                  guid_proceso=guid_proceso,
+                                  simulate=simulate)
             elif articulo.es_balaCable():
-                create_bala(articulo.balaCable, delta, producto,
-                            guid_proceso=guid_proceso, simulate=simulate)
+                res = create_bala(articulo.balaCable, delta, producto,
+                                  guid_proceso=guid_proceso,
+                                  simulate=simulate)
             elif articulo.es_bigbag():
-                create_bigbag(articulo.bigbag, delta, producto,
-                              guid_proceso=guid_proceso, simulate=simulate)
+                res = create_bigbag(articulo.bigbag, delta, producto,
+                                    guid_proceso=guid_proceso,
+                                    simulate=simulate)
             elif articulo.es_caja():
-                create_caja(articulo.caja, delta, producto,
-                            guid_proceso=guid_proceso, simulate=simulate)
+                res = create_caja(articulo.caja, delta, producto,
+                                  guid_proceso=guid_proceso,
+                                  simulate=simulate)
             elif articulo.es_rollo():
-                create_rollo(articulo.rollo, delta, producto,
-                             guid_proceso=guid_proceso, simulate=simulate)
+                res = create_rollo(articulo.rollo, delta, producto,
+                                   guid_proceso=guid_proceso,
+                                   simulate=simulate)
             elif articulo.es_rollo_defectuoso():
-                create_rollo(articulo.rolloDefectuoso, delta, producto,
-                             guid_proceso=guid_proceso, simulate=simulate)
+                res = create_rollo(articulo.rolloDefectuoso, delta, producto,
+                                   guid_proceso=guid_proceso,
+                                   simulate=simulate)
             elif articulo.es_rolloC():
-                create_rollo(articulo.rolloC, delta, producto,
-                             guid_proceso=guid_proceso, simulate=simulate)
+                res = create_rollo(articulo.rolloC, delta, producto,
+                                   guid_proceso=guid_proceso,
+                                   simulate=simulate)
             else:
                 raise ValueError("El artículo %s no es bala, bala de cable, "
                                  "bigbag, caja, rollo ni rollo C."
@@ -1286,6 +1294,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
     else:
         logging.warning("El código %s ya existe en Murano. Se ignora.",
                         articulo.codigo)
+    return res
 
 
 def update_producto(articulo, producto):
