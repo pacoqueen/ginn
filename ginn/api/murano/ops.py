@@ -1410,7 +1410,7 @@ def consumir(productoCompra, cantidad, almacen=None, consumo=None):
     update_stock(productoCompra, -cantidad, almacen)
 
 
-def fire(guid_proceso):
+def fire(guid_proceso, ignore_errors=False):
     """
     Lanza el proceso de importación de Murano de todos los movimientos de
     stock de la tabla temporal.
@@ -1446,7 +1446,7 @@ def fire(guid_proceso):
     if VERBOSE and DEBUG:
         print(strverbose)
     # Si retcode es 1: cagada. Si es 0: éxito
-    if retCode:
+    if retCode and not ignore_errors:
         strerr = "¡PROCESO DE IMPORTACIÓN %s CON ERRORES!"\
                  " No se lanza el script de acumulación de stock." % (
                      guid_proceso)

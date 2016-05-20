@@ -131,15 +131,15 @@ def main():
         murano.connection.DEBUG = True
         murano.ops.DEBUG = True
         guid_proceso = murano.ops.simulate_guid()
-    print("Insertando productos de compra...")
+    print("Generando consultas SQL de productos compra...")
     sql_pcs = insertar_pcs(guid_proceso)
-    print("Insertando productos de venta...")
+    print("Generando consultas SQL de productos de venta...")
     sql_pvs = insertar_pvs(guid_proceso)
     if args.fdest:
         with open(args.fdest, 'w') as f:
             f.write('\n'.join(sql_pvs + sql_pcs))
     if args.run:
-        print("Lanzando proceso de importación...")
+        print("Lanzando consultas y proceso de importación...")
         ejecutar_proceso(con, sql_pvs, sql_pcs, guid_proceso)
     else:
         print("Consultas SQL generadas:")
