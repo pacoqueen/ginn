@@ -329,8 +329,9 @@ def desmuranize_valor(record):
     from collections import namedtuple
     record_murano = {}
     for clave in record.keys():
-        clave_ginn = field_murano2ginn(clave)
-        record_murano[clave_ginn] = record[clave]
+        if clave not in ("CodigoEmpresa", "CodigoArticulo"):
+            clave_ginn = field_murano2ginn(clave)
+            record_murano[clave_ginn] = record[clave]
     RecordMurano = namedtuple('RecordMurano', record_murano.keys())
     res = RecordMurano(**record_murano)
     return res
