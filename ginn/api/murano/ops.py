@@ -292,6 +292,35 @@ def buscar_unidad_medida_basica_murano(producto):
     return unidad2
 
 
+def buscar_marcado_ce(producto):
+    """
+    Devuelve los valores de marcado CE para el producto recibido.
+    Se devuelve como un diccionario de nombre de campo y valor.
+    """
+    id_murano = buscar_codigo_producto(producto)
+    if not id_murano:
+        strerror = "El producto [{}] {} no existe en Murano.".format(
+            producto.puid, producto.descripcion)
+        logging.error(strerror)
+        res = None
+    else:
+        c = Connection()
+        try:
+            sql = "SELECT * FROM %s.dbo.GEO_ArticulosMarcado"\
+                  " WHERE " % (c.get_database())
+            where = r"CodigoArticulo = '%s';" % (id_murano)
+            sql += where
+            res = c.run_sql(sql)
+            record = res[0]     # NOQA
+        except IndexError:
+            strerror = "El producto [{}] {} no tiene registro de marcado en "\
+                "Murano.".format(producto.puid, producto.descripcion)
+            res = None
+        else:
+            res = record
+    return res
+
+
 def buscar_codigo_producto(producto_venta):
     """
     Busca el ID del producto en Murano para la descripción del producto
