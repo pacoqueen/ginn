@@ -317,8 +317,69 @@ def buscar_marcado_ce(producto):
                 "Murano.".format(producto.puid, producto.descripcion)
             res = None
         else:
-            res = record
+            res = desmuranize_valor(record)
     return res
+
+
+def desmuranize_valor(record):
+    """
+    Al objeto recibido le convierte los nombres de los atributos al
+    equivalente en ginn.
+    """
+    from collections import namedtuple
+    record_murano = {}
+    for clave in record.keys():
+        clave_ginn = field_murano2ginn(clave)
+        record_murano[clave_ginn] = record[clave]
+    RecordMurano = namedtuple('RecordMurano', record_murano.keys())
+    res = RecordMurano(**record)
+    return res
+
+
+def field_murano2ginn(campo):
+    """
+    Devuelve el nombre del campo equivalente en ginn al de Murano recibido.
+    Si no tiene equivalencia devuelve None.
+    """
+    # De momento solo lo necesito para los campos de Marcado CE.
+    switcher = {
+        'GEO_est_por_gramaje': 'estandarPruebaGramaje',
+        'GEO_est_pr_alar_long': 'estandarPruebaAlargamientoLongitudinal',
+        'GEO_est_pr_alar_trans': 'estandarPruebaAlargamientoTransversal',
+        'GEO_est_pr_compresion': 'estandarPruebaCompresion',
+        'GEO_est_pr_espesor': 'estandarPruebaEspesor',
+        'GEO_est_pr_long': 'estandarPruebaLongitudinal',
+        'GEO_est_pr_perforacion': 'estandarPruebaPerforacion',
+        'GEO_est_pr_permeabilidad': 'estandarPruebaPermeabilidad',
+        'GEO_est_pr_piramidal': 'estandarPruebaPiramidal',
+        'GEO_est_pr_poros': 'estandarPruebaPoros',
+        'GEO_est_pr_trans': 'estandarPruebaTransversal',
+        'GEO_tol_por_gramaje': 'toleranciaPruebaGramaje',
+        'GEO_tol_por_gramaje_sup': 'toleranciaPruebaGramajeSup',
+        'GEO_tot_pr_alar_long': 'toleranciaPruebaAlargamientoLongitudinal',
+        'GEO_tot_pr_alar_long_sup':
+            'toleranciaPruebaAlargamientoLongitudinalSup',
+        'GEO_tot_pr_alar_trans': 'toleranciaPruebaAlargamientoTransversal',
+        'GEO_tot_pr_alar_trans_sup':
+            'toleranciaPruebaAlargamientoTransversalSup',
+        'GEO_tot_pr_compresion': 'toleranciaPruebaCompresion',
+        'GEO_tot_pr_compresion_sup': 'toleranciaPruebaCompresionSup',
+        'GEO_tot_pr_espesor': 'toleranciaPruebaEspesor',
+        'GEO_tot_pr_espesor_sup': 'toleranciaPruebaEspesorSup',
+        'GEO_tot_pr_long': 'toleranciaPruebaLongitudinal',
+        'GEO_tot_pr_long_sup': 'toleranciaPruebaLongitudinalSup',
+        'GEO_tot_pr_perforacion': 'toleranciaPruebaPerforacion',
+        'GEO_tot_pr_perforacion_sup': 'toleranciaPruebaPerforacionSup',
+        'GEO_tot_pr_permeabilidad': 'toleranciaPruebaPermeabilidad',
+        'GEO_tot_pr_permeabilidad_sup': 'toleranciaPruebaPermeabilidadSup',
+        'GEO_tot_pr_piramidal': 'toleranciaPruebaPiramidal',
+        'GEO_tot_pr_piramidal_sup': 'toleranciaPruebaPiramidalSup',
+        'GEO_tot_pr_poros': 'toleranciaPruebaPoros',
+        'GEO_tot_pr_poros_sup': 'toleranciaPruebaPorosSup',
+        'GEO_tot_pr_trans': 'toleranciaPruebaTransversal',
+        'GEO_tot_pr_trans_sup': 'toleranciaPruebaTransversalSup'
+    }
+    return switcher.get(campo, None)
 
 
 def buscar_codigo_producto(producto_venta):
