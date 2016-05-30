@@ -621,7 +621,7 @@ class PartesDeFabricacionBalas(Ventana):
                                   "Error ordenando descuento de material "
                                   "(%s):\n%s" % (msg, desechos))
             for c in desechos:
-                if c.productoCompraID != None:
+                if c.productoCompraID is not None:
                     unidad = c.productoCompra.unidad
                     producto = c.productoCompra.descripcion
                 else:
@@ -643,11 +643,13 @@ class PartesDeFabricacionBalas(Ventana):
         ide = model[path][-1]
         desecho = pclases.DescuentoDeMaterial.get(ide)
         try:
-            newtext = newtext.replace(desecho.productoCompra.unidad, "").strip()
+            newtext = newtext.replace(desecho.productoCompra.unidad,
+                                      "").strip()
             nueva_cantidad = utils._float(newtext)
         except ValueError:
             utils.dialogo_info(titulo="ERROR FORMATO NUMÉRICO",
-                               texto='El texto "%s" no es una cantidad correcta.' % (newtext),
+                               texto='El texto "%s" no es una cantidad '
+                                     'correcta.' % (newtext),
                                padre=self.wids['ventana'])
         else:
             cantidad_desecho_inicial = desecho.cantidad
