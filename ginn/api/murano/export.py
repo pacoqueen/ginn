@@ -680,6 +680,7 @@ def generate_csv(columnas, filas, nombre_fichero, limpiar_cabecera=True):
     Crea un fichero CSV con las filas recibidas. La primera estará compuesta
     por los nombres de los campos (columnas).
     """
+    print("generate_csv::Filas:", len(filas), "a", nombre_fichero)
     if limpiar_cabecera:
         cabecera = clean_cabecera(columnas)
     else:
@@ -781,6 +782,7 @@ def create_dic_clientes(fecha_ultima_actividad=None):
                                                      fecha_ultima_actividad):
             clientes.add(cliente.id)
     res = {}
+    print("Clientes:", len(clientes))
     for cid in clientes:
         cliente = pclases.Cliente.get(cid)
         res[cid] = build_dic_cliente(cliente, cuentas_contables, lista_campos)
@@ -1494,6 +1496,7 @@ def create_dic_proveedores(fecha_ultima_actividad=None):
                 pclases.FacturaCompra, fecha_ultima_actividad):
             proveedores.add(proveedor.id)
     res = {}
+    print("Proveedores:", len(proveedores))
     for cid in proveedores:
         proveedor = pclases.Proveedor.get(cid)
         res[cid] = build_dic_cliente(proveedor, cuentas_contables,

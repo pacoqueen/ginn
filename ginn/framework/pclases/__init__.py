@@ -11492,7 +11492,7 @@ class CamposEspecificosRollo(SQLObject, PRPCTOO):
     # NOTA: estandarPrueba siempre es el óptimo y puede ocurrir que no se
     # encuentre en medio de las dos tolerancias aplicadas sobre el mismo.
 
-    def comparar_con_marcado(self, valor, prueba, fecha = None):
+    def comparar_con_marcado(self, valor, prueba, fecha=None):
         """
         "valor" es un float que se comparará con el marcado.
         "prueba" es el nombre del campo de la prueba («Gramaje», por ejemplo) y
