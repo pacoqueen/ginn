@@ -1356,7 +1356,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
         delta = 1
     assert articulo is not None, "Debe especificarse un artículo."
     res = None
-    if not existe_articulo(articulo):
+    if not existe_articulo(articulo) or delta < 0:
         for i in range(abs(cantidad)):  # pylint: disable=unused-variable
             if articulo.es_bala():
                 res = create_bala(articulo.bala, delta, producto,
