@@ -54,15 +54,15 @@ CREATE OPERATOR +^ (PROCEDURE='xor', LEFTARG = BOOL, RIGHTARG = BOOL);
 -- Zonas de los delegados --
 ----------------------------
 CREATE TABLE zona(
-    id SERIAL PRIMARY KEY, 
+    id SERIAL PRIMARY KEY,
     nombre TEXT DEFAULT ''
 );
 -------------------------------------------------------------
--- Áreas (subzonas) de las zonas de delegados comerciales. -- 
+-- Áreas (subzonas) de las zonas de delegados comerciales. --
 -------------------------------------------------------------
 CREATE TABLE area(
-    id SERIAL PRIMARY KEY, 
-    zona_id INT REFERENCES zona DEFAULT NULL, 
+    id SERIAL PRIMARY KEY,
+    zona_id INT REFERENCES zona DEFAULT NULL,
     nombre TEXT DEFAULT ''
 );
 
@@ -83,15 +83,15 @@ CREATE TABLE area(
 -- 30, 60, 90, 120, 150, 180, 210, 240                                      --
 ------------------------------------------------------------------------------
 CREATE TABLE documento_de_pago(
-    id SERIAL PRIMARY KEY, 
+    id SERIAL PRIMARY KEY,
     documento TEXT DEFAULT ''
 );
 
 CREATE TABLE forma_de_pago(
-    id SERIAL PRIMARY KEY, 
-    documento_de_pago_id INT REFERENCES documento_de_pago, 
-    plazo INT DEFAULT 120, 
-    activa BOOLEAN DEFAULT TRUE -- NEW! 21/11/2012 Para no seguir usando 
+    id SERIAL PRIMARY KEY,
+    documento_de_pago_id INT REFERENCES documento_de_pago,
+    plazo INT DEFAULT 120,
+    activa BOOLEAN DEFAULT TRUE -- NEW! 21/11/2012 Para no seguir usando
                                 -- formas de pago obsoletas.
 );
 
@@ -111,7 +111,7 @@ CREATE TABLE tarifa(
 -- Tipos de proveedores --
 --------------------------
 CREATE TABLE tipo_de_proveedor(
-    id SERIAL PRIMARY KEY, 
+    id SERIAL PRIMARY KEY,
     descripcion TEXT
 );
 
@@ -228,9 +228,9 @@ CREATE TABLE pedido_compra(
     responsable1 TEXT DEFAULT '',        -- NEW! 27/02/2009
     portes0 TEXT DEFAULT '',             -- NEW! 27/02/2009
     portes1 TEXT DEFAULT '',             -- NEW! 27/02/2009
-    observaciones0 TEXT DEFAULT '',     -- NEW! 26/05/2009 3 líneas que van a 
-    observaciones1 TEXT DEFAULT '',     -- NEW! 26/05/2009 llevar un texto 
-    observaciones2 TEXT DEFAULT ''      -- NEW! 26/05/2009 "casi" fijo. 
+    observaciones0 TEXT DEFAULT '',     -- NEW! 26/05/2009 3 líneas que van a
+    observaciones1 TEXT DEFAULT '',     -- NEW! 26/05/2009 llevar un texto
+    observaciones2 TEXT DEFAULT ''      -- NEW! 26/05/2009 "casi" fijo.
 );
 
 ----------------------
@@ -264,12 +264,12 @@ CREATE TABLE producto_compra(
     fvaloracion TEXT DEFAULT '',
         -- Función de evaluación para valorar las existencias en almacén.
         -- Si '' se usa el precio medio (por defecto).
-    observaciones TEXT DEFAULT '', 
-    obsoleto BOOLEAN DEFAULT FALSE, -- NEW! 13/01/2010. Si True, no se tendrá 
-                                    -- en cuenta para listados de existencias 
+    observaciones TEXT DEFAULT '',
+    obsoleto BOOLEAN DEFAULT FALSE, -- NEW! 13/01/2010. Si True, no se tendrá
+                                    -- en cuenta para listados de existencias
                                     -- y demás.
-    proveedor_id INT REFERENCES proveedor DEFAULT NULL  -- NEW! 6/09/2011. 
-                                    -- Proveedor por defecto para cuando 
+    proveedor_id INT REFERENCES proveedor DEFAULT NULL  -- NEW! 6/09/2011.
+                                    -- Proveedor por defecto para cuando
                                     -- todavía no se haya hecho ningún pedido.
 );
 
@@ -303,8 +303,8 @@ CREATE TABLE linea_de_produccion(
     formulacion_id INT REFERENCES formulacion DEFAULT NULL,
     nombre TEXT,
     descripcion TEXT,
-    observaciones TEXT DEFAULT '', 
-    precio_minimo FLOAT DEFAULT NULL    -- NEW! 10/06/2013 Precio mínimo por 
+    observaciones TEXT DEFAULT '',
+    precio_minimo FLOAT DEFAULT NULL    -- NEW! 10/06/2013 Precio mínimo por
                                 -- kilo al que se pueden vender los productos.
         -- ALTER TABLE linea_de_produccion ADD COLUMN precio_minimo FLOAT DEFAULT NULL; UPDATE linea_de_produccion SET precio_minimo = NULL;
 );
@@ -356,7 +356,7 @@ CREATE TABLE contador(
 -- Tipos de cliente --
 ----------------------
 CREATE TABLE tipo_de_cliente(
-    id SERIAL PRIMARY KEY, 
+    id SERIAL PRIMARY KEY,
     descripcion TEXT
 );
 
@@ -430,7 +430,7 @@ CREATE TABLE cliente(
     packing_list_con_codigo BOOLEAN DEFAULT FALSE,  -- NEW! 27/02/2009
     facturar_con_albaran BOOLEAN DEFAULT TRUE,      -- NEW! 02/03/2009
     copias_factura INT DEFAULT 0,   -- Sin incluir la original. NEW! 09/07/2009
-    tipo_de_cliente_id INT REFERENCES tipo_de_cliente DEFAULT NULL, 
+    tipo_de_cliente_id INT REFERENCES tipo_de_cliente DEFAULT NULL,
     texto_complementario_forma_de_pago TEXT DEFAULT '', -- NEW! 12/02/2014
     forma_pago_fija BOOLEAN DEFAULT FALSE,  -- NEW! 04/09/2014
     validacion_manual BOOLEAN DEFAULT FALSE     -- Validación manual forzosa
@@ -458,9 +458,9 @@ CREATE TABLE campos_especificos_bala(
     bolsas_caja INT DEFAULT NULL,     -- Solo aplicable a bolsas de Geocem.
     -- NEW! 20/02/2010
     cajas_pale INT DEFAULT NULL,      -- Solo aplicable a Geocem embolsado.
-    cliente_id INT REFERENCES cliente DEFAULT NULL  -- Este producto se 
-        -- distribuye a través de un cliente y debe llevar sus datos en 
-        -- la etiqueta de las cajas de fibra embolsada. No se suele usar en 
+    cliente_id INT REFERENCES cliente DEFAULT NULL  -- Este producto se
+        -- distribuye a través de un cliente y debe llevar sus datos en
+        -- la etiqueta de las cajas de fibra embolsada. No se suele usar en
         -- fibra normal.
 );
 
@@ -486,12 +486,12 @@ CREATE TABLE campos_especificos_especial(
 -- Tabla de funciones para generar etiquetas --
 -----------------------------------------------
 CREATE TABLE modelo_etiqueta(
-    id SERIAL PRIMARY KEY, 
+    id SERIAL PRIMARY KEY,
     nombre TEXT,    -- Nombre descriptivo de la etiqueta.
-    modulo TEXT,    -- Módulo (fichero python sin extensión) donde reside 
+    modulo TEXT,    -- Módulo (fichero python sin extensión) donde reside
                     -- la función que se invocará para generar la etiqueta.
                     -- El módulo se importará desde el directorio «informes».
-    funcion TEXT    -- Nombre de la función que devolverá un PDF con las 
+    funcion TEXT    -- Nombre de la función que devolverá un PDF con las
                     -- etiquetas.
 );
 
@@ -553,19 +553,19 @@ CREATE TABLE campos_especificos_rollo(
     c BOOLEAN DEFAULT FALSE,   -- Si True, es rollo «C» con anchos, largos y
                                -- grosores heterogéneos e ignorables.
     -- NEW! 13/06/2011: Nueva prueba para certificado de calidad ASQUAL
-    -- Resistencia al punzonado piramidal (NF G38-019) KN y tolerancia en % 
+    -- Resistencia al punzonado piramidal (NF G38-019) KN y tolerancia en %
     -- (aunque guardaré valores absolutos por "tradición").
     -- OJO: Antes de actualizar en clientes, ejecutar esto:
     -- ALTER TABLE campos_especificos_rollo ADD COLUMN estandar_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE campos_especificos_rollo ADD COLUMN tolerancia_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE campos_especificos_rollo ADD COLUMN tolerancia_prueba_piramidal_sup FLOAT DEFAULT 0.0; ALTER TABLE marcado_ce ADD COLUMN estandar_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE marcado_ce ADD COLUMN tolerancia_prueba_piramidal FLOAT DEFAULT 0.0; ALTER TABLE marcado_ce ADD COLUMN tolerancia_prueba_piramidal_sup FLOAT DEFAULT 0.0; ALTER TABLE partida ADD COLUMN piramidal FLOAT DEFAULT 0; CREATE TABLE prueba_piramidal(id SERIAL PRIMARY KEY, partida_id INT REFERENCES partida, fecha DATE DEFAULT CURRENT_DATE, resultado FLOAT DEFAULT 0.0);
-    estandar_prueba_piramidal FLOAT DEFAULT 0.0, 
-    tolerancia_prueba_piramidal FLOAT DEFAULT 0.0, 
+    estandar_prueba_piramidal FLOAT DEFAULT 0.0,
+    tolerancia_prueba_piramidal FLOAT DEFAULT 0.0,
     tolerancia_prueba_piramidal_sup FLOAT DEFAULT 0.0,
     -- NEW! 07/11/2011: Nueva tabla y campo de modelo de etiquetas.
     --                  NULL imprime la etiqueta genérica de geninformes.
-    modelo_etiqueta_id INT REFERENCES modelo_etiqueta DEFAULT NULL, 
-    cliente_id INT REFERENCES cliente DEFAULT NULL  -- Este producto se 
-        -- fabrica específicamente para un cliente y sus etiquetas serán 
-        -- la que indique "modelo_etiqueta_id" pero con los datos de 
+    modelo_etiqueta_id INT REFERENCES modelo_etiqueta DEFAULT NULL,
+    cliente_id INT REFERENCES cliente DEFAULT NULL  -- Este producto se
+        -- fabrica específicamente para un cliente y sus etiquetas serán
+        -- la que indique "modelo_etiqueta_id" pero con los datos de
         -- distribuidor de "cliente_id".
 );
 
@@ -620,10 +620,10 @@ CREATE TABLE marcado_ce(
     tolerancia_prueba_permeabilidad_sup FLOAT DEFAULT 0.0,  -- Permeabilidad
     tolerancia_prueba_poros_sup FLOAT DEFAULT 0.0,          -- Porometría
     -- NEW! 13/06/2011: Nueva prueba para certificado de calidad ASQUAL
-    -- Resistencia al punzonado piramidal (NF G38-019) KN y tolerancia en % 
+    -- Resistencia al punzonado piramidal (NF G38-019) KN y tolerancia en %
     -- (aunque guardaré valores absolutos por "tradición").
-    estandar_prueba_piramidal FLOAT DEFAULT 0.0, 
-    tolerancia_prueba_piramidal FLOAT DEFAULT 0.0, 
+    estandar_prueba_piramidal FLOAT DEFAULT 0.0,
+    tolerancia_prueba_piramidal FLOAT DEFAULT 0.0,
     tolerancia_prueba_piramidal_sup FLOAT DEFAULT 0.0
 );
 
@@ -648,11 +648,11 @@ CREATE TABLE producto_venta(
     campos_especificos_especial_id INT
         REFERENCES campos_especificos_especial DEFAULT NULL,
     -- NEW! 9/07/2013
-    anno_certificacion INT DEFAULT NULL, 
-    dni TEXT DEFAULT '', 
-    uso TEXT DEFAULT '', 
-    -- ALTER TABLE producto_venta ADD COLUMN anno_certificacion INT DEFAULT NULL; ALTER TABLE producto_venta ADD COLUMN dni TEXT DEFAULT ''; ALTER TABLE producto_venta ADD COLUMN uso TEXT DEFAULT ''; UPDATE producto_venta SET anno_certificacion = NULL; UPDATE producto_venta SET dni = ''; UPDATE producto_venta SET uso = ''; 
-    obsoleto BOOLEAN DEFAULT FALSE, -- NEW! 03/03/2014. 
+    anno_certificacion INT DEFAULT NULL,
+    dni TEXT DEFAULT '',
+    uso TEXT DEFAULT '',
+    -- ALTER TABLE producto_venta ADD COLUMN anno_certificacion INT DEFAULT NULL; ALTER TABLE producto_venta ADD COLUMN dni TEXT DEFAULT ''; ALTER TABLE producto_venta ADD COLUMN uso TEXT DEFAULT ''; UPDATE producto_venta SET anno_certificacion = NULL; UPDATE producto_venta SET dni = ''; UPDATE producto_venta SET uso = '';
+    obsoleto BOOLEAN DEFAULT FALSE, -- NEW! 03/03/2014.
     CHECK (NOT(campos_especificos_bala_id <> NULL
                 AND campos_especificos_rollo_id <> NULL
                 AND campos_especificos_especial_id <> NULL))
@@ -714,7 +714,7 @@ CREATE TABLE partida_cem(
     numpartida INT8 UNIQUE,
     codigo TEXT DEFAULT '',             -- Empezarán por M
     observaciones TEXT DEFAULT ''
-    -- TODO: Presumiblemente llevarán algunos valores específicos de su 
+    -- TODO: Presumiblemente llevarán algunos valores específicos de su
     -- marcado CE, pero aún no los sabemos con claridad. Están en ello.
 );
 
@@ -729,7 +729,7 @@ CREATE TABLE parte_de_produccion(
     prodestandar FLOAT DEFAULT 0,
     merma FLOAT DEFAULT 0.02,    -- Merma calculada por el operario sobre el
                                  -- consumo en relación a la producción.
-                                 -- NO SE USA EN PARTES DE BALAS NI DE 
+                                 -- NO SE USA EN PARTES DE BALAS NI DE
                                  -- EMBOLSADO.
     bloqueado BOOLEAN DEFAULT FALSE,
     observaciones TEXT DEFAULT '',
@@ -741,9 +741,9 @@ CREATE TABLE parte_de_produccion(
     fechahorafin TIMESTAMP DEFAULT LOCALTIMESTAMP(0), -- NEW! 25/10/2006.Ídem.
     fichaproduccion TEXT DEFAULT '',    -- NEW! 31/07/07 Texto libre con
         -- la versión de la ficha de producción usada en el parte.
-    partida_cem_id INT REFERENCES partida_cem DEFAULT NULL  -- NEW! 18/05/2009 
-        -- Hasta ahora la partida/lote se obtenía de los artículos, pero en el 
-        -- caso de la fibra embolsada es necesario que se obtenga directamente 
+    partida_cem_id INT REFERENCES partida_cem DEFAULT NULL  -- NEW! 18/05/2009
+        -- Hasta ahora la partida/lote se obtenía de los artículos, pero en el
+        -- caso de la fibra embolsada es necesario que se obtenga directamente
         -- del parte. Al menos en etapas tempranas.
 );
 
@@ -751,7 +751,7 @@ CREATE TABLE parte_de_produccion(
 -- Configuración de silos para partes de geotextiles --
 -------------------------------------------------------
 -- NEW! 21/10/2014
--- Aquí lo difícil será el algoritmo que determine el porcentaje de 
+-- Aquí lo difícil será el algoritmo que determine el porcentaje de
 -- todos los silos en un momento concreto del parte.
 CREATE TABLE PDP_conf_silo(
     id SERIAL PRIMARY KEY,
@@ -762,7 +762,7 @@ CREATE TABLE PDP_conf_silo(
     producto_compra_id INT REFERENCES producto_compra NOT NULL,
     fechahora TIMESTAMP DEFAULT LOCALTIMESTAMP(0),
     porcentaje FLOAT DEFAULT 0.0,
-    CHECK ((silo_id IS NOT NULL AND reciclada IS NULL) 
+    CHECK ((silo_id IS NOT NULL AND reciclada IS NULL)
            OR (silo_id IS NULL AND reciclada >= 0))
 );
 
@@ -826,8 +826,8 @@ CREATE TABLE categoria_laboral(
     precio_hora_regular FLOAT DEFAULT 0.0,-- NEW! 16/09/2008. Necesario para
                                           -- calcular costes de líneas.
     fecha DATE DEFAULT NULL     -- Fecha de entrada en vigor de los precios
-                                -- para esta categoría laboral. Útil a la 
-                                -- hora de calcular nóminas según la fecha 
+                                -- para esta categoría laboral. Útil a la
+                                -- hora de calcular nóminas según la fecha
                                 -- en que se haga la consulta.
 );
 
@@ -836,21 +836,21 @@ CREATE TABLE categoria_laboral(
 ---------------
 -- NEW! 11/12/2008
 CREATE TABLE almacen(
-    id SERIAL PRIMARY KEY, 
-    nombre TEXT, 
-    observaciones TEXT DEFAULT '', 
-    direccion TEXT DEFAULT '', 
-    ciudad TEXT DEFAULT '', 
-    provincia TEXT DEFAULT '', 
-    cp TEXT DEFAULT '', 
-    telefono TEXT DEFAULT '', 
+    id SERIAL PRIMARY KEY,
+    nombre TEXT,
+    observaciones TEXT DEFAULT '',
+    direccion TEXT DEFAULT '',
+    ciudad TEXT DEFAULT '',
+    provincia TEXT DEFAULT '',
+    cp TEXT DEFAULT '',
+    telefono TEXT DEFAULT '',
     fax TEXT DEFAULT '',
     email TEXT DEFAULT '',
-    pais TEXT DEFAULT 'España', 
-    principal BOOLEAN DEFAULT TRUE, --OJO: solo se usará el primero de los 
-                    -- almacenes principales definidos (en caso de que por 
-                    -- error se crearan varios). Si el almacén es principal 
-                    -- la producción y los consumos de las líneas se harán 
+    pais TEXT DEFAULT 'España',
+    principal BOOLEAN DEFAULT TRUE, --OJO: solo se usará el primero de los
+                    -- almacenes principales definidos (en caso de que por
+                    -- error se crearan varios). Si el almacén es principal
+                    -- la producción y los consumos de las líneas se harán
                     -- directamente en él.
     -- ¿Llegaremos a necesitar datos GIS?
     activo BOOLEAN DEFAULT TRUE
@@ -869,8 +869,8 @@ CREATE TABLE albaran_entrada(
         -- Si TRUE es un albarán de repuestos, tratamiento un poco especial.
         -- No provienen directamente de pedidos. En ventana permiten crear
         -- artículos.
-    almacen_id INT REFERENCES almacen,  -- NEW! 09/01/2009 
-    transportista_id INT REFERENCES transportista DEFAULT NULL -- BUGFIX 
+    almacen_id INT REFERENCES almacen,  -- NEW! 09/01/2009
+    transportista_id INT REFERENCES transportista DEFAULT NULL -- BUGFIX
                                                                -- 15/01/2009
 );
 
@@ -878,15 +878,15 @@ CREATE TABLE albaran_entrada(
 -- Historial de existencias --
 ------------------------------
 -- Una cantidad por fin de mes y producto. Refleja las
--- existencias globales (sin distinguir entre A, B y C) 
+-- existencias globales (sin distinguir entre A, B y C)
 -- de ese producto en esa fecha concreta.
 CREATE TABLE historial_existencias(
     id SERIAL PRIMARY KEY,
     producto_venta_id INT REFERENCES producto_venta NOT NULL,
     fecha DATE DEFAULT CURRENT_DATE,
     cantidad FLOAT DEFAULT 0.0,
-    bultos INT DEFAULT 0, 
-    almacen_id INT REFERENCES almacen 
+    bultos INT DEFAULT 0,
+    almacen_id INT REFERENCES almacen
 );
 
 
@@ -900,8 +900,8 @@ CREATE TABLE historial_existencias_a(
     producto_venta_id INT REFERENCES producto_venta NOT NULL,
     fecha DATE DEFAULT CURRENT_DATE,
     cantidad FLOAT DEFAULT 0.0,
-    bultos INT DEFAULT 0, 
-    almacen_id INT REFERENCES almacen 
+    bultos INT DEFAULT 0,
+    almacen_id INT REFERENCES almacen
 );
 
 ------------------------------------------------------
@@ -914,8 +914,8 @@ CREATE TABLE historial_existencias_b(
     producto_venta_id INT REFERENCES producto_venta NOT NULL,
     fecha DATE DEFAULT CURRENT_DATE,
     cantidad FLOAT DEFAULT 0.0,
-    bultos INT DEFAULT 0, 
-    almacen_id INT REFERENCES almacen 
+    bultos INT DEFAULT 0,
+    almacen_id INT REFERENCES almacen
 );
 
 ------------------------------------------------------
@@ -928,8 +928,8 @@ CREATE TABLE historial_existencias_c(
     producto_venta_id INT REFERENCES producto_venta NOT NULL,
     fecha DATE DEFAULT CURRENT_DATE,
     cantidad FLOAT DEFAULT 0.0,
-    bultos INT DEFAULT 0, 
-    almacen_id INT REFERENCES almacen 
+    bultos INT DEFAULT 0,
+    almacen_id INT REFERENCES almacen
 );
 
 ------------------------------------------------------
@@ -945,20 +945,20 @@ CREATE TABLE historial_existencias_compra(
     producto_compra_id INT REFERENCES producto_compra NOT NULL,
     fecha DATE DEFAULT CURRENT_DATE,
     cantidad FLOAT DEFAULT 0.0,
-    observaciones TEXT DEFAULT '', 
-    almacen_id INT REFERENCES almacen 
+    observaciones TEXT DEFAULT '',
+    almacen_id INT REFERENCES almacen
 );
 
 -------------------------------------------------------------------
 -- Relación muchos a muchos entre producto de compra y almacenes --
 -------------------------------------------------------------------
 -- Aquí se guardan las existencias de los productos de compra.
--- La suma de las existencias de todos los almacenes debe coincidir con 
+-- La suma de las existencias de todos los almacenes debe coincidir con
 -- el total almacenado en el producto de compra.
 CREATE TABLE stock_almacen(
-    id SERIAL PRIMARY KEY, 
-    almacen_id INT REFERENCES almacen, 
-    producto_compra_id INT REFERENCES producto_compra, 
+    id SERIAL PRIMARY KEY,
+    almacen_id INT REFERENCES almacen,
+    producto_compra_id INT REFERENCES producto_compra,
     existencias FLOAT DEFAULT 0.0
 );
 
@@ -967,8 +967,8 @@ CREATE TABLE stock_almacen(
 -----------------------
 CREATE TABLE centro_trabajo(
     id SERIAL PRIMARY KEY,
-    nombre TEXT, 
-    almacen_id INT REFERENCES almacen DEFAULT NULL 
+    nombre TEXT,
+    almacen_id INT REFERENCES almacen DEFAULT NULL
 );
 
 -----------------------
@@ -1026,7 +1026,7 @@ CREATE TABLE empleado(
     activo BOOLEAN DEFAULT True,    -- Si False, el empleado está dado de
                                     -- baja pero se conserva en la BD.
     usuario_id INT REFERENCES usuario DEFAULT NULL -- NEW! 30/12/2008
-        -- Usuario con el que el empleado hace login. Será util para 
+        -- Usuario con el que el empleado hace login. Será util para
         -- identificar a los comerciales automáticamente.
 );
 
@@ -1037,12 +1037,12 @@ CREATE TABLE empleado(
 -- Un comercial, un empleado de la BD.
 -- Necesitará dar de alta una nueva categoría laboral.
 CREATE TABLE comercial(
-    id SERIAL PRIMARY KEY, 
-    empleado_id INT REFERENCES empleado NOT NULL, 
+    id SERIAL PRIMARY KEY,
+    empleado_id INT REFERENCES empleado NOT NULL,
     comision FLOAT DEFAULT 0.0, -- Porcentaje de comisión por ventas.
-    observaciones TEXT DEFAULT '', 
-    cargo TEXT DEFAULT '',      -- Para cosas como "Delegado zona norte". Más 
-                                -- específico que CategoriaLaboral. 
+    observaciones TEXT DEFAULT '',
+    cargo TEXT DEFAULT '',      -- Para cosas como "Delegado zona norte". Más
+                                -- específico que CategoriaLaboral.
                                 -- NEW! 27/01/2009
     telefono TEXT DEFAULT '',   -- NEW! 27/01/2009
     correoe TEXT DEFAULT '',    -- NEW! 27/01/2009
@@ -1357,18 +1357,18 @@ CREATE TABLE campos_especificos(
 -- NEW! 26/05/2009 --
 ---------------------
 CREATE TABLE obra(
-    id SERIAL PRIMARY KEY, 
-    nombre TEXT, 
+    id SERIAL PRIMARY KEY,
+    nombre TEXT,
     direccion TEXT DEFAULT '',
-    cp TEXT DEFAULT '', 
-    ciudad TEXT DEFAULT '', 
-    provincia TEXT DEFAULT '', 
-    fechainicio DATE DEFAULT CURRENT_DATE, 
-    fechafin DATE DEFAULT NULL, 
-    observaciones TEXT DEFAULT '', 
-    generica BOOLEAN DEFAULT FALSE, -- NEW! 27/07/2009: CWT: Si 
-        -- generica = TRUE, es una obra ficticia con los mismos datos del 
-        -- cliente, únicamente para cumplir el formato estándar de CRM de 
+    cp TEXT DEFAULT '',
+    ciudad TEXT DEFAULT '',
+    provincia TEXT DEFAULT '',
+    fechainicio DATE DEFAULT CURRENT_DATE,
+    fechafin DATE DEFAULT NULL,
+    observaciones TEXT DEFAULT '',
+    generica BOOLEAN DEFAULT FALSE, -- NEW! 27/07/2009: CWT: Si
+        -- generica = TRUE, es una obra ficticia con los mismos datos del
+        -- cliente, únicamente para cumplir el formato estándar de CRM de
         -- cliente -> obras y cada cliente al menos una obra.
     pais TEXT DEFAULT ''    -- NEW! 13/07/2010.
 );
@@ -1408,15 +1408,15 @@ CREATE TABLE pedido_venta(
     ciudad_correspondencia TEXT DEFAULT '',     -- NEW! 27/02/2009
     provincia_correspondencia TEXT DEFAULT '',  -- NEW! 27/02/2009
     pais_correspondencia TEXT DEFAULT '',       -- NEW! 27/02/2009
-    texto_obra TEXT DEFAULT '',   --- NEW! 27/02/2009 -- Antes se llamaba 
+    texto_obra TEXT DEFAULT '',   --- NEW! 27/02/2009 -- Antes se llamaba
         -- solo "obra", pero como ahora hay un obraID, he tenido que renombrar
         -- el campo.
     obra_id INT REFERENCES obra DEFAULT NULL,   -- NEW! 09/09/2009 Beatles' day
-    forma_de_pago_id INT REFERENCES forma_de_pago DEFAULT NULL, 
-    validado BOOLEAN DEFAULT TRUE,  -- NEW! 10/06/13. Si cumple requisitos 
+    forma_de_pago_id INT REFERENCES forma_de_pago DEFAULT NULL,
+    validado BOOLEAN DEFAULT TRUE,  -- NEW! 10/06/13. Si cumple requisitos
                                     -- para poderse servir.
-    -- ALTER TABLE pedido_venta ADD COLUMN validado BOOLEAN DEFAULT TRUE; UPDATE pedido_venta SET validado = TRUE; 
-    usuario_id INT REFERENCES usuario DEFAULT NULL -- NEW! 11/06/2013. Usuario 
+    -- ALTER TABLE pedido_venta ADD COLUMN validado BOOLEAN DEFAULT TRUE; UPDATE pedido_venta SET validado = TRUE;
+    usuario_id INT REFERENCES usuario DEFAULT NULL -- NEW! 11/06/2013. Usuario
         -- que ha autorizado el pedido.
     -- ALTER TABLE pedido_venta ADD COLUMN usuario_id INT REFERENCES usuario DEFAULT NULL; UPDATE pedido_venta SET usuario_id = NULL;
 );
@@ -1462,18 +1462,18 @@ CREATE TABLE presupuesto(
     comercial_id INT REFERENCES comercial DEFAULT NULL,-- NEW! 30/12/2008
     nombreobra TEXT DEFAULT '',   --- NEW! 27/02/2009 UPDATED 24/08/2013
     -- Campos añadidos para el nuevo módulo de comerciales: NEW! 23/08/2013
-    estudio BOOLEAN DEFAULT NULL, 
-    adjudicada BOOLEAN DEFAULT FALSE, 
-    cif TEXT DEFAULT '', 
-    email TEXT DEFAULT '', 
-    forma_de_pago_id INT REFERENCES forma_de_pago DEFAULT NULL, 
-    observaciones TEXT DEFAULT '', 
-    obra_id INT REFERENCES obra DEFAULT NULL, 
+    estudio BOOLEAN DEFAULT NULL,
+    adjudicada BOOLEAN DEFAULT FALSE,
+    cif TEXT DEFAULT '',
+    email TEXT DEFAULT '',
+    forma_de_pago_id INT REFERENCES forma_de_pago DEFAULT NULL,
+    observaciones TEXT DEFAULT '',
+    obra_id INT REFERENCES obra DEFAULT NULL,
     usuario_id INT REFERENCES usuario DEFAULT NULL, -- Usuario que ha validado.
-    fecha_validacion TIMESTAMP DEFAULT NULL, 
-    -- ALTER TABLE presupuesto ADD COLUMN estudio BOOLEAN DEFAULT NULL; ALTER TABLE presupuesto ADD COLUMN adjudicada BOOLEAN DEFAULT FALSE; ALTER TABLE presupuesto ADD COLUMN cif TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN email TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN forma_de_pago_id INT REFERENCES forma_de_pago DEFAULT NULL; ALTER TABLE presupuesto ADD COLUMN observaciones TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN obra_id INT REFERENCES obra DEFAULT NULL; ALTER TABLE presupuesto RENAME COLUMN obra TO nombreobra; ALTER TABLE presupuesto ADD COLUMN usuario_id INT REFERENCES usuario DEFAULT NULL; ALTER TABLE presupuesto ADD COLUMN fecha_validacion TIMESTAMP DEFAULT NULL;  
-    cerrado BOOLEAN DEFAULT FALSE,  -- Para indicar que ya se ha terminado de 
-                                    -- introducir información y queda listo 
+    fecha_validacion TIMESTAMP DEFAULT NULL,
+    -- ALTER TABLE presupuesto ADD COLUMN estudio BOOLEAN DEFAULT NULL; ALTER TABLE presupuesto ADD COLUMN adjudicada BOOLEAN DEFAULT FALSE; ALTER TABLE presupuesto ADD COLUMN cif TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN email TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN forma_de_pago_id INT REFERENCES forma_de_pago DEFAULT NULL; ALTER TABLE presupuesto ADD COLUMN observaciones TEXT DEFAULT ''; ALTER TABLE presupuesto ADD COLUMN obra_id INT REFERENCES obra DEFAULT NULL; ALTER TABLE presupuesto RENAME COLUMN obra TO nombreobra; ALTER TABLE presupuesto ADD COLUMN usuario_id INT REFERENCES usuario DEFAULT NULL; ALTER TABLE presupuesto ADD COLUMN fecha_validacion TIMESTAMP DEFAULT NULL;
+    cerrado BOOLEAN DEFAULT FALSE,  -- Para indicar que ya se ha terminado de
+                                    -- introducir información y queda listo
                                     -- para validar (si fuera necesario).
     -- Algunos contadores que considero interesantes y pueden hacer falta:
     impresiones INT DEFAULT 0,  -- Número de veces que ha generado el PDF
@@ -1481,7 +1481,7 @@ CREATE TABLE presupuesto(
     version INT DEFAULT 1,      -- Veces que ha guardado el presupuesto.
     bloqueado BOOLEAN DEFAULT FALSE,    -- Si bloqueado no se puede modificar.
     rechazado BOOLEAN DEFAULT FALSE,    -- ¿Hace falta explicarlo?
-    motivo TEXT DEFAULT '', 
+    motivo TEXT DEFAULT '',
     -- Campos para la solicitud de crédito:
     cred_apertura BOOLEAN DEFAULT FALSE,    -- Tipo de crédito a solicitar
     cred_aumento BOOLEAN DEFAULT FALSE,
@@ -1531,7 +1531,7 @@ CREATE TABLE presupuesto(
     cred_observaciones TEXT DEFAULT '',
     cred_veces_solicitado INT DEFAULT 0,
     cred_motivo_rechazo TEXT DEFAULT ''
-    cred_usuario_id INT REFERENCES usuario DEFAULT NULL, -- ID del usuario 
+    cred_usuario_id INT REFERENCES usuario DEFAULT NULL, -- ID del usuario
         -- que ha aprobado el crédito.
     cred_condiciones TEXT DEFAULT ''
 );
@@ -1545,7 +1545,7 @@ CREATE TABLE linea_de_presupuesto(
     producto_venta_id INT REFERENCES producto_venta DEFAULT NULL,
     producto_compra_id INT REFERENCES producto_compra DEFAULT NULL,
     descripcion TEXT DEFAULT '',  -- Texto libre para crear servicios al pasar
-    -- a pedido, que puede ser la descripción de un producto también si 
+    -- a pedido, que puede ser la descripción de un producto también si
     -- la línea se corresponde con un producto.
     fechahora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     cantidad FLOAT,
@@ -1553,7 +1553,7 @@ CREATE TABLE linea_de_presupuesto(
     -- descuento FLOAT DEFAULT 0.0,
     -- fecha_entrega DATE DEFAULT CURRENT_DATE,
     -- texto_entrega TEXT DEFAULT '',
-    notas TEXT DEFAULT '' 
+    notas TEXT DEFAULT ''
 );  --    NEW! 24/08/2013
     -- GRANT ALL ON linea_de_presupuesto TO geotexan;
     -- GRANT ALL ON linea_de_presupuesto_id_seq TO geotexan;
@@ -1584,9 +1584,9 @@ CREATE TABLE albaran_salida(
     bloqueado BOOLEAN DEFAULT FALSE,
         -- Si True, el albarán solo lo puede modificar un usuario
         -- con nivel de privilegios <= 1.
-    destino_id INT REFERENCES destino DEFAULT NULL, 
-    almacen_origen_id INT REFERENCES almacen DEFAULT NULL, 
-        -- Aunque en realidad por defecto será el almacén principal, pero a la 
+    destino_id INT REFERENCES destino DEFAULT NULL,
+    almacen_origen_id INT REFERENCES almacen DEFAULT NULL,
+        -- Aunque en realidad por defecto será el almacén principal, pero a la
         -- hora de crear el registro no se puede definir.
     almacen_destino_id INT REFERENCES almacen DEFAULT NULL
 );
@@ -1791,7 +1791,7 @@ CREATE TABLE bigbag(
     motivo TEXT DEFAULT '',         -- Motivo por el cual la calidad del
                                     -- bigbag es B.
     parte_de_produccion_id INT REFERENCES parte_de_produccion DEFAULT NULL
-        -- Parte de producción en el que se ha consumido el bigbag para 
+        -- Parte de producción en el que se ha consumido el bigbag para
         -- fabricar bolsas de fibra de cemento.
 );
 
@@ -1801,7 +1801,7 @@ CREATE TABLE bigbag(
 CREATE TABLE pale(
     id SERIAL PRIMARY KEY,
     partida_cem_id INT REFERENCES partida_cem,
-    numpale INT8 UNIQUE, 
+    numpale INT8 UNIQUE,
     codigo TEXT,    -- Empezarán por H
     fechahora TIMESTAMP DEFAULT LOCALTIMESTAMP(0),
     numbolsas INT,  -- Bolsas por caja. Es campo calculado, pero por optimizar.
@@ -1814,12 +1814,12 @@ CREATE TABLE pale(
 -------------------------------
 CREATE TABLE caja(
     id SERIAL PRIMARY KEY,
-    pale_id INT REFERENCES pale, 
-    numcaja INT8 UNIQUE, 
+    pale_id INT REFERENCES pale,
+    numcaja INT8 UNIQUE,
     codigo TEXT,    -- Empezarán por J
     fechahora TIMESTAMP DEFAULT LOCALTIMESTAMP(0),
     -- Número de bolsas es campo calculado: ord(enlaces bolsa->caja)
-    observaciones TEXT DEFAULT '', 
+    observaciones TEXT DEFAULT '',
     numbolsas INT,  -- NEW! 09/09/2009
     peso FLOAT      -- NEW! 11/09/2009  (en kg)
 );
@@ -1904,14 +1904,14 @@ CREATE TABLE bala_cable(
     color TEXT DEFAULT '',
         -- En principio debería ser "Negra/Natural" y copiarse directamente de
         -- la descripción del producto.
-    claseB BOOLEAN DEFAULT TRUE 
+    claseB BOOLEAN DEFAULT TRUE
     --claseB BOOLEAN DEFAULT False
         -- Una bala de cable podría ser de claseB si por ejemplo lleva
         -- residuos o plásticos (criterio aún por decidir y que no sé si
         -- se llegará a usar).
-        -- Actualización 14/09/09: Una bala de cable será siempre de clase C. 
-        -- Tal vez algún día se distingan balas de cable de clase A y B, pero 
-        -- hasta entonces todas son C, al igual que los rollos_c. 
+        -- Actualización 14/09/09: Una bala de cable será siempre de clase C.
+        -- Tal vez algún día se distingan balas de cable de clase A y B, pero
+        -- hasta entonces todas son C, al igual que los rollos_c.
 );
 
 ----------------
@@ -1948,72 +1948,73 @@ CREATE TABLE articulo(
         -- NEW! 07/03/2007
     bala_cable_id INT REFERENCES bala_cable DEFAULT NULL,   -- NEW! 13/06/2007
     rollo_c_id INT REFERENCES rollo_c DEFAULT NULL,         -- NEW! 02/06/2008
-    almacen_id INT REFERENCES almacen DEFAULT NULL,  
+    almacen_id INT REFERENCES almacen DEFAULT NULL,
     caja_id INT REFERENCES caja DEFAULT NULL,     -- NEW! 18/05/2009
-    CHECK (   (bala_id IS NOT NULL 
-               AND rollo_id IS NULL 
-               AND bigbag_id IS NULL 
-               AND rollo_defectuoso_id IS NULL 
-               AND bala_cable_id IS NULL 
-               AND rollo_c_id IS NULL 
-               AND caja_id IS NULL) 
-           OR (bala_id IS NULL 
-               AND rollo_id IS NOT NULL 
-               AND bigbag_id IS NULL 
-               AND rollo_defectuoso_id IS NULL 
-               AND bala_cable_id IS NULL 
-               AND rollo_c_id IS NULL 
-               AND caja_id IS NULL) 
-           OR (bala_id IS NULL 
-               AND rollo_id IS NULL 
-               AND bigbag_id IS NOT NULL 
-               AND rollo_defectuoso_id IS NULL 
-               AND bala_cable_id IS NULL 
-               AND rollo_c_id IS NULL 
-               AND caja_id IS NULL) 
-           OR (bala_id IS NULL 
-               AND rollo_id IS NULL 
-               AND bigbag_id IS NULL 
-               AND rollo_defectuoso_id IS NOT NULL 
-               AND bala_cable_id IS NULL 
-               AND rollo_c_id IS NULL 
-               AND caja_id IS NULL) 
-           OR (bala_id IS NULL 
-               AND rollo_id IS NULL 
-               AND bigbag_id IS NULL 
-               AND rollo_defectuoso_id IS NULL 
-               AND bala_cable_id IS NOT NULL 
-               AND rollo_c_id IS NULL 
-               AND caja_id IS NULL) 
-           OR (bala_id IS NULL 
-               AND rollo_id IS NULL 
-               AND bigbag_id IS NULL 
-               AND rollo_defectuoso_id IS NULL 
-               AND bala_cable_id IS NULL 
-               AND rollo_c_id IS NOT NULL 
-               AND caja_id IS NULL) 
-           OR (bala_id IS NULL 
-               AND rollo_id IS NULL 
-               AND bigbag_id IS NULL 
-               AND rollo_defectuoso_id IS NULL 
-               AND bala_cable_id IS NULL 
-               AND rollo_c_id IS NULL 
-               AND caja_id IS NOT NULL)) 
+    api BOOL DEFAULT FALSE,  -- NEW! 31/05/2016. Indica si se ha enviado a Murano.
+    CHECK (   (bala_id IS NOT NULL
+               AND rollo_id IS NULL
+               AND bigbag_id IS NULL
+               AND rollo_defectuoso_id IS NULL
+               AND bala_cable_id IS NULL
+               AND rollo_c_id IS NULL
+               AND caja_id IS NULL)
+           OR (bala_id IS NULL
+               AND rollo_id IS NOT NULL
+               AND bigbag_id IS NULL
+               AND rollo_defectuoso_id IS NULL
+               AND bala_cable_id IS NULL
+               AND rollo_c_id IS NULL
+               AND caja_id IS NULL)
+           OR (bala_id IS NULL
+               AND rollo_id IS NULL
+               AND bigbag_id IS NOT NULL
+               AND rollo_defectuoso_id IS NULL
+               AND bala_cable_id IS NULL
+               AND rollo_c_id IS NULL
+               AND caja_id IS NULL)
+           OR (bala_id IS NULL
+               AND rollo_id IS NULL
+               AND bigbag_id IS NULL
+               AND rollo_defectuoso_id IS NOT NULL
+               AND bala_cable_id IS NULL
+               AND rollo_c_id IS NULL
+               AND caja_id IS NULL)
+           OR (bala_id IS NULL
+               AND rollo_id IS NULL
+               AND bigbag_id IS NULL
+               AND rollo_defectuoso_id IS NULL
+               AND bala_cable_id IS NOT NULL
+               AND rollo_c_id IS NULL
+               AND caja_id IS NULL)
+           OR (bala_id IS NULL
+               AND rollo_id IS NULL
+               AND bigbag_id IS NULL
+               AND rollo_defectuoso_id IS NULL
+               AND bala_cable_id IS NULL
+               AND rollo_c_id IS NOT NULL
+               AND caja_id IS NULL)
+           OR (bala_id IS NULL
+               AND rollo_id IS NULL
+               AND bigbag_id IS NULL
+               AND rollo_defectuoso_id IS NULL
+               AND bala_cable_id IS NULL
+               AND rollo_c_id IS NULL
+               AND caja_id IS NOT NULL))
 );
 
 
 ----------------------------------------------------------
 -- Líneas de transferencia de mercancía entre almacenes --
 ----------------------------------------------------------
--- Aunque el almacén origen y destino pudiera parecer que son 
--- atributos de esta tabla, en realidad son comunes a todas las líneas 
--- del mismo albarán interno de transferencia. Esto debería ser una 
--- tabla generada automáticamente por la relación muchos a muchos entre 
+-- Aunque el almacén origen y destino pudiera parecer que son
+-- atributos de esta tabla, en realidad son comunes a todas las líneas
+-- del mismo albarán interno de transferencia. Esto debería ser una
+-- tabla generada automáticamente por la relación muchos a muchos entre
 -- el albarán de salida y los artículos, pero no me fío de dejarlo automático.
 CREATE TABLE linea_de_movimiento(
-    id SERIAL PRIMARY KEY, 
-    albaran_salida_id INT REFERENCES albaran_salida, 
-    articulo_id INT REFERENCES articulo 
+    id SERIAL PRIMARY KEY,
+    albaran_salida_id INT REFERENCES albaran_salida,
+    articulo_id INT REFERENCES articulo
 );
 
 --------------------------------
@@ -2187,7 +2188,7 @@ CREATE TABLE factura_compra(
     fecha_visto_bueno_usuario DATE DEFAULT NULL,
     observaciones TEXT DEFAULT '',   -- NEW! 15/02/07. Pues eso. Observaciones.
     vencimientos_confirmados BOOLEAN DEFAULT FALSE -- NEW! 29/08/2008. Para
-        -- que no pregunte CADA vez si los vencimientos son correctos cuando 
+        -- que no pregunte CADA vez si los vencimientos son correctos cuando
         -- no coincidan con los del proveedor.
 );
 
@@ -2213,7 +2214,7 @@ CREATE TABLE linea_de_compra(
     iva FLOAT DEFAULT 0.21,     -- NEW! 15/02/07. IVA de la LDC. Por
         -- compatibilidad con los servicios de las facturas de compra con IVA
         -- mixto.
-    fechahora_facturado TIMESTAMP DEFAULT NULL  -- NEW! 25/09/2014. Para 
+    fechahora_facturado TIMESTAMP DEFAULT NULL  -- NEW! 25/09/2014. Para
         -- informarlo cuando se meta la LDC en una factura de compra con la
         -- fecha y hora exactas. Sirve para ordenar por orden (válgame la
         -- redundancia) de inserción desde los albaranes a la factura.
@@ -2287,9 +2288,9 @@ CREATE TABLE comision(
     cliente_id INT REFERENCES cliente,  -- Cliente que actúa como intermediario
     factura_venta_id INT REFERENCES factura_venta DEFAULT NULL, -- Factura de
         -- venta sobre la que nos cobra comisión
-    prefactura_id INT REFERENCES prefactura DEFAULT NULL, -- Factura de venta 
+    prefactura_id INT REFERENCES prefactura DEFAULT NULL, -- Factura de venta
         -- sobre la que nos cobra comisión
-    porcentaje FLOAT DEFAULT 0.0,   -- Porcentaje del importe de la 
+    porcentaje FLOAT DEFAULT 0.0,   -- Porcentaje del importe de la
                                     -- factura de venta para el intermediario
     albaran_salida_id INT REFERENCES albaran_salida DEFAULT NULL  -- CWT: Las
         -- comisiones que nos cobran se inician en el albarán.
@@ -2320,7 +2321,7 @@ CREATE TABLE servicio_tomado(
         -- facturas de compra "especiales" con IVA mixto. Si una
         -- factura de compra tiene servicios a diferentes IVAs, el IVA de la
         -- factura debe ser 0% e ignorarse.
-    fechahora_facturado TIMESTAMP DEFAULT NULL  -- NEW! 25/09/2014. Para 
+    fechahora_facturado TIMESTAMP DEFAULT NULL  -- NEW! 25/09/2014. Para
         -- informarlo cuando se meta la LDC en una factura de compra con la
         -- fecha y hora exactas. Sirve para ordenar por orden (válgame la
         -- redundancia) de inserción desde los albaranes a la factura.
@@ -2334,11 +2335,11 @@ CREATE TABLE vencimiento_pago(
     factura_compra_id INT REFERENCES factura_compra,
     fecha DATE DEFAULT CURRENT_DATE,
     importe FLOAT DEFAULT 0.0,
-    observaciones TEXT DEFAULT '', 
-    procesado BOOLEAN DEFAULT FALSE,-- NEW! 06/02/2019 Si True, el programa no 
-        -- tratará de crear el registro pago automático al pasar la fecha de 
+    observaciones TEXT DEFAULT '',
+    procesado BOOLEAN DEFAULT FALSE,-- NEW! 06/02/2019 Si True, el programa no
+        -- tratará de crear el registro pago automático al pasar la fecha de
         -- vencimiento.
-    fecha_pagado DATE DEFAULT NULL   -- NEW! 06/02/2019 Fecha en que se 
+    fecha_pagado DATE DEFAULT NULL   -- NEW! 06/02/2019 Fecha en que se
         -- paga el vencimiento. Se usa para las domiciliaciones automáticas.
     -- ALTER TABLE vencimiento_pago ADD COLUMN procesado BOOLEAN DEFAULT FALSE; UPDATE vencimiento_pago SET procesado = FALSE; ALTER TABLE vencimiento_pago ADD COLUMN fecha_pagado DATE DEFAULT NULL; UPDATE vencimiento_pago SET fecha_pagado = NULL;
     );
@@ -2378,14 +2379,14 @@ CREATE TABLE pagare_pago(
                                    -- realiza al completo.
     cantidad FLOAT,                -- Cantidad que cubre el pagaré.
     pagado FLOAT DEFAULT 0,        -- Pagado del pagaré hasta el momento.
-    observaciones TEXT DEFAULT '', 
-    procesado BOOLEAN DEFAULT FALSE,-- Si True, el programa no 
-        -- cambiará el estado del pagaré de "pendiente" a "pagado" de forma 
+    observaciones TEXT DEFAULT '',
+    procesado BOOLEAN DEFAULT FALSE,-- Si True, el programa no
+        -- cambiará el estado del pagaré de "pendiente" a "pagado" de forma
         -- automática.
-    fecha_cobrado DATE DEFAULT NULL   -- Fecha en que se paga el pagaré     
-        -- definitivamente. Tanto por cumplirse el vencimiento como por 
-        -- haberse negociado. Si cobrado >= cantidad, este campo guarda la 
-        -- fecha en que se ha realizado el cobro y el confirming ha dejado de 
+    fecha_cobrado DATE DEFAULT NULL   -- Fecha en que se paga el pagaré
+        -- definitivamente. Tanto por cumplirse el vencimiento como por
+        -- haberse negociado. Si cobrado >= cantidad, este campo guarda la
+        -- fecha en que se ha realizado el cobro y el confirming ha dejado de
         -- estar pendiente.
 );
 
@@ -2423,7 +2424,7 @@ CREATE TABLE pago(
     proveedor_id INT REFERENCES proveedor DEFAULT NULL,
     cuenta_origen_id INT REFERENCES cuenta_origen DEFAULT NULL,
         -- NEW! 21/02/07. Cuenta bancaria origen para las transferencias.
-    cuenta_destino_id INT REFERENCES cuenta_destino DEFAULT NULL, 
+    cuenta_destino_id INT REFERENCES cuenta_destino DEFAULT NULL,
         -- NEW! 21/02/07. Cuenta bancaria destino para las transferencias.
     concepto_libre TEXT DEFAULT ''    -- Concepto editable para transferencias.
 );
@@ -2500,22 +2501,22 @@ CREATE TABLE vencimiento_cobro(
 -- Tabla de bancos --
 ---------------------
 CREATE TABLE banco(
-    id SERIAL PRIMARY KEY, 
-    nombre TEXT, 
+    id SERIAL PRIMARY KEY,
+    nombre TEXT,
     iban TEXT DEFAULT '', -- 34 caracteres [http://es.wikipedia.org/wiki/IBAN]
-    direccion TEXT DEFAULT '',  
-    ciudad TEXT DEFAULT '', 
-    provincia TEXT DEFAULT '', 
-    pais TEXT DEFAULT 'España', 
-    contacto TEXT DEFAULT '', 
-    web TEXT DEFAULT '', 
-    telefono TEXT DEFAULT '', 
-    fax TEXT DEFAULT '', 
-    -- Línea descuento 
-    limite FLOAT DEFAULT NULL, 
-    interes FLOAT DEFAULT NULL, 
-    comision_estudio FLOAT DEFAULT NULL, 
-    concentracion FLOAT DEFAULT NULL, 
+    direccion TEXT DEFAULT '',
+    ciudad TEXT DEFAULT '',
+    provincia TEXT DEFAULT '',
+    pais TEXT DEFAULT 'España',
+    contacto TEXT DEFAULT '',
+    web TEXT DEFAULT '',
+    telefono TEXT DEFAULT '',
+    fax TEXT DEFAULT '',
+    -- Línea descuento
+    limite FLOAT DEFAULT NULL,
+    interes FLOAT DEFAULT NULL,
+    comision_estudio FLOAT DEFAULT NULL,
+    concentracion FLOAT DEFAULT NULL,
     exceso_vencimiento INT DEFAULT NULL
 );
 
@@ -2523,9 +2524,9 @@ CREATE TABLE banco(
 -- Concentración clientes en remesas de bancos --
 -------------------------------------------------
 CREATE TABLE concentracion_remesa(
-    id SERIAL PRIMARY KEY, 
-    banco_id INT NOT NULL REFERENCES banco, 
-    cliente_id INT NOT NULL REFERENCES cliente, 
+    id SERIAL PRIMARY KEY,
+    banco_id INT NOT NULL REFERENCES banco,
+    cliente_id INT NOT NULL REFERENCES cliente,
     concentracion FLOAT
 );
 
@@ -2533,11 +2534,11 @@ CREATE TABLE concentracion_remesa(
 -- Remesas de pagarés --
 ------------------------
 CREATE TABLE remesa(
-    id SERIAL PRIMARY KEY, 
-    banco_id INT REFERENCES banco DEFAULT NULL, 
-    fecha_prevista DATE DEFAULT NULL, 
-    codigo TEXT DEFAULT '', 
-    fecha_cobro DATE DEFAULT NULL, 
+    id SERIAL PRIMARY KEY,
+    banco_id INT REFERENCES banco DEFAULT NULL,
+    fecha_prevista DATE DEFAULT NULL,
+    codigo TEXT DEFAULT '',
+    fecha_cobro DATE DEFAULT NULL,
     aceptada BOOLEAN DEFAULT FALSE
 );
 
@@ -2555,16 +2556,16 @@ CREATE TABLE pagare_cobro(
         -- pagaré se realiza al completo. Se usa como vencimiento del pagaré.
     cantidad FLOAT,     -- Cantidad que cubre el pagaré.
     cobrado FLOAT DEFAULT 0,    -- Cobrado del pagaré hasta el momento.
-    observaciones TEXT DEFAULT '', 
-    fecha_cobrado DATE DEFAULT NULL,   -- Fecha en que se cobra el pagaré 
-        -- definitivamente. Tanto por cumplirse el vencimiento como por 
-        -- haberse negociado. Si cobrado >= cantidad, este campo guarda la 
-        -- fecha en que se ha realizado el cobro y el pagaré ha dejado de 
+    observaciones TEXT DEFAULT '',
+    fecha_cobrado DATE DEFAULT NULL,   -- Fecha en que se cobra el pagaré
+        -- definitivamente. Tanto por cumplirse el vencimiento como por
+        -- haberse negociado. Si cobrado >= cantidad, este campo guarda la
+        -- fecha en que se ha realizado el cobro y el pagaré ha dejado de
         -- estar pendiente.
-    procesado BOOLEAN DEFAULT FALSE, -- Si True ya se ha procesado 
-        -- automáticamente y no hace falta actualizar el estado al cumplir la 
+    procesado BOOLEAN DEFAULT FALSE, -- Si True ya se ha procesado
+        -- automáticamente y no hace falta actualizar el estado al cumplir la
         -- fecha de vencimiento.
-    a_la_orden BOOLEAN DEFAULT TRUE, 
+    a_la_orden BOOLEAN DEFAULT TRUE,
     banco_id INT REFERENCES banco DEFAULT NULL
     -- remesa_id INT REFERENCES remesa DEFAULT NULL
 );
@@ -2576,21 +2577,21 @@ CREATE TABLE pagare_cobro(
 -- Solo uso confirmings para cobrar. Ni se paga ni se emiten.       --
 ----------------------------------------------------------------------
 CREATE TABLE confirming(
-    id SERIAL PRIMARY KEY, 
-    codigo TEXT DEFAULT '',     -- Número -o código- del confirming 
-    fecha_recepcion DATE DEFAULT CURRENT_DATE, 
+    id SERIAL PRIMARY KEY,
+    codigo TEXT DEFAULT '',     -- Número -o código- del confirming
+    fecha_recepcion DATE DEFAULT CURRENT_DATE,
     fecha_cobro DATE DEFAULT NULL,  -- AKA vencimiento
     cantidad FLOAT,                 -- Cantidad cubierta
-    cobrado FLOAT DEFAULT 0,        -- Cobrado hasta el momento. Generalmente 
+    cobrado FLOAT DEFAULT 0,        -- Cobrado hasta el momento. Generalmente
         -- será 0 o la cantidad completa cuando llegue la fecha de vto.
-    observaciones TEXT DEFAULT '', 
+    observaciones TEXT DEFAULT '',
     fecha_cobrado DATE DEFAULT NULL,   -- Fecha en que se cobra el confirming
-        -- definitivamente. Tanto por cumplirse el vencimiento como por 
-        -- haberse negociado. Si cobrado >= cantidad, este campo guarda la 
-        -- fecha en que se ha realizado el cobro y el confirming ha dejado de 
+        -- definitivamente. Tanto por cumplirse el vencimiento como por
+        -- haberse negociado. Si cobrado >= cantidad, este campo guarda la
+        -- fecha en que se ha realizado el cobro y el confirming ha dejado de
         -- estar pendiente.
-    procesado BOOLEAN DEFAULT FALSE  -- Si True ya se ha procesado 
-        -- automáticamente y no hace falta actualizar el estado al cumplir la 
+    procesado BOOLEAN DEFAULT FALSE  -- Si True ya se ha procesado
+        -- automáticamente y no hace falta actualizar el estado al cumplir la
         -- fecha de vencimiento.
     -- remesa_id INT REFERENCES remesa DEFAULT NULL
 );      -- NEW! 20/11/2008
@@ -2601,11 +2602,11 @@ CREATE TABLE confirming(
 -- Tabla "padre" de pagarés de cobro y confirming. --
 -----------------------------------------------------
 CREATE TABLE efecto(
-    id SERIAL PRIMARY KEY, 
-    pagare_cobro_id INT REFERENCES pagare_cobro DEFAULT NULL, 
+    id SERIAL PRIMARY KEY,
+    pagare_cobro_id INT REFERENCES pagare_cobro DEFAULT NULL,
     confirming_id INT REFERENCES confirming DEFAULT NULL,
-    cuenta_bancaria_cliente_id INT REFERENCES cuenta_bancaria_cliente DEFAULT NULL, 
-    -- Ya me traeré a esta tabla campos comunes a confirming y pagarés para 
+    cuenta_bancaria_cliente_id INT REFERENCES cuenta_bancaria_cliente DEFAULT NULL,
+    -- Ya me traeré a esta tabla campos comunes a confirming y pagarés para
     -- optimizar las búsquedas con criterio más que nada.
     CHECK (pagare_cobro_id IS NULL +^ confirming_id IS NULL)
 );      -- NEW! 17/01/2013
@@ -2614,7 +2615,7 @@ CREATE TABLE efecto(
 -- Relación uno a muchos entre efectos de cobro y remesas --
 ------------------------------------------------------------
 CREATE TABLE efecto__remesa(
-    efecto_id INT NOT NULL REFERENCES efecto, 
+    efecto_id INT NOT NULL REFERENCES efecto,
     remesa_id INT NOT NULL REFERENCES remesa
 );      -- NEW! 17/01/2013
 
@@ -2650,7 +2651,7 @@ CREATE TABLE cobro(
     observaciones TEXT DEFAULT '',
     pagare_cobro_id INT REFERENCES pagare_cobro DEFAULT NULL,
     cliente_id INT REFERENCES cliente DEFAULT NULL,
-    factura_de_abono_id INT REFERENCES factura_de_abono DEFAULT NULL, 
+    factura_de_abono_id INT REFERENCES factura_de_abono DEFAULT NULL,
     confirming_id INT REFERENCES confirming DEFAULT NULL -- NEW! 20/11/2008
 );
 
@@ -2665,7 +2666,7 @@ CREATE TABLE abono(
     fecha DATE DEFAULT CURRENT_DATE,
     observaciones TEXT DEFAULT '',  -- Se mostrará y modificará en una ventana
                                     -- aparte a la hora de imprimir.
-    almacen_id INT REFERENCES almacen DEFAULT NULL, -- Almacén destino si es 
+    almacen_id INT REFERENCES almacen DEFAULT NULL, -- Almacén destino si es
                                                     -- un abono de devolución.
     obra_id INT REFERENCES obra
 );
@@ -2863,9 +2864,9 @@ CREATE TABLE prueba_poros(
 
 -- NEW! 13/06/2011
 CREATE TABLE prueba_piramidal(
-    id SERIAL PRIMARY KEY, 
-    partida_id INT REFERENCES partida, 
-    fecha DATE DEFAULT CURRENT_DATE, 
+    id SERIAL PRIMARY KEY,
+    partida_id INT REFERENCES partida,
+    fecha DATE DEFAULT CURRENT_DATE,
     resultado FLOAT DEFAULT 0.0
 );
 
@@ -3047,7 +3048,7 @@ CREATE TABLE documento(
     pagare_pago_id INT REFERENCES pagare_pago DEFAULT NULL,
     empleado_id INT REFERENCES empleado DEFAULT NULL,
     cliente_id INT REFERENCES cliente DEFAULT NULL,
-    proveedor_id INT REFERENCES proveedor DEFAULT NULL, 
+    proveedor_id INT REFERENCES proveedor DEFAULT NULL,
     confirming_id INT REFERENCES confirming DEFAULT NULL -- NEW! 20/11/2008
 );
 
@@ -3092,16 +3093,16 @@ CREATE TABLE control_horas(
     vacaciones_y_asuntos_propios BOOLEAN DEFAULT FALSE,
     fecha DATE DEFAULT CURRENT_DATE,
     festivo BOOLEAN DEFAULT FALSE,
-    bloqueado BOOLEAN DEFAULT FALSE, 
-    plus_absentismo FLOAT DEFAULT 0.0,-- NEW! 24/09/08. Para guardar el plus 
-                                      -- manual de no absentismo. 
+    bloqueado BOOLEAN DEFAULT FALSE,
+    plus_absentismo FLOAT DEFAULT 0.0,-- NEW! 24/09/08. Para guardar el plus
+                                      -- manual de no absentismo.
         -- Para actualizar en clientes:
-        -- ALTER TABLE control_horas ADD COLUMN plus_absentismo FLOAT; ALTER TABLE control_horas ALTER COLUMN plus_absentismo SET DEFAULT 0.0; UPDATE control_horas SET plus_absentismo = 0.0; 
-    concepto_libre TEXT DEFAULT '', 
-    importe_libre FLOAT DEFAULT 0.0 -- NEW! 30/10/2008. Para guardar un 
+        -- ALTER TABLE control_horas ADD COLUMN plus_absentismo FLOAT; ALTER TABLE control_horas ALTER COLUMN plus_absentismo SET DEFAULT 0.0; UPDATE control_horas SET plus_absentismo = 0.0;
+    concepto_libre TEXT DEFAULT '',
+    importe_libre FLOAT DEFAULT 0.0 -- NEW! 30/10/2008. Para guardar un
                                     -- importe a rellenar manualmente.
         -- Para actualizar en clientes:
-        -- ALTER TABLE control_horas ADD COLUMN concepto_libre TEXT; ALTER TABLE control_horas ADD COLUMN importe_libre FLOAT; ALTER TABLE control_horas ALTER COLUMN concepto_libre SET DEFAULT ''; ALTER TABLE control_horas ALTER COLUMN importe_libre SET DEFAULT 0.0; UPDATE control_horas SET concepto_libre = ''; UPDATE control_horas SET importe_libre = 0.0; 
+        -- ALTER TABLE control_horas ADD COLUMN concepto_libre TEXT; ALTER TABLE control_horas ADD COLUMN importe_libre FLOAT; ALTER TABLE control_horas ALTER COLUMN concepto_libre SET DEFAULT ''; ALTER TABLE control_horas ALTER COLUMN importe_libre SET DEFAULT 0.0; UPDATE control_horas SET concepto_libre = ''; UPDATE control_horas SET importe_libre = 0.0;
 );
 
 CREATE TABLE control_horas_produccion(
@@ -3131,9 +3132,9 @@ CREATE TABLE orden_empleados(
 ---------------------------------------------------------------
 -- Tabla auxiliar de objetos recientes por usuario y ventana --
 ---------------------------------------------------------------
--- NEW! 25/08/2008 
+-- NEW! 25/08/2008
 CREATE TABLE lista_objetos_recientes(
-    id SERIAL PRIMARY KEY, 
+    id SERIAL PRIMARY KEY,
     usuario_id INT REFERENCES usuario,
     ventana_id INT REFERENCES ventana
 );
@@ -3143,8 +3144,8 @@ CREATE TABLE lista_objetos_recientes(
 ----------------------------------------------------
 -- NEW! 25/08/2008
 CREATE TABLE id_reciente(
-    id SERIAL PRIMARY KEY, 
-    lista_objetos_recientes_id INT REFERENCES lista_objetos_recientes, 
+    id SERIAL PRIMARY KEY,
+    lista_objetos_recientes_id INT REFERENCES lista_objetos_recientes,
     objeto_id INT NOT NULL
 );
 
@@ -3156,8 +3157,8 @@ CREATE TABLE id_reciente(
 -- NEW! 03/02/2009
 CREATE TABLE stock_especial(
     -- Misma función que la tabla stock_almacen
-    id SERIAL PRIMARY KEY, 
-    almacen_id INT REFERENCES almacen, 
+    id SERIAL PRIMARY KEY,
+    almacen_id INT REFERENCES almacen,
     campos_especificos_especial_id INT REFERENCES campos_especificos_especial,
     existencias FLOAT DEFAULT 0.0
 );
@@ -3172,15 +3173,15 @@ CREATE TABLE stock_especial(
 -- NEW! 26/05/2009        --
 ----------------------------
 CREATE TABLE contacto(
-    id SERIAL PRIMARY KEY, 
-    nombre TEXT, 
-    apellidos TEXT DEFAULT '', 
-    cargo TEXT DEFAULT '', 
-    telefono TEXT DEFAULT '', 
-    fax TEXT DEFAULT '', 
-    movil TEXT DEFAULT '', 
-    correoe TEXT DEFAULT '', 
-    web TEXT DEFAULT '', 
+    id SERIAL PRIMARY KEY,
+    nombre TEXT,
+    apellidos TEXT DEFAULT '',
+    cargo TEXT DEFAULT '',
+    telefono TEXT DEFAULT '',
+    fax TEXT DEFAULT '',
+    movil TEXT DEFAULT '',
+    correoe TEXT DEFAULT '',
+    web TEXT DEFAULT '',
     observaciones TEXT DEFAULT ''
 );
 
@@ -3189,7 +3190,7 @@ CREATE TABLE contacto(
 -- NEW! 26/05/2009                                  --
 ------------------------------------------------------
 CREATE TABLE obra__cliente(
-    obra_id INT NOT NULL REFERENCES obra, 
+    obra_id INT NOT NULL REFERENCES obra,
     cliente_id INT NOT NULL REFERENCES cliente
 );
 
@@ -3198,7 +3199,7 @@ CREATE TABLE obra__cliente(
 -- NEW! 26/05/2009                                   --
 -------------------------------------------------------
 CREATE TABLE obra__contacto(
-    obra_id INT NOT NULL REFERENCES obra, 
+    obra_id INT NOT NULL REFERENCES obra,
     contacto_id INT NOT NULL REFERENCES contacto
 );
 
@@ -3207,10 +3208,10 @@ CREATE TABLE obra__contacto(
 -- NEW! 26/05/2009                   --
 ---------------------------------------
 CREATE TABLE nota(
-    id SERIAL PRIMARY KEY, 
-    factura_venta_id INT REFERENCES factura_venta, 
-    fechahora TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-    texto TEXT DEFAULT '', 
+    id SERIAL PRIMARY KEY,
+    factura_venta_id INT REFERENCES factura_venta,
+    fechahora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    texto TEXT DEFAULT '',
     observaciones TEXT DEFAULT ''
 );
 
@@ -3224,9 +3225,9 @@ CREATE TABLE nota(
 -- quisiera.                                    --
 --------------------------------------------------
 CREATE TABLE estado(
-    id SERIAL PRIMARY KEY, 
-    descripcion TEXT, 
-    pendiente BOOLEAN,  -- Indica si la alarma está pendiente de activarse 
+    id SERIAL PRIMARY KEY,
+    descripcion TEXT,
+    pendiente BOOLEAN,  -- Indica si la alarma está pendiente de activarse
                         -- aún (TRUE) o si ya "ha sonado" y se ignorará.
     observaciones TEXT DEFAULT ''
 );
@@ -3244,17 +3245,17 @@ CREATE TABLE estado(
 -- NEW! 26/05/2009                       --
 -------------------------------------------
 CREATE TABLE alarma(
-    id SERIAL PRIMARY KEY, 
-    factura_venta_id INT REFERENCES factura_venta, 
-    estado_id INT REFERENCES estado DEFAULT 1, 
-    fechahora TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-    texto TEXT DEFAULT '', 
-    fechahora_alarma TIMESTAMP DEFAULT NULL, 
-    objeto_relacionado TEXT DEFAULT NULL,   -- No sé si lo llegaré a usar, 
-        -- pero la idea es guardar aquí un puid de pclases y abrirlo desde 
-        -- la ventana de CRM con doble clic o mostrar información relevante 
+    id SERIAL PRIMARY KEY,
+    factura_venta_id INT REFERENCES factura_venta,
+    estado_id INT REFERENCES estado DEFAULT 1,
+    fechahora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    texto TEXT DEFAULT '',
+    fechahora_alarma TIMESTAMP DEFAULT NULL,
+    objeto_relacionado TEXT DEFAULT NULL,   -- No sé si lo llegaré a usar,
+        -- pero la idea es guardar aquí un puid de pclases y abrirlo desde
+        -- la ventana de CRM con doble clic o mostrar información relevante
         -- al respecto.
-    observaciones TEXT DEFAULT '' 
+    observaciones TEXT DEFAULT ''
 );
 
 ------------------------------
@@ -3264,23 +3265,23 @@ CREATE TABLE alarma(
 -- NEW! 26/05/2009          --
 ------------------------------
 CREATE TABLE categoria(
-    id SERIAL PRIMARY KEY, 
-    descripcion TEXT, 
+    id SERIAL PRIMARY KEY,
+    descripcion TEXT,
     color_r INT,    -- En RGB(256, 256, 256).
-    color_g INT, 
-    color_b INT, 
-    prioridad INT,  -- Prioridad sobre el resto de categorías. Codificada 
-                    -- de la misma forma que los ring en los procesadores: 
+    color_g INT,
+    color_b INT,
+    prioridad INT,  -- Prioridad sobre el resto de categorías. Codificada
+                    -- de la misma forma que los ring en los procesadores:
                     -- 0 = máxima.
     observaciones TEXT DEFAULT ''
 );
 
 -- Solo la primera vez
---INSERT INTO categoria (descripcion, color_r, color_g, color_b, prioridad) 
+--INSERT INTO categoria (descripcion, color_r, color_g, color_b, prioridad)
 --    VALUES ('Urgente', 255, 65, 0, 0);
---INSERT INTO categoria (descripcion, color_r, color_g, color_b, prioridad) 
+--INSERT INTO categoria (descripcion, color_r, color_g, color_b, prioridad)
 --    VALUES ('Llamadas de teléfono', 30, 255, 60, 5);
---INSERT INTO categoria (descripcion, color_r, color_g, color_b, prioridad) 
+--INSERT INTO categoria (descripcion, color_r, color_g, color_b, prioridad)
 --    VALUES ('Tareas automáticas', 125, 125, 125, 10);
 
 -------------------------------------------------
@@ -3288,13 +3289,13 @@ CREATE TABLE categoria(
 -- NEW! 26/05/2009                             --
 -------------------------------------------------
 CREATE TABLE tarea(
-    id SERIAL PRIMARY KEY, 
-    factura_venta_id INT REFERENCES factura_venta, 
-    categoria_id INT REFERENCES categoria DEFAULT NULL, 
-    texto TEXT DEFAULT '', 
-    pendiente BOOLEAN DEFAULT TRUE, 
-    fecha DATE DEFAULT CURRENT_DATE, 
-    observaciones TEXT DEFAULT '', 
+    id SERIAL PRIMARY KEY,
+    factura_venta_id INT REFERENCES factura_venta,
+    categoria_id INT REFERENCES categoria DEFAULT NULL,
+    texto TEXT DEFAULT '',
+    pendiente BOOLEAN DEFAULT TRUE,
+    fecha DATE DEFAULT CURRENT_DATE,
+    observaciones TEXT DEFAULT '',
     fechadone TIMESTAMP DEFAULT NULL
 );
 
@@ -3303,33 +3304,33 @@ CREATE TABLE tarea(
 -----------------------------------
 CREATE TABLE presupuesto_anual(
     -- Conceptos "de primer nivel". En principio no editables por el usuario.
-    id SERIAL PRIMARY KEY, 
+    id SERIAL PRIMARY KEY,
     descripcion TEXT DEFAULT ''
 );
 
 CREATE TABLE concepto_presupuesto_anual(
     -- Conceptos. Primera columna de las flas del presupuesto.
-    id SERIAL PRIMARY KEY, 
-    presupuesto_anual_id INT REFERENCES presupuesto_anual NOT NULL, 
-    descripcion TEXT DEFAULT '', 
-    proveedor_id INT REFERENCES proveedor DEFAULT NULL, 
+    id SERIAL PRIMARY KEY,
+    presupuesto_anual_id INT REFERENCES presupuesto_anual NOT NULL,
+    descripcion TEXT DEFAULT '',
+    proveedor_id INT REFERENCES proveedor DEFAULT NULL,
     inmutable BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE valor_presupuesto_anual(
-    id SERIAL PRIMARY KEY, 
-    concepto_presupuesto_anual_id INT REFERENCES concepto_presupuesto_anual NOT NULL, 
+    id SERIAL PRIMARY KEY,
+    concepto_presupuesto_anual_id INT REFERENCES concepto_presupuesto_anual NOT NULL,
     mes DATE NOT NULL,  -- Me interesa mes y año nada más.
-    importe FLOAT DEFAULT 0.0, 
+    importe FLOAT DEFAULT 0.0,
     precio FLOAT DEFAULT 1      -- Para estimaciones que sean del tipo
-                                -- importe=precio*algo (toneladas para los 
+                                -- importe=precio*algo (toneladas para los
                                 -- proveedores de granza, por ejemplo).
 );
 
 CREATE TABLE vencimiento_valor_presupuesto_anual(
     id SERIAL PRIMARY KEY,
     valor_presupuesto_anual_id INT REFERENCES valor_presupuesto_anual,
-    fecha DATE NOT NULL, 
+    fecha DATE NOT NULL,
     -- El importe será un campo calculado.
     documento_de_pago_id INT REFERENCES documento_de_pago
 );
@@ -3339,14 +3340,14 @@ CREATE TABLE vencimiento_valor_presupuesto_anual(
 -- modificación o eliminación de un objeto.                 --
 --------------------------------------------------------------
 CREATE TABLE auditoria(
-    id SERIAL PRIMARY KEY, 
-    usuario_id INT REFERENCES usuario,  -- FK al usuario 
+    id SERIAL PRIMARY KEY,
+    usuario_id INT REFERENCES usuario,  -- FK al usuario
     ventana_id INT REFERENCES ventana,  -- FK ventana desde donde se ha hecho.
     dbpuid TEXT,        -- Me lo tiene que dar la capa superior.
     action TEXT,        -- creación, modificación o borrado
     ip TEXT DEFAULT NULL,   -- IP desde la que realizó la acción
     hostname TEXT DEFAULT NULL, -- Si es posible, el nombre de la máquina.
-    fechahora TIMESTAMP DEFAULT LOCALTIMESTAMP(0), 
+    fechahora TIMESTAMP DEFAULT LOCALTIMESTAMP(0),
     descripcion TEXT DEFAULT NULL
 );
 
@@ -3371,7 +3372,7 @@ CREATE TABLE visita(
     cliente_id INT REFERENCES cliente DEFAULT NULL,
     nombrecliente TEXT DEFAULT '',
     motivo_visita_id INT REFERENCES motivo_visita,
-    fechahora TIMESTAMP DEFAULT LOCALTIMESTAMP(0), 
+    fechahora TIMESTAMP DEFAULT LOCALTIMESTAMP(0),
     lugar TEXT DEFAULT '',
     observaciones TEXT DEFAULT '',
     enviada BOOLEAN DEFAULT FALSE
@@ -3573,31 +3574,31 @@ CREATE FUNCTION es_interno(INT)
     ;'; -- NEW 03/07/2007
 
 CREATE FUNCTION caja_es_clase_b(INT)
-    -- Devuelve TRUE si la caja es de clase B. El criterio para definir si 
-    -- una caja es B es mirar el número de bolsas por caja que lleva. Si es 
+    -- Devuelve TRUE si la caja es de clase B. El criterio para definir si
+    -- una caja es B es mirar el número de bolsas por caja que lleva. Si es
     -- menor al número de bolsas estándar del producto, es B.
     RETURNS BOOLEAN
     LANGUAGE SQL STABLE
     AS '
-        SELECT caja.numbolsas < ceb.bolsas_caja 
+        SELECT caja.numbolsas < ceb.bolsas_caja
           FROM caja, articulo, producto_venta, campos_especificos_bala as ceb
          WHERE caja.id = $1
            AND caja.id = articulo.caja_id
            AND articulo.producto_venta_id = producto_venta.id
-           AND producto_venta.campos_especificos_bala_id = ceb.id 
+           AND producto_venta.campos_especificos_bala_id = ceb.id
     ;'; -- NEW 11/09/2009
 
-CREATE OR REPLACE FUNCTION cobro_esta_cobrado(idcobro INTEGER, 
+CREATE OR REPLACE FUNCTION cobro_esta_cobrado(idcobro INTEGER,
                                    fecha DATE DEFAULT CURRENT_DATE)
     -- Recibe un ID de cobro y una fecha.
     -- Devuelve el importe cobrado en esa fecha, que depende de:
-    --  * Si es una transferencia, efectivo, cheque o cualquier otra cosa 
-    --    que no sea un confirming o un pagaré; se cuenta como cobrado en 
+    --  * Si es una transferencia, efectivo, cheque o cualquier otra cosa
+    --    que no sea un confirming o un pagaré; se cuenta como cobrado en
     --    cuanto se alcanza la fecha de cobro.
-    --  * Si es un confirming, cuenta como cobrado siempre que tenga el 
-    --    campo pendiente == FALSE. Ya que si no responde el cliente, 
+    --  * Si es un confirming, cuenta como cobrado siempre que tenga el
+    --    campo pendiente == FALSE. Ya que si no responde el cliente,
     --    responde el banco por él.
-    --  * Si es un pagaré, cuenta como cobrado si no está pendiente o no 
+    --  * Si es un pagaré, cuenta como cobrado si no está pendiente o no
     --    está vencido todavía (fecha_cobro <= DATE recibido).
     RETURNS FLOAT
     AS $$
@@ -3609,54 +3610,54 @@ CREATE OR REPLACE FUNCTION cobro_esta_cobrado(idcobro INTEGER,
         BEGIN
             -- Selecciono el cobro en cuestión:
             SELECT * INTO registro_cobro FROM cobro WHERE id = idcobro;
-            -- Buscar si es pagaré, confirming u otra cosa. Aquí ya 
+            -- Buscar si es pagaré, confirming u otra cosa. Aquí ya
             -- me aseguro de que esté recibido mirando la fecha.
             IF NOT (registro_cobro.pagare_cobro_id IS NULL) THEN
-                SELECT * INTO registro_pagare_cobro 
-                  FROM pagare_cobro 
-                 WHERE pagare_cobro.id = registro_cobro.pagare_cobro_id 
+                SELECT * INTO registro_pagare_cobro
+                  FROM pagare_cobro
+                 WHERE pagare_cobro.id = registro_cobro.pagare_cobro_id
                    AND pagare_cobro.fecha_recepcion <= fecha;
-                -- Si tiene fecha de cobro y ya ha pasado, he cobrado lo 
-                -- que indique el pagaré (que puede ser 0 si está pendiente,  
-                -- solo una parte del pagaré por error de alguien o lo que 
-                -- sea, o completo --cuando se pone el pendiente=FALSE, el 
+                -- Si tiene fecha de cobro y ya ha pasado, he cobrado lo
+                -- que indique el pagaré (que puede ser 0 si está pendiente,
+                -- solo una parte del pagaré por error de alguien o lo que
+                -- sea, o completo --cuando se pone el pendiente=FALSE, el
                 -- cobrado se iguala al importe total del pagaré--).
                 IF (NOT (registro_pagare_cobro.fecha_cobrado IS NULL))
                     AND fecha >= registro_pagare_cobro.fecha_cobrado THEN
                     cobrado := registro_pagare_cobro.cobrado;
-                -- Si no tiene fecha de cobrado o ésta todavía no ha llegado 
+                -- Si no tiene fecha de cobrado o ésta todavía no ha llegado
                 -- según la recibida, está documentado, pero no cobrado.
-                -- O si no tiene fecha de cobrado en abosulto. Que estaría 
+                -- O si no tiene fecha de cobrado en abosulto. Que estaría
                 -- no documentado.
                 ELSE
                     cobrado := 0.0;
                 END IF;
             ELSIF NOT (registro_cobro.confirming_id IS NULL) THEN
-                -- Si es un confirming, lo cuento como cobrado si no está 
-                -- pendiente o si ya lo he recibido, ya que si no responde 
-                -- el cliente, responderá el banco. Pero lo cuento como 
-                -- cobrado solo si se ha indicado una fecha de cobro. Ya que 
+                -- Si es un confirming, lo cuento como cobrado si no está
+                -- pendiente o si ya lo he recibido, ya que si no responde
+                -- el cliente, responderá el banco. Pero lo cuento como
+                -- cobrado solo si se ha indicado una fecha de cobro. Ya que
                 -- si se negocia o se cobra, este campo estará informado.
-                -- Y si no está informado, es que es un importe documentado 
-                -- (si no no existiría el registro) pero no cobrado ni 
+                -- Y si no está informado, es que es un importe documentado
+                -- (si no no existiría el registro) pero no cobrado ni
                 -- negociado. Estaría impagado/vencido.
                 SELECT * INTO registro_confirming
-                  FROM confirming 
-                 WHERE confirming.id = registro_cobro.confirming_id 
+                  FROM confirming
+                 WHERE confirming.id = registro_cobro.confirming_id
                    AND confirming.fecha_recepcion <= fecha;
                 IF (NOT (registro_confirming.fecha_cobrado IS NULL))
                     AND fecha >= registro_confirming.fecha_cobrado THEN
                     cobrado := registro_confirming.cobrado;
-                -- Si no tiene fecha de cobrado o ésta todavía no ha llegado 
+                -- Si no tiene fecha de cobrado o ésta todavía no ha llegado
                 -- según la recibida, está documentado, pero no cobrado.
-                -- O si no tiene fecha de cobrado en abosulto. Que estaría 
+                -- O si no tiene fecha de cobrado en abosulto. Que estaría
                 -- no documentado.
                 ELSE
                     cobrado := 0.0;
                 END IF;
             ELSE
-                -- Es un cobro que no implica efectos futuribles 
-                -- (transferencia, contado, etc.). Cuenta como cobrado desde 
+                -- Es un cobro que no implica efectos futuribles
+                -- (transferencia, contado, etc.). Cuenta como cobrado desde
                 -- el momento en que se recibe.
                 IF registro_cobro.fecha <= fecha THEN
                     cobrado := registro_cobro.importe;
@@ -3668,15 +3669,15 @@ CREATE OR REPLACE FUNCTION cobro_esta_cobrado(idcobro INTEGER,
         END;
     $$ LANGUAGE plpgsql; -- NEW 26/06/2013 MODIFICADO 0/08/2013
 
-CREATE OR REPLACE FUNCTION cobro_esta_documentado(idcobro INTEGER, 
+CREATE OR REPLACE FUNCTION cobro_esta_documentado(idcobro INTEGER,
                                    fecha DATE DEFAULT CURRENT_DATE)
     -- Recibe un ID de cobro y una fecha.
-    -- Devuelve el importe documentado PERO NO COBRADO/VENCIDO en esa fecha, 
+    -- Devuelve el importe documentado PERO NO COBRADO/VENCIDO en esa fecha,
     -- que depende de:
-    --  * Si es una transferencia, efectivo, cheque o cualquier otra cosa 
-    --    que no sea un confirming o un pagaré; se cuenta como cobrado en 
+    --  * Si es una transferencia, efectivo, cheque o cualquier otra cosa
+    --    que no sea un confirming o un pagaré; se cuenta como cobrado en
     --    cuanto se alcanza la fecha de cobro. Nunca está documentado.
-    --  * Si es un confirming o un pagaré cuentan como documentados si 
+    --  * Si es un confirming o un pagaré cuentan como documentados si
     --    no tienen informado el campo fecha_cobrado.
     RETURNS FLOAT
     AS $$
@@ -3690,15 +3691,15 @@ CREATE OR REPLACE FUNCTION cobro_esta_documentado(idcobro INTEGER,
             SELECT * INTO registro_cobro FROM cobro WHERE id = idcobro;
             -- Buscar si es pagaré, confirming u otra cosa:
             IF NOT (registro_cobro.pagare_cobro_id IS NULL) THEN
-                SELECT * INTO registro_pagare_cobro 
-                  FROM pagare_cobro 
+                SELECT * INTO registro_pagare_cobro
+                  FROM pagare_cobro
                  WHERE pagare_cobro.id = registro_cobro.pagare_cobro_id;
-                -- Si no tiene fecha de cobro o tiene pero es posterior 
-                -- a la fecha consultada, está documentado. Si es posterior 
-                -- estaría cobrado y si no tiene y dependiendo de la 
-                -- fecha del vencimiento, impagado. Contando siempre con que 
+                -- Si no tiene fecha de cobro o tiene pero es posterior
+                -- a la fecha consultada, está documentado. Si es posterior
+                -- estaría cobrado y si no tiene y dependiendo de la
+                -- fecha del vencimiento, impagado. Contando siempre con que
                 -- se haya recibido en la fecha indicada.
-                IF (registro_pagare_cobro.fecha_cobrado IS NULL OR 
+                IF (registro_pagare_cobro.fecha_cobrado IS NULL OR
                     registro_pagare_cobro.fecha_cobrado > fecha)
                    AND registro_pagare_cobro.fecha_recepcion <= fecha THEN
                     documentado := registro_pagare_cobro.cantidad;
@@ -3706,23 +3707,23 @@ CREATE OR REPLACE FUNCTION cobro_esta_documentado(idcobro INTEGER,
                     documentado := 0.0;
                 END IF;
             ELSIF NOT (registro_cobro.confirming_id IS NULL) THEN
-                SELECT * INTO registro_confirming 
+                SELECT * INTO registro_confirming
                   FROM confirming
                  WHERE confirming.id = registro_cobro.confirming_id;
-                -- Si no tiene fecha de cobro o tiene pero es posterior 
-                -- a la fecha consultada, está documentado. Si es posterior 
-                -- estaría cobrado y si no tiene y dependiendo de la 
+                -- Si no tiene fecha de cobro o tiene pero es posterior
+                -- a la fecha consultada, está documentado. Si es posterior
+                -- estaría cobrado y si no tiene y dependiendo de la
                 -- fecha del vencimiento, impagado.
-                IF (registro_confirming.fecha_cobrado IS NULL OR 
-                    registro_confirming.fecha_cobrado > fecha) 
+                IF (registro_confirming.fecha_cobrado IS NULL OR
+                    registro_confirming.fecha_cobrado > fecha)
                    AND registro_confirming.fecha_recepcion <= fecha THEN
                     documentado := registro_confirming.cantidad;
                 ELSE
                     documentado := 0.0;
                 END IF;
             ELSE
-                -- Es un cobro que no implica efectos futuribles 
-                -- (transferencia, contado, etc.). No llega a tener nunca 
+                -- Es un cobro que no implica efectos futuribles
+                -- (transferencia, contado, etc.). No llega a tener nunca
                 -- un documento de cobro.
                 documentado := 0.0;
             END IF;
@@ -3730,7 +3731,7 @@ CREATE OR REPLACE FUNCTION cobro_esta_documentado(idcobro INTEGER,
         END;
     $$ LANGUAGE plpgsql; -- NEW 7/08/2013
 
-CREATE OR REPLACE FUNCTION calcular_importe_cobrado_factura_venta(idfra INTEGER, 
+CREATE OR REPLACE FUNCTION calcular_importe_cobrado_factura_venta(idfra INTEGER,
 								  fecha DATE DEFAULT CURRENT_DATE)
     -- Devuelve el importe cobrado en fecha para la factura cuyo id se recibe.
     RETURNS FLOAT
@@ -3739,42 +3740,42 @@ CREATE OR REPLACE FUNCTION calcular_importe_cobrado_factura_venta(idfra INTEGER,
     $$ LANGUAGE SQL;
 
 CREATE OR REPLACE FUNCTION calcular_importe_documentado_factura_venta(
-                                idfra INTEGER, 
+                                idfra INTEGER,
                                 fecha DATE DEFAULT CURRENT_DATE)
     -- Indica el importe documentado y no vencido ni cobrado de la factura.
     RETURNS FLOAT
     AS $$
-        SELECT COALESCE(SUM(importe), 0) 
-          FROM cobro 
-         WHERE cobro.factura_venta_id = $1 
+        SELECT COALESCE(SUM(importe), 0)
+          FROM cobro
+         WHERE cobro.factura_venta_id = $1
            AND cobro_esta_documentado(cobro.id, $2) <> 0;
     $$ LANGUAGE SQL;    -- NEW! 7/08/2013
 
 CREATE OR REPLACE FUNCTION calcular_importe_vencido_factura_venta(
-                                idfra INTEGER, 
+                                idfra INTEGER,
                                 fecha DATE DEFAULT CURRENT_DATE)
     RETURNS FLOAT
     AS $$
-        SELECT COALESCE(SUM(importe), 0) 
-          FROM vencimiento_cobro 
-         WHERE vencimiento_cobro.factura_venta_id = $1 
+        SELECT COALESCE(SUM(importe), 0)
+          FROM vencimiento_cobro
+         WHERE vencimiento_cobro.factura_venta_id = $1
            AND vencimiento_cobro.fecha < $2;
     $$ LANGUAGE SQL;
 
 CREATE OR REPLACE FUNCTION calcular_importe_no_vencido_factura_venta(
-                                idfra INTEGER, 
+                                idfra INTEGER,
                                 fecha DATE DEFAULT CURRENT_DATE)
     RETURNS FLOAT
     AS $$
-        SELECT COALESCE(SUM(importe), 0) 
-          FROM vencimiento_cobro 
-         WHERE vencimiento_cobro.factura_venta_id = $1 
+        SELECT COALESCE(SUM(importe), 0)
+          FROM vencimiento_cobro
+         WHERE vencimiento_cobro.factura_venta_id = $1
            AND vencimiento_cobro.fecha >= $2;
     $$ LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION fra_cobrada(idfra INTEGER, 
+CREATE OR REPLACE FUNCTION fra_cobrada(idfra INTEGER,
                                        fecha DATE DEFAULT CURRENT_DATE)
-    -- Devuelve TRUE si el importe de los vencimientos es igual al importe 
+    -- Devuelve TRUE si el importe de los vencimientos es igual al importe
     -- de los cobros en la fecha recibida.
     RETURNS BOOLEAN
     AS $BODY$
@@ -3786,16 +3787,16 @@ CREATE OR REPLACE FUNCTION fra_cobrada(idfra INTEGER,
         SELECT calcular_importe_cobrado_factura_venta($1, $2) INTO cobrado;
         SELECT calcular_importe_vencido_factura_venta($1, $2) INTO vencido;
         SELECT calcular_importe_no_vencido_factura_venta($1, $2) INTO no_vencido;
-        RETURN cobrado != 0 
-           AND ABS(ROUND(cobrado::NUMERIC, 2)) 
+        RETURN cobrado != 0
+           AND ABS(ROUND(cobrado::NUMERIC, 2))
             >= ABS(ROUND((vencido + no_vencido)::NUMERIC, 2));
     END;
     $BODY$ LANGUAGE plpgsql;    -- NEW! 1/08/2013
 
-CREATE OR REPLACE FUNCTION fra_no_documentada(idfra INTEGER, 
+CREATE OR REPLACE FUNCTION fra_no_documentada(idfra INTEGER,
                                               fecha DATE DEFAULT CURRENT_DATE)
-    -- Fra. no documentada es la que no ha vencido ni tiene cobros porque 
-    -- todavía no ha llegado ni un triste pagaré. O si ha llegado, no cubre 
+    -- Fra. no documentada es la que no ha vencido ni tiene cobros porque
+    -- todavía no ha llegado ni un triste pagaré. O si ha llegado, no cubre
     -- el total de la factura.
     RETURNS BOOLEAN
     AS $$
@@ -3809,25 +3810,25 @@ CREATE OR REPLACE FUNCTION fra_no_documentada(idfra INTEGER,
         SELECT calcular_importe_cobrado_factura_venta($1, $2) INTO cobrado;
         SELECT calcular_importe_vencido_factura_venta($1, $2) INTO vencido;
         SELECT calcular_importe_no_vencido_factura_venta($1, $2) INTO no_vencido;
-        RETURN (cobrado = 0 AND vencido = 0 AND documentado = 0) 
-            -- OJO: Si tiene cobros o está vencida pero la factura tiene 
+        RETURN (cobrado = 0 AND vencido = 0 AND documentado = 0)
+            -- OJO: Si tiene cobros o está vencida pero la factura tiene
             -- importe CERO, entonces va a clasificarse como NO DOCUMENTADA.
-            OR (cobrado + documentado < vencido + no_vencido); 
-            -- Vencido + No vencido = TOTAL factura. Si se ha documentado 
-            -- menos que el total de la factura, es que tiene parte pendiente 
-            -- de documentar. Así que la factura está no documentada, supongo, 
+            OR (cobrado + documentado < vencido + no_vencido);
+            -- Vencido + No vencido = TOTAL factura. Si se ha documentado
+            -- menos que el total de la factura, es que tiene parte pendiente
+            -- de documentar. Así que la factura está no documentada, supongo,
             -- aunque solo sea parcialmente.
     END;
     $$ LANGUAGE plpgsql; -- NEW! 2/08/2013 MODIFIED 7/08/2013 UPDATED 17/09/2013
 
-CREATE OR REPLACE FUNCTION fra_no_vencida(idfra INTEGER, 
+CREATE OR REPLACE FUNCTION fra_no_vencida(idfra INTEGER,
                                           fecha DATE DEFAULT CURRENT_DATE)
     RETURNS BOOLEAN
     -- Devuelve TRUE (no vencida o documentada no vencida) si:
     --   * no ha vencido nada de la factura.
-    --   * lo que ha vencido está documentado y los vencimientos de 
+    --   * lo que ha vencido está documentado y los vencimientos de
     --     los documentos no han vencido.
-    --   * La factura no está cobrada por adelanto del pago aunque formalmente 
+    --   * La factura no está cobrada por adelanto del pago aunque formalmente
     --     sí que esté no vencida.
     AS $$
     DECLARE
@@ -3844,7 +3845,7 @@ CREATE OR REPLACE FUNCTION fra_no_vencida(idfra INTEGER,
                --AND NOT fra_no_documentada($1, $2)   -- Está documentada, pero
                AND ((vencido = 0 -- no ha vencido. Porque si ha vencido algo
                                 -- entonces la factura está cobrada o impagada.
-                     --AND cobrado = 0 -- A no ser que se haya adelantado 
+                     --AND cobrado = 0 -- A no ser que se haya adelantado
                                       -- el cobro.
                     ) OR vencido = documentado)
                AND NOT fra_no_documentada($1, $2); -- Como es cortocircuitado,
@@ -3852,9 +3853,9 @@ CREATE OR REPLACE FUNCTION fra_no_vencida(idfra INTEGER,
     END;
     $$ LANGUAGE plpgsql;        -- NEW! 2/08/2013
 
-CREATE OR REPLACE FUNCTION fra_impagada(idfra INTEGER, 
+CREATE OR REPLACE FUNCTION fra_impagada(idfra INTEGER,
                                         fecha DATE DEFAULT CURRENT_DATE)
-    -- Factura impagada es la que ha vencido y ese importe (o parte) vencido 
+    -- Factura impagada es la que ha vencido y ese importe (o parte) vencido
     -- supera el documentado más el cobrado.
     RETURNS BOOLEAN
     AS $$
@@ -3866,15 +3867,15 @@ CREATE OR REPLACE FUNCTION fra_impagada(idfra INTEGER,
         SELECT calcular_importe_cobrado_factura_venta($1, $2) INTO cobrado;
         SELECT calcular_importe_vencido_factura_venta($1, $2) INTO vencido;
         SELECT calcular_importe_documentado_factura_venta($1, $2) INTO documentado;
-        RETURN cobrado + documentado >= 0 
-           AND ROUND((cobrado + documentado)::NUMERIC, 2) 
+        RETURN cobrado + documentado >= 0
+           AND ROUND((cobrado + documentado)::NUMERIC, 2)
                 < ROUND(vencido::NUMERIC, 2);
     END;
     $$ LANGUAGE plpgsql;        -- NEW! 2/08/2013
 
-CREATE OR REPLACE FUNCTION fra_abono(idfra INTEGER, 
+CREATE OR REPLACE FUNCTION fra_abono(idfra INTEGER,
                                      fecha DATE DEFAULT CURRENT_DATE)
-    -- Por compatibilidad con pclases. Pero en realidad ninguna factura de venta 
+    -- Por compatibilidad con pclases. Pero en realidad ninguna factura de venta
     -- es de abono. Las de abono van en otra tabla.
     RETURNS BOOLEAN
     AS $$
@@ -3884,26 +3885,26 @@ CREATE OR REPLACE FUNCTION fra_abono(idfra INTEGER,
     $$ LANGUAGE plpgsql;        -- NEW! 2/08/2013
 
 CREATE OR REPLACE FUNCTION calcular_importe_factura_venta(idfra INTEGER)
-    -- Devuelve el importe total de la factura A PARTIR DE LOS VENCIMIENTOS. Si no tiene 
-    -- vencimientos asumo que la factura está incompleta, algún usuario está trabajando 
+    -- Devuelve el importe total de la factura A PARTIR DE LOS VENCIMIENTOS. Si no tiene
+    -- vencimientos asumo que la factura está incompleta, algún usuario está trabajando
     -- en ella o lo que sea y no la tengo en cuenta para nada.
     RETURNS FLOAT
     AS $$
         SELECT COALESCE(SUM(importe), 0) FROM vencimiento_cobro WHERE vencimiento_cobro.factura_venta_id = $1;
     $$ LANGUAGE SQL;    -- NEW! 5/08/2013
 
-CREATE OR REPLACE FUNCTION calcular_credito_disponible(idcliente INTEGER, 
-                                            fecha DATE DEFAULT CURRENT_DATE, 
-                                            base FLOAT DEFAULT 0.0, 
+CREATE OR REPLACE FUNCTION calcular_credito_disponible(idcliente INTEGER,
+                                            fecha DATE DEFAULT CURRENT_DATE,
+                                            base FLOAT DEFAULT 0.0,
                                             devil BOOLEAN DEFAULT TRUE)
-    -- Devuelve el crédito del cliente cuyo id se recibe. La cantidad "base" 
-    -- se resta al crédito para el cálculo de crédito en el momento de 
-    -- formalizar un pedido. La "base" debería ser el importe del pedido en 
-    -- ese momento y de ese modo saber si el pedido se podría servir con 
-    -- el crédito actual. Por ejemplo: un pedido de 1.5k € (base) no podrá 
+    -- Devuelve el crédito del cliente cuyo id se recibe. La cantidad "base"
+    -- se resta al crédito para el cálculo de crédito en el momento de
+    -- formalizar un pedido. La "base" debería ser el importe del pedido en
+    -- ese momento y de ese modo saber si el pedido se podría servir con
+    -- el crédito actual. Por ejemplo: un pedido de 1.5k € (base) no podrá
     -- servirse si el crédito es de 1K.
-    -- devil (because premature optimization is the root of all evil): Si TRUE 
-    -- usa las optimizaciones de crédito. Si FALSE las ignora; y así puedo 
+    -- devil (because premature optimization is the root of all evil): Si TRUE
+    -- usa las optimizaciones de crédito. Si FALSE las ignora; y así puedo
     -- comparar si el resultado es el mismo en los dos casos.
      RETURNS FLOAT
      AS $$
@@ -3915,16 +3916,16 @@ CREATE OR REPLACE FUNCTION calcular_credito_disponible(idcliente INTEGER,
         credito FLOAT;
      BEGIN
         RAISE INFO 'calcular_credito_disponible: cliente.id %', $1;
-        SELECT cliente.riesgo_concedido 
-          FROM cliente 
+        SELECT cliente.riesgo_concedido
+          FROM cliente
          WHERE cliente.id = $1 INTO riesgo_concedido;
         IF riesgo_concedido = -1 THEN
-            credito := 'Infinity'; 
-        ELSIF devil = TRUE AND riesgo_concedido = 0 THEN   
-                -- CWT: 10/10/2013 OPTIMIZACIÓN. 
-                -- Si el crédito es cero, y como no cuento los abonos, ni me 
+            credito := 'Infinity';
+        ELSIF devil = TRUE AND riesgo_concedido = 0 THEN
+                -- CWT: 10/10/2013 OPTIMIZACIÓN.
+                -- Si el crédito es cero, y como no cuento los abonos, ni me
                 -- molesto en calcular nada. Disponible: cero.
-            credito := 0; 
+            credito := 0;
         ELSE
             RAISE INFO 'Fra        credito    sin_documentar sin_vencer';
             RAISE INFO '---------  ---------  -------------- ----------';
@@ -3932,45 +3933,45 @@ CREATE OR REPLACE FUNCTION calcular_credito_disponible(idcliente INTEGER,
             sin_vencer := 0;
             -- Inicialización del crédito. Por si no entra en el bucle.
             credito := riesgo_concedido - (sin_documentar + sin_vencer) - base;
-            FOR fraventa IN SELECT * FROM factura_venta 
+            FOR fraventa IN SELECT * FROM factura_venta
                                     WHERE factura_venta.cliente_id = $1 LOOP
                 IF fra_impagada(fraventa.id, $2) THEN
                     RAISE INFO 'Fra. impagada: % (id %). No sigo.', fraventa.numfactura, fraventa.id;
-                    -- PSEUDOOPTIMIZACIÓN. Si alguna factura está impagada, 
+                    -- PSEUDOOPTIMIZACIÓN. Si alguna factura está impagada,
                     -- crédito 0. No sigo.
                     RETURN 0;
                 ELSIF fra_no_documentada(fraventa.id, $2) THEN
-                    sin_documentar := sin_documentar 
+                    sin_documentar := sin_documentar
                         + calcular_importe_factura_venta(fraventa.id)
-                        - calcular_importe_cobrado_factura_venta(fraventa.id); 
+                        - calcular_importe_cobrado_factura_venta(fraventa.id);
                         -- A costa de gastar unos ciclos más en estos casos
-                        -- particulares, si la factura está no documentada  
+                        -- particulares, si la factura está no documentada
                         -- solo cuento la parte que realmente está pendiente
                         -- de documentar.
                     RAISE INFO '%          %          %              %', fraventa.numfactura, credito, sin_documentar, sin_vencer;
                 ELSIF fra_no_vencida(fraventa.id, $2) THEN
-                    sin_vencer := sin_vencer 
+                    sin_vencer := sin_vencer
                         + calcular_importe_factura_venta(fraventa.id);
                     RAISE INFO '%          %          %              %', fraventa.numfactura, credito, sin_documentar, sin_vencer;
                 END IF;
                 IF devil = TRUE THEN
-                    -- OPTIMIZACIÓN: 10/10/2013. CWT: Si durante el cálculo 
-                    -- llego a cero, paro. Dejo de seguir calculando. Lo mismo 
-                    -- da que tenga cero como que tenga menos quince mil. No 
+                    -- OPTIMIZACIÓN: 10/10/2013. CWT: Si durante el cálculo
+                    -- llego a cero, paro. Dejo de seguir calculando. Lo mismo
+                    -- da que tenga cero como que tenga menos quince mil. No
                     -- se le va a servir nada.
-                    credito := riesgo_concedido 
-                                - (sin_documentar + sin_vencer) 
+                    credito := riesgo_concedido
+                                - (sin_documentar + sin_vencer)
                                 - base;
                     IF credito < 0 THEN
                         RETURN 0;
                     END IF;
-                END IF; 
+                END IF;
             END LOOP;
             IF NOT devil THEN
-                credito := riesgo_concedido 
-                            - (sin_documentar + sin_vencer) 
+                credito := riesgo_concedido
+                            - (sin_documentar + sin_vencer)
                             - base;
-            END IF; 
+            END IF;
         END IF;
         RAISE INFO 'calcular_credito_disponible: credito %', credito;
         RETURN credito;
@@ -4052,7 +4053,7 @@ CREATE FUNCTION un_solo_almacen_ppal() RETURNS TRIGGER AS '
 --        -- Casos a cubrir:
 --        IF OLD IS NULL THEN
 --            IF (SELECT COUNT(id) FROM almacen WHERE principal = TRUE) = 0 THEN
---                -- 1.- Que sea el primer almacén que se crea. Debe ser 
+--                -- 1.- Que sea el primer almacén que se crea. Debe ser
 --                --     el principal.
 --                NEW.principal = TRUE;
 --            ELSE
@@ -4060,9 +4061,9 @@ CREATE FUNCTION un_solo_almacen_ppal() RETURNS TRIGGER AS '
 --                NEW.principal = FALSE;
 --            END IF;
 --        ELSE    -- OLD IS NOT NULL, está en UPDATE.
---            -- 3.- Que esté actualizando un almacén. 
+--            -- 3.- Que esté actualizando un almacén.
 --            -- IF OLD.principal = TRUE
---                -- Si es el principal, se deja como estaba. 
+--                -- Si es el principal, se deja como estaba.
 --                -- NEW.principal = TRUE
 --            -- ELSE
 --                -- Si no lo es, se pone principal al FALSE.
@@ -4070,46 +4071,46 @@ CREATE FUNCTION un_solo_almacen_ppal() RETURNS TRIGGER AS '
 --            -- END IF;
 --            NEW.principal = OLD.principal;
 --        END IF;
-        -- Mucho más fácil. Si ya hay un almacén principal el nuevo registro 
-        -- debe estar a FALSE en el campo principal. Si no hay ninguno, tanto 
-        -- si estoy creando como actualizando registros, devuelvo TRUE y será 
-        -- el primero. Las siguientes veces ya siempre devolverá FALSE en ese 
+        -- Mucho más fácil. Si ya hay un almacén principal el nuevo registro
+        -- debe estar a FALSE en el campo principal. Si no hay ninguno, tanto
+        -- si estoy creando como actualizando registros, devuelvo TRUE y será
+        -- el primero. Las siguientes veces ya siempre devolverá FALSE en ese
         -- campo.
         IF (SELECT COUNT(id) FROM almacen WHERE principal = TRUE) = 0 THEN
-            NEW.principal = TRUE; 
+            NEW.principal = TRUE;
         ELSE
             NEW.principal = FALSE;
         END IF;
         RETURN NEW;
-        -- OJO: Si se hace un UPDATE con varios registros, el primero de 
-        -- ellos se quedará con el principal a TRUE dependiendo de cómo 
-        -- se lo monte el planificador de consultas. De todos modos no me 
+        -- OJO: Si se hace un UPDATE con varios registros, el primero de
+        -- ellos se quedará con el principal a TRUE dependiendo de cómo
+        -- se lo monte el planificador de consultas. De todos modos no me
         -- preocupa porque el ORM siempre ataca los registros individualmente.
-        -- El único problema latente es que hasta que se haga el sync() o 
+        -- El único problema latente es que hasta que se haga el sync() o
         -- syncUpdate() el objeto tendrá ese atributo a True.
     END;
 ' LANGUAGE plpgsql;
 
 CREATE FUNCTION un_solo_almacen_ppal_pero_el_ultimo() RETURNS TRIGGER AS '
     BEGIN
-        -- Vale. La idea es justo la contraria que en el caso anterior. Ahora 
-        -- voy a intentar respetar el valor del registro nuevo. Si no hay 
-        -- definido almacén principal, el nuevo es el principal. Si ya lo 
+        -- Vale. La idea es justo la contraria que en el caso anterior. Ahora
+        -- voy a intentar respetar el valor del registro nuevo. Si no hay
+        -- definido almacén principal, el nuevo es el principal. Si ya lo
         -- había y el nuevo quiere serlo, le dejo.
         IF NEW.principal = TRUE THEN
             UPDATE almacen SET principal = FALSE;
         ELSE
             IF (SELECT COUNT(id) FROM almacen WHERE principal = TRUE) = 0 THEN
-                NEW.principal = TRUE; 
+                NEW.principal = TRUE;
             END IF;
         END IF;
         RETURN NEW;
     END;
 ' LANGUAGE plpgsql;
 
-CREATE TRIGGER tr_un_solo_almacen_ppal_pero_el_ultimo 
---CREATE TRIGGER tr_un_solo_almacen_ppal 
-    BEFORE INSERT OR UPDATE ON almacen 
+CREATE TRIGGER tr_un_solo_almacen_ppal_pero_el_ultimo
+--CREATE TRIGGER tr_un_solo_almacen_ppal
+    BEFORE INSERT OR UPDATE ON almacen
     --FOR EACH ROW EXECUTE PROCEDURE un_solo_almacen_ppal();
     FOR EACH ROW EXECUTE PROCEDURE un_solo_almacen_ppal_pero_el_ultimo();
 

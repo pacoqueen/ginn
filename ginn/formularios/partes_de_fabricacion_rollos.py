@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2016  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -93,6 +93,8 @@ except ImportError:
     from psycopg2 import ProgrammingError as psycopg_ProgrammingError
 import datetime
 from lib.myprint import myprint
+from api import murano
+
 
 # Compruebo qué tipo de fechas estoy manejando y preparo la constante de un
 # día completo para sumar a fechas y fechahora.
@@ -2184,6 +2186,7 @@ class PartesDeFabricacionRollos(Ventana):
                         rollo.destroy(ventana = __file__)
                     if rolloDefectuoso != None:
                         rolloDefectuoso.destroy(ventana = __file__)
+                     murano.ops.delete_articulo(articulo)
                 except Exception, e:
                     utils.dialogo_info(titulo = 'ERROR: ROLLO NO BORRADO',
                         texto = 'El rollo no ha sido eliminado completamente.'
@@ -3598,6 +3601,7 @@ def crear_articulo(numrollo,
         pclases.Auditoria.nuevo(articulo,
                 objeto_ventana_parte and objeto_ventana_parte.usuario or None,
                 __file__)
+        murano.ops.create_articulo(articulo)
     else:
         articulo = None
     return articulo

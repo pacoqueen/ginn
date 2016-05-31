@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2016  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -69,6 +69,7 @@ from formularios import reports
 import datetime
 from lib.myprint import myprint
 import time
+from api import murano
 
 
 def verificar_solapamiento(partedeproduccion, padre=None,
@@ -658,10 +659,25 @@ class PartesDeFabricacionBalas(Ventana):
             antes = productoCompra.existencias
             cantidad_desecho_final = desecho.cambiar_cantidad(nueva_cantidad)
             despues = desecho.productoCompra.existencias
-            self.logger.warning("%spartes_de_fabricacion_balas::cambiar_cantidad_descuento_material -> Cambiada cantidad de descuento existente. Stock de %s antes: %f, después: %f. Cantidad de desecho antes: %f. Después: %f." % (self.usuario and self.usuario.usuario + ": " or "", productoCompra.descripcion, antes, despues, cantidad_desecho_inicial, cantidad_desecho_final))
+            self.logger.warning("%spartes_de_fabricacion_balas::"
+                                "cambiar_cantidad_descuento_material -> "
+                                "Cambiada cantidad de descuento existente. "
+                                "Stock de %s antes: %f, después: %f. "
+                                "Cantidad de desecho antes: %f. "
+                                "Después: %f." % (self.usuario and
+                                                  self.usuario.usuario +
+                                                  ": " or "",
+                                                  productoCompra.descripcion,
+                                                  antes,
+                                                  despues,
+                                                  cantidad_desecho_inicial,
+                                                  cantidad_desecho_final))
             if cantidad_desecho_final != nueva_cantidad:
                 utils.dialogo_info(titulo="EXISTENCIAS INSUFICIENTES",
-                                   texto="No había existencias suficientes del producto para cambiar la\ncantidad desechada a %s." % (utils.float2str(nueva_cantidad)),
+                                   texto="No había existencias suficientes del"
+                                         " producto para cambiar la\ncantidad"
+                                         " desechada a %s." % (
+                                             utils.float2str(nueva_cantidad)),
                                    padre=self.wids['ventana'])
             self.objeto.unificar_desechos()
             self.rellenar_tabla_desechos()
@@ -675,7 +691,7 @@ class PartesDeFabricacionBalas(Ventana):
         """
         escala.set_sensitive(ch.get_active())
         model = combo.get_model()
-        if len(model) > 0  and ch.get_active():
+        if len(model) > 0 and ch.get_active():
             utils.combo_set_from_db(combo, model[0][0])
             combo.set_sensitive(True)
             escala.set_value(100)
@@ -708,9 +724,9 @@ class PartesDeFabricacionBalas(Ventana):
         try:
             granzas = pclases.ProductoCompra.select(pclases.AND(
                 pclases.ProductoCompra.q.descripcion.contains("granza"),
-                pclases.ProductoCompra.q.obsoleto == False,
-                pclases.ProductoCompra.q.tipoDeMaterialID
-                  == pclases.TipoDeMaterial.select(
+                pclases.ProductoCompra.q.obsoleto == False,     # NOQA
+                pclases.ProductoCompra.q.tipoDeMaterialID ==
+                    pclases.TipoDeMaterial.select(
                     pclases.TipoDeMaterial.q.descripcion.contains("prima")
                   )[0].id),
                 orderBy="descripcion")
@@ -774,7 +790,7 @@ class PartesDeFabricacionBalas(Ventana):
         Recibe la escala relacionada con el silo.
         """
         if ch.get_active():
-            idsilo = int(ch.get_name()[ch.get_name().index("ID")+2:])
+            idsilo = int(ch.get_name()[ch.get_name().index("ID") + 2:])
             silo = pclases.Silo.get(idsilo)
             if silo.ocupado <= 0:
                 ch.set_active(False)
@@ -806,11 +822,12 @@ class PartesDeFabricacionBalas(Ventana):
 
     def add_filtro(self, b):
         producto = self.buscar_producto_compra("FILTRO")
-        if producto == None:
+        if producto is None:
             return
         cantidad = utils.dialogo_entrada(titulo='CANTIDAD',
-                    texto='Introduzca la cantidad consumida:')
-        if cantidad == None:
+                                         texto='Introduzca la cantidad '
+                                               'consumida:')
+        if cantidad is None:
             return
         try:
             cantidad = float(cantidad)
@@ -2529,7 +2546,10 @@ class PartesDeFabricacionBalas(Ventana):
                 ini, fin = fin, ini
             if abs(fin - ini) > 100:
                 if not utils.dialogo(titulo = '¿ESTÁ SEGURO?',
-                                     texto = "Está a punto de añadir %d artículos al parte. ¿Está seguro de que esa cantidad es correcta?" % abs(fin-ini),
+                                     texto = "Está a punto de añadir %d "
+                                             "artículos al parte. ¿Está "
+                                             "seguro de que esa cantidad es"
+                                             " correcta?" % abs(fin-ini),
                                      padre = self.wids['ventana']):
                     return None, pedir_peso
         else:
@@ -2573,6 +2593,7 @@ class PartesDeFabricacionBalas(Ventana):
                             albaranSalida = None,
                             almacen = pclases.Almacen.get_almacen_principal())
             pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
+            murano.create_articulo(articulo)
         if articulo != None:
             self.descontar_material_adicional(articulo)
             self.actualizar_ventana()
@@ -2605,6 +2626,7 @@ class PartesDeFabricacionBalas(Ventana):
                             albaranSalida = None,
                             almacen = pclases.Almacen.get_almacen_principal())
         pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
+        murano.create_articulo(articulo)
         return articulo
 
     def drop_bala(self, boton):
@@ -2656,6 +2678,7 @@ class PartesDeFabricacionBalas(Ventana):
                                 bala.destroy(ventana = __file__)
                             if es_bigbag:
                                 bigbag.destroy(ventana = __file__)
+                            murano.ops.delete_articulo(articulo)
                         except ZeroDivisionError:
                             utils.dialogo_info(titulo = 'ERROR', texto = 'Ocurrió un error. No se pudo eliminar completamente.\nAnote el número de bala (%s) y contacte con el administrador de la aplicación\npara subsanar la inconsistencia.' % (bala and bala.codigo or "no disponible"), padre = self.wids['ventana'])
                             # bala.parteDeProduccion = self.objeto
@@ -3715,8 +3738,11 @@ class PartesDeFabricacionBalas(Ventana):
                     # Si no son los mismos del calendario y los quiere borrar.
                     if [ht.empleado for ht in self.objeto.horasTrabajadas] != empleados \
                        and utils.dialogo(titulo = "¿ELIMINAR OPERARIOS?",
-                                     texto = "El parte ya tiene empleados relacionados.\n¿Desea eliminarlos y asociar los definidos en el turno?",
-                                     padre = self.wids['ventana']):
+                                         texto="El parte ya tiene empleados "
+                                         "relacionados.\n¿Desea eliminarlos "
+                                         "y asociar los definidos en el "
+                                         "turno?",
+                                         padre=self.wids['ventana']):
                         for ht in self.objeto.horasTrabajadas:
                             self.objeto.removeEmpleado(ht.empleado)
                     else:

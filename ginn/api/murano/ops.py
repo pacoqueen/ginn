@@ -1393,6 +1393,8 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
     else:
         logging.warning("El código %s ya existe en Murano. Se ignora.",
                         articulo.codigo)
+    # El código de retorno es 1 para error y 0 para éxito.
+    articulo.api = not bool(res)
     return res
 
 
@@ -1505,6 +1507,7 @@ def fire(guid_proceso, ignore_errors=False):
     """
     Lanza el proceso de importación de Murano de todos los movimientos de
     stock de la tabla temporal.
+    Devuelve 0 si el proceso se completó con éxito o 1 en caso contrario.
     """
     strerror = "No puede ejecutar código nativo de Murano. Necesita instalar"\
                " la biblioteca win32com y lanzar esta función desde una "\
