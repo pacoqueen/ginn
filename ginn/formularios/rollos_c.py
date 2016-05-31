@@ -27,11 +27,11 @@
 ## rollos_c.py - Alta de rollos «C».
 ###################################################################
 ## NOTAS:
-## 
+##
 ###################################################################
 ## Changelog:
 ## 2 de junio de 2008 -> Inicio
-## 
+##
 ###################################################################
 
 from ventana import Ventana
@@ -43,10 +43,11 @@ from framework import pclases
 import mx.DateTime
 from informes import geninformes
 from ventana_progreso import VentanaProgreso
+from api import murano
 
 def descontar_material_adicional(ventana_parte, articulo, restar = True):
     """
-    Descuenta el material adicional correspondiente al artículo según 
+    Descuenta el material adicional correspondiente al artículo según
     la formulación que indique la línea de fabricación.
     Si "restar" es True, descuenta. Si es False, añade la cantidad (para
     cuando se elimine un rollo del parte, por ejemplo).
@@ -54,16 +55,16 @@ def descontar_material_adicional(ventana_parte, articulo, restar = True):
     se avisará al usuario de la incidencia.
     """
     producto = articulo.productoVenta
-    # OJO: Debe llamarse "plastico", tal cual, sin acentos ni nada. No es lo 
+    # OJO: Debe llamarse "plastico", tal cual, sin acentos ni nada. No es lo
     # suyo, pero al menos hemos reducido el número de casos especiales.
     for consumoAdicional in producto.consumosAdicionales:
         consumido = consumoAdicional.consumir(articulo, cancelar = not restar)
         ventana_parte.logger.warning("Rollos C (%s-%s): Consumiendo %s de %s para el rollo C %s. Existencias: %s" % (
-            utils.str_fecha(articulo.fechahora), 
-            utils.str_hora_corta(articulo.fechahora), 
-            utils.float2str(consumido), 
-            consumoAdicional.productoCompra.descripcion, 
-            articulo.codigo, 
+            utils.str_fecha(articulo.fechahora),
+            utils.str_hora_corta(articulo.fechahora),
+            utils.float2str(consumido),
+            consumoAdicional.productoCompra.descripcion,
+            articulo.codigo,
             utils.float2str(consumoAdicional.productoCompra.existencias)))
     # OJO: ¿TODO?: Estos consumos no generan albaranes internos.
     #actualizar_albaran_interno_con_tubos(ventana_parte.objeto)
@@ -74,10 +75,10 @@ class RollosC(Ventana):
         self.usuario = usuario
         Ventana.__init__(self, 'rollos_c.glade', objeto, usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
-                       'b_aplicar/clicked': self.actualizar_tabla, 
-                       'b_add/clicked': self.crear_rollo, 
-                       'b_drop/clicked': self.drop_or_print, 
-                       'b_etiqueta/clicked': self.drop_or_print, 
+                       'b_aplicar/clicked': self.actualizar_tabla,
+                       'b_add/clicked': self.crear_rollo,
+                       'b_drop/clicked': self.drop_or_print,
+                       'b_etiqueta/clicked': self.drop_or_print,
                        'b_mes/clicked': self.cambiar_mes_acumulado
                        }
         self.add_connections(connections)
@@ -90,7 +91,7 @@ class RollosC(Ventana):
                 except AttributeError:
                     esta_obsoleto = False
                 if not esta_obsoleto:
-                    productos_gtxc.append((cer.productosVenta[0].id, 
+                    productos_gtxc.append((cer.productosVenta[0].id,
                                            cer.productosVenta[0].descripcion))
             except IndexError:  # Producto mal borrado, CER desparejado.
                 mensaje = "%srollos_c::__init__ -> CamposEspecificosRollo ID %d sin productosVenta. Intento eliminar." % (self.usuario and self.usuario.usuario + ": " or "", cer.id)
@@ -106,7 +107,7 @@ class RollosC(Ventana):
         productos_gtxc.sort(lambda p1, p2: p1[0] - p2[0])
         utils.rellenar_lista(self.wids['cbe_producto'], productos_gtxc)
         if len(productos_gtxc) > 0:
-            utils.combo_set_from_db(self.wids['cbe_producto'], 
+            utils.combo_set_from_db(self.wids['cbe_producto'],
                                     productos_gtxc[0][0])
         self.wids['sp_ver'].set_value(15)
         self.preparar_tv(self.wids['tv_rollos'])
@@ -115,8 +116,8 @@ class RollosC(Ventana):
 
     def drop_or_print(self, boton):
         """
-        Recupera los objetos rollo y genera las etiquetas 
-        en PDF o los elimina, dependiendo del botón que 
+        Recupera los objetos rollo y genera las etiquetas
+        en PDF o los elimina, dependiendo del botón que
         haya invocado al callback.
         """
         model,paths=self.wids['tv_rollos'].get_selection().get_selected_rows()
@@ -128,14 +129,14 @@ class RollosC(Ventana):
             if "etiqueta" in boton.name:
                 self.generar_etiquetas(rollos)
             elif "drop" in boton.name:
-                if utils.dialogo(titulo = "¿BORRAR?", 
-                                 texto = "¿Está seguro de eliminar los rollos seleccionados?", 
+                if utils.dialogo(titulo = "¿BORRAR?",
+                                 texto = "¿Está seguro de eliminar los rollos seleccionados?",
                                  padre = self.wids['ventana']):
                     self.borrar_rollos(rollos)
 
     def generar_etiquetas(self, rollos):
         """
-        Genera una lista de diccionarios con los datos de los rollos 
+        Genera una lista de diccionarios con los datos de los rollos
         para generar sus etiquetas.
         """
         from listado_rollos import preparar_datos_etiquetas_rollos_c
@@ -144,7 +145,7 @@ class RollosC(Ventana):
             from formularios import reports
             reports.abrir_pdf(geninformes.etiquetasRollosCEtiquetadora(data))
             for r in rollos:    # XXX: Anoto que se ha impreso la etiqueta.
-                pclases.Auditoria.modificado(r, self.usuario, __file__, 
+                pclases.Auditoria.modificado(r, self.usuario, __file__,
                         "Impresión de etiqueta para rollo %s" % r.get_info())
 
     def borrar_rollos(self, rollos):
@@ -156,57 +157,62 @@ class RollosC(Ventana):
             a = b.articulo
             #a.rolloC = None
             try:
+                murano_deleted = murano.ops.delete_articulo(a)
                 a.destroy(ventana = __file__)
             except Exception, msg:
-                self.logger.error("%srollos_c::borrar_rollos -> Artículo ID %d de rollo ID %d (%s) no se pudo eliminar. Excepción: %s" 
+                self.logger.error("%srollos_c::borrar_rollos -> Artículo ID %d de rollo ID %d (%s) no se pudo eliminar. Excepción: %s"
                     % (self.usuario and self.usuario.usuario + ": " or "", a.id, b.id, b.codigo, msg))
                 a.rolloC = b
                 self.consumir(b)
+                if murano_deleted:
+                    murano.ops.create_articulo(a)
             else:
                 try:
                     b.destroy(ventana = __file__)
                 except Exception, msg:
-                    self.logger.error("%srollos_c::borrar_rollos -> Rollo ID %d (%s) no se pudo eliminar. Excepción: %s" 
+                    self.logger.error("%srollos_c::borrar_rollos -> Rollo ID %d (%s) no se pudo eliminar. Excepción: %s"
                         % (self.usuario and self.usuario.usuario + ": " or "", b.id, b.codigo, msg))
                     try:
                         b.destroy_en_cascada(ventana = __file__)
                     except Exception, msg:
-                        self.logger.error("%srollos_c::borrar_rollos -> Rollo ID %d (%s) no se pudo eliminar en cascada. Excepción: %s" 
+                        self.logger.error("%srollos_c::borrar_rollos -> Rollo ID %d (%s) no se pudo eliminar en cascada. Excepción: %s"
                             % (self.usuario and self.usuario.usuario + ": " or "", b.id, b.codigo, msg))
                         self.consumir(b)
+                        # TODO: Refactorizar. ¿No habría que recrear el
+                        # artículo?
         self.actualizar_tabla()
 
     def crear_rollo(self, boton = None, peso = None):
         """
-        Crea una rollo del producto mostrado en pantalla e introduce 
-        su información en el TreeView. El peso lo solicita en una 
+        Crea una rollo del producto mostrado en pantalla e introduce
+        su información en el TreeView. El peso lo solicita en una
         ventana de diálogo.
         Si se recibe peso, debe ser un float.
         """
         # ¿TODO?: Hacer que el peso lo tome del puerto serie y se le pase a esta función.
         producto = utils.combo_get_value(self.wids['cbe_producto'])
         if producto == None:
-            utils.dialogo_info(titulo = "SELECCIONE UN PRODUCTO", 
-                               texto = "Debe seleccionar un producto en el desplegable.", 
+            utils.dialogo_info(titulo = "SELECCIONE UN PRODUCTO",
+                               texto = "Debe seleccionar un producto en el desplegable.",
                                padre = self.wids['ventana'])
         else:
             if peso == None:
-                peso = utils.dialogo_entrada(titulo = "PESO", 
-                                             texto = "Introduzca peso:", 
-                                             padre = self.wids['ventana'], 
+                peso = utils.dialogo_entrada(titulo = "PESO",
+                                             texto = "Introduzca peso:",
+                                             padre = self.wids['ventana'],
                                              valor_por_defecto = "0")
                 try:
                     peso = utils._float(peso)
                 except (ValueError, TypeError):
-                    utils.dialogo_info(titulo = "ERROR", 
-                        texto = "El valor tecleado %s no es correcto." % peso, 
+                    utils.dialogo_info(titulo = "ERROR",
+                        texto = "El valor tecleado %s no es correcto." % peso,
                         padre = self.wids['ventana'])
                     peso = 0
             nuevo_rollo = self.crear_objeto_rollo(producto, peso)
             if nuevo_rollo == None:
-                utils.dialogo_info(titulo = "ERROR", 
+                utils.dialogo_info(titulo = "ERROR",
                     texto = "El rollo no se pudo crear. Verifique el peso "
-                            "introducido e inténtelo de nuevo.", 
+                            "introducido e inténtelo de nuevo.",
                     padre = self.wids['ventana'])
             else:
                 self.consumir(nuevo_rollo)
@@ -239,16 +245,17 @@ class RollosC(Ventana):
             b = pclases.RolloC(peso = peso)
             pclases.Auditoria.nuevo(b, self.usuario, __file__)
             try:
-                a = pclases.Articulo(rolloC = b, 
-                                bala = None, 
-                                bigbag = None, 
-                                rollo = None, 
-                                fechahora = mx.DateTime.localtime(), 
-                                productoVenta = producto, 
-                                parteDeProduccion = None, 
-                                albaranSalida = None, 
+                a = pclases.Articulo(rolloC = b,
+                                bala = None,
+                                bigbag = None,
+                                rollo = None,
+                                fechahora = mx.DateTime.localtime(),
+                                productoVenta = producto,
+                                parteDeProduccion = None,
+                                albaranSalida = None,
                                 almacen = pclases.Almacen.get_almacen_principal())
                 pclases.Auditoria.nuevo(a, self.usuario, __file__)
+                murano.ops.create_articulo(a)
             except:
                 b.destroy(ventana = __file__)
                 b = None
@@ -261,19 +268,19 @@ class RollosC(Ventana):
         Introduce el rollo al final del TreeView y lo desplaza.
         """
         model = self.wids['tv_rollos'].get_model()
-        fila = (utils.str_fechahora(rollo.fechahora), 
-                rollo.codigo, 
-                utils.float2str(rollo.peso, 2), 
-                rollo.productoVenta.descripcion, 
-                rollo.observaciones, 
+        fila = (utils.str_fechahora(rollo.fechahora),
+                rollo.codigo,
+                utils.float2str(rollo.peso, 2),
+                rollo.productoVenta.descripcion,
+                rollo.observaciones,
                 rollo.id)
         model.append(fila)
         self.mover_al_final(self.wids['tv_rollos'])
 
     def actualizar_tabla(self, boton = None):
         """
-        Actualiza la información completa de la tabla, 
-        volviendo a buscar los rollos e introduciéndolas 
+        Actualiza la información completa de la tabla,
+        volviendo a buscar los rollos e introduciéndolas
         en el TreeView.
         """
         rollos = self.buscar()
@@ -284,7 +291,7 @@ class RollosC(Ventana):
 
     def buscar(self):
         """
-        Inicia la consulta paral año indicado en el widget y 
+        Inicia la consulta paral año indicado en el widget y
         rellena las tablas con la información obtenida.
         """
         #import time
@@ -300,11 +307,11 @@ class RollosC(Ventana):
         else:
             tot = cuantos * 1.0
         for b in qrollos:
-            b.sync()        
-                # Con 999 rollos se gana únicamente 1 segundo si omito 
+            b.sync()
+                # Con 999 rollos se gana únicamente 1 segundo si omito
                 # la sincronización.
             try:
-                rollos.insert(0, (b, b.productoVenta))       
+                rollos.insert(0, (b, b.productoVenta))
                     # Para optimizar los accesos a la BD cacheo los datos aquí.
             except:     # ¿Rollo sin producto de venta? Mal asunto
                 rollos.insert(0, (b, None))
@@ -319,7 +326,7 @@ class RollosC(Ventana):
 
     def rellenar_tabla(self, rollos):
         """
-        Introduce los rollos recibidas en el TreeView «tv» y lo 
+        Introduce los rollos recibidas en el TreeView «tv» y lo
         desplaza a la última fila (la más baja)
         """
         tv = self.wids['tv_rollos']
@@ -333,11 +340,11 @@ class RollosC(Ventana):
                 desc = producto.descripcion
             else:
                 desc = "?"
-            fila = (utils.str_fechahora(rollo.fechahora), 
-                    rollo.codigo, 
-                    utils.float2str(rollo.peso, 2), 
-                    desc, 
-                    rollo.observaciones, 
+            fila = (utils.str_fechahora(rollo.fechahora),
+                    rollo.codigo,
+                    utils.float2str(rollo.peso, 2),
+                    desc,
+                    rollo.observaciones,
                     rollo.id)
             model.append(fila)
             totpantalla += rollo.peso_sin
@@ -348,34 +355,34 @@ class RollosC(Ventana):
 
     def cambiar_mes_acumulado(self, boton):
         """
-        Permite seleccionar un mes y un año. Después rellena los totales 
+        Permite seleccionar un mes y un año. Después rellena los totales
         de nuevo usando ese mes y año paral acumulado del mes.
-        No se almacenan mes y año, de modo que en cuanto se refresque la 
+        No se almacenan mes y año, de modo que en cuanto se refresque la
         pantalla volverá al mes y año actual.
         """
         mes_actual = mx.DateTime.today().month
-        meses = zip(range(1, 13), ("enero", 
-                                   "febrero", 
-                                   "marzo", 
-                                   "abril", 
-                                   "mayo", 
-                                   "junio", 
-                                   "julio", 
-                                   "agosto", 
-                                   "septiembre", 
-                                   "octubre", 
-                                   "noviembre", 
+        meses = zip(range(1, 13), ("enero",
+                                   "febrero",
+                                   "marzo",
+                                   "abril",
+                                   "mayo",
+                                   "junio",
+                                   "julio",
+                                   "agosto",
+                                   "septiembre",
+                                   "octubre",
+                                   "noviembre",
                                    "diciembre"))
-        mes = utils.dialogo_combo(titulo = "MES", 
-                                  texto = "Seleccione mes:", 
-                                  ops = meses, 
+        mes = utils.dialogo_combo(titulo = "MES",
+                                  texto = "Seleccione mes:",
+                                  ops = meses,
                                   padre = self.wids['ventana'],
                                   valor_por_defecto = mes_actual)
         if mes != None:
             anno_actual = mx.DateTime.today().year
-            anno = utils.dialogo_entrada(titulo = "AÑO", 
-                                         texto = "Introduzca año:", 
-                                         valor_por_defecto = str(anno_actual), 
+            anno = utils.dialogo_entrada(titulo = "AÑO",
+                                         texto = "Introduzca año:",
+                                         valor_por_defecto = str(anno_actual),
                                          padre = self.wids['ventana'])
             try:
                 anno = int(anno)
@@ -389,7 +396,7 @@ class RollosC(Ventana):
     def rellenar_totales(self, totpantalla, mes = None, anno = None):
         """
         Rellena los "entries" de totales:
-        - En pantalla. Se recibe. Si es None no cambial valor que haya en 
+        - En pantalla. Se recibe. Si es None no cambial valor que haya en
                        el entry.
         - Acumulado de todas.
         - Acumulado del mes.
@@ -404,7 +411,7 @@ class RollosC(Ventana):
         self.wids['label4'].set_use_markup(True)
         totmes = pclases.RolloC.calcular_acumulado_mes_peso_sin(mes, anno)
         if totpantalla != None:
-            self.wids['e_pantalla'].set_text("%s kg" 
+            self.wids['e_pantalla'].set_text("%s kg"
                 % utils.float2str(totpantalla))
         self.wids['e_mes'].set_text("%s kg" % utils.float2str(totmes))
         self.wids['e_acumulado'].set_text("%s kg" % utils.float2str(totacum))
@@ -429,10 +436,10 @@ class RollosC(Ventana):
         """
         cols = (('Fecha y hora', 'gobject.TYPE_STRING', False,True,False,None),
                 ('Código', 'gobject.TYPE_STRING', False, True, True, None),
-                ('Peso', 'gobject.TYPE_STRING', True, True, False, 
-                    self.cambiar_peso), 
-                ('Producto', 'gobject.TYPE_STRING', False, False, False, None), 
-                ('Observaciones', 'gobject.TYPE_STRING', True, False, False, 
+                ('Peso', 'gobject.TYPE_STRING', True, True, False,
+                    self.cambiar_peso),
+                ('Producto', 'gobject.TYPE_STRING', False, False, False, None),
+                ('Observaciones', 'gobject.TYPE_STRING', True, False, False,
                     self.cambiar_observaciones),
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(tv, cols)
@@ -449,16 +456,16 @@ class RollosC(Ventana):
         try:
             peso = utils._float(texto)
         except ValueError:
-            utils.dialogo_info(titulo = "ERROR", 
-                               texto = "El valor tecleado %s no es correcto." % (peso), 
+            utils.dialogo_info(titulo = "ERROR",
+                               texto = "El valor tecleado %s no es correcto." % (peso),
                                padre = self.wids['ventana'])
         else:
             model = self.wids['tv_rollos'].get_model()
             try:
                 rollo = pclases.RolloC.get(model[path][-1])
             except:
-                utils.dialogo_info(titulo = "ERROR", 
-                                   texto = "No se pudo acceder al rollo.", 
+                utils.dialogo_info(titulo = "ERROR",
+                                   texto = "No se pudo acceder al rollo.",
                                    padre = self.wids['ventana'])
                 self.actualizar_tabla()
             else:
@@ -473,7 +480,7 @@ class RollosC(Ventana):
                     totpantalla = 0.0
                 totpantalla -= difpeso
                 self.rellenar_totales(totpantalla)
-    
+
     def cambiar_observaciones(self, cell, path, texto):
         """
         Cambia las observaciones del rollo de la fila editada.
@@ -482,8 +489,8 @@ class RollosC(Ventana):
         try:
             rollo = pclases.RolloC.get(model[path][-1])
         except:
-            utils.dialogo_info(titulo = "ERROR", 
-                               texto = "No se pudo acceder al rollo.", 
+            utils.dialogo_info(titulo = "ERROR",
+                               texto = "No se pudo acceder al rollo.",
                                padre = self.wids['ventana'])
             self.actualizar_tabla()
         else:
@@ -493,5 +500,5 @@ class RollosC(Ventana):
 ################################################################################
 
 if __name__ == '__main__':
-    v = RollosC() 
+    v = RollosC()
 

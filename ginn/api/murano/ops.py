@@ -1393,8 +1393,8 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
     else:
         logging.warning("El código %s ya existe en Murano. Se ignora.",
                         articulo.codigo)
-    # El código de retorno es 1 para error y 0 para éxito.
-    articulo.api = not bool(res)
+    articulo.api = res
+    articulo.syncUpdate()
     return res
 
 
@@ -1588,4 +1588,6 @@ def fire(guid_proceso, ignore_errors=False):
         logging.info(strverbose)
         if VERBOSE and DEBUG:
             print(strverbose)
+    # El código de retorno es 1 para error y 0 para éxito. Cambio a boolean.
+    retCode = not bool(retCode)
     return retCode

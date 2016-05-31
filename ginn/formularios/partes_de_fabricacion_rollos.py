@@ -2174,19 +2174,19 @@ class PartesDeFabricacionRollos(Ventana):
                     rolloDefectuoso = articulo.rolloDefectuoso
                     descontar_material_adicional(self, articulo,
                                                  restar = False)
-                    # Ya no poedo hacer esto
+                    # Ya no puedo hacer esto
                     # articulo.rollo = None
                     # Porque si no, esto
                     # IntegrityError: el nuevo registro para la relación
                     # «articulo» viola la restricción check «articulo_check»
-                    articulo.rolloDefectuoso = rolloDefectuoso
+                    retcode_murano = murano.ops.delete_articulo(articulo)
+                    # WTF? articulo.rolloDefectuoso = rolloDefectuoso
                     articulo.parteDeProduccion = None
                     articulo.destroy(ventana = __file__)
                     if rollo != None:
                         rollo.destroy(ventana = __file__)
                     if rolloDefectuoso != None:
                         rolloDefectuoso.destroy(ventana = __file__)
-                     murano.ops.delete_articulo(articulo)
                 except Exception, e:
                     utils.dialogo_info(titulo = 'ERROR: ROLLO NO BORRADO',
                         texto = 'El rollo no ha sido eliminado completamente.'

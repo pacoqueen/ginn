@@ -2593,7 +2593,7 @@ class PartesDeFabricacionBalas(Ventana):
                             albaranSalida = None,
                             almacen = pclases.Almacen.get_almacen_principal())
             pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
-            murano.create_articulo(articulo)
+            murano.ops.create_articulo(articulo)
         if articulo != None:
             self.descontar_material_adicional(articulo)
             self.actualizar_ventana()
@@ -2626,7 +2626,7 @@ class PartesDeFabricacionBalas(Ventana):
                             albaranSalida = None,
                             almacen = pclases.Almacen.get_almacen_principal())
         pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
-        murano.create_articulo(articulo)
+        murano.ops.create_articulo(articulo)
         return articulo
 
     def drop_bala(self, boton):
@@ -2669,6 +2669,7 @@ class PartesDeFabricacionBalas(Ventana):
                                 es_bigbag = False
                                 es_bala = False
                             self.descontar_material_adicional(articulo, restar = False)
+                            ret_murano = murano.ops.delete_articulo(articulo)
                             # TODO: Falta aumentar la granza al igual que se hace cuando se cambia el peso de una bala.
                             #articulo.bala = None
                             #articulo.bigbag = None
@@ -2678,7 +2679,6 @@ class PartesDeFabricacionBalas(Ventana):
                                 bala.destroy(ventana = __file__)
                             if es_bigbag:
                                 bigbag.destroy(ventana = __file__)
-                            murano.ops.delete_articulo(articulo)
                         except ZeroDivisionError:
                             utils.dialogo_info(titulo = 'ERROR', texto = 'Ocurrió un error. No se pudo eliminar completamente.\nAnote el número de bala (%s) y contacte con el administrador de la aplicación\npara subsanar la inconsistencia.' % (bala and bala.codigo or "no disponible"), padre = self.wids['ventana'])
                             # bala.parteDeProduccion = self.objeto
@@ -2689,6 +2689,8 @@ class PartesDeFabricacionBalas(Ventana):
                                 if es_bigbag:
                                     articulo.bigbag = bigbag
                                 self.descontar_material_adicional(articulo, restar = True)
+                                if ret_murano:
+                                    murano.ops.create_articulo(articulo)
                             except pclases.SQLObjectNotFound:
                                 pass
                             except AttributeError:  # Existe el artículo pero ya no tiene bala
