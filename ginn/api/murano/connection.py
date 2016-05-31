@@ -21,7 +21,7 @@ import pymssql
 # DEBUG = True
 DEBUG = False
 VERBOSE = True
-CODEMPRESA = 8000   # Empresa de pruebas. Cambiar por la 10200 en producción.
+CODEMPRESA = 10200  # Empresa de pruebas: 800. Cambiar a la 10200 en producción
 
 
 class Connection(object):
