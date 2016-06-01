@@ -1,6 +1,6 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim:
 " Vim session script.
-" Created by session.vim 2.13.1 on 31 mayo 2016 at 22:22:38.
+" Created by session.vim 2.13.1 on 01 junio 2016 at 17:15:25.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -31,6 +31,7 @@ badd +1 dump_existencias.py
 badd +1 ginn/api/tests/murano_tests.py
 badd +1 ginn/api/tests/dump_existencias.py
 badd +12 ginn/formularios/partes_de_fabricacion_rollos.py
+badd +0 ginn/api/murano/extra.py
 argglobal
 silent! argdel *
 edit ginn/api/murano/ops.py
@@ -53,16 +54,7 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-wincmd _ | wincmd |
-split
-wincmd _ | wincmd |
-split
-wincmd _ | wincmd |
-split
-10wincmd k
-wincmd w
-wincmd w
-wincmd w
+7wincmd k
 wincmd w
 wincmd w
 wincmd w
@@ -74,29 +66,23 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 26 + 73) / 146)
-exe '2resize ' . ((&lines * 22 + 26) / 53)
-exe 'vert 2resize ' . ((&columns * 119 + 73) / 146)
-exe '3resize ' . ((&lines * 10 + 26) / 53)
-exe 'vert 3resize ' . ((&columns * 119 + 73) / 146)
-exe '4resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 4resize ' . ((&columns * 119 + 73) / 146)
-exe '5resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 5resize ' . ((&columns * 119 + 73) / 146)
-exe '6resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 6resize ' . ((&columns * 119 + 73) / 146)
-exe '7resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 7resize ' . ((&columns * 119 + 73) / 146)
-exe '8resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 8resize ' . ((&columns * 119 + 73) / 146)
-exe '9resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 9resize ' . ((&columns * 119 + 73) / 146)
-exe '10resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 10resize ' . ((&columns * 119 + 73) / 146)
-exe '11resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 11resize ' . ((&columns * 119 + 73) / 146)
-exe '12resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 12resize ' . ((&columns * 119 + 73) / 146)
+exe 'vert 1resize ' . ((&columns * 20 + 58) / 117)
+exe '2resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 2resize ' . ((&columns * 96 + 58) / 117)
+exe '3resize ' . ((&lines * 32 + 24) / 48)
+exe 'vert 3resize ' . ((&columns * 96 + 58) / 117)
+exe '4resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 4resize ' . ((&columns * 96 + 58) / 117)
+exe '5resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 5resize ' . ((&columns * 96 + 58) / 117)
+exe '6resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 6resize ' . ((&columns * 96 + 58) / 117)
+exe '7resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 7resize ' . ((&columns * 96 + 58) / 117)
+exe '8resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 8resize ' . ((&columns * 96 + 58) / 117)
+exe '9resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 9resize ' . ((&columns * 96 + 58) / 117)
 argglobal
 enew
 file __Tagbar__
@@ -119,23 +105,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1359 - ((7 * winheight(0) + 11) / 22)
+let s:l = 1381 - ((3 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1359
-normal! 049|
-wincmd w
-argglobal
-enew
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
+1381
+normal! 013|
 wincmd w
 argglobal
 edit ginn/api/murano/connection.py
@@ -148,15 +123,51 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 24 - ((1 * winheight(0) + 0) / 1)
+let s:l = 148 - ((13 * winheight(0) + 16) / 32)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-24
-normal! 019|
+148
+normal! 037|
 wincmd w
 argglobal
 edit ginn/api/tests/dump_existencias.py
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 57 - ((0 * winheight(0) + 0) / 1)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+57
+normal! 013|
+wincmd w
+argglobal
+edit ginn/api/murano/export.py
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 1327 - ((0 * winheight(0) + 0) / 1)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+1327
+normal! 018|
+wincmd w
+argglobal
+edit ginn/api/murano/extra.py
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -171,35 +182,6 @@ if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 48
-normal! 045|
-wincmd w
-argglobal
-enew
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-wincmd w
-argglobal
-edit ginn/api/murano/export.py
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-let s:l = 1505 - ((0 * winheight(0) + 0) / 1)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-1505
 normal! 0
 wincmd w
 argglobal
@@ -213,23 +195,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 0) / 1)
+let s:l = 1400 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 0
-wincmd w
-argglobal
-enew
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
+1400
+normal! 014|
 wincmd w
 argglobal
 edit ginn/api/murano/ops.py
@@ -242,12 +213,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 0) / 1)
+let s:l = 1604 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 0
+1604
+normal! 09|
 wincmd w
 argglobal
 enew
@@ -260,41 +231,24 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 wincmd w
-argglobal
-enew
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-wincmd w
-2wincmd w
-exe 'vert 1resize ' . ((&columns * 26 + 73) / 146)
-exe '2resize ' . ((&lines * 22 + 26) / 53)
-exe 'vert 2resize ' . ((&columns * 119 + 73) / 146)
-exe '3resize ' . ((&lines * 10 + 26) / 53)
-exe 'vert 3resize ' . ((&columns * 119 + 73) / 146)
-exe '4resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 4resize ' . ((&columns * 119 + 73) / 146)
-exe '5resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 5resize ' . ((&columns * 119 + 73) / 146)
-exe '6resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 6resize ' . ((&columns * 119 + 73) / 146)
-exe '7resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 7resize ' . ((&columns * 119 + 73) / 146)
-exe '8resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 8resize ' . ((&columns * 119 + 73) / 146)
-exe '9resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 9resize ' . ((&columns * 119 + 73) / 146)
-exe '10resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 10resize ' . ((&columns * 119 + 73) / 146)
-exe '11resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 11resize ' . ((&columns * 119 + 73) / 146)
-exe '12resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 12resize ' . ((&columns * 119 + 73) / 146)
+3wincmd w
+exe 'vert 1resize ' . ((&columns * 20 + 58) / 117)
+exe '2resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 2resize ' . ((&columns * 96 + 58) / 117)
+exe '3resize ' . ((&lines * 32 + 24) / 48)
+exe 'vert 3resize ' . ((&columns * 96 + 58) / 117)
+exe '4resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 4resize ' . ((&columns * 96 + 58) / 117)
+exe '5resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 5resize ' . ((&columns * 96 + 58) / 117)
+exe '6resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 6resize ' . ((&columns * 96 + 58) / 117)
+exe '7resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 7resize ' . ((&columns * 96 + 58) / 117)
+exe '8resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 8resize ' . ((&columns * 96 + 58) / 117)
+exe '9resize ' . ((&lines * 1 + 24) / 48)
+exe 'vert 9resize ' . ((&columns * 96 + 58) / 117)
 tabnext 1
 if exists('s:wipebuf')
 "   silent exe 'bwipe ' . s:wipebuf
@@ -311,30 +265,6 @@ let &so = s:so_save | let &siso = s:siso_save
 " Everything down here is generated by vim-session (not supported
 " by :mksession out of the box).
 
-3wincmd w
-tabnext 1
-let s:bufnr_save = bufnr("%")
-let s:cwd_save = getcwd()
-cwindow
-if !getbufvar(s:bufnr_save, '&modified')
-  let s:wipebuflines = getbufline(s:bufnr_save, 1, '$')
-  if len(s:wipebuflines) <= 1 && empty(get(s:wipebuflines, 0, ''))
-    silent execute 'bwipeout' s:bufnr_save
-  endif
-endif
-execute "cd" fnameescape(s:cwd_save)
-6wincmd w
-tabnext 1
-let s:bufnr_save = bufnr("%")
-let s:cwd_save = getcwd()
-cwindow
-if !getbufvar(s:bufnr_save, '&modified')
-  let s:wipebuflines = getbufline(s:bufnr_save, 1, '$')
-  if len(s:wipebuflines) <= 1 && empty(get(s:wipebuflines, 0, ''))
-    silent execute 'bwipeout' s:bufnr_save
-  endif
-endif
-execute "cd" fnameescape(s:cwd_save)
 9wincmd w
 tabnext 1
 let s:bufnr_save = bufnr("%")
@@ -347,32 +277,8 @@ if !getbufvar(s:bufnr_save, '&modified')
   endif
 endif
 execute "cd" fnameescape(s:cwd_save)
-11wincmd w
-tabnext 1
-let s:bufnr_save = bufnr("%")
-let s:cwd_save = getcwd()
-cwindow
-if !getbufvar(s:bufnr_save, '&modified')
-  let s:wipebuflines = getbufline(s:bufnr_save, 1, '$')
-  if len(s:wipebuflines) <= 1 && empty(get(s:wipebuflines, 0, ''))
-    silent execute 'bwipeout' s:bufnr_save
-  endif
-endif
-execute "cd" fnameescape(s:cwd_save)
-12wincmd w
-tabnext 1
-let s:bufnr_save = bufnr("%")
-let s:cwd_save = getcwd()
-cwindow
-if !getbufvar(s:bufnr_save, '&modified')
-  let s:wipebuflines = getbufline(s:bufnr_save, 1, '$')
-  if len(s:wipebuflines) <= 1 && empty(get(s:wipebuflines, 0, ''))
-    silent execute 'bwipeout' s:bufnr_save
-  endif
-endif
-execute "cd" fnameescape(s:cwd_save)
-1resize 51|vert 1resize 26|2resize 22|vert 2resize 119|3resize 10|vert 3resize 119|4resize 1|vert 4resize 119|5resize 1|vert 5resize 119|6resize 1|vert 6resize 119|7resize 1|vert 7resize 119|8resize 1|vert 8resize 119|9resize 1|vert 9resize 119|10resize 1|vert 10resize 119|11resize 1|vert 11resize 119|12resize 1|vert 12resize 119|
-2wincmd w
+1resize 46|vert 1resize 20|2resize 1|vert 2resize 96|3resize 32|vert 3resize 96|4resize 1|vert 4resize 96|5resize 1|vert 5resize 96|6resize 1|vert 6resize 96|7resize 1|vert 7resize 96|8resize 1|vert 8resize 96|9resize 1|vert 9resize 96|
+3wincmd w
 tabnext 1
 if exists('s:wipebuf')
   if empty(bufname(s:wipebuf))

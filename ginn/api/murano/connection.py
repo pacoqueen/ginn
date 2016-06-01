@@ -107,7 +107,9 @@ class Connection(object):
         if not isinstance(sql, (list, tuple)):
             sql = [sql]
         try:
-            conn = self.conn.cursor(as_dict=True)
+            cursor = self.conn.cursor(as_dict=True)
+        except TypeError:
+            cursor = self.conn.cursor()
         except AttributeError as exception:
             if not DEBUG:
                 raise exception
@@ -125,13 +127,16 @@ class Connection(object):
                     logging.info(strlog)
                     if VERBOSE and DEBUG:
                         print(strlog)
-                    res = conn.execute(sentence_sql)
+                    res = cursor.execute(sentence_sql)
                     if "SELECT" in sentence_sql:
                         strlog = "    · fetchall..."
                         logging.info(strlog)
                         if VERBOSE and DEBUG:
                             print(strlog)
-                        res = conn.fetchall()
+                        try:
+                            res = cursor.fetchall_asdict()
+                        except AttributeError:
+                            res = cursor.fetchall()
                         strlog = "\t\t\t\t[OK]"
                         logging.info(strlog)
                         if VERBOSE and DEBUG:

@@ -1596,6 +1596,9 @@ def fire(guid_proceso, ignore_errors=False):
             print(strverbose)
     # El código de retorno es 1 para error y 0 para éxito o bien una tupla con
     # True/False en la primera posición. Cambio a boolean.
+    if VERBOSE:
+        print("murano:ops:fire -> Código de retorno: {} ({})".format(
+            retCode, type(retCode)))
     if isinstance(retCode, int):
         res = not bool(retCode)
     else:
@@ -1603,4 +1606,7 @@ def fire(guid_proceso, ignore_errors=False):
             res = retCode[0]
         except IndexError:  # ¿Qué demonios es?
             res = bool(retCode)
+    if VERBOSE:
+        print("murano:ops:fire -> Valor devuelto: {} ({})".format(
+            res, type(res)))
     return res
