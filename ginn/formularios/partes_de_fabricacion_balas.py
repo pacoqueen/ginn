@@ -69,8 +69,11 @@ from formularios import reports
 import datetime
 from lib.myprint import myprint
 import time
-from api import murano
-
+try:
+    from api import murano
+    MURANO = True
+except ImportError:
+    MURANO = False
 
 def verificar_solapamiento(partedeproduccion, padre=None,
                            fecha_anterior=None, horaini_anterior=None,
@@ -2565,6 +2568,11 @@ class PartesDeFabricacionBalas(Ventana):
         return xrange(ini, fin+1), pedir_peso
 
     def crear_bala(self, numbala, peso, lote, fibracemento = False):
+        if not MURANO:
+            utils.dialogo_info(titulo="ERROR DE CONEXIÓN CON MURANO",
+                           texto="No puede crear balas. Solo consultas.",
+                   padre=self.wids['ventana'])
+            return
         if fibracemento:
             articulo = self.crear_bigbag(numbala, peso, lote)
         else:
@@ -2603,6 +2611,11 @@ class PartesDeFabricacionBalas(Ventana):
         Crea un bigbag con los datos recibidos y devuelve
         el artículo relacionado con el mismo.
         """
+        if not MURANO:
+            utils.dialogo_info(titulo="ERROR DE CONEXIÓN CON MURANO",
+                               texto="No puede crear balas. Solo consultas.",
+                               padre=self.wids['ventana'])
+            return
         codigo = "C%d" % (numero)
         try:
             bigbag = pclases.Bigbag(loteCem = lote,
@@ -2630,6 +2643,11 @@ class PartesDeFabricacionBalas(Ventana):
         return articulo
 
     def drop_bala(self, boton):
+        if not MURANO:
+            utils.dialogo_info(titulo="ERROR DE CONEXIÓN CON MURANO",
+                           texto="No puede eliminar balas. Solo consultas.",
+                   padre=self.wids['ventana'])
+            return
         model, paths=self.wids['tv_balas'].get_selection().get_selected_rows()
         if paths == None or paths == []:
             utils.dialogo_info('BALA NO SELECCIONADA',

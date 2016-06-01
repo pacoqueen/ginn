@@ -93,7 +93,11 @@ except ImportError:
     from psycopg2 import ProgrammingError as psycopg_ProgrammingError
 import datetime
 from lib.myprint import myprint
-from api import murano
+try:
+    from api import murano
+    MURANO = True
+except ImportError:
+    MURANO = False
 
 
 # Compruebo qué tipo de fechas estoy manejando y preparo la constante de un
@@ -2148,6 +2152,11 @@ class PartesDeFabricacionRollos(Ventana):
             return range(-fin, -ini + 1)[::-1]  # HACK: Python 2.3 no tiene __reversed__ en el xrange.
 
     def drop_rollo(self, boton):
+        if not MURANO:
+            utils.dialogo_info(titulo="ERROR DE CONEXIÓN CON MURANO",
+                               texto="No puede eliminar rollos. Solo consultas.",
+                               padre=self.wids['ventana'])
+            return
         selection = self.wids['tv_rollos'].get_selection()
         model, paths = selection.get_selected_rows()
         if  paths == None or paths == []:
@@ -3523,6 +3532,11 @@ def crear_articulo(numrollo,
     OJO: AQUÍ NO SE DESCUENTA EL MATERIAL EMPLEADO EN LA FABRICACIÓN. Sólo se
     crea el artículo.
     """
+    if not MURANO:
+        utils.dialogo_info(titulo="ERROR DE CONEXIÓN CON MURANO",
+                           texto="No puede crear rollos. Solo consultas.",
+                           padre=self.wids['ventana'])
+        return
     peso, densidad = _calcular_peso_densidad(peso, producto)
     if not defectuoso:
         codigo = 'R%d' % (numrollo) # NOTA: Cambiar aquí si al final el

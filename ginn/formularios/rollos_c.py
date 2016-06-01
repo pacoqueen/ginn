@@ -43,7 +43,11 @@ from framework import pclases
 import mx.DateTime
 from informes import geninformes
 from ventana_progreso import VentanaProgreso
-from api import murano
+try:
+    from api import murano
+    MURANO = True
+except ImportError:
+    MURANO = False
 
 def descontar_material_adicional(ventana_parte, articulo, restar = True):
     """
@@ -152,6 +156,11 @@ class RollosC(Ventana):
         """
         Elimina los rollos recibidas y actualiza la ventana.
         """
+        if not MURANO:
+            utils.dialogo_info(titulo="ERROR DE CONEXIÓN CON MURANO",
+                               texto="No puede eliminar rollos. Solo consultas.",
+                               padre=self.wids['ventana'])
+            return
         for b in rollos:
             self.anular_consumo(b)
             a = b.articulo
@@ -241,6 +250,11 @@ class RollosC(Ventana):
         """
         Crea una nueva rollo «C» y su artículo relacionado.
         """
+        if not MURANO:
+            utils.dialogo_info(titulo="ERROR DE CONEXIÓN CON MURANO",
+                               texto="No puede crear rollos. Solo consultas.",
+                               padre=self.wids['ventana'])
+            return
         if peso > 0:
             b = pclases.RolloC(peso = peso)
             pclases.Auditoria.nuevo(b, self.usuario, __file__)

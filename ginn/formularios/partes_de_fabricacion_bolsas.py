@@ -58,7 +58,11 @@ from ventana_progreso import VentanaActividad, VentanaProgreso
 from partes_de_fabricacion_balas import verificar_solapamiento, \
                                         entran_en_turno
 from partes_de_fabricacion_rollos import descontar_material_adicional
-from api import murano
+try:
+    from api import murano
+    MURANO = True
+except ImportError:
+    MURANO = False
 
 def copy2(entry1, evento, entry2, sumar = 0):
     """
@@ -800,6 +804,11 @@ class PartesDeFabricacionBolsas(Ventana):
         Si el número de bolsas es inferior a 40 se va a crear por defecto
         como B.
         """
+        if not MURANO:
+            utils.dialogo_info(titulo="ERROR DE CONEXIÓN CON MURANO",
+                               texto="No puede crear cajas. Solo consultas.",
+                               padre=self.wids['ventana'])
+            return
         if not self.producto:
             utils.dialogo_info(titulo = "SELECCIONE UN PRODUCTO",
                 texto = "Antes debe seleccionar un producto.",
@@ -1308,6 +1317,11 @@ class PartesDeFabricacionBolsas(Ventana):
         """
         Elimina el palé, sus cajas, bolsas y consumos relacionados.
         """
+        if not MURANO:
+            utils.dialogo_info(titulo="ERROR DE CONEXIÓN CON MURANO",
+                               texto="No puede eliminar cajas. Solo consultas.",
+                               padre=self.wids['ventana'])
+            return
         model, paths = self.wids['tv_produccion'].get_selection().\
                                                             get_selected_rows()
         if (not paths or
