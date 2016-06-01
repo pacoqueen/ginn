@@ -954,6 +954,7 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
             res.append(sql_movserie)
         else:
             c.run_sql(sql_movserie)
+            # pylint: disable=redefined-variable-type
             res = fire(id_proceso_IME)
         return res
 
@@ -1026,6 +1027,7 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
             res.append(sql_movserie)
         else:
             c.run_sql(sql_movserie)
+            # pylint: disable=redefined-variable-type
             res = fire(id_proceso_IME)
         return res
 
@@ -1102,6 +1104,7 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
             res.append(sql_movserie)
         else:
             c.run_sql(sql_movserie)
+            # pylint: disable=redefined-variable-type
             res = fire(id_proceso_IME)
         return res
 
@@ -1175,6 +1178,7 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
             res.append(sql_movserie)
         else:
             c.run_sql(sql_movserie)
+            # pylint: disable=redefined-variable-type
             res = fire(id_proceso_IME)
         return res
 
@@ -1468,6 +1472,7 @@ def update_stock(producto, delta, almacen, guid_proceso=None,
         res = [sql_movstock]
     else:
         c.run_sql(sql_movstock)
+        # pylint: disable=redefined-variable-type
         res = fire(id_proceso_IME)
     return res
 
@@ -1503,6 +1508,7 @@ def consumir(productoCompra, cantidad, almacen=None, consumo=None):
     update_stock(productoCompra, -cantidad, almacen)
 
 
+# pylint: disable=too-many-statements
 def fire(guid_proceso, ignore_errors=False):
     """
     Lanza el proceso de importación de Murano de todos los movimientos de
@@ -1588,6 +1594,13 @@ def fire(guid_proceso, ignore_errors=False):
         logging.info(strverbose)
         if VERBOSE and DEBUG:
             print(strverbose)
-    # El código de retorno es 1 para error y 0 para éxito. Cambio a boolean.
-    retCode = not bool(retCode)
-    return retCode
+    # El código de retorno es 1 para error y 0 para éxito o bien una tupla con
+    # True/False en la primera posición. Cambio a boolean.
+    if isinstance(retCode, int):
+        res = not bool(retCode)
+    else:
+        try:
+            res = retCode[0]
+        except IndexError:  # ¿Qué demonios es?
+            res = bool(retCode)
+    return res
