@@ -98,7 +98,7 @@ class Connection(object):
         if VERBOSE and DEBUG:
             print("\t\t\t\t[OK]")
 
-    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-branches, too-many-statements
     def run_sql(self, sql):
         """
         Crea un cursor, ejecuta la(s) consulta(s) y cierra el cursor.

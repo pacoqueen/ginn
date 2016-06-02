@@ -39,7 +39,7 @@ def insertar_pvs(guid_proceso):
     """
     res = []
     articulos = pclases.Articulo.select(pclases.AND(
-        pclases.Articulo.q.api == False,        # NOQA
+        pclases.Articulo.q.api == False,
         pclases.Articulo.q.almacen != None))    # NOQA
     for articulo in tqdm(articulos, total=articulos.count()):
         try:

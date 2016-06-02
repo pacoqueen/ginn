@@ -1558,6 +1558,7 @@ def fire(guid_proceso, ignore_errors=False):
     if VERBOSE and DEBUG:
         print(strverbose)
     # Si retcode es 1: cagada. Si es 0: éxito
+    # TODO: ¿Y si es None? Lo he visto en procesos con errores.
     if retCode and not ignore_errors:
         strerr = "¡PROCESO DE IMPORTACIÓN %s CON ERRORES!"\
                  " No se lanza el script de acumulación de stock." % (
@@ -1609,8 +1610,10 @@ def fire(guid_proceso, ignore_errors=False):
     # El código de retorno es 1 para error y 0 para éxito o bien una tupla con
     # True/False en la primera posición. Cambio a boolean.
     if VERBOSE:
-        print("murano:ops:fire -> Código de retorno: {} ({})".format(
-            retCode, type(retCode)))
+        strres = "murano:ops:fire -> Código de retorno: {} ({})".format(
+            retCode, type(retCode))
+        print(strres)
+        logging.info(strres)
     if isinstance(retCode, int):
         res = not bool(retCode)
     else:
@@ -1619,6 +1622,8 @@ def fire(guid_proceso, ignore_errors=False):
         except IndexError:  # ¿Qué demonios es?
             res = bool(retCode)
     if VERBOSE:
-        print("murano:ops:fire -> Valor devuelto: {} ({})".format(
-            res, type(res)))
+        strres = "murano:ops:fire -> Valor devuelto: {} ({})".format(
+            res, type(res))
+        print(strres)
+        logging.info(strres)
     return res

@@ -35,7 +35,8 @@ DELETE
 EXTRA
 -----
 * Llamada a procedimiento de importación interno de Murano via
-%SYSTEMDRV%\...\Sage\Sage Murano\LCOEM.dll
+%SYSTEMDRV%\...\Sage\Sage Murano\LCOEM.dll (debe registrarse con regsvr32 si no
+lo hace la propia instalación de Murano)
 * Exportación a CSV y SQL de todos los productos, clientes y proveedores.
 
 REQUERIMENTS
