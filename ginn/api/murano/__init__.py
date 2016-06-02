@@ -51,4 +51,5 @@ from api.murano.export import exportar_proveedores
 
 __all__ = ["create_bala", "create_rollo", "consumir", "delete_articulo",
            "exportar_productos", "exportar_clientes", "exportar_proveedores",
-           "create_bigbag", "create_pale"]
+           "create_bigbag", "create_pale", "buscar_marcado_ce",
+           "create_articulo", "delete_articulo"]

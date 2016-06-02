@@ -1359,7 +1359,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
     else:
         delta = 1
     assert articulo is not None, "Debe especificarse un artículo."
-    res = None
+    res = False
     if not existe_articulo(articulo) or delta < 0:
         for i in range(abs(cantidad)):  # pylint: disable=unused-variable
             if articulo.es_bala():
@@ -1394,11 +1394,14 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
                 raise ValueError("El artículo %s no es bala, bala de cable, "
                                  "bigbag, caja, rollo ni rollo C."
                                  % (articulo.puid))
+            if VERBOSE:
+                print("ops::create_articulo --> {}.res = {} ({})".format(
+                    articulo.puid, res, type(res)))
+            articulo.api = res
+            articulo.syncUpdate()
     else:
         logging.warning("El código %s ya existe en Murano. Se ignora.",
                         articulo.codigo)
-    articulo.api = res
-    articulo.syncUpdate()
     return res
 
 
