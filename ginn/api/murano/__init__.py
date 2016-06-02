@@ -46,6 +46,7 @@ pymssql, pywin32
 # pylint: disable=import-error
 from api.murano.ops import create_bala, create_rollo, consumir
 from api.murano.ops import create_pale, create_bigbag, delete_articulo
+from api.murano.ops import create_articulo, buscar_marcado_ce
 from api.murano.export import exportar_productos, exportar_clientes
 from api.murano.export import exportar_proveedores
 
