@@ -101,7 +101,7 @@ SQL_STOCK = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
                '%s',    -- UnidadMedida2_ (la básica: ROLLO, BALA...)
                %f,      -- factor de conversión
                '%s',    -- comentario
-               'DIV',   -- FIXME: XXX: Temporal para lo del cálculo de dividir entre 100 las unidades de todos los movimientos marcados con 'DIV' en CodigoCanal y evitar el BUG _syntax error_ de Murano de la coma.
+               '%s',    -- FIXME: XXX: Temporal para lo del cálculo de dividir entre 100 las unidades de todos los movimientos marcados con 'DIV' en CodigoCanal y evitar el BUG _syntax error_ de Murano de la coma. Solo debe ir con DIV en los artículos con trazabilidad.
                -- NULL,
                -- NULL,
                -- NULL,
@@ -915,15 +915,17 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
         else:
             id_proceso_IME = guid_proceso
         guid_movposicion = generar_guid(c)
+        canal_div = 'DIV'
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
                                     documento, codigo_articulo, codigo_almacen,
                                     partida, grupo_talla, codigo_talla,
                                     tipo_movimiento, unidades, unidad_medida,
                                     precio, importe, unidades2, unidad_medida2,
-                                    factor_conversion, comentario, ubicacion,
-                                    origen_movimiento, numero_serie_lc,
-                                    id_proceso_IME, guid_movposicion)
+                                    factor_conversion, comentario, canal_div,
+                                    ubicacion, origen_movimiento,
+                                    numero_serie_lc, id_proceso_IME,
+                                    guid_movposicion)
         if simulate:
             res = [sql_movstock]
         else:
@@ -987,15 +989,17 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
         else:
             id_proceso_IME = guid_proceso
         guid_movposicion = generar_guid(c)
+        canal_div = 'DIV'
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
                                     documento, codigo_articulo, codigo_almacen,
                                     partida, grupo_talla, codigo_talla,
                                     tipo_movimiento, unidades, unidad_medida,
                                     precio, importe, unidades2, unidad_medida2,
-                                    factor_conversion, comentario, ubicacion,
-                                    origen_movimiento, numero_serie_lc,
-                                    id_proceso_IME, guid_movposicion)
+                                    factor_conversion, comentario, canal_div,
+                                    ubicacion, origen_movimiento,
+                                    numero_serie_lc, id_proceso_IME,
+                                    guid_movposicion)
         if simulate:
             res = [sql_movstock]
         else:
@@ -1063,15 +1067,17 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
         else:
             id_proceso_IME = guid_proceso
         guid_movposicion = generar_guid(c)
+        canal_div = 'DIV'
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
                                     documento, codigo_articulo, codigo_almacen,
                                     partida, grupo_talla, codigo_talla,
                                     tipo_movimiento, unidades, unidad_medida,
                                     precio, importe, unidades2, unidad_medida2,
-                                    factor_conversion, comentario, ubicacion,
-                                    origen_movimiento, numero_serie_lc,
-                                    id_proceso_IME, guid_movposicion)
+                                    factor_conversion, comentario, canal_div,
+                                    ubicacion, origen_movimiento,
+                                    numero_serie_lc, id_proceso_IME,
+                                    guid_movposicion)
         if simulate:
             res = [sql_movstock]
         else:
@@ -1137,15 +1143,17 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
         else:
             id_proceso_IME = guid_proceso
         guid_movposicion = generar_guid(c)
+        canal_div = 'DIV'
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
                                     documento, codigo_articulo, codigo_almacen,
                                     partida, grupo_talla, codigo_talla,
                                     tipo_movimiento, unidades, unidad_medida,
                                     precio, importe, unidades2, unidad_medida2,
-                                    factor_conversion, comentario, ubicacion,
-                                    origen_movimiento, numero_serie_lc,
-                                    id_proceso_IME, guid_movposicion)
+                                    factor_conversion, comentario, canal_div,
+                                    ubicacion, origen_movimiento,
+                                    numero_serie_lc, id_proceso_IME,
+                                    guid_movposicion)
         if simulate:
             res = [sql_movstock]
         else:
@@ -1462,14 +1470,15 @@ def update_stock(producto, delta, almacen, guid_proceso=None,
     # producto con código de trazabilidad.
     unidad_medida2 = buscar_unidad_medida_basica(producto)
     guid_movposicion = generar_guid(c)
+    canal_div = ''
     sql_movstock = SQL_STOCK % (database,
                                 CODEMPRESA, ejercicio, periodo, fecha,
                                 documento, codigo_articulo, codigo_almacen,
                                 partida, grupo_talla, codigo_talla,
                                 tipo_movimiento, unidades, unidad_medida,
                                 precio, importe, unidades2, unidad_medida2,
-                                factor_conversion, comentario, ubicacion,
-                                origen_movimiento, numero_serie_lc,
+                                factor_conversion, comentario, canal_div,
+                                ubicacion, origen_movimiento, numero_serie_lc,
                                 id_proceso_IME, guid_movposicion)
     if simulate:
         res = [sql_movstock]
