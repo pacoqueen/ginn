@@ -862,8 +862,9 @@ class PartesDeFabricacionBolsas(Ventana):
             #numcajasdefecto = pclases.Pale.NUMCAJAS
             numcajasdefecto = productoVenta.camposEspecificosBala.cajasPale
             # 1.- Creo el palé.
-            print "Creando palé", numpale, "..."
+            print "Creando palé"
             numpale, codigo = pclases.Pale.get_next_numpale(numbolsas)
+            print "    ", numpale, "..."
             pale = pclases.Pale(partidaCem = partidaCem,
                     numpale = numpale,
                     codigo = codigo,
