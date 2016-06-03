@@ -1624,6 +1624,12 @@ def fire(guid_proceso, ignore_errors=False):
     if VERBOSE:
         strres = "murano:ops:fire -> Valor devuelto: {} ({})".format(
             res, type(res))
-        print(strres)
-        logging.info(strres)
+        try:
+            print(strres)
+            logging.info(strres)
+        except IOError:
+            # TODO: Por un error extraño en el ordenador de cemento, que lanza
+            # un IOError Errno 9 Bad file descriptor. ¿Fichero demasiado
+            # grande? ¿Volcado a logging concurrente?
+            pass
     return res
