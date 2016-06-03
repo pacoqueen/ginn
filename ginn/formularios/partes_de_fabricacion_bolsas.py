@@ -862,6 +862,7 @@ class PartesDeFabricacionBolsas(Ventana):
             #numcajasdefecto = pclases.Pale.NUMCAJAS
             numcajasdefecto = productoVenta.camposEspecificosBala.cajasPale
             # 1.- Creo el palé.
+            print "Creando palé", numpale, "..."
             numpale, codigo = pclases.Pale.get_next_numpale(numbolsas)
             pale = pclases.Pale(partidaCem = partidaCem,
                     numpale = numpale,
@@ -870,7 +871,9 @@ class PartesDeFabricacionBolsas(Ventana):
                     numbolsas = numbolsas,
                     numcajas = numcajasdefecto
                     )
+            print "Palé %s creado." % pale.codigo
             pclases.Auditoria.nuevo(pale, self.usuario, __file__)
+            print "Creando %d cajas..." % pale.numcajas
             # 2.- Creo las cajas.
             for i in range(pale.numcajas):  # @UnusedVariable
                 numcaja, codigo = pclases.Caja.get_next_numcaja()
