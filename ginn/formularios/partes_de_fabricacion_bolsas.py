@@ -898,9 +898,11 @@ class PartesDeFabricacionBolsas(Ventana):
                             almacen = pclases.Almacen.get_almacen_principal(),
                             rolloC = None,
                             balaCable = None)
-                print "Artículo %s creado..." % articulo.id
+                print "Artículo de caja %s creado..." % caja.puid
                 pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
+                print "Volcando artículo a Murano..."
                 murano.ops.create_articulo(articulo)
+                print "Caja %s volcada..." % articulo.codigo
                 icont += 1
             # OJO: Le paso el último artículo porque la formulación de esta
             # línea será por PALÉS COMPLETOS.
