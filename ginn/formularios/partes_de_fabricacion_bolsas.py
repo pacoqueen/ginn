@@ -879,6 +879,7 @@ class PartesDeFabricacionBolsas(Ventana):
                 except AttributeError:
                     gramos = 0
                 peso = (gramos * numbolsas) / 1000.0
+                print "Creando caja", numcaja, "..."
                 caja = pclases.Caja(pale = pale,
                                     numcaja = numcaja,
                                     codigo = codigo,
@@ -897,6 +898,7 @@ class PartesDeFabricacionBolsas(Ventana):
                             almacen = pclases.Almacen.get_almacen_principal(),
                             rolloC = None,
                             balaCable = None)
+                print "Artículo %s creado..." % articulo.id
                 pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
                 murano.ops.create_articulo(articulo)
                 icont += 1
