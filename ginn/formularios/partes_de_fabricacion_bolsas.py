@@ -862,9 +862,7 @@ class PartesDeFabricacionBolsas(Ventana):
             #numcajasdefecto = pclases.Pale.NUMCAJAS
             numcajasdefecto = productoVenta.camposEspecificosBala.cajasPale
             # 1.- Creo el palé.
-            print "Creando palé"
             numpale, codigo = pclases.Pale.get_next_numpale(numbolsas)
-            print "    ", numpale, "..."
             pale = pclases.Pale(partidaCem = partidaCem,
                     numpale = numpale,
                     codigo = codigo,
@@ -872,9 +870,7 @@ class PartesDeFabricacionBolsas(Ventana):
                     numbolsas = numbolsas,
                     numcajas = numcajasdefecto
                     )
-            print "Palé %s creado." % pale.codigo
             pclases.Auditoria.nuevo(pale, self.usuario, __file__)
-            print "Creando %d cajas..." % pale.numcajas
             # 2.- Creo las cajas.
             for i in range(pale.numcajas):  # @UnusedVariable
                 numcaja, codigo = pclases.Caja.get_next_numcaja()
@@ -883,7 +879,6 @@ class PartesDeFabricacionBolsas(Ventana):
                 except AttributeError:
                     gramos = 0
                 peso = (gramos * numbolsas) / 1000.0
-                print "Creando caja", numcaja, "..."
                 caja = pclases.Caja(pale = pale,
                                     numcaja = numcaja,
                                     codigo = codigo,
@@ -902,11 +897,13 @@ class PartesDeFabricacionBolsas(Ventana):
                             almacen = pclases.Almacen.get_almacen_principal(),
                             rolloC = None,
                             balaCable = None)
-                print "Artículo de caja %s creado..." % caja.puid
                 pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
-                print "Volcando artículo a Murano..."
-                murano.ops.create_articulo(articulo)
-                print "Caja %s volcada..." % articulo.codigo
+                # TODO: PORASQUI: Al final sí que está volcando. Pero va tan sumamente lento que parece que se cuelga. Además la salida por consola no está habilitada, con lo que al final el error que da es por algún print de depuración que hay por ahí.
+                try:
+                    murano.ops.create_articulo(articulo)
+                except IOError:
+                    pass    # Alguna movida con la salida por consola de
+                    # depuración y no está disponible.
                 icont += 1
             # OJO: Le paso el último artículo porque la formulación de esta
             # línea será por PALÉS COMPLETOS.
@@ -1363,6 +1360,8 @@ class PartesDeFabricacionBolsas(Ventana):
             try:
                 murano.ops.delete_articulo(objeto)
                 objeto.destroy_en_cascada(ventana = __file__)
+            except IOError:
+                pass    # No tenemos consola para sacar los mensajes de debug.
             except Exception, msg:
                 vpro.ocultar()
                 error = True
