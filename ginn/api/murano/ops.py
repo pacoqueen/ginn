@@ -1628,8 +1628,8 @@ def fire(guid_proceso, ignore_errors=False):
             print(strres)
             logging.info(strres)
         except IOError:
-            # TODO: Por un error extraño en el ordenador de cemento, que lanza
-            # un IOError Errno 9 Bad file descriptor. ¿Fichero demasiado
-            # grande? ¿Volcado a logging concurrente?
+            # Por un error extraño en el ordenador de cemento, que lanza
+            # un IOError Errno 9 Bad file descriptor. Probablemente por no
+            # tener salida estándar (se abre sin ventana de "terminal").
             pass
     return res
