@@ -1520,6 +1520,45 @@ def consumir(productoCompra, cantidad, almacen=None, consumo=None):
     update_stock(productoCompra, -cantidad, almacen)
 
 
+def get_existencias_silo(silo):
+    """
+    Recibe un silo de ginn y devuelve un diccionario con los productos y sus
+    existencias en el almacén correspondiente de Murano.
+    Cada silo tiene un almacén en Murano.
+    0. Se determina el almacén correspondiente en Murano al silo recibido.
+    1. Se buscan los productos que hay en ese almacén y sus existencias.
+    2. Se monta un diccionario con los productos de ginn correspondientes a
+        los productos de Murano de ese almacén.
+    3. Se almacena en el diccionario, para cada producto de ginn, las
+        existencias consultadas anteriormente.
+    4. Se devuelve ese diccionario.
+    """
+    res = {}
+    almacen = buscar_almacen_silo(silo)
+# PORASQUI: Aquí debería hacer la consulta a Murano, bien por dll o bien por SQL
+    return res
+
+
+def buscar_almacen_silo(silo):
+    """
+    Devuelve el código de almacén de Murano del silo recibido.
+    """
+    # OJO: HARCODED
+    # Podría tirar de la tabla almacenes y buscar por nombre, pero prefiero
+    # ahorrar llamadas al SQLServer.
+    almacenes = {"Silo 1": "SIL1",
+                 "Silo 2": "SIL2",
+                 "Silo 3": "SIL3",
+                 "Silo 4": "SIL4",
+                 "Silo 5": "SIL5",
+                 "Silo 6": "SIL6"}
+    try:
+        almacen = almacenes[silo.nombre]
+    except KeyError:
+        almacen = None
+    return almacen
+
+
 # pylint: disable=too-many-statements
 def fire(guid_proceso, ignore_errors=False):
     """

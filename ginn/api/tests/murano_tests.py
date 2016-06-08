@@ -352,14 +352,14 @@ def main():
     if args.codigo:
         pbar = tqdm(args.codigo)
         for codigo in pbar:
-            pbar.set_description("Insertando sin consumos %s" % (codigo))
-            prueba_codigo(codigo)
+            pbar.set_description("Insertando con consumos %s" % (codigo))
+            prueba_codigo(codigo, consumir=True)
     if args.file_source:
         pbar = tqdm(parse_file(args.file_source),
                     total=file_len(args.file_source))
         for codigo in pbar:
-            pbar.set_description("Insertando con consumos %s" % (codigo))
-            prueba_codigo(codigo, consumir=True)
+            pbar.set_description("Insertando sin consumos %s" % (codigo))
+            prueba_codigo(codigo, consumir=False)
 
 
 if __name__ == "__main__":

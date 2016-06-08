@@ -48,10 +48,11 @@ pymssql, pywin32
 from api.murano.ops import create_bala, create_rollo, consumir
 from api.murano.ops import create_pale, create_bigbag, delete_articulo
 from api.murano.ops import create_articulo, buscar_marcado_ce
+from api.murano.ops import get_existencias_silo
 from api.murano.export import exportar_productos, exportar_clientes
 from api.murano.export import exportar_proveedores
 
 __all__ = ["create_bala", "create_rollo", "consumir", "delete_articulo",
            "exportar_productos", "exportar_clientes", "exportar_proveedores",
            "create_bigbag", "create_pale", "buscar_marcado_ce",
-           "create_articulo", "delete_articulo"]
+           "create_articulo", "delete_articulo", "get_existencias_silo"]
