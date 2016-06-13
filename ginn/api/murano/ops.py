@@ -1535,7 +1535,78 @@ def get_existencias_silo(silo):
     """
     res = {}
     almacen = buscar_almacen_silo(silo)
-# PORASQUI: Aquí debería hacer la consulta a Murano, bien por dll o bien por SQL
+    sql_silos = """SELECT AcumuladoStock.Ejercicio,
+                          AcumuladoStock.CodigoEmpresa,
+                          AcumuladoStock.CodigoAlmacen,
+                          Articulos.CodigoFamilia,
+                          Articulos.CodigoSubfamilia,
+                          Familias.Descripcion,
+                          Subfamilias.Descripcion AS Descripcion2,
+                          AcumuladoStock.CodigoArticulo,
+                          Articulos.DescripcionArticulo,
+                          AcumuladoStock.CodigoTalla01_,
+                          AcumuladoStock.Partida,
+                          ArticulosSeries.NumeroSerieLc,
+                          Articulos.UnidadMedida2_,
+                          Articulos.UnidadMedidaAlternativa_,
+                          AcumuladoStock.UnidadSaldo,
+                          AcumuladoStock.UnidadSaldoTipo_,
+                          Articulos.TipoEnvase_,
+                          Articulos.PrecioCompra,
+                          ArticulosSeries.GEO_CosteUnidadEspecifica,
+                          ArticulosSeries.UnidadesSerie,
+                          ArticulosSeries.PesoBruto_,
+                          ArticulosSeries.PesoNeto_,
+                          ArticulosSeries.MetrosCuadrados
+        FROM AcumuladoStock
+             INNER JOIN Articulos ON AcumuladoStock.CodigoEmpresa =
+                Articulos.CodigoEmpresa
+             AND AcumuladoStock.CodigoArticulo = Articulos.CodigoArticulo
+             LEFT OUTER JOIN ArticulosSeries ON
+                AcumuladoStock.Partida = ArticulosSeries.Partida AND
+                AcumuladoStock.CodigoAlmacen = ArticulosSeries.CodigoAlmacen
+                    AND
+                AcumuladoStock.CodigoTalla01_ = ArticulosSeries.CodigoTalla01_
+                    AND Articulos.CodigoEmpresa =
+                        ArticulosSeries.CodigoEmpresa AND
+                Articulos.CodigoArticulo = ArticulosSeries.CodigoArticulo
+            LEFT OUTER JOIN Familias AS Subfamilias ON
+                Articulos.CodigoFamilia = Subfamilias.CodigoFamilia AND
+                Articulos.CodigoSubfamilia = Subfamilias.CodigoSubfamilia AND
+                Articulos.CodigoEmpresa = Subfamilias.CodigoEmpresa
+            LEFT OUTER JOIN Familias ON
+                Articulos.CodigoFamilia = Familias.CodigoFamilia AND
+                Articulos.CodigoEmpresa = Familias.CodigoEmpresa AND
+                Familias.CodigoSubfamilia = '**********'
+        WHERE AcumuladoStock.Periodo = 99
+          AND AcumuladoStock.CodigoAlmacen = '%s'
+          AND AcumuladoStock.CodigoEmpresa = '%s';""" % (almacen, CODEMPRESA)
+    conn = Connection()
+    res_murano = conn.run_sql(sql_silos)
+    for registro in res_murano:
+        codigo_producto = registro['CodigoArticulo']
+        existencias = registro['UnidadSaldo']
+        producto = get_producto_ginn(codigo_producto)
+        res[producto] = float(existencias)
+    return res
+
+
+def get_producto_ginn(codigo_murano):
+    """
+    Devuelve el objeto producto de ginn (de compra o de venta) según el código
+    recibido de Murano.
+    """
+    # FIXME: Implementar otra forma de que la relación sea biyectiva.
+    # OJO: HARCODED. Si se crean nuevos productos, hay que tener cuidado de que
+    # se respete esta codificación.
+    if codigo_murano.startswith("PC"):
+        clase = pclases.ProductoCompra
+    elif codigo_murano.startswith("PV"):
+        clase = pclases.ProductoVenta
+    else:
+        raise NotImplementedError("Solo se permite buscar por código PV|PC")
+    idginn = int(codigo_murano.replace("PC", "").replace("PV", ""))
+    res = clase.get(idginn)
     return res
 
 
