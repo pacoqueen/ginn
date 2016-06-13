@@ -452,7 +452,12 @@ class PartesDeFabricacionBalas(Ventana):
             font_desc = pango.FontDescription("Sans 8")
             l_silo.modify_font(font_desc)
             mostrar_carga_silo(l_silo, silo)
-            carga_mas_antigua = silo.get_carga_mas_antigua()
+            try:
+                carga_mas_antigua = murano.ops.get_carga_mas_antigua_silo(silo)
+            except:
+                self.logger.error(
+                    "Error al leer silos de Murano. Fallback a ginn.")
+                carga_mas_antigua = silo.get_carga_mas_antigua()
             if carga_mas_antigua is None:
                 l_carga_silo = gtk.Label("vacío")
             else:
@@ -577,7 +582,12 @@ class PartesDeFabricacionBalas(Ventana):
                     numsilo = int(idsilo.replace("ID", ""))
                     silo = pclases.Silo.get(numsilo)
                     numreciclada = None
-                    carga_mas_baja_en_silo = silo.get_carga_mas_antigua()
+                    try:
+                        carga_mas_baja_en_silo = murano.ops.get_carga_mas_antigua_silo(silo)
+                    except:
+                        self.logger.error(
+                            "Error al leer silos de Murano. Fallback a ginn.")
+                        carga_mas_baja_en_silo = silo.get_carga_mas_antigua()
                     producto = carga_mas_baja_en_silo.productoCompra
                     silo_key = silo
                 porcentaje = escala_porcentaje.get_value() / 100
@@ -3373,7 +3383,12 @@ class PartesDeFabricacionBalas(Ventana):
                     myprint(__file__, " -> ", diccionario_consumido)
             else:
                 # No hay que cargar el silo. ¡SOLO HAY QUE ANULAR EL CONSUMO!
-                carga_mas_baja_en_silo = silo.get_carga_mas_antigua()
+                try:
+                    carga_mas_baja_en_silo = murano.ops.get_carga_mas_antigua_silo(silo)
+                except:
+                    self.logger.error(
+                        "Error al leer silos de Murano. Fallback a ginn.")
+                    carga_mas_baja_en_silo = silo.get_carga_mas_antigua()
                 if carga_mas_baja_en_silo != None:
                     producto_consumido = carga_mas_baja_en_silo.productoCompra
                     cargado = peso_sin_aditivos * porcentaje
@@ -4300,7 +4315,11 @@ def mostrar_carga_silo(label, silo):
     """
     Muestra la carga del silo «silo» en el label recibido.
     """
-    ocupado = silo.ocupado
+    try:
+        stock_murano = murano.ops.get_existencias_silo(silo)
+        ocupado = sum([stock_murano[producto] for producto in stock_murano])
+    except:
+        ocupado = silo.ocupado
     strocupado = utils.float2str(ocupado, 1)
     capacidad = silo.capacidad
     if ocupado < capacidad / 4:

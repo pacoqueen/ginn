@@ -17,6 +17,7 @@ logging.basicConfig(filename="%s.log" % (NOMFLOG),
                     format="%(asctime)s %(levelname)-8s : %(message)s",
                     level=logging.DEBUG)
 import datetime
+from collections import namedtuple
 from connection import Connection, DEBUG, VERBOSE, CODEMPRESA
 from export import determinar_familia_murano
 from extra import get_peso_bruto, get_peso_neto, get_superficie
@@ -326,7 +327,6 @@ def desmuranize_valor(record):
     Al objeto recibido le convierte los nombres de los atributos al
     equivalente en ginn.
     """
-    from collections import namedtuple
     record_murano = {}
     for clave in record.keys():
         if clave not in ("CodigoEmpresa", "CodigoArticulo"):
@@ -1589,6 +1589,20 @@ def get_existencias_silo(silo):
         producto = get_producto_ginn(codigo_producto)
         res[producto] = float(existencias)
     return res
+
+
+def get_carga_mas_antigua_silo(silo):
+    """
+    Devuelve una estructura similar a las cargas de ginn pero con los datos
+    de Murano. Ver pclases.Silo.get_carga_mas_antigua
+    """
+    CargaSilo = namedtuple('CargaSilo',
+                           ['productoCompra', 'siloID', 'cantidad'])
+    productos_cargados = get_existencias_silo(silo)
+    cs = None
+    for pc in productos_cargados:   # Solo devolverá uno.
+        cs = CargaSilo(pc, silo.id, productos_cargados[pc])
+    return cs
 
 
 def get_producto_ginn(codigo_murano):

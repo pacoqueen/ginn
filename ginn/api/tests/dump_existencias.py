@@ -38,6 +38,7 @@ def insertar_pvs(guid_proceso):
     de serie y movimiento de stock.
     """
     res = []
+    # pylint: disable=singleton-comparison
     articulos = pclases.Articulo.select(pclases.AND(
         pclases.Articulo.q.api == False,        # NOQA
         pclases.Articulo.q.almacen != None))    # NOQA
