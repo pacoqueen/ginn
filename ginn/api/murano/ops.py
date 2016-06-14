@@ -891,7 +891,7 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
     caso, el valor de ejecutar el proceso de importación.
     """
     articulo = bala.articulo
-    if existe_articulo(articulo) and cantidad:
+    if cantidad > 0 and existe_articulo(articulo):
         logging.warning("La bala %s ya existe en Murano. Se ignora.",
                         bala.codigo)
     else:
@@ -968,7 +968,7 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
     """
     articulo = bigbag.articulo
-    if existe_articulo(articulo) and cantidad:
+    if cantidad > 0 and existe_articulo(articulo):
         logging.warning("El bigbag %s ya existe en Murano. Se ignora.",
                         articulo.codigo)
     else:
@@ -1043,7 +1043,7 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
     """
     articulo = rollo.articulo
-    if existe_articulo(articulo) and cantidad:
+    if cantidad > 0 and existe_articulo(articulo):
         logging.warning("El rollo %s ya existe en Murano. Se ignora.",
                         articulo.codigo)
     else:
@@ -1122,7 +1122,7 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
     Si cantidad es 1, realiza un decremento.
     """
     articulo = caja.articulo
-    if existe_articulo(articulo) and cantidad:
+    if cantidad > 0 and existe_articulo(articulo):
         logging.warning("La caja %s ya existe en Murano. Se ignora.",
                         articulo.codigo)
     else:
@@ -1368,7 +1368,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
         delta = 1
     assert articulo is not None, "Debe especificarse un artículo."
     res = False
-    if not existe_articulo(articulo) or delta < 0:
+    if delta < 0 or not existe_articulo(articulo):
         for i in range(abs(cantidad)):  # pylint: disable=unused-variable
             if articulo.es_bala():
                 res = create_bala(articulo.bala, delta, producto,
