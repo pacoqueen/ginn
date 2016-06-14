@@ -946,7 +946,10 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
             res = [sql_movstock]
         else:
             c.run_sql(sql_movstock)
-        origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
+        if cantidad < 0:
+            origen_documento = 11
+        else:
+            origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
         # 11 (salida de stock), 12 (inventario)
         # mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
         mov_posicion_origen = guid_movposicion
@@ -1020,7 +1023,10 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
             res = [sql_movstock]
         else:
             c.run_sql(sql_movstock)
-        origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
+        if cantidad < 0:
+            origen_documento = 11
+        else:
+            origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
         # 11 (salida de stock), 12 (inventario)
         # mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
         mov_posicion_origen = guid_movposicion
@@ -1098,7 +1104,10 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
             res = [sql_movstock]
         else:
             c.run_sql(sql_movstock)
-        origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
+        if cantidad < 0:
+            origen_documento = 11
+        else:
+            origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
         # 11 (salida de stock), 12 (inventario)
         # mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
         mov_posicion_origen = guid_movposicion
@@ -1174,7 +1183,10 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
             res = [sql_movstock]
         else:
             c.run_sql(sql_movstock)
-        origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
+        if cantidad < 0:
+            origen_documento = 11
+        else:
+            origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
         # 11 (salida de stock), 12 (inventario)
         # mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
         mov_posicion_origen = guid_movposicion
@@ -1521,7 +1533,18 @@ def delete_articulo(articulo):
     Elimina el artículo en Murano mediante la creación de un movimiento de
     stock negativo de ese código de producto.
     """
-    create_articulo(articulo, cantidad=-1)
+    # Buscamos el producto que tiene asignado ahora en Murano para darlo de
+    # baja de ESE producto en concreto. Seguramente no sea el que tiene
+    # asignado en ginn y fallará si intentamos crear el movimiento negativo
+    # contra él.
+    conn = Connection()
+    movserie = get_movimiento_articulo_serie(conn, articulo)
+    if movserie:
+        id_producto_anterior = movserie["CodigoArticulo"]
+        producto_anterior = get_producto_ginn(id_producto_anterior)
+        create_articulo(articulo, cantidad=-1, producto=producto_anterior)
+    else:
+        logging.warning("El artículo %s no existe en Murano.", articulo.codigo)
 
 
 def consumir(productoCompra, cantidad, almacen=None, consumo=None):
