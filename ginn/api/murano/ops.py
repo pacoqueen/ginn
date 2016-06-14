@@ -687,11 +687,12 @@ def get_mov_posicion(conexion, codigo_articulo):
     return mov_posicion
 
 
-def get_codalmacen_articulo(conexion, articulo):
+def get_movimiento_articulo_serie(conexion, articulo):
     """
-    Busca el último movimiento de stock del artículo y devuelve el código
-    de almacén si es un movimiento de entrada o la cadena vacía si es de
-    salida.
+    Devuelve el registro de Murano que contiene la última información del
+    código del artículo recibido. Típicamente será un movimiento de entrada de
+    fabricación, de salida por albarán o None si no existe el artículo en
+    Murano.
     """
     codigo_articulo = articulo.codigo
     SQL = r"""SELECT TOP 1 CodigoAlmacen
@@ -701,10 +702,25 @@ def get_codalmacen_articulo(conexion, articulo):
                                          codigo_articulo,
                                          CODEMPRESA)
     try:
-        codalmacen = conexion.run_sql(SQL)[0]["CodigoAlmacen"]
+        registro_serie = conexion.run_sql(SQL)[0]
     except (TypeError, AttributeError, KeyError, IndexError):
+        # Ese código de artículo (NumeroSerieLc) nunca ha existido en Murano.
+        registro_serie = None
+    return registro_serie
+
+
+def get_codalmacen_articulo(conexion, articulo):
+    """
+    Busca el último movimiento de stock del artículo y devuelve el código
+    de almacén si es un movimiento de entrada o la cadena vacía si es de
+    salida.
+    """
+    registro_serie = get_movimiento_articulo_serie(conexion, articulo)
+    if registro_serie is None:
         # codalmacen es None o no se encontraron registros
         codalmacen = ""
+    else:
+        codalmacen = registro_serie["CodigoAlmacen"]
     return codalmacen
 
 
@@ -1333,9 +1349,12 @@ def update_calidad(articulo, calidad):
     raise NotImplementedError("Función no disponible por el momento.")
 
 
-def existe_articulo(articulo):
+def existe_articulo(articulo, productoVenta=None):
     """
-    Devuelve True si el artículo ya existe en Murano. False en caso contrario.
+    Devuelve True si el artículo ya existe en Murano **Y** es del producto
+    recibido. Se permite especificar producto para el caso del cambio de
+    producto, donde no me interesa si el artículo existe, sino que si existe
+    con el producto de destino para no duplicarlo.
     Se considera que si un artículo ha salido del almacén, sigue existiendo
     en Murano. Esto evita que se dupliquen códigos y se respete la
     trazabilidad.
@@ -1345,9 +1364,17 @@ def existe_articulo(articulo):
         # Por error o por pruebas he recibido directamente el código del
         # artículo.
         articulo = pclases.Articulo.get_articulo(articulo)
+    if not productoVenta:
+        productoVenta = articulo.productoVenta
     c = Connection()
-    codalmacen = get_codalmacen_articulo(c, articulo)
-    res = bool(codalmacen)
+    movserie = get_movimiento_articulo_serie(c, articulo)
+    if not movserie:
+        res = False
+    else:
+        codigo_producto_venta_actual = movserie['CodigoArticulo']
+        codigo_producto_venta_preguntado = get_codigo_articulo_murano(
+            productoVenta)
+        res = codigo_producto_venta_actual == codigo_producto_venta_preguntado
     return res
 
 
