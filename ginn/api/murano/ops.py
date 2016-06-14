@@ -695,7 +695,7 @@ def get_movimiento_articulo_serie(conexion, articulo):
     Murano.
     """
     codigo_articulo = articulo.codigo
-    SQL = r"""SELECT TOP 1 CodigoAlmacen
+    SQL = r"""SELECT TOP 1 *
               FROM [%s].[dbo].[MovimientoArticuloSerie]
               WHERE NumeroSerieLc = '%s' AND CodigoEmpresa = '%d'
               ORDER BY Fecha DESC;""" % (conexion.get_database(),
