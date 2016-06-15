@@ -1641,6 +1641,16 @@ def get_existencias_silo(silo):
     return res
 
 
+def get_ocupado_silo(silo):
+    """
+    Devuelve la cantidad total de existencias que hay en un silo, sea del
+    producto que sea.
+    """
+    stock_murano = get_existencias_silo(silo)
+    ocupado = sum([stock_murano[producto] for producto in stock_murano])
+    return ocupado
+
+
 def get_carga_mas_antigua_silo(silo):
     """
     Devuelve una estructura similar a las cargas de ginn pero con los datos
