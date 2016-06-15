@@ -805,7 +805,14 @@ class PartesDeFabricacionBalas(Ventana):
         if ch.get_active():
             idsilo = int(ch.get_name()[ch.get_name().index("ID") + 2:])
             silo = pclases.Silo.get(idsilo)
-            if silo.ocupado <= 0:
+            try:
+                stock_murano = murano.ops.get_existencias_silo(silo)
+                ocupado = sum([stock_murano[producto] for producto in stock_murano])
+            except:
+                self.logger.error(
+                    "No se pudo leer Silo en Murano. Fallback a ginn.")
+                ocupado = silo.ocupado
+            if ocupado <= 0:
                 ch.set_active(False)
                 escala.set_value(0)
             else:
@@ -2577,7 +2584,7 @@ class PartesDeFabricacionBalas(Ventana):
             ini, fin = numbala, numbala
         return xrange(ini, fin+1), pedir_peso
 
-    def crear_bala(self, numbala, peso, lote, fibracemento = False):
+    def crear_bala(self, numbala, peso, lote, fibracemento=False):
         if not MURANO:
             utils.dialogo_info(titulo="ERROR DE CONEXIÓN CON MURANO",
                            texto="No puede crear balas. Solo consultas.",
@@ -3373,12 +3380,19 @@ class PartesDeFabricacionBalas(Ventana):
                 if pclases.DEBUG:
                     myprint(__file__, " -> ", articulo.peso, aditivos,
                             peso_sin_aditivos, porcentaje)
+                try:
+                    stock_murano = murano.ops.get_existencias_silo(silo)
+                    ocupado = sum([stock_murano[producto] for producto in stock_murano])
+                except:
+                    self.logger.error(
+                        "No se pudo leer Silo en Murano. Fallback a ginn.")
+                    ocupado = silo.ocupado
                 self.logger.warning("CONSUMO LÍNEA FIBRA: Consumiendo %s de "
                         "granza del silo %s para la bala o bigbag %s. "
                         "Ocupado: %s" % (utils.float2str(consumido),
                                          silo.nombre,
                                          articulo.codigo_interno,
-                                         utils.float2str(silo.ocupado)))
+                                         utils.float2str(ocupado)))
                 if pclases.DEBUG:
                     myprint(__file__, " -> ", diccionario_consumido)
             else:
@@ -3400,11 +3414,18 @@ class PartesDeFabricacionBalas(Ventana):
                             despues = producto_consumido.existencias + cargado,
                             cantidad = -cargado)
                     pclases.Auditoria.nuevo(consumo, self.usuario, __file__)
+                    try:
+                        stock_murano = murano.ops.get_existencias_silo(silo)
+                        ocupado = sum([stock_murano[producto] for producto in stock_murano])
+                    except:
+                        self.logger.error(
+                            "No se pudo leer Silo en Murano. Fallback a ginn.")
+                        ocupado = silo.ocupado
                     self.logger.warning("CONSUMO LÍNEA FIBRA: "
                             "%s anulado de silo %s. Ocupado: %s" % (
                                 utils.float2str(cargado),
                                 silo.nombre,
-                                silo.ocupado))
+                                ocupado))
                 else:
                     utils.dialogo_info(titulo = "ERROR EN SILO",
                             texto = "No se pudo determinar el producto "
@@ -4319,6 +4340,9 @@ def mostrar_carga_silo(label, silo):
         stock_murano = murano.ops.get_existencias_silo(silo)
         ocupado = sum([stock_murano[producto] for producto in stock_murano])
     except:
+        self.logger.error(
+            "No se pudo leer carga de silo %s en Murano. Fallback a ginn." %
+                silo.nombre)
         ocupado = silo.ocupado
     strocupado = utils.float2str(ocupado, 1)
     capacidad = silo.capacidad
