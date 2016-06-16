@@ -7,6 +7,9 @@ Capa de "adaptación" de ginn a Murano.
 Se encarga de calcular según las nuevas definiciones los pesos brutos, netos,
 teóricos (iedales) y superficie de un artículo de ginn, aunque este haya
 sido producido antes del cambio efectivo en ginn.
+
+Todas las funciones que comienzan con _ pertenecen a la versión anterior de
+las definiciones de pesos (ginn < 6.1.1)
 """
 
 from __future__ import print_function
@@ -45,6 +48,14 @@ logging.basicConfig(filename="%s.log" % (NOMFLOG),
 
 def get_peso_bruto(articulo):
     """
+    Peso bruto del artículo. Coincide con el dado en báscula salvo para las
+    cajas, que es el marcado por el operario + 250 gr.
+    """
+    return articulo.peso_bruto
+
+
+def _get_peso_bruto(articulo):
+    """
     Devuelve el peso bruto del artículo que espera recibir Murano.
     """
     peso = articulo.get_peso()
@@ -64,6 +75,22 @@ def get_peso_bruto(articulo):
 
 def get_peso_neto(articulo):
     """
+    Devuelve el peso neto del artículo, que es el peso bruto menos el
+    peso estimado de embalaje. En el caso de los rollos A y las cajas,
+    A EFECTOS DE MURANO, debe coincidir con el peso teórico ideal.
+    """
+    if articulo.es_rollo() and articulo.es_clase_a():  # peso neto = teórico
+        res = articulo.peso_teorico
+    elif articulo.es_caja():    # La línea no falla. El peso neto es el ideal.
+        res = articulo.peso_teorico
+    else:   # Para el resto de rollos y demás artículos,
+            # neto = bruto - embalaje (que puede ser despreciable)
+        res = articulo.peso_sin
+    return res
+
+
+def _get_peso_neto(articulo):
+    """
     Devuelve el peso neto del artículo que espera recibir Murano. Es el peso
     bruto menos el embalaje definido para el producto al que pertenece.
     Si no es aplicable, se devuelve None
@@ -80,6 +107,16 @@ def get_peso_neto(articulo):
 
 def get_peso_ideal(articulo):
     """
+    Devuelve el peso teórico del producto o 0 si no es aplicable.
+    """
+    res = articulo.peso_teorico
+    if res is None:
+        res = 0.0
+    return res
+
+
+def _get_peso_ideal(articulo):
+    """
     Devuelve el peso teórico que debería tener un artículo según el
     producto al que pertenece el artículo.
     Para un artículo sin peso ideal definido se considera 0.0.
@@ -91,6 +128,15 @@ def get_peso_ideal(articulo):
 
 
 def get_peso_embalaje(articulo):
+    """
+    Devuelve el peso del embalaje definido para el artículo según su
+    producto. Ojo: algunos valores están HARCODED en pclases.
+    """
+    res = articulo.peso_embalaje
+    return res
+
+
+def _get_peso_embalaje(articulo):
     """
     Devuelve el peso del embalaje definido para el artículo. No se obtiene
     de manera directa, es estimado para cada producto. Si es despreciable,
@@ -113,6 +159,15 @@ def get_peso_embalaje(articulo):
 
 
 def get_superficie(articulo):
+    """
+    Si es aplicable, devuelve los m² del producto (largo x ancho).
+    Si no, devuelve None.
+    """
+    res = articulo.superficie
+    return res
+
+
+def _get_superficie(articulo):
     """
     Devuelve la superficie del artículo: alto * largo.
     Si no es aplicable, se devuelve None.

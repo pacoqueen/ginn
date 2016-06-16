@@ -9815,7 +9815,8 @@ class Articulo(SQLObject, PRPCTOO):
         if self.es_bala():
             res = 0.2       # 200 gramos. Ver Zim del 14/10/2015
         elif self.es_bala_cable():
-            res = 0.2       # 200 gramos también.
+            res = self.balaCable.pesoEmbalaje
+            # Tienen su propio campo en la BD, aunque no se usa. Ceropordefecto
         elif self.es_bigbag():
             res = 0.0       # Despreciable
         elif self.es_caja():
@@ -9825,11 +9826,11 @@ class Articulo(SQLObject, PRPCTOO):
         elif self.es_rollo():
             res = self.productoVenta.camposEspecificosRollo.pesoEmbalaje
         elif self.es_rollo_c():
-            res = self.productoVenta.camposEspecificosRollo.pesoEmbalaje
+            res = self.rolloC.pesoEmbalaje
         elif self.es_rollo_defectuoso():
-            res = self.productoVenta.camposEspecificosRollo.pesoEmbalaje
+            res = self.rolloDefectuoso.pesoEmbalaje
         else:
-            res = 0.0
+            res = None
         return res
 
     def get_superficie(self):
@@ -10245,35 +10246,6 @@ class Articulo(SQLObject, PRPCTOO):
         else:
             res = None
         return res
-
-    @property
-    def pesoEmbalaje(self):
-        """
-        Devuelve el peso del embalaje del producto. Los rollos B y C tienen
-        su propio campo. Los A deben obtenerlo de la ficha del producto.
-        Las balas A y B no tienen definido peso de embalaje y es despreciable
-        actualmente. OJO: [20160314] Esto cambiará próximamente.
-        Las balas C tienen su propio campo.
-        Los bigbag no tienen peso de embalaje.
-        Las cajas no tienen peso de embalaje. OJO: [20160314] Cambiará.
-        """
-        res = None
-        if self.bala:
-            res = 0.0
-        elif self.balaCable:
-            res = self.balaCable.pesoEmbalaje
-        elif self.rollo:
-            res = self.productoVenta.camposEspecificosRollo.pesoEmbalaje
-        elif self.rolloDefectuoso:
-            res = self.rolloDefectuoso.pesoEmbalaje
-        elif self.rolloC:
-            res = self.rolloC.pesoEmbalaje
-        elif self.bigbag:
-            res = 0.0
-        elif self.caja:
-            res = 0.0
-        return res
-    peso_embalaje = pesoEmbalaje
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
