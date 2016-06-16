@@ -806,8 +806,7 @@ class PartesDeFabricacionBalas(Ventana):
             idsilo = int(ch.get_name()[ch.get_name().index("ID") + 2:])
             silo = pclases.Silo.get(idsilo)
             try:
-                stock_murano = murano.ops.get_existencias_silo(silo)
-                ocupado = sum([stock_murano[producto] for producto in stock_murano])
+                ocupado = murano.ops.get_ocupado_silo(silo)
             except:
                 self.logger.error(
                     "No se pudo leer Silo en Murano. Fallback a ginn.")
@@ -3381,8 +3380,7 @@ class PartesDeFabricacionBalas(Ventana):
                     myprint(__file__, " -> ", articulo.peso, aditivos,
                             peso_sin_aditivos, porcentaje)
                 try:
-                    stock_murano = murano.ops.get_existencias_silo(silo)
-                    ocupado = sum([stock_murano[producto] for producto in stock_murano])
+                    ocupado = murano.ops.get_ocupado_silo(silo)
                 except:
                     self.logger.error(
                         "No se pudo leer Silo en Murano. Fallback a ginn.")
@@ -3415,8 +3413,7 @@ class PartesDeFabricacionBalas(Ventana):
                             cantidad = -cargado)
                     pclases.Auditoria.nuevo(consumo, self.usuario, __file__)
                     try:
-                        stock_murano = murano.ops.get_existencias_silo(silo)
-                        ocupado = sum([stock_murano[producto] for producto in stock_murano])
+                        ocupado = murano.ops.get_ocupado_silo(silo)
                     except:
                         self.logger.error(
                             "No se pudo leer Silo en Murano. Fallback a ginn.")
@@ -4337,8 +4334,7 @@ def mostrar_carga_silo(label, silo):
     Muestra la carga del silo «silo» en el label recibido.
     """
     try:
-        stock_murano = murano.ops.get_existencias_silo(silo)
-        ocupado = sum([stock_murano[producto] for producto in stock_murano])
+        ocupado = murano.ops.get_ocupado_silo(silo)
     except:
         self.logger.error(
             "No se pudo leer carga de silo %s en Murano. Fallback a ginn." %
