@@ -4336,9 +4336,8 @@ def mostrar_carga_silo(label, silo):
     try:
         ocupado = murano.ops.get_ocupado_silo(silo)
     except:
-        self.logger.error(
-            "No se pudo leer carga de silo %s en Murano. Fallback a ginn." %
-                silo.nombre)
+        #print "No se pudo leer carga de silo %s en Murano. Fallback a ginn."%(
+        #        silo.nombre)
         ocupado = silo.ocupado
     strocupado = utils.float2str(ocupado, 1)
     capacidad = silo.capacidad
