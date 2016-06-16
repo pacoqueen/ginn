@@ -687,7 +687,7 @@ def get_mov_posicion(conexion, codigo_articulo):
     return mov_posicion
 
 
-def get_movimiento_articulo_serie(conexion, articulo):
+def get_ultimo_movimiento_articulo_serie(conexion, articulo):
     """
     Devuelve el registro de Murano que contiene la última información del
     código del artículo recibido. Típicamente será un movimiento de entrada de
@@ -715,7 +715,7 @@ def get_codalmacen_articulo(conexion, articulo):
     de almacén si es un movimiento de entrada o la cadena vacía si es de
     salida.
     """
-    registro_serie = get_movimiento_articulo_serie(conexion, articulo)
+    registro_serie = get_ultimo_movimiento_articulo_serie(conexion, articulo)
     if registro_serie is None:
         # codalmacen es None o no se encontraron registros
         codalmacen = ""
@@ -1379,7 +1379,7 @@ def existe_articulo(articulo, productoVenta=None):
     if not productoVenta:
         productoVenta = articulo.productoVenta
     c = Connection()
-    movserie = get_movimiento_articulo_serie(c, articulo)
+    movserie = get_ultimo_movimiento_articulo_serie(c, articulo)
     if not movserie:
         res = False
     else:
@@ -1388,6 +1388,38 @@ def existe_articulo(articulo, productoVenta=None):
             productoVenta)
         res = codigo_producto_venta_actual == codigo_producto_venta_preguntado
     return res
+
+
+def esta_en_almacen(articulo):
+    """
+    Devuelve True si el artículo está en algún almacén de Murano. Sea del
+    producto que sea.
+    False en caso contrario.
+    """
+    if not isinstance(articulo, pclases.Articulo):
+        # Por error o por pruebas he recibido directamente el código del
+        # artículo.
+        articulo = pclases.Articulo.get_articulo(articulo)
+    c = Connection()
+    movserie = get_ultimo_movimiento_articulo_serie(c, articulo)
+    if not movserie:
+        # Si no ha tenido movimientos de serie, nunca ha existido en Murano.
+        res = False
+    else:
+        if es_movimiento_de_salida(movserie):
+            # Ha tenido movimientos, pero el último ha sido de salida.
+            res = False
+        else:
+            res = True
+    return res
+
+
+def es_movimiento_de_salida(movserie):
+    """
+    Recibe un registro MovimientoArticuloSerie de Murano (diccionario) y
+    devuelve True si es un movimiento de salida.
+    """
+    return movserie['OrigenDocumento'] == 11
 
 
 def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
@@ -1538,7 +1570,7 @@ def delete_articulo(articulo):
     # asignado en ginn y fallará si intentamos crear el movimiento negativo
     # contra él.
     conn = Connection()
-    movserie = get_movimiento_articulo_serie(conn, articulo)
+    movserie = get_ultimo_movimiento_articulo_serie(conn, articulo)
     if movserie:
         id_producto_anterior = movserie["CodigoArticulo"]
         producto_anterior = get_producto_ginn(id_producto_anterior)
