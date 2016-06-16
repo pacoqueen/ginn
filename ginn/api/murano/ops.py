@@ -907,7 +907,7 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
     caso, el valor de ejecutar el proceso de importación.
     """
     articulo = bala.articulo
-    if cantidad > 0 and existe_articulo(articulo):
+    if cantidad > 0 and duplica_articulo(articulo):
         logging.warning("La bala %s ya existe en Murano. Se ignora.",
                         bala.codigo)
     else:
@@ -987,7 +987,7 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
     """
     articulo = bigbag.articulo
-    if cantidad > 0 and existe_articulo(articulo):
+    if cantidad > 0 and duplica_articulo(articulo):
         logging.warning("El bigbag %s ya existe en Murano. Se ignora.",
                         articulo.codigo)
     else:
@@ -1065,7 +1065,7 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
     """
     articulo = rollo.articulo
-    if cantidad > 0 and existe_articulo(articulo):
+    if cantidad > 0 and duplica_articulo(articulo):
         logging.warning("El rollo %s ya existe en Murano. Se ignora.",
                         articulo.codigo)
     else:
@@ -1147,7 +1147,7 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
     Si cantidad es 1, realiza un decremento.
     """
     articulo = caja.articulo
-    if cantidad > 0 and existe_articulo(articulo):
+    if cantidad > 0 and duplica_articulo(articulo):
         logging.warning("La caja %s ya existe en Murano. Se ignora.",
                         articulo.codigo)
     else:
@@ -1361,6 +1361,38 @@ def update_calidad(articulo, calidad):
     raise NotImplementedError("Función no disponible por el momento.")
 
 
+def duplica_articulo(articulo, producto=None):
+    """
+    Devuelve True si al crear el artículo recibido con el producto indicado
+    (o el que tenga asignado el artículo, si es None) crearía un duplicado.
+    Es decir, si el artículo no existía en Murano (no tiene registro de
+    movimiento de serie), devuelve False (no lo duplicaría si lo creara).
+    Si el artículo ya existe en Murano pero ha salido en un movimiento de
+    borrado desde fabricación --y no por albarán-- entonces tampoco lo
+    duplicaría, devuelve False. Si el movimiento es de ajuste manual
+    de salida, tampoco lo duplicaría.
+    True en el resto de los casos (existe y el último movimiento es de
+    albarán o de entrada de fabricación).
+    Si tiene un movimiento de entrada de fabricación pero con otro producto,
+    **sí** que duplicaría el código (que es lo que comprueba existe_articulo).
+    """
+    if not isinstance(articulo, pclases.Articulo):
+        # Por error o por pruebas he recibido directamente el código del
+        # artículo.
+        articulo = pclases.Articulo.get_articulo(articulo)
+    if not producto:
+        producto = articulo.productoVenta
+    conn = Connection()
+    movserie = get_ultimo_movimiento_articulo_serie(conn, articulo)
+    if (not movserie or
+            es_movimiento_salida_fabricacion(movserie) or
+            es_movimiento_salida_manual(movserie)):
+        res = False
+    else:
+        res = True
+    return res
+
+
 def existe_articulo(articulo, productoVenta=None):
     """
     Devuelve True si el artículo ya existe en Murano **Y** es del producto
@@ -1445,6 +1477,17 @@ def es_movimiento_salida_fabricacion(movserie):
     return res
 
 
+def es_movimiento_salida_manual(movserie):
+    """
+    True si el registro MovimientoArticuloSerie es de salida por un ajuste
+    manual por entrada/salida de movimientos de Murano.
+    OJO: Esos movimientos los debe marcar el usuario como "MAN" en la Serie.
+    """
+    res = (movserie['OrigenDocumento'] == 11 and
+           movserie['SerieDocumento'] == 'MAN')
+    return res
+
+
 def es_movimiento_salida_albaran(movserie):
     """
     Devuelve el número de albarán (evaluable como True) por el que ha salido
@@ -1476,7 +1519,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
         delta = 1
     assert articulo is not None, "Debe especificarse un artículo."
     res = False
-    if delta < 0 or not existe_articulo(articulo):
+    if delta < 0 or not duplica_articulo(articulo, producto):
         for i in range(abs(cantidad)):  # pylint: disable=unused-variable
             if articulo.es_bala():
                 res = create_bala(articulo.bala, delta, producto,
