@@ -2418,7 +2418,7 @@ class PartesDeFabricacionBalas(Ventana):
                 self.iniciar_pesaje_auto(None)
             else:
                 numbala, pedir_peso = self.pedir_numbala(
-                                                fibracemento = fibracemento)
+                                                fibracemento=fibracemento)
                 if numbala == None:
                     return  # Ha cancelado el diálogo.
                 for bala in numbala:
@@ -2429,7 +2429,8 @@ class PartesDeFabricacionBalas(Ventana):
                     else:
                         peso = 0
                     #myprint("Voy a crear...")
-                    self.crear_bala(bala,peso,lote,fibracemento=fibracemento)
+                    self.crear_bala(bala, peso, lote,
+                                    fibracemento=fibracemento)
                     #myprint("Creada...")
             self.save_conf_silos()
             self.rellenar_tabla_conf_silos()
@@ -4265,10 +4266,12 @@ def recv_serial(com, ventana, l_peso, ventana_parte, e_numbala, l_estable, l_pes
 
             try:
                 peso = float(peso_str)
-                if peso % 1 != 0:   # Le quito un kilo
-                    peso_sin = peso - 1.0
-                else:   # CWT: Le quito kilo y medio si es peso "redondo"
-                    peso_sin = peso - 1.5
+                #if peso % 1 != 0:   # Le quito un kilo
+                #    peso_sin = peso - 1.0
+                #else:   # CWT: Le quito kilo y medio si es peso "redondo"
+                #    peso_sin = peso - 1.5
+                # HARCODED: Peso embalaje debería estar definido en algún sitio
+                peso_sin = peso - 0.2   # XXX: Nueva estimación de peso neto.
                 l_peso.set_text('<b><span color="dark green">%s</span></b>' % (
                     utils.float2str(peso)))
                 l_peso2.set_text('<b><big><span color="dark green">'

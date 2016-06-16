@@ -878,7 +878,8 @@ class PartesDeFabricacionBolsas(Ventana):
                     gramos = productoVenta.camposEspecificosBala.gramosBolsa
                 except AttributeError:
                     gramos = 0
-                peso = (gramos * numbolsas) / 1000.0
+                peso_neto = (gramos * numbolsas) / 1000.0
+                peso = peso_bruto = peso_neto + 0.150 + 0.100  # Palé + cartón
                 caja = pclases.Caja(pale = pale,
                                     numcaja = numcaja,
                                     codigo = codigo,

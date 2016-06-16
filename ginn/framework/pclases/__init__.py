@@ -4308,23 +4308,18 @@ class Caja(SQLObject, PRPCTOO):
 
     def calcular_peso(self):
         """
-        Devuelve el peso total de la caja.
+        Devuelve el peso teórico de la caja.
         """
-        return self.peso
-        #return self.get_peso()
-        #try:
-        #    # Otra opción:
-        #    try:
-        #        numbolsas = self.pale.numbolsas
-        #    except AttributeError:  # Solo por si acaso
-        #        numbolsas = len(self.bolsas)
-        #    pv = self.bolsas[0].articulo.productoVenta
-        #    pesobolsa = pv.camposEspecificosBala.gramosBolsa
-        #    res = numbolsas * pesobolsa / 1000.0    # En kg, please.
-        #except (IndexError, AttributeError):
-        #    res = sum([b.peso for b in self.bolsas])
-        #    # ¿Lento? Maybe. Pero seguro. La optimización es la parte del try.
-        #return res
+        try:
+            numbolsas = self.pale.numbolsas
+        except AttributeError:  # Solo por si acaso
+            numbolsas = self.productoVenta.camposEspecificosBala.bolsasCaja
+        pesobolsa = self.productoVenta.camposEspecificosBala.gramosBolsa
+        res = numbolsas * pesobolsa / 1000.0    # En kg, please.
+        return res
+
+    get_peso_teorico = calcular_peso
+    peso_teorico = property(get_peso_teorico)
 
     def en_almacen(self, fecha = None, almacen = None):
         """
@@ -9810,35 +9805,32 @@ class Articulo(SQLObject, PRPCTOO):
         Devuelve el peso neto (sin embalaje)
         del artículo en función de si es rollo,
         rollo defectuoso, bala, bala de cable o bigbag.
-                        PESO BRUTO (c.e) - PESO NETO (s.e)
-        Rollo           rollo.peso          rollo.peso - peso_embalaje del producto
-        RolloDefectuoso rollod.peso         rollod.peso - rollo.pesoEmbalaje (por defecto el del producto original)
-        Bala            bala.peso           bala.peso   (en balas no se guarda el peso del embalaje, se descuenta
-                                                         directamente de lo dado en báscula)
-        Bigbag          bigbag.peso         bigbag.peso (No hay báscula, se mete directamente el peso dado y se
-                                                         desprecia el peso del bigbag, humedad, etc.)
-        BalaCable       balaCable.peso      balaCable.peso - balaCable.pesoEmbalaje (por defecto 0.0)
-        RolloC          rolloC.peso         rolloC.peso - rolloC.pesoEmbalaje (por defecto 0.0)
         """
-        if self.es_rollo():
-            return self.rollo.peso - self.rollo.productoVenta.camposEspecificosRollo.pesoEmbalaje
+        return self.peso_bruto - self.peso_embalaje
+
+    def get_peso_embalaje(self):
+        """
+        Devuelve el peso estimado del embalaje en cada caso.
+        """
         if self.es_bala():
-            return self.bala.pesobala       # En balas, a lo marcado por la
-            # báscula se que quita 1.5 kg y se redondea al .5 superior.
-            # Por tanto, en balas el peso siempre es peso neto.
-        if self.es_bigbag():
-            return self.bigbag.pesobigbag   # En bigbags no se especifica en
-            # peso del embalaje.
-        if self.es_rollo_defectuoso():
-            return self.rolloDefectuoso.peso - self.rolloDefectuoso.pesoEmbalaje
-        if self.es_bala_cable():
-            return self.balaCable.peso - self.balaCable.pesoEmbalaje
-        if self.es_rollo_c():
-            return self.rolloC.peso - self.rolloC.pesoEmbalaje
-        if self.es_caja():
-            return self.caja.peso  # Peso de las bolsas de papel y cartón
-                                    # despreciable.
-        return None
+            res = 0.2       # 200 gramos. Ver Zim del 14/10/2015
+        elif self.es_bala_cable():
+            res = 0.2       # 200 gramos también.
+        elif self.es_bigbag():
+            res = 0.0       # Despreciable
+        elif self.es_caja():
+            res = 0.1 + 0.15   # CWT: 100 gr de bolsa y cartón. 150 gr
+            # proporcionales del palé. Entre todas las cajas se supone que
+            # suman el palé completo. Aunque varíe el número de cajas.
+        elif self.es_rollo():
+            res = self.productoVenta.camposEspecificosRollo.pesoEmbalaje
+        elif self.es_rollo_c():
+            res = self.productoVenta.camposEspecificosRollo.pesoEmbalaje
+        elif self.es_rollo_defectuoso():
+            res = self.productoVenta.camposEspecificosRollo.pesoEmbalaje
+        else:
+            res = 0.0
+        return res
 
     def get_superficie(self):
         """
@@ -9886,7 +9878,7 @@ class Articulo(SQLObject, PRPCTOO):
         largo pero no se tiene en cuenta).
         """
         if (self.es_bala() or self.es_bigbag() or self.es_bala_cable() or
-            self.es_caja()):
+                self.es_caja()):
             return None
         if self.es_rollo():
             return self.productoVenta.camposEspecificosRollo.metrosLineales
@@ -9905,8 +9897,8 @@ class Articulo(SQLObject, PRPCTOO):
         """
         if self.es_rollo():
             cantidad = self.superficie
-        elif (self.es_bala() or self.es_bigbag() or self.es_bala_cable()
-              or self.es_caja()):
+        elif (self.es_bala() or self.es_bigbag() or self.es_bala_cable() or
+              self.es_caja()):
             cantidad = self.peso
         elif self.es_rollo_defectuoso():
             cantidad = self.superficie
@@ -9945,9 +9937,30 @@ class Articulo(SQLObject, PRPCTOO):
             res = False
         return res
 
+    def get_peso_teorico(self):
+        """
+        Devuelve el peso teórico o ideal del artículo según su producto.
+        """
+        if self.es_bala() or self.es_bala_cable() or self.es_bigbag():
+            res = None
+        elif self.es_caja():
+            res = self.caja.peso_teorico
+        elif self.es_rollo():
+            res = self.rollo.peso_teorico
+        elif self.es_rollo_defectuoso():
+            res = self.rolloDefectuoso.peso_teorico
+        elif self.es_rollo_c():
+            res = None
+        else:
+            res = None
+        return res
+
     superficie = property(get_superficie)
     peso = property(get_peso)
+    peso_bruto = peso
     peso_sin = property(get_peso_sin, doc = get_peso_sin.__doc__)
+    peso_teorico = property(get_peso_teorico)
+    peso_embalaje = property(get_peso_embalaje)
     ancho = property(get_ancho)
     largo = property(get_largo)
     cantidad = property(get_cantidad)
@@ -10168,26 +10181,26 @@ class Articulo(SQLObject, PRPCTOO):
             tiempo = 0.0
         return tiempo
 
-    def get_peso_teorico(self):
-        """
-        Devuelve el peso teórico del artículo según la ficha del producto.
-        """
-        res = None
-        for link in ("bala", "balaCable", "rollo", "rolloDefectuoso", "rolloC",
-                     "bigbag", "caja"):
-            try:
-                linked = getattr(self, link)
-                if linked == None:
-                    raise AttributeError
-            except AttributeError:
-                continue
-            else:
-                try:
-                    res = linked.get_peso_teorico()
-                except AttributeError:
-                    res = None # Este tipo de producto no lo tiene definido.
-                break
-        return res
+    #def get_peso_teorico(self):
+    #    """
+    #    Devuelve el peso teórico del artículo según la ficha del producto.
+    #    """
+    #    res = None
+    #    for link in ("bala", "balaCable", "rollo", "rolloDefectuoso", "rolloC",
+    #                 "bigbag", "caja"):
+    #        try:
+    #            linked = getattr(self, link)
+    #            if linked == None:
+    #                raise AttributeError
+    #        except AttributeError:
+    #            continue
+    #        else:
+    #            try:
+    #                res = linked.get_peso_teorico()
+    #            except AttributeError:
+    #                res = None # Este tipo de producto no lo tiene definido.
+    #            break
+    #    return res
 
     def calcular_tiempo_fabricacion(self):
         """
@@ -22202,4 +22215,3 @@ if __name__ == '__main__':
     #do_performance_test()
     #r = Rollo.select()[0]
     #r.destroy_en_cascada()
-

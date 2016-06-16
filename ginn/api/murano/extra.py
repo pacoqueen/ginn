@@ -70,6 +70,8 @@ def get_peso_neto(articulo):
     """
     if articulo.es_rollo() and articulo.es_clase_a():  # peso neto = teórico
         res = get_peso_ideal(articulo)
+    elif articulo.es_caja():    # La línea no falla. El peso neto es el ideal.
+        res = get_peso_ideal(articulo)
     else:   # Para el resto de rollos y demás artículos,
             # neto = bruto - embalaje (que puede ser despreciable)
         res = get_peso_bruto(articulo) - get_peso_embalaje(articulo)
