@@ -1419,7 +1419,32 @@ def es_movimiento_de_salida(movserie):
     Recibe un registro MovimientoArticuloSerie de Murano (diccionario) y
     devuelve True si es un movimiento de salida.
     """
-    return movserie['OrigenDocumento'] == 11
+    res = (es_movimiento_salida_fabricacion(movserie) or
+           es_movimiento_salida_albaran(movserie))
+    return res
+
+
+def es_movimiento_salida_fabricacion(movserie):
+    """
+    True si el registro MovimientoArticuloSerie es de salida de fabricación
+    (borrado en partes).
+    """
+    res = (movserie['OrigenDocumento'] == 11 and movserie['Serie'] == 'FAB')
+    return res
+
+
+def es_movimiento_salida_albaran(movserie):
+    """
+    Devuelve el número de albarán (evaluable como True) por el que ha salido
+    el artículo indicado en el registro MovimientoArticuloSerie.
+    """
+    if movserie['OrigenDocumento'] == 1:
+        serie = movserie['SerieDocumento']
+        documento = movserie['Documento']
+        res = serie + str(documento)
+    else:
+        res = False
+    return res
 
 
 def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
