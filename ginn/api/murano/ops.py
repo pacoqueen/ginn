@@ -1424,12 +1424,24 @@ def es_movimiento_de_salida(movserie):
     return res
 
 
+def get_producto_articulo_murano(articulo):
+    """
+    Devuelve el pclases.ProductoVenta que tenga asignado el artículo en Murano.
+    """
+    conn = Connection()
+    movserie = get_ultimo_movimiento_articulo_serie(conn, articulo)
+    murano_id = movserie['CodigoArticulo']
+    pv = get_producto_ginn(murano_id)
+    return pv
+
+
 def es_movimiento_salida_fabricacion(movserie):
     """
     True si el registro MovimientoArticuloSerie es de salida de fabricación
     (borrado en partes).
     """
-    res = (movserie['OrigenDocumento'] == 11 and movserie['Serie'] == 'FAB')
+    res = (movserie['OrigenDocumento'] == 11 and
+           movserie['SerieDocumento'] == 'FAB')
     return res
 
 
