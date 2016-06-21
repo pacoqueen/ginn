@@ -9787,7 +9787,9 @@ class Articulo(SQLObject, PRPCTOO):
         if self.es_rollo():
             return self.rollo.peso
         if self.es_bala():
-            return self.bala.pesobala
+            # En el caso de las balas, el objeto bala guarda el peso
+            # real menos el embalaje estimado.
+            return self.bala.pesobala + self.peso_embalaje
         if self.es_bigbag():
             return self.bigbag.pesobigbag
         if self.es_rollo_defectuoso():
@@ -9797,7 +9799,9 @@ class Articulo(SQLObject, PRPCTOO):
         if self.es_rollo_c():
             return self.rolloC.peso
         if self.es_caja():
-            return self.caja.peso  # Campo calculado.
+            # En las cajas también se guarda el peso teórico. No hay
+            # báscula ni peso real.
+            return self.caja.peso + self.peso_embalaje # Campo calculado.
         return None
 
     def get_peso_sin(self):

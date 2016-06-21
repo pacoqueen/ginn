@@ -1973,3 +1973,56 @@ def corregir_dimensiones_articulo(articulo, peso_bruto=None, peso_neto=None,
     res = conn.run_sql(SQL_ARTICULO)
     res = res and conn.run_sql(SQL_MOVIMIENTO)
     return res
+
+
+def producto_murano2ginn(codigo, sync=False):
+    """
+    Vuelca el produco de Murano del código recibido en ginn.
+    Respeta el ID de Murano en ginn.
+    Si el ID ya existe, machaca la información de ginn con la de Murano si
+    el flag «sync» está activo. En otro caso, lanza una excepción.
+    """
+    conn = Connection()
+    SQL = "SELECT * FROM %s.dbo.Articulos WHERE CodigoArticulo='%s';" % (
+            conn.get_database(), codigo)
+    prod_murano = conn.run_sql(SQL)
+    if not prod_murano:
+        strerr = "El código %s no existe en Murano." % (codigo)
+        logging.error(strerr)
+        raise ValueError, strerr
+    else:
+        try:
+            prod_ginn = get_producto_ginn(codigo)
+        except SQLObjectNotFound:
+            res = _create_producto_ginn(prod_murano)
+        else:
+            if sync:
+                res = _update_producto_ginn(prod_ginn, prod_murano)
+            else:
+                res = None
+    return res
+
+
+def _create_producto_ginn(prod_murano):
+    """
+    Recibe un producto de Murano en forma de diccionario cuyas claves son los
+    nombres de los campos y los valores, sus valores.
+    Crea un producto en ginn con el ID de Murano y devuelve el objeto
+    recién creado.
+    """
+    ide = int(prod_murano['CodigoArticulo'].replace("PV", ""))
+    try:
+        pv = pclases.ProductoVenta(id = ide)
+    except:
+        pv = None
+    return pv
+
+
+def _update_producto_ginn(prod_ginn, prod_murano):
+    """
+    Recibe un producto de ginn y otro de Murano en forma de diccionario.
+    Actualiza los campos de ginn según los valores del de Murano.
+    Devuelve None si no se pudo actualizar y el producto de ginn sí se pudo.
+    """
+    res = None
+    return res

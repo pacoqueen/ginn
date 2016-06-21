@@ -4033,11 +4033,11 @@ def crear_ventana_pesaje(ventana_parte, padre = None):
     import gobject
     com = utils.get_puerto_serie()
     if com != None:
-        ventana, l_peso, e_numbala, b_cancelar, b_aceptar, l_estable, l_peso2 = build_ventana(padre)
-        src_id = gobject.timeout_add(1500, recv_serial, com, ventana, l_peso, ventana_parte, e_numbala, l_estable, l_peso2)
+        ventana, l_peso, e_numbala, b_cancelar, b_aceptar, l_estable, l_peso_sin = build_ventana(padre)
+        src_id = gobject.timeout_add(1500, recv_serial, com, ventana, l_peso, ventana_parte, e_numbala, l_estable, l_peso_sin)
         b_cancelar.connect("clicked", cerrar_ventana_bascula, ventana, com, src_id)
         ventana.connect("destroy", cerrar_ventana_bascula, ventana, com, src_id)
-        b_aceptar.connect("clicked", leer_nueva_bala, l_peso, l_estable, e_numbala, ventana_parte, l_peso2)
+        b_aceptar.connect("clicked", leer_nueva_bala, l_peso, l_estable, e_numbala, ventana_parte, l_peso_sin)
         ultimo_mas_uno = pclases.Bala._queryOne("""SELECT COALESCE(MAX(numbala), 0)+1 FROM bala""")
         proximo_numbala = `int(ultimo_mas_uno[0])`
         e_numbala.set_text("B%s" % (proximo_numbala))
@@ -4048,13 +4048,13 @@ def crear_ventana_pesaje(ventana_parte, padre = None):
             padre = ventana_parte.wids['ventana'])
 
 def leer_nueva_bala(boton, l_peso, l_estable, e_numbala, ventana_parte,
-                    l_peso2):
+                    l_peso_sin):
     """
     Crea una nueva bala tomando el peso del label.
     Si l_estable es distinto de "Estable" da error y
     no crea la bala. Si crea la bala, actualiza e_numbala.
     """
-    peso_str = l_peso2.get_text().replace("[", "").replace("]", "").strip()
+    peso_str = l_peso_sin.get_text().replace("[", "").replace("]", "").strip()
     try:
         peso = float(peso_str)
     except ValueError:
@@ -4103,7 +4103,7 @@ def crear_nueva_bala(numbala, codigo_bala, peso, ventana_parte):
                                 partidaCarga=None,
                                 numbala=numbala,
                                 codigo=codigo_bala,
-                                pesobala=peso,
+                                pesobala=peso,  # OJO: Peso SIN embalaje
                                 muestra=False,
                                 claseb=False,
                                 motivo="")
@@ -4192,10 +4192,10 @@ def build_ventana(padre):
     l_peso.set_use_markup(True)
     l_peso.set_justify(gtk.JUSTIFY_CENTER)
     l_peso.set_property('xalign', 0.5)
-    l_peso2 = gtk.Label('<span color="dark green"> (Esperando peso...) </span>')
-    l_peso2.set_use_markup(True)
-    l_peso2.set_justify(gtk.JUSTIFY_CENTER)
-    l_peso2.set_property('xalign', 0.5)
+    l_peso_sin = gtk.Label('<span color="dark green"> (Esperando peso...) </span>')
+    l_peso_sin.set_use_markup(True)
+    l_peso_sin.set_justify(gtk.JUSTIFY_CENTER)
+    l_peso_sin.set_property('xalign', 0.5)
     l_estable = gtk.Label('<span color="black">No lectura</span>')
     l_estable.set_use_markup(True)
     l_estable.set_justify(gtk.JUSTIFY_CENTER)
@@ -4204,14 +4204,14 @@ def build_ventana(padre):
     # ch_marcado.set_active(True)
     contenedor.add(box_bala)
     contenedor.add(l_peso)
-    contenedor.add(l_peso2)
+    contenedor.add(l_peso_sin)
     contenedor.add(l_estable)
     # contenedor.add(ch_marcado)
     b_aceptar_peso = gtk.Button(label = "_Aceptar peso")
     contenedor.add(b_aceptar_peso)
     contenedor.add(b_cancelar)
     ventana.resize(300, 200)
-    return ventana, l_peso, e_numbala, b_cancelar, b_aceptar_peso, l_estable, l_peso2    #, ch_marcado
+    return ventana, l_peso, e_numbala, b_cancelar, b_aceptar_peso, l_estable, l_peso_sin    #, ch_marcado
 
 def cerrar_ventana_bascula(boton, ventana, com, src_id):
     """
@@ -4223,7 +4223,7 @@ def cerrar_ventana_bascula(boton, ventana, com, src_id):
     ventana.destroy()
     com.close()
 
-def recv_serial(com, ventana, l_peso, ventana_parte, e_numbala, l_estable, l_peso2):
+def recv_serial(com, ventana, l_peso, ventana_parte, e_numbala, l_estable, l_peso_sin):
     """
     A diferencia del de rollos, este simplemente actualiza el peso mostrado en pantalla.
     La bala se creará con el peso mediante el botón correspondiente.
@@ -4280,16 +4280,16 @@ def recv_serial(com, ventana, l_peso, ventana_parte, e_numbala, l_estable, l_pes
                 peso_sin = peso - 0.2   # XXX: Nueva estimación de peso neto.
                 l_peso.set_text('<b><span color="dark green">%s</span></b>' % (
                     utils.float2str(peso)))
-                l_peso2.set_text('<b><big><span color="dark green">'
+                l_peso_sin.set_text('<b><big><span color="dark green">'
                     '%s</span></big></b>' % (utils.float2str(peso_sin)))
             except ValueError:
                 peso = 0
                 l_peso.set_text('<b><big><span color="dark green">'
                     'ERROR</span></big></b>')
-                l_peso2.set_text('<b><big><span color="dark green">'
+                l_peso_sin.set_text('<b><big><span color="dark green">'
                     'ERROR</span></big></b>')
             l_peso.set_use_markup(True)
-            l_peso2.set_use_markup(True)
+            l_peso_sin.set_use_markup(True)
     #DEBUG:         myprint("Recibido peso: %s" % (peso_str)) #DEBUG:
     return True
 

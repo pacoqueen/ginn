@@ -879,12 +879,12 @@ class PartesDeFabricacionBolsas(Ventana):
                 except AttributeError:
                     gramos = 0
                 peso_neto = (gramos * numbolsas) / 1000.0
-                peso = peso_bruto = peso_neto + 0.150 + 0.100  # Palé + cartón
+                #peso = peso_bruto = peso_neto + 0.150 + 0.100  # Palé + cartón
                 caja = pclases.Caja(pale = pale,
                                     numcaja = numcaja,
                                     codigo = codigo,
                                     fechahora = mx.DateTime.localtime(),
-                                    peso = peso,
+                                    peso = peso_neto,
                                     numbolsas = numbolsas)
                 pclases.Auditoria.nuevo(caja, self.usuario, __file__)
                 articulo = pclases.Articulo(parteDeProduccion=self.objeto,
