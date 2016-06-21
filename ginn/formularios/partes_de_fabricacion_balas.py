@@ -2267,7 +2267,13 @@ class PartesDeFabricacionBalas(Ventana):
         else:
             # XXX
             for silo in [s for s in pclases.Silo.select() if self.wids['ch_silo_ID%d' % (s.id)].get_active()]:
-                if silo.get_ocupado() <= 0:
+                try:
+                    ocupado = murano.ops.get_ocupado_silo(silo)
+                except:
+                    self.logger.error(
+                        "No se pudo leer Silo en Murano. Fallback a ginn.")
+                    ocupado = silo.ocupado
+                if ocupado <= 0:
                     utils.dialogo_info(titulo = "NO PUEDE PRODUCIR",
                                        texto = 'El silo "%s" está vacío.\nCompruébelo y corríjalo desde la ventana correspondiente si fuera necesario.' % (silo.nombre),
                                        padre = self.wids['ventana'])

@@ -1929,3 +1929,15 @@ def fire(guid_proceso, ignore_errors=False):
             # tener salida estándar (se abre sin ventana de "terminal").
             pass
     return res
+
+
+def corregir_dimensiones_articulo(articulo, peso_bruto=None, peso_neto=None,
+                                  metros_cuadrados=None):
+    """
+    Corrige el peso bruto, neto y metros cuadrados del artículo recibido
+    para poner en Murano los indicados por parámetro o los de los valores
+    en ginn para el artículo si son None.
+    """
+    # Tablas a tocar: ArticulosSerie, MovimientoArticuloSerie y no sé
+    # si alguna tabla de stock.
+    raise NotImplementedError
