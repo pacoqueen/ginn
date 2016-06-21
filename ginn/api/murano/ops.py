@@ -1950,7 +1950,7 @@ def corregir_dimensiones_articulo(articulo, peso_bruto=None, peso_neto=None,
             metros_cuadrados = 0
     codigo = articulo.codigo
     conn = Connection()
-    SQL_ARTICULO = r"""UPDATE %s.dbo.ArticulosSerie
+    SQL_ARTICULO = r"""UPDATE %s.dbo.ArticulosSeries
                        SET PesoBruto_ = %f,
                            PesoNeto_ = %f,
                            MetrosCuadrados = %f
