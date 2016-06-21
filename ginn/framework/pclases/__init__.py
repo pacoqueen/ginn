@@ -9960,6 +9960,7 @@ class Articulo(SQLObject, PRPCTOO):
     peso = property(get_peso)
     peso_bruto = peso
     peso_sin = property(get_peso_sin, doc = get_peso_sin.__doc__)
+    peso_neto = peso_sin
     peso_teorico = property(get_peso_teorico)
     peso_embalaje = property(get_peso_embalaje)
     ancho = property(get_ancho)
