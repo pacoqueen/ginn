@@ -1940,4 +1940,31 @@ def corregir_dimensiones_articulo(articulo, peso_bruto=None, peso_neto=None,
     """
     # Tablas a tocar: ArticulosSerie, MovimientoArticuloSerie y no sé
     # si alguna tabla de stock.
-    raise NotImplementedError
+    if peso_bruto is None:
+        peso_bruto = articulo.peso_bruto
+    if peso_neto is None:
+        peso_neto = articulo.peso_neto
+    if metros_cuadrados is None:
+        metros_cuadrados = articulo.metros_cuadrados
+    conn = Connection()
+    SQL_ARTICULO = r"""UPDATE %s.dbo.ArticulosSerie
+                       SET PesoBruto_ = %f,
+                           PesoNeto_ = %f,
+                           MetrosCuadrados = %f
+                       WHERE NumeroSerieLc = '%s';
+                    """ % (conn.get_database(),
+                           peso_bruto,
+                           peso_neto,
+                           metros_cuadrados)
+    SQL_MOVIMIENTO = r"""UPDATE %s.dbo.MovimientoArticuloSerie
+                         SET PesoBruto_ = %f,
+                             PesoNeto_ = %f,
+                             MetrosCuadrados = %f
+                         WHERE NumeroSerieLc = '%s';
+                      """ % (conn.get_database(),
+                             peso_bruto,
+                             peso_neto,
+                             metros_cuadrados)
+    res = conn.run_sql(SQL_ARTICULO)
+    res = res and conn.run_sql(SQL_MOVIMIENTO)
+    return res
