@@ -1948,6 +1948,7 @@ def corregir_dimensiones_articulo(articulo, peso_bruto=None, peso_neto=None,
         metros_cuadrados = articulo.superficie
         if metros_cuadrados is None:
             metros_cuadrados = 0
+    codigo = articulo.codigo
     conn = Connection()
     SQL_ARTICULO = r"""UPDATE %s.dbo.ArticulosSerie
                        SET PesoBruto_ = %f,
@@ -1957,7 +1958,8 @@ def corregir_dimensiones_articulo(articulo, peso_bruto=None, peso_neto=None,
                     """ % (conn.get_database(),
                            peso_bruto,
                            peso_neto,
-                           metros_cuadrados)
+                           metros_cuadrados,
+                           codigo)
     SQL_MOVIMIENTO = r"""UPDATE %s.dbo.MovimientoArticuloSerie
                          SET PesoBruto_ = %f,
                              PesoNeto_ = %f,
@@ -1966,7 +1968,8 @@ def corregir_dimensiones_articulo(articulo, peso_bruto=None, peso_neto=None,
                       """ % (conn.get_database(),
                              peso_bruto,
                              peso_neto,
-                             metros_cuadrados)
+                             metros_cuadrados,
+                             codigo)
     res = conn.run_sql(SQL_ARTICULO)
     res = res and conn.run_sql(SQL_MOVIMIENTO)
     return res
