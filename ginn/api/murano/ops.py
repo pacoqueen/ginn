@@ -2014,6 +2014,8 @@ def _create_producto_ginn(prod_murano):
     try:
         pv = pclases.ProductoVenta(id = ide)
     except:
+        # TODO: PORASQUI: Hasta que lea directamente el producto de Murano desde
+        # el parte y laboratorio, sincronizar manualmente con estas funciones.
         pv = None
     return pv
 
