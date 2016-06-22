@@ -378,9 +378,35 @@ def field_murano2ginn(campo):
         'GEO_tot_pr_poros': 'toleranciaPruebaPoros',
         'GEO_tot_pr_poros_sup': 'toleranciaPruebaPorosSup',
         'GEO_tot_pr_trans': 'toleranciaPruebaTransversal',
-        'GEO_tot_pr_trans_sup': 'toleranciaPruebaTransversalSup'
+        'GEO_tot_pr_trans_sup': 'toleranciaPruebaTransversalSup',
+        # -- Campos generales en común. Algunos son funciones que reciben el
+        #               valor de Murano y devuelvel el correspondiente en ginn
+        'DescripcionLinea': _get_linea_produccion_ginn,
+        'DescripcionArticulo': 'nombre',
+        'Descripcion2Articulo': 'descripcion',
+        # PORASQUI
     }
     return switcher.get(campo, None)
+
+
+def _get_linea_produccion_ginn(descripcion_linea):
+    """
+    Devuelve el registro de ginn que se corresponde con la descripción de la
+    línea de producción de Murano recibida.
+    """
+    linea = descripcion_linea.split([-1])
+    try:
+        lineas_ginn = pclases.LineaDeProduccion.select(
+            pclases.LineaDeProduccion.q.nombre.contains(linea))
+        assert lineas_ginn.count == 1
+        linea_ginn = lineas_ginn[0]
+    except IndexError:
+        linea_ginn = None
+    except AssertionError:
+        logging.warning("Encontradas %d posibles líneas de producción para %s",
+                        lineas_ginn.count(), descripcion_linea)
+        linea_ginn = lineas_ginn[0]
+    return linea_ginn
 
 
 def buscar_codigo_producto(producto_venta):
@@ -698,9 +724,9 @@ def get_ultimo_movimiento_articulo_serie(conexion, articulo):
     SQL = r"""SELECT TOP 1 *
               FROM [%s].[dbo].[MovimientoArticuloSerie]
               WHERE NumeroSerieLc = '%s' AND CodigoEmpresa = '%d'
-              ORDER BY Fecha DESC;""" % (conexion.get_database(),
-                                         codigo_articulo,
-                                         CODEMPRESA)
+              ORDER BY FechaRegistro DESC;""" % (conexion.get_database(),
+                                                 codigo_articulo,
+                                                 CODEMPRESA)
     try:
         registro_serie = conexion.run_sql(SQL)[0]
     except (TypeError, AttributeError, KeyError, IndexError):
@@ -1984,16 +2010,17 @@ def producto_murano2ginn(codigo, sync=False):
     """
     conn = Connection()
     SQL = "SELECT * FROM %s.dbo.Articulos WHERE CodigoArticulo='%s';" % (
-            conn.get_database(), codigo)
-    prod_murano = conn.run_sql(SQL)
-    if not prod_murano:
+        conn.get_database(), codigo)
+    try:
+        prod_murano = conn.run_sql(SQL)[0]
+    except IndexError:
         strerr = "El código %s no existe en Murano." % (codigo)
         logging.error(strerr)
-        raise ValueError, strerr
+        raise ValueError(strerr)
     else:
         try:
             prod_ginn = get_producto_ginn(codigo)
-        except SQLObjectNotFound:
+        except pclases.SQLObjectNotFound:
             res = _create_producto_ginn(prod_murano)
         else:
             if sync:
@@ -2012,7 +2039,7 @@ def _create_producto_ginn(prod_murano):
     """
     ide = int(prod_murano['CodigoArticulo'].replace("PV", ""))
     try:
-        pv = pclases.ProductoVenta(id = ide)
+        pv = pclases.ProductoVenta(id=ide)
     except:
         # TODO: PORASQUI: Hasta que lea directamente el producto de Murano desde
         # el parte y laboratorio, sincronizar manualmente con estas funciones.
