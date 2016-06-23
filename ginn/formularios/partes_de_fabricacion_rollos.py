@@ -1433,7 +1433,7 @@ class PartesDeFabricacionRollos(Ventana):
         for a in self.objeto.articulos:
             if a.es_rollo_defectuoso():
                 numrollosb += 1
-                pesob += a.peso
+                pesob += a.peso_real
                 peso_sinb += a.peso_sin
                 metrosb += a.superficie
                 mlinb += a.largo
@@ -1445,7 +1445,7 @@ class PartesDeFabricacionRollos(Ventana):
                 if metrosCuadrados == None:
                     metrosCuadrados = a.rollo.productoVenta.camposEspecificosRollo.metros_cuadrados
                 numrollosa += 1
-                apeso = a.peso
+                apeso = a.peso_real
                 #pesoa += a.peso
                 pesoa += apeso
                 #peso_sina += a.peso_sin
