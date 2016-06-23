@@ -2002,6 +2002,57 @@ def corregir_dimensiones_articulo(articulo, peso_bruto=None, peso_neto=None,
     return res
 
 
+def _get_peso_bruto_murano(articulo):
+    """
+    Devuelve el peso bruto que guarda Murano para el artículo de ginn recibido.
+    """
+    conn = Connection()
+    SQL = r"""SELECT PesoBruto_ FROM %s.dbo.ArticulosSeries
+              WHERE NumeroSerieLc = '%s';""" % (conn.get_database(),
+                                                articulo.codigo)
+    try:
+        res = conn.run_sql(SQL)[0]['PesoBruto_']
+    except IndexError:
+        res = None
+    else:
+        res = float(res)    # Viene como Decimal()
+    return res
+
+
+def _get_peso_neto_murano(articulo):
+    """
+    Devuelve el peso bruto que guarda Murano para el artículo de ginn recibido.
+    """
+    conn = Connection()
+    SQL = r"""SELECT PesoNeto_ FROM %s.dbo.ArticulosSeries
+              WHERE NumeroSerieLc = '%s';""" % (conn.get_database(),
+                                                articulo.codigo)
+    try:
+        res = conn.run_sql(SQL)[0]['PesoNeto_']
+    except IndexError:
+        res = None
+    else:
+        res = float(res)
+    return res
+
+
+def _get_superficie_murano(articulo):
+    """
+    Devuelve el peso bruto que guarda Murano para el artículo de ginn recibido.
+    """
+    conn = Connection()
+    SQL = r"""SELECT MetosCuadrados FROM %s.dbo.ArticulosSeries
+              WHERE NumeroSerieLc = '%s';""" % (conn.get_database(),
+                                                articulo.codigo)
+    try:
+        res = conn.run_sql(SQL)[0]['MetrosCuadrados']
+    except IndexError:
+        res = None
+    else:
+        res = float(res)
+    return res
+
+
 def producto_murano2ginn(codigo, sync=False):
     """
     Vuelca el produco de Murano del código recibido en ginn.
