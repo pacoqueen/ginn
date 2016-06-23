@@ -1195,7 +1195,7 @@ class PartesDeFabricacionBalas(Ventana):
 
     def peso(self, a):
         try:
-            return a.peso
+            return a.peso_real
         except:
             return 0.0
 

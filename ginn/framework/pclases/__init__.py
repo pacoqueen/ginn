@@ -9998,7 +9998,7 @@ class Articulo(SQLObject, PRPCTOO):
             elif self.es_rollo_c():
                 res = self.rolloC.peso
             elif self.es_bala():
-                res = self.peso_bruto
+                res = self.bala.pesobala
             elif self.es_bala_cable():
                 res = self.balaCable.peso
             elif self.es_bigbag():

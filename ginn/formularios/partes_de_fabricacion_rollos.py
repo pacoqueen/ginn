@@ -3616,7 +3616,10 @@ def crear_articulo(numrollo,
         pclases.Auditoria.nuevo(articulo,
                 objeto_ventana_parte and objeto_ventana_parte.usuario or None,
                 __file__)
-        murano.ops.create_articulo(articulo)
+        try:
+            murano.ops.create_articulo(articulo)
+        except:
+            print("Error al conectar con Murano.")
     else:
         articulo = None
     return articulo
