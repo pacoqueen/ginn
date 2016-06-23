@@ -1951,6 +1951,8 @@ CREATE TABLE articulo(
     almacen_id INT REFERENCES almacen DEFAULT NULL,
     caja_id INT REFERENCES caja DEFAULT NULL,     -- NEW! 18/05/2009
     api BOOL DEFAULT FALSE,  -- NEW! 31/05/2016. Indica si se ha enviado a Murano.
+    peso_real FLOAT DEFAULT NULL,   -- NEW! 23/06/2016. Peso dado en báscula o
+                                    -- NONE si no es aplicable.
     CHECK (   (bala_id IS NOT NULL
                AND rollo_id IS NULL
                AND bigbag_id IS NULL

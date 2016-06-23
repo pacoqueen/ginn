@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2016  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -267,7 +267,8 @@ class RollosC(Ventana):
                                 productoVenta = producto,
                                 parteDeProduccion = None,
                                 albaranSalida = None,
-                                almacen = pclases.Almacen.get_almacen_principal())
+                                almacen = pclases.Almacen.get_almacen_principal(),
+                                pesoReal = peso)
                 pclases.Auditoria.nuevo(a, self.usuario, __file__)
                 murano.ops.create_articulo(a)
             except:

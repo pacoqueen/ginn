@@ -64,12 +64,13 @@
 
 
 DEBUG = False
-#DEBUG = True    # Se puede activar desde ipython después de importar con
+# DEBUG = True  # Se puede activar desde ipython después de importar con
                 # pclases.DEBUG = True
 VERBOSE = True  # Activar para mostrar por pantalla progreso al cargar clases.
 VERBOSE = False
 
-import sys, os
+import sys
+import os
 if sys.executable.endswith("pythonw.exe"):
     # Porque entonces no hay stdout y salta excepción IOError 9
     # Más info: http://bugs.python.org/issue706263
@@ -693,6 +694,15 @@ NO_VALIDABLE, VALIDABLE, PLAZO_EXCESIVO, SIN_FORMA_DE_PAGO, \
         PRECIO_INSUFICIENTE, CLIENTE_DEUDOR, SIN_CIF, SIN_CLIENTE, \
         COND_PARTICULARES, COMERCIALIZADO, BLOQUEO_FORZADO, \
         BLOQUEO_CLIENTE, SERVICIO = range(13)
+
+# Algunos pesos HARCODED:
+PESO_EMBALAJE_BALAS = 0.86
+PESO_EMBALAJE_CAJAS = 0.25
+PESO_EMBALAJE_BALAS_C = 0.0
+PESO_EMBALAJE_BIGBAGS = 0.0
+PESO_EMBALAJE_ROLLOS = None        # Según producto
+PESO_EMBALAJE_ROLLOS_DEFECTUOSOS = None
+PESO_EMBALAJE_ROLLOS_C = None
 
 # VERBOSE MODE
 total = 161 # egrep "^class" pclases.py | grep "(SQLObject, PRPCTOO)" | wc -l
@@ -9785,17 +9795,32 @@ class Articulo(SQLObject, PRPCTOO):
         del artículo en función de si es rollo, bala o bigbag.
         """
         if self.es_rollo():
-            return self.rollo.peso
+            #return self.rollo.peso  # <-- Peso real. No el nuevo "bruto".
+            # CWT: [23/06/2016] Es lo que se va a mandar a Murano. Un paso
+            # bruto ideal, que no es real de báscula.
+            return self.peso_teorico + self.peso_embalaje
         if self.es_bala():
             # En el caso de las balas, el objeto bala guarda el peso
             # real menos el embalaje estimado.
-            return self.bala.pesobala + self.peso_embalaje
+            if not self.peso_real:
+                return self.bala.pesobala + self.peso_embalaje
+            else:
+                return self.peso_real
         if self.es_bigbag():
-            return self.bigbag.pesobigbag
+            if not self.peso_real:
+                return self.bigbag.pesobigbag  + PESO_EMBALAJE_BIGBAGS
+            else:
+                return self.peso_real
         if self.es_rollo_defectuoso():
-            return self.rolloDefectuoso.peso
+            return self.rolloDefectuoso.peso # <-- Peso real. No el nuevo "bruto".
+            # CWT: [23/06/2016] Es lo que se va a mandar a Murano. Un paso
+            # bruto ideal, que no es real de báscula.
+            return self.peso_teorico + self.peso_embalaje
         if self.es_bala_cable():
-            return self.balaCable.peso
+            if not self.peso_real:
+                return self.balaCable.peso
+            else:
+                return self.peso_real
         if self.es_rollo_c():
             return self.rolloC.peso
         if self.es_caja():
@@ -9817,14 +9842,18 @@ class Articulo(SQLObject, PRPCTOO):
         Devuelve el peso estimado del embalaje en cada caso.
         """
         if self.es_bala():
-            res = 0.2       # 200 gramos. Ver Zim del 14/10/2015
+            res = PESO_EMBALAJE_BALAS  # ~~200 gramos. Ver Zim del 14/10/2015~~
+            # 865 gr. Pesado en fábrica. Redondeamos a 0.86 porque solo
+            # podemos trabajar con 2 decimales contra Murano.
         elif self.es_bala_cable():
             res = self.balaCable.pesoEmbalaje
             # Tienen su propio campo en la BD, aunque no se usa. Ceropordefecto
         elif self.es_bigbag():
-            res = 0.0       # Despreciable
+            res = PESO_EMBALAJE_BIGBAGS
+            #res = 0.0       # Despreciable
         elif self.es_caja():
-            res = 0.1 + 0.15   # CWT: 100 gr de bolsa y cartón. 150 gr
+            res = PESO_EMBALAJE_CAJAS
+            #res = 0.1 + 0.15   # CWT: 100 gr de bolsa y cartón. 150 gr
             # proporcionales del palé. Entre todas las cajas se supone que
             # suman el palé completo. Aunque varíe el número de cajas.
         elif self.es_rollo():
@@ -9960,7 +9989,11 @@ class Articulo(SQLObject, PRPCTOO):
             res = None
         return res
 
+    def get_peso_real(self):
+        return self.pesoReal
+
     superficie = property(get_superficie)
+    peso_real = property(get_peso_real)
     peso = property(get_peso)
     peso_bruto = peso
     peso_sin = property(get_peso_sin, doc = get_peso_sin.__doc__)

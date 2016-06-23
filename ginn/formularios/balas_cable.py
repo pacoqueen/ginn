@@ -219,7 +219,8 @@ class BalasCable(Ventana):
                                 parteDeProduccion = None,
                                 albaranSalida = None,
                                 almacen =
-                                    pclases.Almacen.get_almacen_principal())
+                                    pclases.Almacen.get_almacen_principal(),
+                                pesoReal = peso)
                 pclases.Auditoria.nuevo(a, self.usuario, __file__)
                 murano.ops.create_articulo(a)
             except:

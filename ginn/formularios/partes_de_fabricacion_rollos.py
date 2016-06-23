@@ -3481,7 +3481,7 @@ def descontar_material_adicional(ventana_parte, articulo, restar = True):
 
 def _calcular_peso_densidad(peso, producto, ventana_parte = None):
     """
-    Calcula el peso y la "densidad" del artículo en base al
+    Calcula el peso bruto y la "densidad" del artículo en base al
     peso y producto recibido.
     Si el peso es None, usa los datos por defecto del producto.
     Si no lo es, devuelve el mismo peso recibido y la "densidad"
@@ -3611,7 +3611,8 @@ def crear_articulo(numrollo,
                             parteDeProduccion = parte,
                             productoVenta = producto,
                             albaranSalida = None,
-                            almacen = pclases.Almacen.get_almacen_principal())
+                            almacen = pclases.Almacen.get_almacen_principal(),
+                            pesoReal = peso)
         pclases.Auditoria.nuevo(articulo,
                 objeto_ventana_parte and objeto_ventana_parte.usuario or None,
                 __file__)
@@ -3638,24 +3639,24 @@ def build_ventana(padre):
     e_numrollo.set_property("has-frame", False)
     box_rollo.add(e_numrollo)
     b_cancelar = gtk.Button(stock = gtk.STOCK_CANCEL)
-    l_peso = gtk.Label(
+    l_peso_bruto = gtk.Label(
         '<big><span color="dark green">Esperando peso...</span></big>')
-    l_peso.set_use_markup(True)
-    l_peso.set_justify(gtk.JUSTIFY_CENTER)
-    l_peso.set_property('xalign', 0.5)
+    l_peso_bruto.set_use_markup(True)
+    l_peso_bruto.set_justify(gtk.JUSTIFY_CENTER)
+    l_peso_bruto.set_property('xalign', 0.5)
     ch_marcado = gtk.CheckButton("_Marcado CE")
     ch_marcado.set_active(True)
     ch_defectuoso = gtk.CheckButton("_Defectuoso")
     ch_defectuoso.set_active(False)
     ch_defectuoso.connect("toggled",cambiar_marcado_ce,ch_marcado,e_numrollo)
     contenedor.add(box_rollo)
-    contenedor.add(l_peso)
+    contenedor.add(l_peso_bruto)
     contenedor.add(ch_marcado)
     contenedor.add(ch_defectuoso)
     contenedor.add(b_cancelar)
     ventana.resize(365, 150)
     ventana.move(435, 130)
-    return ventana, l_peso, e_numrollo, b_cancelar, ch_marcado, ch_defectuoso
+    return ventana, l_peso_bruto, e_numrollo, b_cancelar, ch_marcado, ch_defectuoso
 
 def cambiar_marcado_ce(ch_defectuoso, ch_marcado, e_numrollo):
     """
@@ -3818,7 +3819,7 @@ def imprimir_etiqueta(articulo, marcado_ce, ventana_parte, defectuoso = False):
                         r['codigo39'],
                         articulo.codigo))
 
-def recv_serial(com, ventana, l_peso, ventana_parte, ch_marcado, e_numrollo,
+def recv_serial(com, ventana, l_peso_bruto, ventana_parte, ch_marcado, e_numrollo,
                 ch_defectuoso, objeto_ventana_parte):
     #DEBUG:    print "callback lanzado. leyendo..."    # Tal y como suponía, esto es BLOQUEANTE con timeout_add.
     # c = com.readline(eol = '\r')
@@ -3833,10 +3834,10 @@ def recv_serial(com, ventana, l_peso, ventana_parte, ch_marcado, e_numrollo,
             peso = 0
         if peso == 0:
             return True     # Cuando se apaga y enciende el peso, envía 0. Así que si el peso es 0, no creo rollo.
-        l_peso.set_text(
+        l_peso_bruto.set_text(
             '<b><big><span color="dark green">%s</span></big></b>'
                 % (utils.float2str(peso)))
-        l_peso.set_use_markup(True)
+        l_peso_bruto.set_use_markup(True)
         #DEBUG:        print "Recibido peso: %f" % (peso)
         try:
             codigo_rollo_a_crear = get_proximo_codigo_a_crear(e_numrollo)
@@ -3872,15 +3873,15 @@ def recv_serial(com, ventana, l_peso, ventana_parte, ch_marcado, e_numrollo,
             return True
         ventana_parte.actualizar_ventana()
         # El recién creado lo pongo en la línea de última pesada.
-        l_peso.set_text('<big><span color="dark green">Última pesada (%s): '
+        l_peso_bruto.set_text('<big><span color="dark green">Última pesada (%s): '
                         '%s</span></big>' % (codigo_rollo_a_crear,
-                                             l_peso.get_text()))
+                                             l_peso_bruto.get_text()))
         # Y la variable ahora pasa a contener el siguiente rollo en base al
         # último creado (dado que el checkbox permanece inmutable hasta que
         # lo cambie el usuario, será del mismo tipo que el recién creado).
         codigo_rollo_a_crear = get_proximo_codigo_a_crear(e_numrollo)
         e_numrollo.set_text("%s" % (codigo_rollo_a_crear))
-        l_peso.set_use_markup(True)
+        l_peso_bruto.set_use_markup(True)
     return True
 
 def get_proximo_codigo_a_crear(e_numrollo):
@@ -3923,14 +3924,14 @@ def crear_ventana_pesaje(ventana_parte, padre = None, rollo = None,
     # DEBUG: print com
     if com != None:
         (ventana,
-         l_peso,
+         l_peso_bruto,
          e_numrollo,
          b_cancelar,
          ch_marcado,
          ch_defectuoso) = build_ventana(padre)
         # En WIN32 pyserial no tiene descriptor de fichero. :(
         # src_id = gobject.io_add_watch(com.fd, gobject.IO_IN | gobject.IO_HUP, recv_serial, com, ventana)
-        src_id = gobject.timeout_add(1500, recv_serial, com, ventana, l_peso,
+        src_id = gobject.timeout_add(1500, recv_serial, com, ventana, l_peso_bruto,
                                      ventana_parte, ch_marcado, e_numrollo,
                                      ch_defectuoso, objeto_ventana_parte)
         b_cancelar.connect("clicked", cerrar_ventana_bascula, ventana, com,

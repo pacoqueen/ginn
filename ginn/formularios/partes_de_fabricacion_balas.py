@@ -2469,7 +2469,8 @@ class PartesDeFabricacionBalas(Ventana):
 
     def pedir_peso(self, numbala, fibracemento = False):
         """
-        Si el peso es incorrecto devuelve None.
+        Si el peso es incorrecto devuelve None. Devuelve el PESO BRUTO
+        introducido por el usuario.
         """
         pesobala = None
         peso = utils.dialogo_entrada(titulo = 'PESO %s %d' % (fibracemento and "BIGBAG" or "BALA", numbala),
@@ -2591,6 +2592,9 @@ class PartesDeFabricacionBalas(Ventana):
         return xrange(ini, fin+1), pedir_peso
 
     def crear_bala(self, numbala, peso, lote, fibracemento=False):
+        """
+        Recibe el **peso bruto** tecleado por el usuario.
+        """
         if not MURANO:
             utils.dialogo_info(titulo="ERROR DE CONEXIÓN CON MURANO",
                            texto="No puede crear balas. Solo consultas.",
@@ -2601,14 +2605,14 @@ class PartesDeFabricacionBalas(Ventana):
         else:
             codigo = 'B'+str(numbala)
             try:
-                bala = pclases.Bala(lote = lote,
-                                    partidaCarga = None,
-                                    numbala = numbala,
-                                    codigo = codigo,
-                                    pesobala = peso,
-                                    claseb = False,
-                                    motivo = '',
-                                    muestra = False)
+                bala = pclases.Bala(lote=lote,
+                                    partidaCarga=None,
+                                    numbala=numbala,
+                                    codigo=codigo,
+                                    pesobala=peso-pclases.PESO_EMBALAJE_BALAS,
+                                    claseb=False,
+                                    motivo='',
+                                    muestra=False)
                 pclases.Auditoria.nuevo(bala, self.usuario, __file__)
             except:
                 utils.dialogo_info(titulo = 'BALA NO CREADA',
@@ -2616,13 +2620,14 @@ class PartesDeFabricacionBalas(Ventana):
                             'número %d no esté duplicado.' % numbala,
                     padre = self.wids['ventana'])
                 return
-            articulo = pclases.Articulo(bala = bala,
-                            rollo = None,
-                            bigbag = None,
-                            parteDeProduccion = self.objeto,
-                            productoVenta = self.producto,
-                            albaranSalida = None,
-                            almacen = pclases.Almacen.get_almacen_principal())
+            articulo = pclases.Articulo(bala=bala,
+                            rollo=None,
+                            bigbag=None,
+                            parteDeProduccion=self.objeto,
+                            productoVenta=self.producto,
+                            albaranSalida=None,
+                            almacen=pclases.Almacen.get_almacen_principal(),
+                            pesoReal=peso)
             pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
             murano.ops.create_articulo(articulo)
         if articulo != None:
@@ -2644,7 +2649,7 @@ class PartesDeFabricacionBalas(Ventana):
             bigbag = pclases.Bigbag(loteCem = lote,
                                     numbigbag = numero,
                                     codigo = codigo,
-                                    pesobigbag = peso,
+                                    pesobigbag=peso-pclases.PESO_EMBALAJE_BIGBAGS,
                                     muestra = False,
                                     claseb = False,
                                     motivo = "")
@@ -2660,7 +2665,8 @@ class PartesDeFabricacionBalas(Ventana):
                             parteDeProduccion = self.objeto,
                             productoVenta = self.producto,
                             albaranSalida = None,
-                            almacen = pclases.Almacen.get_almacen_principal())
+                            almacen = pclases.Almacen.get_almacen_principal(),
+                            pesoReal = peso)
         pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
         murano.ops.create_articulo(articulo)
         return articulo
@@ -4055,36 +4061,38 @@ def leer_nueva_bala(boton, l_peso, l_estable, e_numbala, ventana_parte,
     no crea la bala. Si crea la bala, actualiza e_numbala.
     """
     peso_str = l_peso_sin.get_text().replace("[", "").replace("]", "").strip()
+    peso_real_str = l_peso.get_text()
     try:
-        peso = float(peso_str)
+        peso_sin = float(peso_str)
+        peso_real = utils.parse_float(peso_real_str)
     except ValueError:
-        utils.dialogo_info(titulo = "PESO INCORRECTO",
-                           texto = '"%s" no es un peso correcto.' % (peso_str),
-                           padre = ventana_parte.wids['ventana'])
+        utils.dialogo_info(titulo="PESO INCORRECTO",
+                           texto='"%s" no es un peso correcto.' % (peso_str),
+                           padre=ventana_parte.wids['ventana'])
     else:
         if l_estable.get_text().lower() != "estable":
-            utils.dialogo_info(titulo = "PESO NO ESTABILIZADO",
-                texto = "Debe esperar a que se estabilice la báscula.",
-                padre = ventana_parte.wids['ventana'])
+            utils.dialogo_info(titulo="PESO NO ESTABILIZADO",
+                texto="Debe esperar a que se estabilice la báscula.",
+                padre=ventana_parte.wids['ventana'])
         else:
             codigo_bala = e_numbala.get_text()
             try:
                 numbala = int(
                     codigo_bala.upper().replace("B", "").replace("L", ""))
             except ValueError:
-                utils.dialogo_info(titulo = "BALA INCORRECTA",
-                                   texto = "El código %s no es correcto.",
-                                   padre = ventana_parte.wids['ventana'])
+                utils.dialogo_info(titulo="BALA INCORRECTA",
+                                   texto="El código %s no es correcto.",
+                                   padre=ventana_parte.wids['ventana'])
             else:
-                nueva_bala = crear_nueva_bala(numbala, codigo_bala, peso,
-                                              ventana_parte)
+                nueva_bala = crear_nueva_bala(numbala, codigo_bala, peso_sin,
+                                              peso_real, ventana_parte)
                 if nueva_bala != None:
                     ultimo_mas_uno = pclases.Bala._queryOne("""
                         SELECT COALESCE(MAX(numbala), 0)+1 FROM bala""")
                     proximo_numbala = `int(ultimo_mas_uno[0])`
                     e_numbala.set_text("B%s" % (proximo_numbala))
 
-def crear_nueva_bala(numbala, codigo_bala, peso, ventana_parte):
+def crear_nueva_bala(numbala, codigo_bala, peso_neto, peso_real, ventana_parte):
     """
     Crea un nuevo artículo y su bala asociada y lo relaciona
     con el parte de la ventana. Actualiza también la ventana
@@ -4110,13 +4118,14 @@ def crear_nueva_bala(numbala, codigo_bala, peso, ventana_parte):
             pclases.Auditoria.nuevo(bala, ventana_parte.usuario, __file__)
             parte = ventana_parte.objeto
             producto = ventana_parte.producto
-            articulo = pclases.Articulo(bala = bala,
-                            rollo = None,
-                            bigbag = None,
-                            parteDeProduccion = parte,
-                            albaranSalida = None,
-                            productoVenta = producto,
-                            almacen = pclases.Almacen.get_almacen_principal())
+            articulo = pclases.Articulo(bala=bala,
+                            rollo=None,
+                            bigbag=None,
+                            parteDeProduccion=parte,
+                            albaranSalida=None,
+                            productoVenta=producto,
+                            almacen=pclases.Almacen.get_almacen_principal(),
+                            pesoReal=peso_real)
             pclases.Auditoria.nuevo(articulo, ventana_parte.usuario, __file__)
             ventana_parte.descontar_material_adicional(articulo)
             try:
@@ -4277,7 +4286,7 @@ def recv_serial(com, ventana, l_peso, ventana_parte, e_numbala, l_estable, l_pes
                 #else:   # CWT: Le quito kilo y medio si es peso "redondo"
                 #    peso_sin = peso - 1.5
                 # HARCODED: Peso embalaje debería estar definido en algún sitio
-                peso_sin = peso - 0.2   # XXX: Nueva estimación de peso neto.
+                peso_sin = peso - pclases.PESO_EMBALAJE_BALAS
                 l_peso.set_text('<b><span color="dark green">%s</span></b>' % (
                     utils.float2str(peso)))
                 l_peso_sin.set_text('<b><big><span color="dark green">'
