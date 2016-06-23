@@ -1169,7 +1169,7 @@ class PartesDeFabricacionRollos(Ventana):
 
     def peso(self, d):
         try:
-            res = d.peso
+            res = d.peso_real
         except AttributeError:
             res = 0.0
         return res

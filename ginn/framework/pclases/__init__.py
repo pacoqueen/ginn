@@ -9990,7 +9990,26 @@ class Articulo(SQLObject, PRPCTOO):
         return res
 
     def get_peso_real(self):
-        return self.pesoReal
+        if not self.pesoReal:  # Para los artículos creados antes del 23/06/16
+            if self.es_rollo():
+                res = self.rollo.peso
+            elif self.es_rollo_defectuoso():
+                res = self.rolloDefectuoso.peso
+            elif self.es_rollo_c():
+                res = self.rolloC.peso
+            elif self.es_bala():
+                res = self.peso_bruto
+            elif self.es_bala_cable():
+                res = self.balaCable.peso
+            elif self.es_bigbag():
+                res = self.bigbag.peso
+            elif self.es_caja():
+                res = None   # No tienen peso real de báscula.
+            else:
+                res = None
+        else:  # Para los artículos posteriores, el valor de la base de datos.
+            res = self.pesoReal
+        return res
 
     superficie = property(get_superficie)
     peso_real = property(get_peso_real)
