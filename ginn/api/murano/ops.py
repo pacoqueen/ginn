@@ -854,7 +854,7 @@ def get_cantidad_dimension_especifica(articulo):
           articulo.es_rollo_c() or articulo.es_bigbag() or
           articulo.es_caja()):
         # unidades = articulo.get_peso()
-        #unidades = get_peso_bruto(articulo)  # En dimensión específica: kg
+        # unidades = get_peso_bruto(articulo)  # En dimensión específica: kg
         unidades = get_peso_neto(articulo)  # En dimensión específica: kg
     # XxX ### XxX ### XxX ### XxX ### XxX ### XxX ### XxX ### XxX ### XxX ##
     # BUG: [Murano] Si mando un número entero (los m² siempre son enteros)
@@ -2042,8 +2042,9 @@ def _create_producto_ginn(prod_murano):
     try:
         pv = pclases.ProductoVenta(id=ide)
     except:
-        # TODO: PORASQUI: Hasta que lea directamente el producto de Murano desde
-        # el parte y laboratorio, sincronizar manualmente con estas funciones.
+        # TODO: PORASQUI: Hasta que lea directamente el producto de Murano
+        # desde el parte y laboratorio, sincronizar manualmente con estas
+        # funciones.
         pv = None
     return pv
 

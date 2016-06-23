@@ -4111,7 +4111,7 @@ def crear_nueva_bala(numbala, codigo_bala, peso_neto, peso_real, ventana_parte):
                                 partidaCarga=None,
                                 numbala=numbala,
                                 codigo=codigo_bala,
-                                pesobala=peso,  # OJO: Peso SIN embalaje
+                                pesobala=peso_neto,  # OJO: Peso SIN embalaje
                                 muestra=False,
                                 claseb=False,
                                 motivo="")
