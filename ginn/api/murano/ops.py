@@ -1965,8 +1965,6 @@ def corregir_dimensiones_articulo(articulo, peso_bruto=None, peso_neto=None,
     para poner en Murano los indicados por parámetro o los de los valores
     en ginn para el artículo si son None.
     """
-    # Tablas a tocar: ArticulosSerie, MovimientoArticuloSerie y no sé
-    # si alguna tabla de stock.
     if peso_bruto is None:
         peso_bruto = articulo.peso_bruto
     if peso_neto is None:
@@ -1977,28 +1975,18 @@ def corregir_dimensiones_articulo(articulo, peso_bruto=None, peso_neto=None,
             metros_cuadrados = 0
     codigo = articulo.codigo
     conn = Connection()
-    SQL_ARTICULO = r"""UPDATE %s.dbo.ArticulosSeries
-                       SET PesoBruto_ = %f,
-                           PesoNeto_ = %f,
-                           MetrosCuadrados = %f
-                       WHERE NumeroSerieLc = '%s';
-                    """ % (conn.get_database(),
-                           peso_bruto,
-                           peso_neto,
-                           metros_cuadrados,
-                           codigo)
-    SQL_MOVIMIENTO = r"""UPDATE %s.dbo.MovimientoArticuloSerie
-                         SET PesoBruto_ = %f,
-                             PesoNeto_ = %f,
-                             MetrosCuadrados = %f
-                         WHERE NumeroSerieLc = '%s';
-                      """ % (conn.get_database(),
-                             peso_bruto,
-                             peso_neto,
-                             metros_cuadrados,
-                             codigo)
-    res = conn.run_sql(SQL_ARTICULO)
-    res = res and conn.run_sql(SQL_MOVIMIENTO)
+    tablas = ['ArticulosSeries', 'MovimientoArticuloSerie',
+              'GEO_LineasSeriesCargadas', 'GEO_Pales']
+    res = True
+    for tabla in tablas:
+        SQL = r"""UPDATE %s.dbo.%s
+                  SET PesoBruto_ = %f,
+                      PesoNeto_ = %f,
+                      MetrosCuadrados = %f
+                  WHERE NumeroSerieLc = '%s';
+               """ % (conn.get_database(), tabla, peso_bruto, peso_neto,
+                      metros_cuadrados, codigo)
+        res = res and conn.run_sql(SQL)
     return res
 
 

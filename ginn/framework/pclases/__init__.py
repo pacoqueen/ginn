@@ -6446,7 +6446,9 @@ class BalaCable(SQLObject, PRPCTOO):
 
     def get_peso_sin(self):
         """
-        Devuelve el peso *real* de la bala en kg, pero descontando el embalaje.
+        Devuelve el peso *real* de la bala de cable en kg, pero descontando
+        el embalaje. El peso guardado en pclases.BalaCable es el bruto de
+        báscula, el real.
         """
         return self.peso - self.pesoEmbalaje
 
@@ -9990,6 +9992,10 @@ class Articulo(SQLObject, PRPCTOO):
         return res
 
     def get_peso_real(self):
+        """
+        El peso real del artículo, el dado por báscula siempre que sea
+        aplicable.
+        """
         if not self.pesoReal:  # Para los artículos creados antes del 23/06/16
             if self.es_rollo():
                 res = self.rollo.peso
@@ -9998,7 +10004,11 @@ class Articulo(SQLObject, PRPCTOO):
             elif self.es_rollo_c():
                 res = self.rolloC.peso
             elif self.es_bala():
-                res = self.bala.pesobala
+                # OJO: Caso especial.
+                # El peso guardado en pclases.Bala no es el de báscula. Es el
+                # de báscula **menos** el embalaje estimado, que a lo largo del
+                # tiempo ha pasado de 1/1.5 kg a 200 gr y finalmente a 860 gr
+                res = self.bala.pesobala + self.peso_embalaje
             elif self.es_bala_cable():
                 res = self.balaCable.peso
             elif self.es_bigbag():
