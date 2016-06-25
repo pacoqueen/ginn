@@ -331,6 +331,9 @@ def desmuranize_valor(record):
     for clave in record.keys():
         if clave not in ("CodigoEmpresa", "CodigoArticulo"):
             clave_ginn = field_murano2ginn(clave)
+            if "." in clave_ginn:  # tabla_realcionada.campo. Me quedo solo
+                # con el campo.
+                clave_ginn = clave_ginn.split(".")[-1]
             record_murano[clave_ginn] = record[clave]
     RecordMurano = namedtuple('RecordMurano', record_murano.keys())
     res = RecordMurano(**record_murano)
@@ -341,52 +344,177 @@ def field_murano2ginn(campo):
     """
     Devuelve el nombre del campo equivalente en ginn al de Murano recibido.
     Si no tiene equivalencia devuelve None.
+    Devuelve el nombre_de_la_tabla.campo. Si el campo en la tabla de Murano se
+    puede corresponder con varios de ginn, se devuelve así:
+    nombre_tabla1/nombre_tabla2.campo_ginn
+    (el campo_ginn se supone que se llama igual en las dos tablas)
+    SHOW ME THE CODE!
     """
     # De momento solo lo necesito para los campos de Marcado CE.
     switcher = {
-        'GEO_est_por_gramaje': 'estandarPruebaGramaje',
-        'GEO_est_pr_alar_long': 'estandarPruebaAlargamientoLongitudinal',
-        'GEO_est_pr_alar_trans': 'estandarPruebaAlargamientoTransversal',
-        'GEO_est_pr_compresion': 'estandarPruebaCompresion',
-        'GEO_est_pr_espesor': 'estandarPruebaEspesor',
-        'GEO_est_pr_long': 'estandarPruebaLongitudinal',
-        'GEO_est_pr_perforacion': 'estandarPruebaPerforacion',
-        'GEO_est_pr_permeabilidad': 'estandarPruebaPermeabilidad',
-        'GEO_est_pr_piramidal': 'estandarPruebaPiramidal',
-        'GEO_est_pr_poros': 'estandarPruebaPoros',
-        'GEO_est_pr_trans': 'estandarPruebaTransversal',
-        'GEO_tol_por_gramaje': 'toleranciaPruebaGramaje',
-        'GEO_tol_por_gramaje_sup': 'toleranciaPruebaGramajeSup',
-        'GEO_tot_pr_alar_long': 'toleranciaPruebaAlargamientoLongitudinal',
+        'GEO_est_por_gramaje': 'camposEspecificosRollo.estandarPruebaGramaje',
+        'GEO_est_pr_alar_long':
+            'camposEspecificosRollo.estandarPruebaAlargamientoLongitudinal',
+        'GEO_est_pr_alar_trans':
+            'camposEspecificosRollo.estandarPruebaAlargamientoTransversal',
+        'GEO_est_pr_compresion':
+            'camposEspecificosRollo.estandarPruebaCompresion',
+        'GEO_est_pr_espesor': 'camposEspecificosRollo.estandarPruebaEspesor',
+        'GEO_est_pr_long': 'camposEspecificosRollo.estandarPruebaLongitudinal',
+        'GEO_est_pr_perforacion':
+            'camposEspecificosRollo.estandarPruebaPerforacion',
+        'GEO_est_pr_permeabilidad':
+            'camposEspecificosRollo.estandarPruebaPermeabilidad',
+        'GEO_est_pr_piramidal':
+            'camposEspecificosRollo.estandarPruebaPiramidal',
+        'GEO_est_pr_poros': 'camposEspecificosRollo.estandarPruebaPoros',
+        'GEO_est_pr_trans': 'camposEspecificosRollo.estandarPruebaTransversal',
+        'GEO_tol_por_gramaje':
+            'camposEspecificosRollo.toleranciaPruebaGramaje',
+        'GEO_tol_por_gramaje_sup':
+            'camposEspecificosRollo.toleranciaPruebaGramajeSup',
+        'GEO_tot_pr_alar_long':
+            'camposEspecificosRollo.toleranciaPruebaAlargamientoLongitudinal',
         'GEO_tot_pr_alar_long_sup':
             'toleranciaPruebaAlargamientoLongitudinalSup',
-        'GEO_tot_pr_alar_trans': 'toleranciaPruebaAlargamientoTransversal',
+        'GEO_tot_pr_alar_trans':
+            'camposEspecificosRollo.toleranciaPruebaAlargamientoTransversal',
         'GEO_tot_pr_alar_trans_sup':
             'toleranciaPruebaAlargamientoTransversalSup',
-        'GEO_tot_pr_compresion': 'toleranciaPruebaCompresion',
-        'GEO_tot_pr_compresion_sup': 'toleranciaPruebaCompresionSup',
-        'GEO_tot_pr_espesor': 'toleranciaPruebaEspesor',
-        'GEO_tot_pr_espesor_sup': 'toleranciaPruebaEspesorSup',
-        'GEO_tot_pr_long': 'toleranciaPruebaLongitudinal',
-        'GEO_tot_pr_long_sup': 'toleranciaPruebaLongitudinalSup',
-        'GEO_tot_pr_perforacion': 'toleranciaPruebaPerforacion',
-        'GEO_tot_pr_perforacion_sup': 'toleranciaPruebaPerforacionSup',
-        'GEO_tot_pr_permeabilidad': 'toleranciaPruebaPermeabilidad',
-        'GEO_tot_pr_permeabilidad_sup': 'toleranciaPruebaPermeabilidadSup',
-        'GEO_tot_pr_piramidal': 'toleranciaPruebaPiramidal',
-        'GEO_tot_pr_piramidal_sup': 'toleranciaPruebaPiramidalSup',
-        'GEO_tot_pr_poros': 'toleranciaPruebaPoros',
-        'GEO_tot_pr_poros_sup': 'toleranciaPruebaPorosSup',
-        'GEO_tot_pr_trans': 'toleranciaPruebaTransversal',
-        'GEO_tot_pr_trans_sup': 'toleranciaPruebaTransversalSup',
+        'GEO_tot_pr_compresion':
+            'camposEspecificosRollo.toleranciaPruebaCompresion',
+        'GEO_tot_pr_compresion_sup':
+            'camposEspecificosRollo.toleranciaPruebaCompresionSup',
+        'GEO_tot_pr_espesor': 'camposEspecificosRollo.toleranciaPruebaEspesor',
+        'GEO_tot_pr_espesor_sup':
+            'camposEspecificosRollo.toleranciaPruebaEspesorSup',
+        'GEO_tot_pr_long':
+            'camposEspecificosRollo.toleranciaPruebaLongitudinal',
+        'GEO_tot_pr_long_sup':
+            'camposEspecificosRollo.toleranciaPruebaLongitudinalSup',
+        'GEO_tot_pr_perforacion':
+            'camposEspecificosRollo.toleranciaPruebaPerforacion',
+        'GEO_tot_pr_perforacion_sup':
+            'camposEspecificosRollo.toleranciaPruebaPerforacionSup',
+        'GEO_tot_pr_permeabilidad':
+            'camposEspecificosRollo.toleranciaPruebaPermeabilidad',
+        'GEO_tot_pr_permeabilidad_sup':
+            'camposEspecificosRollo.toleranciaPruebaPermeabilidadSup',
+        'GEO_tot_pr_piramidal':
+            'camposEspecificosRollo.toleranciaPruebaPiramidal',
+        'GEO_tot_pr_piramidal_sup':
+            'camposEspecificosRollo.toleranciaPruebaPiramidalSup',
+        'GEO_tot_pr_poros': 'camposEspecificosRollo.toleranciaPruebaPoros',
+        'GEO_tot_pr_poros_sup':
+            'camposEspecificosRollo.toleranciaPruebaPorosSup',
+        'GEO_tot_pr_trans':
+            'camposEspecificosRollo.toleranciaPruebaTransversal',
+        'GEO_tot_pr_trans_sup':
+            'camposEspecificosRollo.toleranciaPruebaTransversalSup',
         # -- Campos generales en común. Algunos son funciones que reciben el
         #               valor de Murano y devuelvel el correspondiente en ginn
         'DescripcionLinea': _get_linea_produccion_ginn,
         'DescripcionArticulo': 'nombre',
         'Descripcion2Articulo': 'descripcion',
-        # PORASQUI
+        'CodigoAlternativo': 'codigo',
+        'StockMinimo': 'minimo',
+        'PrecioVenta': 'preciopordefecto',
+        'CodigoArancelario': 'arancel',
+        'GEO_ProdEstandar': 'prodestandar',
+        'GEO_anno_certificacion': 'annoCertificacion',
+        'GEO_Dni': 'dni',
+        'GEO_Usi': _get_uso_ginn,
+        'ObsoletoLc': 'obsoleto',
+        # -- Campos específicos de rollos
+        'GEO_gramos': 'camposEspecificosRollo.gramos',
+        'GEO_rollos_por_camion': 'camposEspecificosRollo.rollosPorCamion',
+        'GEO_Modelo_etiqueta_id': _get_modelo_etiqueta_ginn,
+            # 'camposEspecificosRollo.modeloEtiquetaID',
+        'GEO_Diametro': 'camposEspecificosRollo.diametro',
+        'GEO_Ficha_fabricacion': 'camposEspecificosRollo.fichaFabricacion',
+        'MarcaProducto': 'camposEspecificosRollo.codigoComposan',
+        'GEO_ancho': 'camposEspecificosRollo.ancho',
+        'GEO_metros_lineales': 'camposEspecificosRollo.metrosLineales',
+        'GEO_calidad_C': 'camposEspecificosRollo.c',
+        'GEO_peso_embalaje': 'camposEspecificosRollo.pesoEmbalaje',
+        'GEO_Cliente_id':
+            'camposEspecificosRollo/camposEspecificosBala.clienteID',
+        # Campos específicos de fibra:
+        'GEO_Consumo_granza': 'camposEspecificosBala.consumoGranza',
+        'GEO_Tipo_Material_bala_id': _get_tipo_material_bala_ginn,
+        'GEO_bolsas_Caja': 'camposEspecificosBala.bolsasCaja',
+        'GEO_gramos_bolsa': 'camposEspecificosBala.gramosBolsa',
+        'GEO_Reciclada': 'camposEspecificosBala.reciclada',
+        'GEO_Color': 'camposEspecificosBala.color',
+        'GEO_Cajas_pale': 'camposEspecificosBala.cajasPale',
+        # 'GEO_Cliente_id': 'camposEspecificosBala.clienteID',
+        'GEO_Dtex': 'camposEspecificosBala.dtex',
+        'GEO_Corte': 'camposEspecificosBala.corte',
+        'GEO_antiuvi': 'camposEspecificosBala.antiuv',
+
+# TODO: PORASQUI
     }
     return switcher.get(campo, None)
+
+
+def _get_tipo_material_bala_ginn(codigo_murano):
+    """
+    Devuelve el ID del tipo de material de fibra según el código recibido
+    de Murano:
+    - '': None
+    - 'PR': 1 (Polipropileno)
+    - 'LI': 2 (Poliéster)
+    """
+    # HARCODED
+    if codigo_murano == 'PR':
+        # Por error en Sage, lo teclearon como Prolipopileno
+        res = 1
+    elif codigo_murano == 'LI':
+        res = 2
+    else:
+        res = None
+    return res
+
+
+def _get_modelo_etiqueta_ginn(id_etiqueta_murano):
+    """
+    Devuelve el ID del modelo de la etiqueta en ginn correspondiente al ID
+    de Murano para ese mismo modelo recibido.
+    Si no lo encuentra o no está establecido en Murano (0), devuelve None.
+    """
+    if id_etiqueta_murano == 4:
+        # Normativa julio 2013
+        res = 4
+    elif id_etiqueta_murano in range(1, 6):
+        # Resulta que el ID coincide en ambas bases de datos.
+        res = id_etiqueta_murano
+    else:   # Incluido el 0, que es el equivalente al None en Murano
+        res = None
+    return res
+
+
+def _get_uso_ginn(codigo_uso):
+    """
+    Si recibe, devuelve:
+    - DP: Drenaje, filtración, refuerzo, separación, protección
+    - DS: Drenaje, filtración, refuerzo, separación
+    - FP: Fibra de polipropileno virgen embolsada en papel hidrosoluble para
+          su uso como aditivo del hormigón
+    - '': ''
+    Resto: None
+    """
+    if codigo_uso == 'DP':
+        res = "Drenaje, filtración, refuerzo, separación, protección"
+    elif codigo_uso == 'DS':
+        res = "Drenaje, filtración, refuerzo, separación"
+    elif codigo_uso == 'FP':
+        res = "Fibra de polipropileno virgen embolsada en papel hidrosoluble"\
+              " para su uso como aditivo del hormigón"
+    elif codigo_uso == '':
+        res = ""
+    else:
+        res = None
+    return res
 
 
 def _get_linea_produccion_ginn(descripcion_linea):
@@ -2029,7 +2157,7 @@ def _get_superficie_murano(articulo):
     Devuelve el peso bruto que guarda Murano para el artículo de ginn recibido.
     """
     conn = Connection()
-    SQL = r"""SELECT MetosCuadrados FROM %s.dbo.ArticulosSeries
+    SQL = r"""SELECT MetrosCuadrados FROM %s.dbo.ArticulosSeries
               WHERE NumeroSerieLc = '%s';""" % (conn.get_database(),
                                                 articulo.codigo)
     try:
@@ -2049,8 +2177,9 @@ def producto_murano2ginn(codigo, sync=False):
     el flag «sync» está activo. En otro caso, lanza una excepción.
     """
     conn = Connection()
-    SQL = "SELECT * FROM %s.dbo.Articulos WHERE CodigoArticulo='%s';" % (
-        conn.get_database(), codigo)
+    SQL = r"""SELECT * FROM %s.dbo.Articulos
+              WHERE CodigoEmpresa = '%s' AND CodigoArticulo='%s';""" % (
+                      conn.get_database(), CODEMPRESA, codigo)
     try:
         prod_murano = conn.run_sql(SQL)[0]
     except IndexError:
@@ -2092,7 +2221,28 @@ def _update_producto_ginn(prod_ginn, prod_murano):
     """
     Recibe un producto de ginn y otro de Murano en forma de diccionario.
     Actualiza los campos de ginn según los valores del de Murano.
-    Devuelve None si no se pudo actualizar y el producto de ginn sí se pudo.
+    Devuelve None si no se pudo actualizar, y el producto de ginn sí se pudo.
     """
-    res = None
+    res = prod_ginn
+    for campo_murano in prod_murano.keys():
+        valor_murano = prod_murano[campo_murano]
+        campo_ginn = field_murano2ginn(campo_murano)
+        if isinstance(campo_ginn, type(lambda: None)):
+            # El campo es una función que me va a dar el valor en ginn
+            # equivalente al de Murano. El campo de ginn lo sacaré del
+            # tipo del propio valor de ginn.
+            valor_ginn = campo_ginn(valor_murano)
+            campo_ginn = str(type(campo_ginn)).split(".")[-1].split("'")[0]
+            campo_ginn = campo_ginn[0].lower() + campo_ginn[1:]
+        # Si no, el campo es un campo de verdad que viene como cadena.
+        valor_ginn = getattr(prod_ginn, campo_ginn)
+        if valor_murano and valor_ginn != valor_murano:
+            # Si Murano tiene informado ese valor y no coincide con el de
+            # ginn, machaco el de ginn.
+            try:
+                setattr(prod_ginn, campo_ginn, valor_ginn)
+                prod_ginn.syncUpdate()
+            except:
+                res = None
+                break   # TODO: PORASQUI: ¿Y ya no sigo actualizando? ¿Y dejo los campos que ya he tocado así, sin backtrack?
     return res
