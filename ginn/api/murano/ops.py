@@ -342,8 +342,8 @@ def desmuranize_valor(record):
 
 def field_murano2ginn(campo):
     """
-    Devuelve el nombre del campo equivalente en ginn al de Murano recibido.
-    Si no tiene equivalencia devuelve None.
+    Devuelve el nombre del campo equivalente en productos de ginn al de Murano
+    recibido. Si no tiene equivalencia devuelve None.
     Devuelve el nombre_de_la_tabla.campo. Si el campo en la tabla de Murano se
     puede corresponder con varios de ginn, se devuelve así:
     nombre_tabla1/nombre_tabla2.campo_ginn
@@ -2169,6 +2169,25 @@ def _get_superficie_murano(articulo):
     return res
 
 
+def get_producto_murano(codigo):
+    """
+    Devuelve el registro `Articulos` de Murano que coincide con el código
+    (de Murano) recibido. El valor devuelto es un diccionario cuyas claves
+    son los nombres de los campos o None si no lo encuentra.
+    """
+    conn = Connection()
+    SQL = r"""SELECT * FROM %s.dbo.Articulos
+              WHERE CodigoEmpresa = '%s' AND CodigoArticulo='%s';""" % (
+          conn.get_database(), CODEMPRESA, codigo)
+    try:
+        prod_murano = conn.run_sql(SQL)[0]
+    except IndexError:
+        strerr = "El código %s no existe en Murano." % (codigo)
+        logging.error(strerr)
+        prod_murano = None
+    return prod_murano
+
+
 def producto_murano2ginn(codigo, sync=False):
     """
     Vuelca el produco de Murano del código recibido en ginn.
@@ -2176,15 +2195,9 @@ def producto_murano2ginn(codigo, sync=False):
     Si el ID ya existe, machaca la información de ginn con la de Murano si
     el flag «sync» está activo. En otro caso, lanza una excepción.
     """
-    conn = Connection()
-    SQL = r"""SELECT * FROM %s.dbo.Articulos
-              WHERE CodigoEmpresa = '%s' AND CodigoArticulo='%s';""" % (
-                      conn.get_database(), CODEMPRESA, codigo)
-    try:
-        prod_murano = conn.run_sql(SQL)[0]
-    except IndexError:
+    prod_murano = get_producto_murano(codigo)
+    if not prod_murano:
         strerr = "El código %s no existe en Murano." % (codigo)
-        logging.error(strerr)
         raise ValueError(strerr)
     else:
         try:
@@ -2234,8 +2247,22 @@ def _update_producto_ginn(prod_ginn, prod_murano):
             valor_ginn = campo_ginn(valor_murano)
             campo_ginn = str(type(campo_ginn)).split(".")[-1].split("'")[0]
             campo_ginn = campo_ginn[0].lower() + campo_ginn[1:]
-        # Si no, el campo es un campo de verdad que viene como cadena.
-        valor_ginn = getattr(prod_ginn, campo_ginn)
+        # Si no, el campo es un campo de verdad que viene como cadena. Pero
+        # puede ser un campo del producto o de una tabla intermedia
+        # relacionada:
+        if "." not in campo_ginn:
+            valor_ginn = getattr(prod_ginn, campo_ginn)
+        else:
+            tabla_intermedia, campo_ginn = campo_ginn.split(".")
+            if "/" in tabla_intermedia:     # Pueden ser dos registros los
+                                            # que lleven ese campo.
+                tablas = tabla_intermedia.split("/")
+                for tabla in tablas:
+                    # Busco el registro intermedio que **no es None**.
+                    registro_intermedio = getattr(prod_ginn, tabla)
+                    if registro_intermedio:
+                        break
+            valor_ginn = getattr(getattr(prod_ginn, tabla), campo_ginn)
         if valor_murano and valor_ginn != valor_murano:
             # Si Murano tiene informado ese valor y no coincide con el de
             # ginn, machaco el de ginn.
@@ -2244,5 +2271,5 @@ def _update_producto_ginn(prod_ginn, prod_murano):
                 prod_ginn.syncUpdate()
             except:
                 res = None
-                break   # TODO: PORASQUI: ¿Y ya no sigo actualizando? ¿Y dejo los campos que ya he tocado así, sin backtrack?
+                break   # TODO: PORASQUI: ¿Y ya no sigo actualizando? ¿Y dejo los campos que ya he tocado así, sin backtrack? ¿Y si no puedo actualizar el atributo porque se ha cambiado incluso de rollo a bala y en lugar de tener un camposEspecificosRollo ahora tiene un camposEspecificosBala?
     return res
