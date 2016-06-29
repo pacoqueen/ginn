@@ -2114,7 +2114,7 @@ def corregir_dimensiones_articulo(articulo, peso_bruto=None, peso_neto=None,
                   WHERE NumeroSerieLc = '%s';
                """ % (conn.get_database(), tabla, peso_bruto, peso_neto,
                       metros_cuadrados, codigo)
-        res = res and conn.run_sql(SQL)
+        res = conn.run_sql(SQL) and res
     return res
 
 
