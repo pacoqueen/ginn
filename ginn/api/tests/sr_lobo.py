@@ -171,7 +171,7 @@ def check_campos_obligatorios(producto):
     return res
 
 
-def check_everything():
+def check_everything(report):
     """
     Devuelve todos los códigos de artículos que hay en el almacén en ginn (eso
     incluye, por fuerza, todo lo fabricado después del 31 de mayo de 2016, que
@@ -185,20 +185,24 @@ def check_everything():
     # Sync artículos. ginn => Murano
     fini = datetime.datetime(
         2016, 5, 31, 17, 30) - datetime.timedelta(hours=17.5)
+    report.write("Buscando todos los artículos...")
     # pylint: disable=bad-continuation
     articulos = pclases.Articulo.select(pclases.OR(     # NOQA
         pclases.Articulo.q.almacen != None,
         pclases.AND(pclases.Articulo.q.parteDeProduccionID ==
                         pclases.ParteDeProduccion.q.id,
                     pclases.ParteDeProduccion.q.fechahorainicio >= fini)))
+    report.write("{} encontrados. Ordenando...\n".format(articulos.count()))
     codigos_articulos = [a.codigo for a in articulos]
     codigos_articulos.sort()
     # Sync productos de compra y venta. ginn <= Murano
+    report.write("Buscando todos los productos de venta...")
     conn = murano.connection.Connection()
     productos = conn.run_sql(r"""SELECT CodigoArticulo FROM %s.dbo.Articulos
         WHERE CodigoArticulo LIKE 'P%';""" % (conn.get_database(),
                                               murano.connection.CODEMPRESA))
     codigos_productos = [r['CodigoArticulo'] for r in productos]
+    report.write("{} encontrados.\n".format(len(codigos_productos)))
     return codigos_articulos, codigos_productos
 
 
@@ -226,7 +230,8 @@ def main():
     args = parser.parse_args()
     if not args.codigos_articulos and not args.codigos_productos:
         # Si no recibo argumentos, compruebo todos los artículos y productos.
-        args.codigos_articulos, args.codigos_productos = check_everything()
+        args.codigos_articulos, args.codigos_productos = check_everything(
+            args.fsalida)
     # # Pruebas
     if args.codigos_articulos:
         for codigo in tqdm(args.codigos_articulos):
