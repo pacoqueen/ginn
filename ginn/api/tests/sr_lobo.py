@@ -224,7 +224,7 @@ def main():
                         help="Guardar resultados en fichero de salida.",
                         default="%s_sr_lobo.txt" % (ahora))
     args = parser.parse_args()
-    if len(sys.argv) == 1:
+    if not args.codigos_articulos and not args.codigos_productos:
         # Si no recibo argumentos, compruebo todos los artículos y productos.
         args.codigos_articulos, args.codigos_productos = check_everything()
     # # Pruebas
