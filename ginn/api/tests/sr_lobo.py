@@ -118,7 +118,6 @@ def sync_producto(codigo, fsalida, simulate=True):
         report.write("Simulando sincronización de producto %s..." % codigo)
     else:
         report.write("Sincronizando producto %s..." % codigo)
-    # TODO
     # 0.- ¿Existe el producto?
     try:
         producto_ginn = murano.ops.get_producto_ginn(codigo)

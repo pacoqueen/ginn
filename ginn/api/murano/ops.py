@@ -10,6 +10,7 @@ Operaciones.
 from __future__ import print_function
 import os
 import sys
+import time
 import logging
 
 NOMFLOG = ".".join(os.path.basename(__file__).split(".")[:-1])
@@ -429,7 +430,7 @@ def field_murano2ginn(campo):
         'GEO_gramos': 'camposEspecificosRollo.gramos',
         'GEO_rollos_por_camion': 'camposEspecificosRollo.rollosPorCamion',
         'GEO_Modelo_etiqueta_id': _get_modelo_etiqueta_ginn,
-            # 'camposEspecificosRollo.modeloEtiquetaID',
+        #     'camposEspecificosRollo.modeloEtiquetaID',
         'GEO_Diametro': 'camposEspecificosRollo.diametro',
         'GEO_Ficha_fabricacion': 'camposEspecificosRollo.fichaFabricacion',
         'MarcaProducto': 'camposEspecificosRollo.codigoComposan',
@@ -447,12 +448,10 @@ def field_murano2ginn(campo):
         'GEO_Reciclada': 'camposEspecificosBala.reciclada',
         'GEO_Color': 'camposEspecificosBala.color',
         'GEO_Cajas_pale': 'camposEspecificosBala.cajasPale',
-        # 'GEO_Cliente_id': 'camposEspecificosBala.clienteID',
+        # 'GEO_Cliente_id': 'camposEspecificosBala.clienteID', # DUPE
         'GEO_Dtex': 'camposEspecificosBala.dtex',
         'GEO_Corte': 'camposEspecificosBala.corte',
         'GEO_antiuvi': 'camposEspecificosBala.antiuv',
-
-# TODO: PORASQUI
     }
     return switcher.get(campo, None)
 
@@ -990,7 +989,7 @@ def get_cantidad_dimension_especifica(articulo):
     # hace bien Murano. Pero si no, la coma la interpreta como separador
     # de campo de una consulta SQL en el proceso interno de convertir la
     # TmpIME en MovStock, `da un syntax error near ,` en la traza y PETA.
-    # TODO: FIXME: Hasta que no se arregle, mando número entero multiplicado
+    # FIXME: Hasta que no se arregle, mando número entero multiplicado
     # por 100 y en Murano se vuelve a dividir entre 100 para que se quede la
     # cantidad correcta en kilos.
     unidades = int(unidades * 100)  # XxX ### XxX ### XxX ### XxX ### XxX ##
@@ -1971,6 +1970,19 @@ def buscar_almacen_silo(silo):
     return almacen
 
 
+def _str_time(t):
+    """
+    Devuelve una cadena con los segundos recibidos en formato minutos:segundos
+    """
+    minutos = t / 60
+    segundos = t % 60
+    if minutos:
+        res = "{}:{} m".format(minutos, segundos)
+    else:
+        res = "{} s".format(segundos)
+    return res
+
+
 # pylint: disable=too-many-statements
 def fire(guid_proceso, ignore_errors=False):
     """
@@ -1978,11 +1990,13 @@ def fire(guid_proceso, ignore_errors=False):
     stock de la tabla temporal.
     Devuelve 0 si el proceso se completó con éxito o 1 en caso contrario.
     """
+    antes = time.time()
     strerror = "No puede ejecutar código nativo de Murano. Necesita instalar"\
                " la biblioteca win32com y lanzar esta función desde una "\
                "plataforma donde se encuentre instalado Sage Murano."
     if not LCOEM:
         raise NotImplementedError(strerror)
+    logging.info("Inicializando OEM..")
     burano = win32com.client.Dispatch("LogicControlOEM.OEM_EjecutaOEM")
     burano.InicializaOEM(CODEMPRESA,
                          "OEM",
@@ -1990,6 +2004,10 @@ def fire(guid_proceso, ignore_errors=False):
                          "",
                          r"LOGONSERVER\MURANO",
                          "GEOTEXAN")
+    ahora = time.time()
+    tiempo_inicializacion = ahora - antes
+    str_tiempo_inicializacion = _str_time(tiempo_inicializacion)
+    logging.info("OEM inicializada en %s", str_tiempo_inicializacion)
     retCode = None
     operacion = "ImportaIME"
     strverbose = "Lanzando proceso de importación `%s` con GUID `%s`..." % (
@@ -2177,8 +2195,9 @@ def get_producto_murano(codigo):
     """
     conn = Connection()
     SQL = r"""SELECT * FROM %s.dbo.Articulos
-              WHERE CodigoEmpresa = '%s' AND CodigoArticulo='%s';""" % (
-          conn.get_database(), CODEMPRESA, codigo)
+              WHERE CodigoEmpresa = '%s'
+                AND CodigoArticulo='%s';""" % (conn.get_database(),
+                                               CODEMPRESA, codigo)
     try:
         prod_murano = conn.run_sql(SQL)[0]
     except IndexError:
@@ -2222,11 +2241,36 @@ def _create_producto_ginn(prod_murano):
     ide = int(prod_murano['CodigoArticulo'].replace("PV", ""))
     try:
         pv = pclases.ProductoVenta(id=ide)
-    except:
+        if prod_murano['CodigoAreaCompetenciaLc'] == "ROLLO":
+            pv.camposEspecificosRollo = pclases.CamposEspecificosRollo()
+        elif prod_murano['CodigoAreaCompetenciaLc'] == "BALA":
+            pv.camposEspecificosBala = pclases.CamposEspecificosBala()
+        elif prod_murano['CodigoAreaCompetenciaLc'] == "CAJA":
+            pv.camposEspecificosBala = pclases.CamposEspecificosBala()
+        elif prod_murano['CodigoAreaCompetenciaLc'] == "BIGBAG":
+            pv.camposEspecificosBala = pclases.CamposEspecificosBala()
+        else:
+            strerror = "El producto {} no tiene indicado si es rollo, bala, "\
+                       "caja o bigbag en Murano (campo «Área "\
+                       "competencia»).".format(prod_murano['CodigoArticulo'])
+            print(strerror)
+            logging.error(strerror)
+            pv.destroySelf()
+            pv = None
+    # pylint: disable=broad-except
+    except Exception as excepcion:
         # TODO: PORASQUI: Hasta que lea directamente el producto de Murano
         # desde el parte y laboratorio, sincronizar manualmente con estas
         # funciones.
+        strerror = "El producto {} no se pudo crear en ginn."\
+                   " Expceción: {}".format(prod_murano['CodigoArticulo'],
+                                           excepcion)
+        print(strerror)
+        logging.error(strerror)
         pv = None
+    else:
+        if pv:
+            _update_producto_ginn(pv, prod_murano)
     return pv
 
 
@@ -2262,14 +2306,24 @@ def _update_producto_ginn(prod_ginn, prod_murano):
                     registro_intermedio = getattr(prod_ginn, tabla)
                     if registro_intermedio:
                         break
+            else:
+                tabla = tabla_intermedia
             valor_ginn = getattr(getattr(prod_ginn, tabla), campo_ginn)
         if valor_murano and valor_ginn != valor_murano:
             # Si Murano tiene informado ese valor y no coincide con el de
             # ginn, machaco el de ginn.
             try:
-                setattr(prod_ginn, campo_ginn, valor_ginn)
+                setattr(prod_ginn, campo_ginn, valor_murano)
                 prod_ginn.syncUpdate()
-            except:
+            # pylint: disable=broad-except
+            except Exception as excepcion:
                 res = None
-                break   # TODO: PORASQUI: ¿Y ya no sigo actualizando? ¿Y dejo los campos que ya he tocado así, sin backtrack? ¿Y si no puedo actualizar el atributo porque se ha cambiado incluso de rollo a bala y en lugar de tener un camposEspecificosRollo ahora tiene un camposEspecificosBala?
+                strlog = "(EE)[S] Campo {} de {} no se pudo instanciar"\
+                         ": {}".format(campo_ginn, prod_ginn, excepcion)
+                print(strlog)
+                logging.error(strlog)
+                # break   Intento seguir actualizando campos, pero...
+                # TODO: ¿Y si ha cambiado el producto de rollo a bala? Habría
+                # que eliminarlo y volverlo a crear, porque no tendrá
+                # registro camposEspecificosBala y fallará hasta el final.
     return res
