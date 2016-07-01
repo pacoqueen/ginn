@@ -51,7 +51,7 @@ def sync_articulo(codigo, fsalida, simulate=True):
     - Superficie
     - Valor campo api
     """
-    report = open(fsalida, "a")
+    report = open(fsalida, "a", 0)
     if simulate:
         report.write("Simulando sincronización de artículo %s..." % codigo)
     else:
@@ -71,7 +71,7 @@ def sync_articulo(codigo, fsalida, simulate=True):
             # pylint: disable=protected-access
             if (murano.ops._get_peso_bruto_murano(articulo) != peso_bruto or
                     murano.ops._get_peso_neto_murano(articulo) != peso_neto or
-                    murano.ops._get_superficie(articulo) != superficie):
+                    murano.ops._get_superficie_murano(articulo) != superficie):
                 report.write("Corrigiendo dimensiones ({}, {}, {})...".format(
                     peso_bruto, peso_neto, superficie))
                 if not simulate:
@@ -113,7 +113,7 @@ def sync_producto(codigo, fsalida, simulate=True):
     están informados en Murano (modelo etiqueta, gramaje, bolsas por caja...)
     """
     res = True
-    report = open(fsalida, "a")
+    report = open(fsalida, "a", 0)
     if simulate:
         report.write("Simulando sincronización de producto %s..." % codigo)
     else:
@@ -182,7 +182,7 @@ def check_everything(fsalida):
     donde se mantienen. Así comprobará después que en ginn existen y tienen la
     misma información.
     """
-    report = open(fsalida, "a")
+    report = open(fsalida, "a", 0)
     # Sync artículos. ginn => Murano
     fini = datetime.datetime(
         2016, 5, 31, 17, 30) - datetime.timedelta(hours=17.5)
@@ -201,9 +201,10 @@ def check_everything(fsalida):
     # Sync productos de compra y venta. ginn <= Murano
     report.write("Buscando todos los productos de venta...")
     conn = murano.connection.Connection()
-    sql = "SELECT CodigoArticulo FROM %s.dbo.Articulos" % (conn.get_database())
-    sql += "WHERE CodigoArticulo LIKE 'P%'"
-    sql += "AND CodigoEmpresa = '%d';" % (murano.connection.CODEMPRESA)
+    sql = "SELECT CodigoArticulo FROM {}.dbo.Articulos".format(
+        conn.get_database())
+    sql += " WHERE CodigoArticulo LIKE 'P%'"
+    sql += " AND CodigoEmpresa = '{}';".format(murano.connection.CODEMPRESA)
     productos = conn.run_sql(sql)
     codigos_productos = [r['CodigoArticulo'] for r in productos]
     report.write("{} encontrados.\n".format(len(codigos_productos)))
@@ -228,7 +229,7 @@ def main():
     parser.add_argument("-n", "--dry-run", dest="simulate",
                         help="Simular. No hace cambios en la base de datos.",
                         default=False, action='store_true')
-    ahora = datetime.datetime.today().strftime("%Y%m%d_%H%M%S")
+    ahora = datetime.datetime.today().strftime("%Y%m%d_%H")
     parser.add_argument("-o", dest="fsalida",
                         help="Guardar resultados en fichero de salida.",
                         default="%s_sr_lobo.txt" % (ahora))
