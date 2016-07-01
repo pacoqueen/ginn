@@ -171,7 +171,7 @@ def check_campos_obligatorios(producto):
     return res
 
 
-def check_everything(report):
+def check_everything(fsalida):
     """
     Devuelve todos los códigos de artículos que hay en el almacén en ginn (eso
     incluye, por fuerza, todo lo fabricado después del 31 de mayo de 2016, que
@@ -182,6 +182,7 @@ def check_everything(report):
     donde se mantienen. Así comprobará después que en ginn existen y tienen la
     misma información.
     """
+    report = open(fsalida, "a")
     # Sync artículos. ginn => Murano
     fini = datetime.datetime(
         2016, 5, 31, 17, 30) - datetime.timedelta(hours=17.5)
@@ -203,6 +204,7 @@ def check_everything(report):
                                               murano.connection.CODEMPRESA))
     codigos_productos = [r['CodigoArticulo'] for r in productos]
     report.write("{} encontrados.\n".format(len(codigos_productos)))
+    report.close()
     return codigos_articulos, codigos_productos
 
 
