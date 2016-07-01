@@ -195,7 +195,7 @@ def check_everything(fsalida):
     articulos = set(articulos_en_almacen)
     for pdp in partes_fabricacion:
         articulos.update(set(pdp.articulos))
-    report.write("{} encontrados. Ordenando...\n".format(len(articulos))
+    report.write("{} encontrados. Ordenando...\n".format(len(articulos)))
     codigos_articulos = [a.codigo for a in articulos]
     codigos_articulos.sort()
     # Sync productos de compra y venta. ginn <= Murano
