@@ -188,12 +188,14 @@ def check_everything(fsalida):
         2016, 5, 31, 17, 30) - datetime.timedelta(hours=17.5)
     report.write("Buscando todos los artículos...")
     # pylint: disable=bad-continuation
-    articulos = pclases.Articulo.select(pclases.OR(     # NOQA
-        pclases.Articulo.q.almacen != None,
-        pclases.AND(pclases.Articulo.q.parteDeProduccionID ==
-                        pclases.ParteDeProduccion.q.id,
-                    pclases.ParteDeProduccion.q.fechahorainicio >= fini)))
-    report.write("{} encontrados. Ordenando...\n".format(articulos.count()))
+    articulos_en_almacen = pclases.Articulo.select(     # NOQA
+        pclases.Articulo.q.almacen != None)
+    partes_fabricacion = pclases.ParteDeProduccion.select(
+        pclases.ParteDeProduccion.q.fechahorainicio >= fini)
+    articulos = set(articulos_en_almacen)
+    for pdp in partes_fabricacion:
+        articulos.update(set(pdp.articulos))
+    report.write("{} encontrados. Ordenando...\n".format(len(articulos))
     codigos_articulos = [a.codigo for a in articulos]
     codigos_articulos.sort()
     # Sync productos de compra y venta. ginn <= Murano
