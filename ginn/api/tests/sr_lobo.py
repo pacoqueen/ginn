@@ -201,10 +201,10 @@ def check_everything(fsalida):
     # Sync productos de compra y venta. ginn <= Murano
     report.write("Buscando todos los productos de venta...")
     conn = murano.connection.Connection()
-    productos = conn.run_sql(r"""SELECT CodigoArticulo FROM %s.dbo.Articulos
-        WHERE CodigoArticulo LIKE 'P%'
-          AND CodigoEmpresa = '%d';""" % (conn.get_database(),
-                                          murano.connection.CODEMPRESA))
+    sql = "SELECT CodigoArticulo FROM %s.dbo.Articulos" % (conn.get_database())
+    sql += "WHERE CodigoArticulo LIKE 'P%'"
+    sql += "AND CodigoEmpresa = '%d';" % (murano.connection.CODEMPRESA)
+    productos = conn.run_sql(sql)
     codigos_productos = [r['CodigoArticulo'] for r in productos]
     report.write("{} encontrados.\n".format(len(codigos_productos)))
     report.close()
