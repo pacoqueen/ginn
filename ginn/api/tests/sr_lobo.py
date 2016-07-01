@@ -187,10 +187,10 @@ def check_everything():
         2016, 5, 31, 17, 30) - datetime.timedelta(hours=17.5)
     # pylint: disable=bad-continuation
     articulos = pclases.Articulo.select(pclases.OR(     # NOQA
-        pclases.Articulo.q.almacen != None),
+        pclases.Articulo.q.almacen != None,
         pclases.AND(pclases.Articulo.q.parteDeProduccionID ==
                         pclases.ParteDeProduccion.q.id,
-                    pclases.ParteDeProduccion.q.fechahorainicio >= fini))
+                    pclases.ParteDeProduccion.q.fechahorainicio >= fini)))
     codigos_articulos = [a.codigo for a in articulos]
     codigos_articulos.sort()
     # Sync productos de compra y venta. ginn <= Murano
