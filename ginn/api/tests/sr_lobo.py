@@ -202,8 +202,9 @@ def check_everything(fsalida):
     report.write("Buscando todos los productos de venta...")
     conn = murano.connection.Connection()
     productos = conn.run_sql(r"""SELECT CodigoArticulo FROM %s.dbo.Articulos
-        WHERE CodigoArticulo LIKE 'P%';""" % (conn.get_database(),
-                                              murano.connection.CODEMPRESA))
+        WHERE CodigoArticulo LIKE 'P%'
+          AND CodigoEmpresa = '%d';""" % (conn.get_database(),
+                                          murano.connection.CODEMPRESA))
     codigos_productos = [r['CodigoArticulo'] for r in productos]
     report.write("{} encontrados.\n".format(len(codigos_productos)))
     report.close()
