@@ -77,8 +77,13 @@ def sync_articulo(codigo, fsalida, simulate=True):
             if (peso_bruto_murano != peso_bruto or
                     peso_neto_murano != peso_neto or
                     superficie_murano != superficie):
-                report.write("Corrigiendo dimensiones ({}, {}, {})... ".format(
-                    peso_bruto, peso_neto, superficie))
+                report.write("Corrigiendo dimensiones ({} -> {}, {} -> {},"
+                             " {} -> {})... ".format(peso_bruto_murano,
+                                                     peso_bruto,
+                                                     peso_neto_murano,
+                                                     peso_neto,
+                                                     superficie_murano,
+                                                     superficie))
                 if not simulate:
                     res = murano.ops.corregir_dimensiones_articulo(articulo,
                                                                    peso_bruto,
