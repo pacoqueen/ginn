@@ -53,13 +53,13 @@ def sync_articulo(codigo, fsalida, simulate=True):
     """
     report = open(fsalida, "a", 0)
     if simulate:
-        report.write("Simulando sincronización de artículo %s..." % codigo)
+        report.write("Simulando sincronización de artículo %s... " % codigo)
     else:
-        report.write("Sincronizando artículo %s..." % codigo)
+        report.write("Sincronizando artículo %s... " % codigo)
     articulo = pclases.Articulo.get_articulo(codigo)
     if articulo:
         if not murano.ops.existe_articulo(articulo):
-            report.write("Creando...")
+            report.write("Creando... ")
             if not simulate:
                 res = murano.ops.create_articulo(articulo)
             else:
@@ -68,11 +68,16 @@ def sync_articulo(codigo, fsalida, simulate=True):
             peso_bruto = articulo.peso_bruto
             peso_neto = articulo.peso_neto
             superficie = articulo.superficie
+            if superficie is None:
+                superficie = 0.0    # Es como lo devuelve Murano. Como float.
             # pylint: disable=protected-access
-            if (murano.ops._get_peso_bruto_murano(articulo) != peso_bruto or
-                    murano.ops._get_peso_neto_murano(articulo) != peso_neto or
-                    murano.ops._get_superficie_murano(articulo) != superficie):
-                report.write("Corrigiendo dimensiones ({}, {}, {})...".format(
+            (peso_bruto_murano,
+             peso_neto_murano,
+             superficie_murano) = murano.ops._get_dimensiones_murano(articulo)
+            if (peso_bruto_murano != peso_bruto or
+                    peso_neto_murano != peso_neto or
+                    superficie_murano != superficie):
+                report.write("Corrigiendo dimensiones ({}, {}, {})... ".format(
                     peso_bruto, peso_neto, superficie))
                 if not simulate:
                     res = murano.ops.corregir_dimensiones_articulo(articulo,
@@ -85,7 +90,7 @@ def sync_articulo(codigo, fsalida, simulate=True):
                 report.write("Nada que hacer.")
                 res = True
         if not articulo.api:
-            report.write("Actualizando valor api...")
+            report.write("Actualizando valor api... ")
             if not simulate:
                 articulo.api = murano.ops.existe_articulo(articulo)
                 articulo.syncUpdate()
@@ -115,14 +120,14 @@ def sync_producto(codigo, fsalida, simulate=True):
     res = True
     report = open(fsalida, "a", 0)
     if simulate:
-        report.write("Simulando sincronización de producto %s..." % codigo)
+        report.write("Simulando sincronización de producto %s... " % codigo)
     else:
-        report.write("Sincronizando producto %s..." % codigo)
+        report.write("Sincronizando producto %s... " % codigo)
     # 0.- ¿Existe el producto?
     try:
         producto_ginn = murano.ops.get_producto_ginn(codigo)
     except pclases.SQLObjectNotFound:
-        report.write("No encontrado. Creando...")
+        report.write("No encontrado. Creando... ")
         # Ya hemos comprobado que no existe, pero por si acaso, prefiero que
         # salta una excepción antes de machacar nada... de momento.
         res = murano.ops.producto_murano2ginn(codigo, sync=False)
@@ -186,7 +191,7 @@ def check_everything(fsalida):
     # Sync artículos. ginn => Murano
     fini = datetime.datetime(
         2016, 5, 31, 17, 30) - datetime.timedelta(hours=17.5)
-    report.write("Buscando todos los artículos...")
+    report.write("Buscando todos los artículos... ")
     # pylint: disable=bad-continuation
     articulos_en_almacen = pclases.Articulo.select(     # NOQA
         pclases.Articulo.q.almacen != None)
@@ -199,7 +204,7 @@ def check_everything(fsalida):
     codigos_articulos = [a.codigo for a in articulos]
     codigos_articulos.sort()
     # Sync productos de compra y venta. ginn <= Murano
-    report.write("Buscando todos los productos de venta...")
+    report.write("Buscando todos los productos de venta... ")
     conn = murano.connection.Connection()
     sql = "SELECT CodigoArticulo FROM {}.dbo.Articulos".format(
         conn.get_database())

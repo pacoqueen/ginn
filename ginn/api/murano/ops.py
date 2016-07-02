@@ -2187,6 +2187,29 @@ def _get_superficie_murano(articulo):
     return res
 
 
+def _get_dimensiones_murano(articulo):
+    """
+    Devuelve el peso bruto, neto y metros cuadrados que guarda Murano para el
+    artículo de ginn recibido.
+    """
+    conn = Connection()
+    SQL = r"""SELECT PesoBruto_, PesoNeto_, MetrosCuadrados
+              FROM %s.dbo.ArticulosSeries
+              WHERE NumeroSerieLc = '%s';""" % (conn.get_database(),
+                                                articulo.codigo)
+    try:
+        peso_bruto = conn.run_sql(SQL)[0]['PesoBruto_']
+        peso_neto = conn.run_sql(SQL)[0]['PesoNeto_']
+        superficie = conn.run_sql(SQL)[0]['MetrosCuadrados']
+    except IndexError:
+        peso_bruto, peso_neto, superficie = None, None, None
+    else:
+        peso_bruto = float(peso_bruto)
+        peso_neto = float(peso_neto)
+        superficie = float(superficie)
+    return peso_bruto, peso_neto, superficie
+
+
 def get_producto_murano(codigo):
     """
     Devuelve el registro `Articulos` de Murano que coincide con el código
