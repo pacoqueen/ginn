@@ -40,7 +40,7 @@ from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
 sys.argv = _argv
 
 
-# pylint: disable=too-many-branches
+# pylint: disable=too-many-branches,too-many-statements
 def sync_articulo(codigo, fsalida, simulate=True):
     """
     Sincroniza el artículo de ginn cuyo código es "codigo", con el de
@@ -50,6 +50,7 @@ def sync_articulo(codigo, fsalida, simulate=True):
     - Peso neto
     - Superficie
     - Valor campo api
+    - Código palé
     """
     report = open(fsalida, "a", 0)
     if simulate:
@@ -65,6 +66,7 @@ def sync_articulo(codigo, fsalida, simulate=True):
             else:
                 res = True
         else:
+            altered = False
             peso_bruto = articulo.peso_bruto
             peso_neto = articulo.peso_neto
             superficie = articulo.superficie
@@ -84,6 +86,7 @@ def sync_articulo(codigo, fsalida, simulate=True):
                                                      peso_neto,
                                                      superficie_murano,
                                                      superficie))
+                altered = True
                 if not simulate:
                     res = murano.ops.corregir_dimensiones_articulo(articulo,
                                                                    peso_bruto,
@@ -91,7 +94,12 @@ def sync_articulo(codigo, fsalida, simulate=True):
                                                                    superficie)
                 else:
                     res = True
-            else:
+            if articulo.caja and articulo.caja.pale:
+                pale_murano = murano.ops._get_codigo_pale(articulo)
+                if pale_murano != articulo.caja.pale.codigo:
+                    res = murano.ops.corregir_pale(articulo)
+                    altered = True
+            if not altered:
                 report.write("Nada que hacer.")
                 res = True
         if not articulo.api:

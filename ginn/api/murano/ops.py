@@ -2140,9 +2140,10 @@ def corregir_dimensiones_articulo(articulo, peso_bruto=None, peso_neto=None,
                   SET PesoBruto_ = %f,
                       PesoNeto_ = %f,
                       MetrosCuadrados = %f
-                  WHERE NumeroSerieLc = '%s';
+                  WHERE NumeroSerieLc = '%s'
+                    AND CodigoEmpresa = '%s';
                """ % (conn.get_database(), tabla, peso_bruto, peso_neto,
-                      metros_cuadrados, codigo)
+                      metros_cuadrados, codigo, CODEMPRESA)
         res = conn.run_sql(SQL) and res
     return res
 
@@ -2206,19 +2207,61 @@ def _get_dimensiones_murano(articulo):
     conn = Connection()
     SQL = r"""SELECT PesoBruto_, PesoNeto_, MetrosCuadrados
               FROM %s.dbo.ArticulosSeries
-              WHERE NumeroSerieLc = '%s';""" % (conn.get_database(),
-                                                articulo.codigo)
+              WHERE NumeroSerieLc = '%s'
+                AND CodigoEmpresa = '%s';""" % (conn.get_database(),
+                                                articulo.codigo,
+                                                CODEMPRESA)
     try:
-        peso_bruto = conn.run_sql(SQL)[0]['PesoBruto_']
-        peso_neto = conn.run_sql(SQL)[0]['PesoNeto_']
-        superficie = conn.run_sql(SQL)[0]['MetrosCuadrados']
+        result = conn.run_sql(SQL)[0]
     except IndexError:
         peso_bruto, peso_neto, superficie = None, None, None
     else:
+        peso_bruto = result['PesoBruto_']
+        peso_neto = result['PesoNeto_']
+        superficie = result['MetrosCuadrados']
         peso_bruto = float(peso_bruto)
         peso_neto = float(peso_neto)
         superficie = float(superficie)
     return peso_bruto, peso_neto, superficie
+
+
+def _get_codigo_pale(articulo):
+    """
+    Devuelve el código de palé que tiene el artículo de ginn en Murano.
+    """
+    conn = Connection()
+    SQL = r"""SELECT CodigoPale FROM %s.dbo.ArticulosSeries
+              WHERE NumeroSerieLc = '%s'
+                AND CodigoEmpresa = '%s';""" % (conn.get_database(),
+                                                articulo.codigo, CODEMPRESA)
+    try:
+        codigo_pale = conn.run_sql(SQL)[0]['CodigoPale']
+    except IndexError:
+        codigo_pale = None
+    return codigo_pale
+
+
+def corregir_pale(articulo, pale=None):
+    """
+    Corrige el valor del campo CodigoPale en Murano para el artículo de acuerdo
+    al palé o al código de palé recibido.
+    """
+    if not pale:
+        pale = articulo.caja.pale
+    try:
+        codigo_pale = pale.codigo
+    except AttributeError:
+        codigo_pale = pale
+    conn = Connection()
+    SQL = r"""UPDATE %s.dbo.ArticulosSeries
+                 SET CodigoPale = '%s'
+               WHERE CodigoEmpresa = '%s'
+                 AND NumeroSerieLc = '%s';""" % (conn.get_database(),
+                                                 codigo_pale,
+                                                 CODEMPRESA,
+                                                 articulo.codigo)
+    res = conn.run_sql(SQL)
+    return res
 
 
 def get_producto_murano(codigo):
@@ -2230,8 +2273,8 @@ def get_producto_murano(codigo):
     conn = Connection()
     SQL = r"""SELECT * FROM %s.dbo.Articulos
               WHERE CodigoEmpresa = '%s'
-                AND CodigoArticulo='%s';""" % (conn.get_database(),
-                                               CODEMPRESA, codigo)
+                AND CodigoArticulo = '%s';""" % (conn.get_database(),
+                                                 CODEMPRESA, codigo)
     try:
         prod_murano = conn.run_sql(SQL)[0]
     except IndexError:
