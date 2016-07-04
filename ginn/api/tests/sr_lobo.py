@@ -96,9 +96,16 @@ def sync_articulo(codigo, fsalida, simulate=True):
                     res = True
             if articulo.caja and articulo.caja.pale:
                 pale_murano = murano.ops._get_codigo_pale(articulo)
-                if pale_murano != articulo.caja.pale.codigo:
-                    res = murano.ops.corregir_pale(articulo)
+                codigo_pale_ginn = articulo.caja.pale.codigo
+                if pale_murano != codigo_pale_ginn:
+                    report.write("Corrigiendo palé "
+                                 "({} -> {})...".format(pale_murano,
+                                                        codigo_pale_ginn))
                     altered = True
+                    if simulate:
+                        res = murano.ops.corregir_pale(articulo)
+                    else:
+                        res = True
             if not altered:
                 report.write("Nada que hacer.")
                 res = True
