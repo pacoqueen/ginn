@@ -1996,7 +1996,7 @@ def fire(guid_proceso, ignore_errors=False):
                "plataforma donde se encuentre instalado Sage Murano."
     if not LCOEM:
         raise NotImplementedError(strerror)
-    logging.info("Inicializando OEM..")
+    logging.info("Inicializando OEM...")
     burano = win32com.client.Dispatch("LogicControlOEM.OEM_EjecutaOEM")
     burano.InicializaOEM(CODEMPRESA,
                          "OEM",
@@ -2028,7 +2028,12 @@ def fire(guid_proceso, ignore_errors=False):
     if VERBOSE and DEBUG:
         print(strverbose)
     # Si retcode es 1: cagada. Si es 0: éxito
-    # TODO: ¿Y si es None? Lo he visto en procesos con errores.
+    # ¿Y si es None? Lo he visto en procesos con errores.
+    #  Mucho me temo que si es None, no lo ha procesado. Y no se procesan más
+    # adelante. Se quedan pendiente para siempre.
+    if retCode is None:
+        logging.warning("Se cambia el valor None por 1 (FAIL).")
+        retCode = 1
     if retCode and not ignore_errors:
         strerr = "¡PROCESO DE IMPORTACIÓN %s CON ERRORES!"\
                  " No se lanza el script de acumulación de stock." % (
@@ -2102,6 +2107,11 @@ def fire(guid_proceso, ignore_errors=False):
             # un IOError Errno 9 Bad file descriptor. Probablemente por no
             # tener salida estándar (se abre sin ventana de "terminal").
             pass
+    ahora = time.time()
+    tiempo_fire = ahora - antes
+    str_tiempo_fire = _str_time(tiempo_fire)
+    logging.info("Proceso de importación `%s` finalizado en %s",
+                 guid_proceso, str_tiempo_fire)
     return res
 
 
