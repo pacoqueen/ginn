@@ -1,6 +1,6 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim:
 " Vim session script.
-" Created by session.vim 2.13.1 on 02 julio 2016 at 10:53:30.
+" Created by session.vim 2.13.1 on 04 julio 2016 at 23:22:20.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -26,7 +26,7 @@ endif
 set shortmess=aoO
 badd +1 ginn/api/murano/ops.py
 badd +1 ginn/api/tests/sr_lobo.py
-badd +1 ginn/api/murano/connection.py
+badd +12 ginn/api/murano/connection.py
 argglobal
 silent! argdel *
 edit ginn/api/murano/connection.py
@@ -52,17 +52,17 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 20 + 57) / 115)
-exe '2resize ' . ((&lines * 6 + 27) / 54)
-exe 'vert 2resize ' . ((&columns * 94 + 57) / 115)
-exe '3resize ' . ((&lines * 1 + 27) / 54)
-exe 'vert 3resize ' . ((&columns * 94 + 57) / 115)
+exe 'vert 1resize ' . ((&columns * 22 + 57) / 115)
+exe '2resize ' . ((&lines * 12 + 27) / 54)
+exe 'vert 2resize ' . ((&columns * 92 + 57) / 115)
+exe '3resize ' . ((&lines * 12 + 27) / 54)
+exe 'vert 3resize ' . ((&columns * 92 + 57) / 115)
 exe '4resize ' . ((&lines * 1 + 27) / 54)
-exe 'vert 4resize ' . ((&columns * 94 + 57) / 115)
-exe '5resize ' . ((&lines * 29 + 27) / 54)
-exe 'vert 5resize ' . ((&columns * 94 + 57) / 115)
+exe 'vert 4resize ' . ((&columns * 92 + 57) / 115)
+exe '5resize ' . ((&lines * 12 + 27) / 54)
+exe 'vert 5resize ' . ((&columns * 92 + 57) / 115)
 exe '6resize ' . ((&lines * 11 + 27) / 54)
-exe 'vert 6resize ' . ((&columns * 94 + 57) / 115)
+exe 'vert 6resize ' . ((&columns * 92 + 57) / 115)
 argglobal
 enew
 file __Tagbar__
@@ -85,12 +85,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 36 - ((1 * winheight(0) + 3) / 6)
+let s:l = 21 - ((7 * winheight(0) + 6) / 12)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-36
-normal! 021|
+21
+normal! 0
 wincmd w
 argglobal
 edit ginn/api/murano/ops.py
@@ -103,12 +103,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 2189 - ((1 * winheight(0) + 0) / 1)
+let s:l = 2296 - ((8 * winheight(0) + 6) / 12)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-2189
-normal! 0
+2296
+normal! 08|
 wincmd w
 argglobal
 enew
@@ -132,12 +132,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 86 - ((19 * winheight(0) + 14) / 29)
+let s:l = 104 - ((6 * winheight(0) + 6) / 12)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-86
-normal! 053|
+104
+normal! 034|
 wincmd w
 argglobal
 edit ginn/api/murano/connection.py
@@ -150,25 +150,25 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 5) / 11)
+let s:l = 87 - ((2 * winheight(0) + 5) / 11)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 0
+87
+normal! 031|
 wincmd w
 5wincmd w
-exe 'vert 1resize ' . ((&columns * 20 + 57) / 115)
-exe '2resize ' . ((&lines * 6 + 27) / 54)
-exe 'vert 2resize ' . ((&columns * 94 + 57) / 115)
-exe '3resize ' . ((&lines * 1 + 27) / 54)
-exe 'vert 3resize ' . ((&columns * 94 + 57) / 115)
+exe 'vert 1resize ' . ((&columns * 22 + 57) / 115)
+exe '2resize ' . ((&lines * 12 + 27) / 54)
+exe 'vert 2resize ' . ((&columns * 92 + 57) / 115)
+exe '3resize ' . ((&lines * 12 + 27) / 54)
+exe 'vert 3resize ' . ((&columns * 92 + 57) / 115)
 exe '4resize ' . ((&lines * 1 + 27) / 54)
-exe 'vert 4resize ' . ((&columns * 94 + 57) / 115)
-exe '5resize ' . ((&lines * 29 + 27) / 54)
-exe 'vert 5resize ' . ((&columns * 94 + 57) / 115)
+exe 'vert 4resize ' . ((&columns * 92 + 57) / 115)
+exe '5resize ' . ((&lines * 12 + 27) / 54)
+exe 'vert 5resize ' . ((&columns * 92 + 57) / 115)
 exe '6resize ' . ((&lines * 11 + 27) / 54)
-exe 'vert 6resize ' . ((&columns * 94 + 57) / 115)
+exe 'vert 6resize ' . ((&columns * 92 + 57) / 115)
 tabnext 1
 if exists('s:wipebuf')
 "   silent exe 'bwipe ' . s:wipebuf
@@ -197,7 +197,7 @@ if !getbufvar(s:bufnr_save, '&modified')
   endif
 endif
 execute "cd" fnameescape(s:cwd_save)
-1resize 52|vert 1resize 20|2resize 6|vert 2resize 94|3resize 1|vert 3resize 94|4resize 1|vert 4resize 94|5resize 29|vert 5resize 94|6resize 11|vert 6resize 94|
+1resize 52|vert 1resize 22|2resize 12|vert 2resize 92|3resize 12|vert 3resize 92|4resize 1|vert 4resize 92|5resize 12|vert 5resize 92|6resize 11|vert 6resize 92|
 5wincmd w
 tabnext 1
 if exists('s:wipebuf')
