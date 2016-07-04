@@ -1974,12 +1974,12 @@ def _str_time(t):
     """
     Devuelve una cadena con los segundos recibidos en formato minutos:segundos
     """
-    minutos = t / 60
+    minutos = int(t // 60)
     segundos = t % 60
     if minutos:
-        res = "{}:{} m".format(minutos, segundos)
+        res = "{:d}:{:0>5.2f} m".format(minutos, segundos)
     else:
-        res = "{} s".format(segundos)
+        res = "{:0>5.2f} s".format(segundos)
     return res
 
 
@@ -2016,11 +2016,12 @@ def fire(guid_proceso, ignore_errors=False):
     if VERBOSE and DEBUG:
         print(strverbose)
     retCode = burano.EjecutaOEM("LCCImExP.LcImExProceso", operacion,
-                                str(guid_proceso), 1, 1, 0)
+                                str(guid_proceso), 1, 1, 4)
     # 1 = No borrar registros IME al finalizar.
     # 1 = No borrar registros con errores ni siquiera cuando el primer
     # parámetro esté a 0.
     # 0 = Ejecutar en todos los módulos.
+    # 4 = Procesar solo para el módulo de gestión. [20160704] Cambiamos 0 por 4
     strverbose = "Importación `%s` concluida con código de retorno: %s" % (
         guid_proceso, retCode)
     logging.info(strverbose)
