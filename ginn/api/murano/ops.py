@@ -2395,7 +2395,12 @@ def _update_producto_ginn(prod_ginn, prod_murano):
                         break
             else:
                 tabla = tabla_intermedia
-            valor_ginn = getattr(getattr(prod_ginn, tabla), campo_ginn)
+            try:
+                valor_ginn = getattr(getattr(prod_ginn, tabla), campo_ginn)
+            except AttributeError:
+                # Este tabla.campo no lo tiene. Es un rollo y estoy buscando
+                # algo de balas o al contrario.
+                continue
         if valor_murano and valor_ginn != valor_murano:
             # Si Murano tiene informado ese valor y no coincide con el de
             # ginn, machaco el de ginn.
