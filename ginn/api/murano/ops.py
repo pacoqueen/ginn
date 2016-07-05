@@ -1979,7 +1979,7 @@ def _str_time(t):
     if minutos:
         res = "{:d}:{:0>5.2f} m".format(minutos, segundos)
     else:
-        res = "{:0>5.2f} s".format(segundos)
+        res = "{:.2f} s".format(segundos)
     return res
 
 
@@ -2031,6 +2031,12 @@ def fire(guid_proceso, ignore_errors=False):
     # ¿Y si es None? Lo he visto en procesos con errores.
     #  Mucho me temo que si es None, no lo ha procesado. Y no se procesan más
     # adelante. Se quedan pendiente para siempre.
+    # XXX: **A no ser que se procese a mano**. Entonces se desbloquean todos
+    # los pendientes y deja entrar más. TODO: PORASQUI: Pero si se hace a mano
+    # no se ejecutan el AcumularCamposSeries y el GEO_DIV que divide entre 100.
+    # El GEO_DIV se ejecutará en la siguiente importación, porque se hace
+    # para todos los pendientes. Pero el otro necesita un GUID de proceso
+    # y habría que editarlo y ejecutarlo a mano uno por uno de los pendientes.
     if retCode is None:
         logging.warning("Se cambia el valor None por 1 (FAIL).")
         retCode = 1
@@ -2361,6 +2367,10 @@ def _update_producto_ginn(prod_ginn, prod_murano):
     for campo_murano in prod_murano.keys():
         valor_murano = prod_murano[campo_murano]
         campo_ginn = field_murano2ginn(campo_murano)
+        if campo_ginn is None:
+            # Este campo no está contemplado para sincronizarse o todavía no
+            # se ha incluído en el diccionario de equivalencia. Lo ignoro.
+            continue
         if isinstance(campo_ginn, type(lambda: None)):
             # El campo es una función que me va a dar el valor en ginn
             # equivalente al de Murano. El campo de ginn lo sacaré del
