@@ -2376,6 +2376,7 @@ def _update_producto_ginn(prod_ginn, prod_murano):
             # equivalente al de Murano. El campo de ginn lo sacaré del
             # tipo del propio valor de ginn.
             valor_ginn = campo_ginn(valor_murano)
+# TODO: PORASQUI: Esto no funciona. Así me devuelve "<type " :(
             campo_ginn = str(type(campo_ginn)).split(".")[-1].split("'")[0]
             campo_ginn = campo_ginn[0].lower() + campo_ginn[1:]
         # Si no, el campo es un campo de verdad que viene como cadena. Pero
