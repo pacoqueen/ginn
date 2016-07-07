@@ -472,6 +472,8 @@ def _get_tipo_material_bala_ginn(codigo_murano):
         res = 2
     else:
         res = None
+    if res:
+        res = pclases.TipoMaterialBala.get(res)
     return res
 
 
@@ -489,6 +491,8 @@ def _get_modelo_etiqueta_ginn(id_etiqueta_murano):
         res = id_etiqueta_murano
     else:   # Incluido el 0, que es el equivalente al None en Murano
         res = None
+    if res:
+        res = pclases.ModeloEtiqueta.get(res)
     return res
 
 
@@ -2412,14 +2416,25 @@ def _update_producto_ginn(prod_ginn, prod_murano):
             # equivalente al de Murano. El campo de ginn lo sacaré del
             # tipo del propio valor de ginn.
             valor_ginn = campo_ginn(valor_murano)
-# TODO: PORASQUI: Esto no funciona. Así me devuelve "<type " :(
-            campo_ginn = str(type(valor_ginn)).split(".")[-1].split("'")[0]
-            campo_ginn = campo_ginn[0].lower() + campo_ginn[1:]
+            if valor_ginn:
+                campo_ginn = str(type(valor_ginn)).split(".")[-1].split("'")[0]
+                campo_ginn = campo_ginn[0].lower() + campo_ginn[1:]
+            else:
+                # TODO: PORASQUI: Esto lo tendré que hacer de otra manera...
+                continue    # El valor en ginn es None. Me quedo sin saber
+                # el nombre del campo en ginn. No puedo actualizar nada.
         # Si no, el campo es un campo de verdad que viene como cadena. Pero
         # puede ser un campo del producto o de una tabla intermedia
         # relacionada:
         if "." not in campo_ginn:
-            valor_ginn = getattr(prod_ginn, campo_ginn)
+            try:
+                valor_ginn = getattr(prod_ginn, campo_ginn)
+            except AttributeError:
+                tabla_intermedia = getattr(prod_ginn, "camposEspecificosBala")
+                if not tabla_intermedia:    # Si no es uno, es otro.
+                    tabla_intermedia = getattr(prod_ginn,
+                                               "camposEspecificosRollo")
+                valor_ginn = getattr(tabla_intermedia, campo_ginn)
         else:
             tabla_intermedia, campo_ginn = campo_ginn.split(".")
             if "/" in tabla_intermedia:     # Pueden ser dos registros los
