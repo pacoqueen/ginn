@@ -265,6 +265,82 @@ def finish_pendientes(fsalida, simulate=True):
     report.close()
 
 
+def corregir_dimensiones_nulas(fsalida, simulate=True):
+    """
+    En lugar de buscar en ginn todos los artículos y recorrerlos para
+    comprobarlos en Murano, buscamos en Murano los artículos mal traspasados
+    y los corregimos según lo que tengan en ginn (más rápido).
+    Este preproceso acelerará también los posteriores.
+    """
+    report = open(fsalida, "a", 0)
+    conn = murano.connection.Connection()
+    sqls = ("""SELECT CodigoArticulo, NumeroSerieLc,
+                    PesoBruto_, PesoNeto_, MetrosCuadrados
+              FROM {}.dbo.ArticulosSeries
+             WHERE CodigoEmpresa = '{}'
+               AND NumeroSerieLc LIKE 'B%'
+               AND (PesoBruto_ = 0.0 OR PesoNeto_ = 0.0); -- Balas (A y B)
+            """,
+            """SELECT CodigoArticulo, NumeroSerieLc,
+                    PesoBruto_, PesoNeto_, MetrosCuadrados
+              FROM {}.dbo.ArticulosSeries
+             WHERE CodigoEmpresa = '{}'
+               AND NumeroSerieLc LIKE 'Z%'
+               AND (PesoBruto_ = 0.0 OR PesoNeto_ = 0.0); -- Balas de cable (C)
+            """,
+            """SELECT CodigoArticulo, NumeroSerieLc,
+                    PesoBruto_, PesoNeto_, MetrosCuadrados
+              FROM {}.dbo.ArticulosSeries
+             WHERE CodigoEmpresa = '{}'
+               AND NumeroSerieLc LIKE 'C%'
+               AND (PesoBruto_ = 0.0 OR PesoNeto_ = 0.0); -- Bigbag (A, B, C)
+            """,
+            """SELECT CodigoArticulo, NumeroSerieLc,
+                    PesoBruto_, PesoNeto_, MetrosCuadrados, CodigoPale
+              FROM {}.dbo.ArticulosSeries
+             WHERE CodigoEmpresa = '{}'
+               AND NumeroSerieLc LIKE 'J%'
+               AND (PesoBruto_ = 0.0 OR PesoNeto_ = 0.0
+                    OR CodigoPale = '');                  -- Cajas (A, B, C)
+            """,
+            """SELECT CodigoArticulo, NumeroSerieLc,
+                    PesoBruto_, PesoNeto_, MetrosCuadrados
+              FROM {}.dbo.ArticulosSeries
+             WHERE CodigoEmpresa = '{}'
+               AND NumeroSerieLc LIKE 'R%'
+               AND (MetrosCuadrados = 0.0 OR PesoBruto_ = 0.0
+                    OR PesoNeto_ = 0.0);                  -- Rollos (A)
+            """,
+            """SELECT CodigoArticulo, NumeroSerieLc,
+                    PesoBruto_, PesoNeto_, MetrosCuadrados
+              FROM {}.dbo.ArticulosSeries
+             WHERE CodigoEmpresa = '{}'
+               AND NumeroSerieLc LIKE 'X%'
+               AND (MetrosCuadrados = 0.0 OR PesoBruto_ = 0.0
+                    OR PesoNeto_ = 0.0);            -- Rollos defectuosos (B)
+            """,
+            """SELECT CodigoArticulo, NumeroSerieLc,
+                    PesoBruto_, PesoNeto_, MetrosCuadrados
+              FROM {}.dbo.ArticulosSeries
+             WHERE CodigoEmpresa = '{}'
+               AND NumeroSerieLc LIKE 'Y%'
+               AND (PesoBruto_ = 0.0 OR PesoNeto_ = 0.0); -- Rollos C
+
+             """)
+    i = 0
+    tot = len(sqls)
+    for sql in sqls:
+        sql = sql.format(conn.get_database(), murano.connection.CODEMPRESA)
+        codigos = conn.run_sql(sql)
+        report.write("{} artículos encontrados ({}/{}):\n".format(len(codigos),
+                                                                  i, tot))
+        for registro in tqdm(codigos):
+            codigo = registro['NumeroSerieLc']
+            res = sync_articulo(codigo, fsalida, simulate)
+    report.close()
+    return res
+
+
 def main():
     """
     Rutina principal.
@@ -294,6 +370,8 @@ def main():
         subprocess.Popen('gvim "{}"'.format(args.fsalida))
     # Primero termino de procesar todas las posibles imortaciones pendientes:
     finish_pendientes(args.fsalida, args.simulate)
+    # Y corrijo las posibles dimensiones nulas:
+    corregir_dimensiones_nulas(args.fsalida, args.simulate)
     if not args.codigos_articulos and not args.codigos_productos:
         # Si no recibo argumentos, compruebo todos los artículos y productos.
         args.codigos_articulos, args.codigos_productos = check_everything(
