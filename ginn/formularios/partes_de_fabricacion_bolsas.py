@@ -856,7 +856,7 @@ class PartesDeFabricacionBolsas(Ventana):
         pales_a_etiquetar = []
         productoVenta = self.producto
         for numbolsas in listanumbolsas:
-            vpro = VentanaProgreso(padre = self.wids['ventana'])
+            vpro = VentanaProgreso(padre=self.wids['ventana'])
             vpro.mostrar()
             icont = 0.0
             #numcajasdefecto = pclases.Pale.NUMCAJAS
@@ -872,8 +872,10 @@ class PartesDeFabricacionBolsas(Ventana):
                     )
             pclases.Auditoria.nuevo(pale, self.usuario, __file__)
             # 2.- Creo las cajas.
+            tot = pale.numcajas
             for i in range(pale.numcajas):  # @UnusedVariable
                 numcaja, codigo = pclases.Caja.get_next_numcaja()
+                vpro.set_valor(icont / tot, "Creando caja %s..." % codigo)
                 try:
                     gramos = productoVenta.camposEspecificosBala.gramosBolsa
                 except AttributeError:
@@ -899,13 +901,20 @@ class PartesDeFabricacionBolsas(Ventana):
                             rolloC = None,
                             balaCable = None)
                 pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
-                # TODO: PORASQUI: Al final sí que está volcando. Pero va tan sumamente lento que parece que se cuelga. Además la salida por consola no está habilitada, con lo que al final el error que da es por algún print de depuración que hay por ahí.
-                try:
-                    murano.ops.create_articulo(articulo)
-                except IOError:
-                    pass    # Alguna movida con la salida por consola de
-                    # depuración y no está disponible.
+                # DONE: Al final sí que está volcando. Pero va tan sumamente
+                # lento caja a caja que parece que se cuelga. Además la salida
+                # por consola no está habilitada, con lo que al final el error
+                # que da es por algún print de depuración que hay por ahí.
+                # try:
+                #     murano.ops.create_articulo(articulo)
+                # except IOError:
+                #     pass    # Alguna movida con la salida por consola de
+                #     # depuración y no está disponible.
                 icont += 1
+            # 3.- Creo el palé en Murano
+            vpro.set_valor(icont / tot,
+                           "Creando palé {}...".format(pale.codigo))
+            murano.ops.create_pale(pale)
             # OJO: Le paso el último artículo porque la formulación de esta
             # línea será por PALÉS COMPLETOS.
             pales_a_etiquetar.append(pale)
