@@ -327,16 +327,17 @@ def corregir_dimensiones_nulas(fsalida, simulate=True):
                AND (PesoBruto_ = 0.0 OR PesoNeto_ = 0.0); -- Rollos C
 
              """)
-    i = 0
+    i = 1
     tot = len(sqls)
     for sql in sqls:
         sql = sql.format(conn.get_database(), murano.connection.CODEMPRESA)
         codigos = conn.run_sql(sql)
-        report.write("{} artículos encontrados ({}/{}):\n".format(len(codigos),
-                                                                  i, tot))
+        report.write("{}/{}: {} artículos encontrados:\n".format(i, tot,
+                                                                 len(codigos)))
         for registro in tqdm(codigos):
             codigo = registro['NumeroSerieLc']
             res = sync_articulo(codigo, fsalida, simulate)
+        i += 1
     report.close()
     return res
 
