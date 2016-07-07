@@ -247,7 +247,7 @@ def finish_pendientes(fsalida, simulate=True):
     conn = murano.connection.Connection()
     sql = """SELECT IdProcesoIME
              FROM {}.dbo.Iniciador_TmpIME
-             WHERE FechaFin IS NULL;""".format(conn.get_database)
+             WHERE FechaFin IS NULL;""".format(conn.get_database())
     guids = conn.run_sql(sql)
     report.write("{} procesos pendients encontrados.\n".format(len(guids)))
     for proceso in tqdm(guids):
