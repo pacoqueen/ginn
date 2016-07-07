@@ -152,20 +152,19 @@ def sync_producto(codigo, fsalida, simulate=True):
         # Ya hemos comprobado que no existe, pero por si acaso, prefiero que
         # salta una excepción antes de machacar nada... de momento.
         res = murano.ops.producto_murano2ginn(codigo, sync=False)
+    # 1.- Actualizo campos conforme a lo que indica Murano.
+    res = murano.ops.producto_murano2ginn(codigo, sync=True)
+    # 2.- Compruebo que los valores obligatorios están "informados".
+    producto_ginn.sync()    # Por si ha cambiado algo.
+    if isinstance(producto_ginn, pclases.ProductoVenta):
+        campos_incorrectos = check_campos_obligatorios(producto_ginn)
+        for campo in campos_incorrectos:
+            report.write(" !{}".format(campo))
+        res = not campos_incorrectos
     else:
-        # 1.- Actualizo campos conforme a lo que indica Murano.
-        res = murano.ops.producto_murano2ginn(codigo, sync=True)
-        # 2.- Compruebo que los valores obligatorios están "informados".
-        producto_ginn.sync()    # Por si ha cambiado algo.
-        if isinstance(producto_ginn, pclases.ProductoVenta):
-            campos_incorrectos = check_campos_obligatorios(producto_ginn)
-            for campo in campos_incorrectos:
-                report.write(" !{}".format(campo))
-            res = not campos_incorrectos
-        else:
-            # Los productos de compra no tienen campos obligatorios que
-            # afeten a producción.
-            res = True
+        # Los productos de compra no tienen campos obligatorios que
+        # afeten a producción.
+        res = True
     if res:
         report.write(" [OK]\n")
     else:
