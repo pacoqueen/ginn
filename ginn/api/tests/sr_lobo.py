@@ -103,7 +103,7 @@ def sync_articulo(codigo, fsalida, simulate=True):
                                  "({} -> {})...".format(pale_murano,
                                                         codigo_pale_ginn))
                     altered = True
-                    if simulate:
+                    if not simulate:
                         res = murano.ops.corregir_pale(articulo)
                     else:
                         res = True
