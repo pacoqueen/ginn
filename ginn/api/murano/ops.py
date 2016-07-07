@@ -1379,6 +1379,7 @@ def create_pale(pale, cantidad=1, producto=None, guid_proceso=None,
     Crea un palé con todas sus cajas en Murano a partir del palé de ginn.
     Si cantidad es -1 saca el palé del almacén.
     """
+    # TODO: PORASQUI: Hacer que al crear un palé se inserten todas las cajas pero en un único proceso de importación. Así irá más rápido y espero que se desatasque Murano.
     # Los palés se crean automáticamente al crear las cajas con el código de
     # palé informado. No hay que crear movimiento de stock ni de número de
     # serie para eso.

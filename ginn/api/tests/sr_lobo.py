@@ -237,6 +237,33 @@ def check_everything(fsalida):
     return codigos_articulos, codigos_productos
 
 
+def finish_pendientes(fsalida, simulate=True):
+    """
+    Busca todos los registros de importaciones pendientes de procesar y las
+    completa si simulate viene a False.
+    """
+    report = open(fsalida, "a", 0)
+    conn = murano.connection.Connection()
+    sql = """SELECT IdProcesoIME
+             FROM {}.dbo.Iniciador_TmpIME
+             WHERE FechaFin IS NULL;""".format(conn.get_database)
+    guids = conn.run_sql(sql)
+    report.write("{} procesos pendients encontrados.\n".format(len(guids)))
+    for proceso in tqdm(guids):
+        guid = proceso['IdProcesoIME']
+        if not simulate:
+            report.write("Procesando {}...".format(guid))
+            res = murano.ops.fire(guid)
+        else:
+            report.write("Simulando {}...".format(guid))
+            res = True
+        if res:
+            report.write(" [OK]\n")
+        else:
+            report.write(" [KO]\n")
+    report.close()
+
+
 def main():
     """
     Rutina principal.
@@ -258,7 +285,12 @@ def main():
     parser.add_argument("-o", dest="fsalida",
                         help="Guardar resultados en fichero de salida.",
                         default="%s_sr_lobo.txt" % (ahora))
+    parser.add_argument("-v", "--view", dest="ver_salida",
+                        help="Abre el fichero de salida en un editor externo.",
+                        default=False, action='store_true')
     args = parser.parse_args()
+    # Primero termino de procesar todas las posibles imortaciones pendientes:
+    finish_pendientes(args.simulate)
     if not args.codigos_articulos and not args.codigos_productos:
         # Si no recibo argumentos, compruebo todos los artículos y productos.
         args.codigos_articulos, args.codigos_productos = check_everything(
