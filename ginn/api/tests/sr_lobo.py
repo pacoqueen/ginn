@@ -220,7 +220,11 @@ def check_everything(fsalida):
     articulos = set(articulos_en_almacen)
     for pdp in partes_fabricacion:
         articulos.update(set(pdp.articulos))
-    # TODO: PORASQUI: Completo con balas y rollos C, que no tienen parte de producción:
+    # Completo con balas y rollos C, que no tienen parte de producción:
+    for bc in pclases.BalaCable.select(pclases.BalaCable.q.fechahora >= fini):
+        articulos.add(bc.articulo)
+    for cc in pclases.RolloC.select(pclases.RolloC.q.fechahora >= fini):
+        articulos.add(cc.articulo)
     report.write("{} encontrados. Ordenando...\n".format(len(articulos)))
     codigos_articulos = [a.codigo for a in articulos]
     codigos_articulos.sort()

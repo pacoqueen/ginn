@@ -2403,6 +2403,7 @@ def _update_producto_ginn(prod_ginn, prod_murano):
     Actualiza los campos de ginn según los valores del de Murano.
     Devuelve None si no se pudo actualizar, y el producto de ginn sí se pudo.
     """
+    # TODO: PORASQUI: Reescribir. Esto no funciona. Solo crea el registro y el registro relacionado; pero no actualiza campos en el registro relacionado.
     res = prod_ginn
     for campo_murano in prod_murano.keys():
         valor_murano = prod_murano[campo_murano]
@@ -2420,7 +2421,6 @@ def _update_producto_ginn(prod_ginn, prod_murano):
                 campo_ginn = str(type(valor_ginn)).split(".")[-1].split("'")[0]
                 campo_ginn = campo_ginn[0].lower() + campo_ginn[1:]
             else:
-                # TODO: PORASQUI: Esto lo tendré que hacer de otra manera...
                 continue    # El valor en ginn es None. Me quedo sin saber
                 # el nombre del campo en ginn. No puedo actualizar nada.
         # Si no, el campo es un campo de verdad que viene como cadena. Pero
