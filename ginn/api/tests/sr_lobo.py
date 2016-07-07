@@ -293,7 +293,7 @@ def main():
     if args.ver_salida:
         subprocess.Popen('gvim "{}"'.format(args.fsalida))
     # Primero termino de procesar todas las posibles imortaciones pendientes:
-    finish_pendientes(args.simulate)
+    finish_pendientes(args.fsalida, args.simulate)
     if not args.codigos_articulos and not args.codigos_productos:
         # Si no recibo argumentos, compruebo todos los artículos y productos.
         args.codigos_articulos, args.codigos_productos = check_everything(
