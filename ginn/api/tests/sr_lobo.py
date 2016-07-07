@@ -20,6 +20,7 @@ from __future__ import print_function
 import datetime
 import sys
 import os
+import subprocess
 import logging
 import argparse
 LOGFILENAME = "%s.log" % (".".join(os.path.basename(__file__).split(".")[:-1]))
@@ -289,6 +290,8 @@ def main():
                         help="Abre el fichero de salida en un editor externo.",
                         default=False, action='store_true')
     args = parser.parse_args()
+    if args.ver_salida:
+        subprocess.Popen('gvim "{}"'.format(args.fsalida))
     # Primero termino de procesar todas las posibles imortaciones pendientes:
     finish_pendientes(args.simulate)
     if not args.codigos_articulos and not args.codigos_productos:

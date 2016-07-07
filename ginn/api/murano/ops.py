@@ -1051,14 +1051,17 @@ def estimar_precio_coste(articulo, precio_kg):
     return peso * precio_kg
 
 
+# pylint: disable=too-many-arguments
 def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
-                simulate=False):
+                simulate=False, procesar=True):
     """
     Crea una bala en las tablas temporales de Murano.
     Recibe un objeto bala de ginn.
     Si cantidad es -1 realiza la baja de almacén de la bala.
     Si simulate es True, devuelve las dos consultas SQL generadas. En otro
     caso, el valor de ejecutar el proceso de importación.
+    Si procesar es False no lanza el proceso de importación a través de la
+    DDL OEM de Murano.
     """
     articulo = bala.articulo
     if cantidad > 0 and duplica_articulo(articulo):
@@ -1130,12 +1133,16 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
         else:
             c.run_sql(sql_movserie)
             # pylint: disable=redefined-variable-type
-            res = fire(id_proceso_IME)
+            if procesar:
+                res = fire(id_proceso_IME)
+            else:   # No proceso la importación. Todo ha ido bien hasta ahora.
+                    # Devuelvo el guid, que me vale como True también.
+                res = id_proceso_IME
         return res
 
 
 def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
-                  simulate=False):
+                  simulate=False, procesar=True):
     """
     Crea un bigbag en Murano a partir de la información del bigbag en ginn.
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
@@ -1208,12 +1215,16 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
         else:
             c.run_sql(sql_movserie)
             # pylint: disable=redefined-variable-type
-            res = fire(id_proceso_IME)
+            if procesar:
+                res = fire(id_proceso_IME)
+            else:   # No proceso la importación. Todo ha ido bien hasta ahora.
+                    # Devuelvo el guid, que me vale como True también.
+                res = id_proceso_IME
         return res
 
 
 def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
-                 simulate=False):
+                 simulate=False, procesar=True):
     """
     Crea un rollo en Murano a partir de la información del rollo en ginn.
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
@@ -1290,12 +1301,16 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
         else:
             c.run_sql(sql_movserie)
             # pylint: disable=redefined-variable-type
-            res = fire(id_proceso_IME)
+            if procesar:
+                res = fire(id_proceso_IME)
+            else:   # No proceso la importación. Todo ha ido bien hasta ahora.
+                    # Devuelvo el guid, que me vale como True también.
+                res = id_proceso_IME
         return res
 
 
 def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
-                simulate=False):
+                simulate=False, procesar=True):
     """
     Crea una caja en Murano a partir de la información del objeto caja en ginn.
     Si cantidad es 1, realiza un decremento.
@@ -1369,17 +1384,21 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
         else:
             c.run_sql(sql_movserie)
             # pylint: disable=redefined-variable-type
-            res = fire(id_proceso_IME)
+            if procesar:
+                res = fire(id_proceso_IME)
+            else:   # No proceso la importación. Todo ha ido bien hasta ahora.
+                    # Devuelvo el guid, que me vale como True también.
+                res = id_proceso_IME
         return res
 
 
+# pylint: disable=too-many-arguments
 def create_pale(pale, cantidad=1, producto=None, guid_proceso=None,
-                simulate=False):
+                simulate=False, procesar=True):
     """
     Crea un palé con todas sus cajas en Murano a partir del palé de ginn.
     Si cantidad es -1 saca el palé del almacén.
     """
-    # TODO: PORASQUI: Hacer que al crear un palé se inserten todas las cajas pero en un único proceso de importación. Así irá más rápido y espero que se desatasque Murano.
     # Los palés se crean automáticamente al crear las cajas con el código de
     # palé informado. No hay que crear movimiento de stock ni de número de
     # serie para eso.
@@ -1398,11 +1417,22 @@ def create_pale(pale, cantidad=1, producto=None, guid_proceso=None,
         if VERBOSE:
             cajas.set_description("Creando caja %s... (%d/%d)" % (
                 caja.codigo, i, totcajas))
-        create_caja(caja, cantidad=cantidad, producto=producto,
-                    guid_proceso=guid_proceso, simulate=simulate)
+        # La primera caja instanaciará el IdProcesoIME y se lo iré pasando
+        # a las demás cajas. No lanzo el fire de ninguna de ellas. Lo haré
+        # cuando tenga el palé completo.
+        guid_proceso = create_caja(caja,
+                                   cantidad=cantidad,
+                                   producto=producto,
+                                   guid_proceso=guid_proceso,
+                                   simulate=simulate,
+                                   procesar=False)
     # No es necesario. Cada caja lanza su proceso y el palé no crea
     # registros en la base de datos. No hay que lanzar ninún proceso adicional.
-    # fire(id_proceso_IME)
+    if procesar:
+        res = fire(guid_proceso)
+    else:
+        res = guid_proceso
+    return res
 
 
 def consulta_proveedor(nombre=None, cif=None):
@@ -1728,7 +1758,7 @@ def update_producto(articulo, producto):
 
 
 def update_stock(producto, delta, almacen, guid_proceso=None,
-                 simulate=False):
+                 simulate=False, procesar=True):
     """
     Incrementa o decrementa el stock del producto en la cantidad recibida en
     en el parámetro «delta».
@@ -1791,7 +1821,11 @@ def update_stock(producto, delta, almacen, guid_proceso=None,
     else:
         c.run_sql(sql_movstock)
         # pylint: disable=redefined-variable-type
-        res = fire(id_proceso_IME)
+        if procesar:
+            res = fire(id_proceso_IME)
+        else:   # No proceso la importación. Todo ha ido bien hasta ahora.
+                # Devuelvo el guid, que me vale como True también.
+            res = id_proceso_IME
     return res
 
 
@@ -2038,6 +2072,7 @@ def fire(guid_proceso, ignore_errors=False):
     # El GEO_DIV se ejecutará en la siguiente importación, porque se hace
     # para todos los pendientes. Pero el otro necesita un GUID de proceso
     # y habría que editarlo y ejecutarlo a mano uno por uno de los pendientes.
+    # O bien tirar del Sr. Lobo y que haga el fire de todos los pendientes.
     if retCode is None:
         logging.warning("Se cambia el valor None por 1 (FAIL).")
         retCode = 1
