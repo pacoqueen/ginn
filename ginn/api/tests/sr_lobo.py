@@ -221,6 +221,7 @@ def check_everything(fsalida):
     articulos = set(articulos_en_almacen)
     for pdp in partes_fabricacion:
         articulos.update(set(pdp.articulos))
+    # TODO: PORASQUI: Completo con balas y rollos C, que no tienen parte de producción:
     report.write("{} encontrados. Ordenando...\n".format(len(articulos)))
     codigos_articulos = [a.codigo for a in articulos]
     codigos_articulos.sort()
@@ -329,6 +330,7 @@ def corregir_dimensiones_nulas(fsalida, simulate=True):
              """)
     i = 1
     tot = len(sqls)
+    res = True
     for sql in sqls:
         sql = sql.format(conn.get_database(), murano.connection.CODEMPRESA)
         codigos = conn.run_sql(sql)
@@ -336,7 +338,7 @@ def corregir_dimensiones_nulas(fsalida, simulate=True):
                                                                  len(codigos)))
         for registro in tqdm(codigos):
             codigo = registro['NumeroSerieLc']
-            res = sync_articulo(codigo, fsalida, simulate)
+            res = sync_articulo(codigo, fsalida, simulate) and res
         i += 1
     report.close()
     return res
