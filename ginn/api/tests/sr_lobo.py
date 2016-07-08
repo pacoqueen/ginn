@@ -151,7 +151,7 @@ def sync_producto(codigo, fsalida, simulate=True):
         report.write("No encontrado. Creando... ")
         # Ya hemos comprobado que no existe, pero por si acaso, prefiero que
         # salta una excepción antes de machacar nada... de momento.
-        res = murano.ops.producto_murano2ginn(codigo, sync=False)
+        producto_ginn = murano.ops.producto_murano2ginn(codigo, sync=False)
     # 1.- Actualizo campos conforme a lo que indica Murano.
     res = murano.ops.producto_murano2ginn(codigo, sync=True)
     # 2.- Compruebo que los valores obligatorios están "informados".
