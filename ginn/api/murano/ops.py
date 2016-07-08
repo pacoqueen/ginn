@@ -2403,7 +2403,7 @@ def _update_producto_ginn(prod_ginn, prod_murano):
     Actualiza los campos de ginn según los valores del de Murano.
     Devuelve None si no se pudo actualizar, y el producto de ginn sí se pudo.
     """
-    # TODO: PORASQUI: Reescribir. Esto no funciona. Solo crea el registro y el registro relacionado; pero no actualiza campos en el registro relacionado.
+    # TODO: PORASQUI: Reescribir. Esto no funciona. Solo crea el registro y el registro relacionado; pero no actualiza campos en el registro relacionado. OJO: No hay que machacar las descripciones porque hay productos como el 865 que necesitan esa descripción tan larga en la etiqueta.
     res = prod_ginn
     for campo_murano in prod_murano.keys():
         valor_murano = prod_murano[campo_murano]

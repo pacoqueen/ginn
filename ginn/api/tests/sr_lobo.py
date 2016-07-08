@@ -223,8 +223,8 @@ def check_everything(fsalida):
     # Completo con balas y rollos C, que no tienen parte de producción:
     for bc in pclases.BalaCable.select(pclases.BalaCable.q.fechahora >= fini):
         articulos.add(bc.articulo)
-    for cc in pclases.RolloC.select(pclases.RolloC.q.fechahora >= fini):
-        articulos.add(cc.articulo)
+    for rc in pclases.RolloC.select(pclases.RolloC.q.fechahora >= fini):
+        articulos.add(rc.articulo)
     report.write("{} encontrados. Ordenando...\n".format(len(articulos)))
     codigos_articulos = [a.codigo for a in articulos]
     codigos_articulos.sort()
