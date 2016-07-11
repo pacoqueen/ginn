@@ -17,6 +17,7 @@ Realiza comprobaciones para detectar si hay discrepancias entre Murano y ginn.
 """
 
 from __future__ import print_function
+from time import sleep
 import datetime
 import sys
 import os
@@ -189,10 +190,10 @@ def check_campos_obligatorios(producto):
         campos[ceb] += ['gramosBolsa', 'bolsasCaja', 'cajasPale']
     for indirecto in campos:
         if indirecto:
-            campo = campos[indirecto]
-            valor = getattr(producto, campo)
-            if not valor:
-                res.append(campo)
+            for campo in campos[indirecto]:
+                valor = getattr(producto, campo)
+                if not valor:
+                    res.append(campo)
     return res
 
 
@@ -218,12 +219,18 @@ def check_everything(fsalida):
     partes_fabricacion = pclases.ParteDeProduccion.select(
         pclases.ParteDeProduccion.q.fechahorainicio >= fini)
     articulos = set(articulos_en_almacen)
-    for pdp in partes_fabricacion:
+    for pdp in tqdm(partes_fabricacion, total=partes_fabricacion.count(),
+                    unit="pdp", desc="Partes de producción"):
         articulos.update(set(pdp.articulos))
     # Completo con balas y rollos C, que no tienen parte de producción:
-    for bc in pclases.BalaCable.select(pclases.BalaCable.q.fechahora >= fini):
+    balas_cable = pclases.BalaCable.select(
+        pclases.BalaCable.q.fechahora >= fini)
+    for bc in tqdm(balas_cable, total=balas_cable.count(), unit="bc",
+                   desc="Balas de cable"):
         articulos.add(bc.articulo)
-    for rc in pclases.RolloC.select(pclases.RolloC.q.fechahora >= fini):
+    rollos_c = pclases.RolloC.select(pclases.RolloC.q.fechahora >= fini)
+    for rc in tqdm(rollos_c, total=rollos_c.count(), unit="rc",
+                   desc="Rollos C"):
         articulos.add(rc.articulo)
     report.write("{} encontrados. Ordenando...\n".format(len(articulos)))
     codigos_articulos = [a.codigo for a in articulos]
@@ -254,7 +261,7 @@ def finish_pendientes(fsalida, simulate=True):
              WHERE FechaFin IS NULL;""".format(conn.get_database())
     guids = conn.run_sql(sql)
     report.write("{} procesos pendients encontrados.\n".format(len(guids)))
-    for proceso in tqdm(guids):
+    for proceso in tqdm(guids, desc="Procesos pendientes"):
         guid = proceso['IdProcesoIME']
         if not simulate:
             report.write("Procesando {}...".format(guid))
@@ -334,12 +341,12 @@ def corregir_dimensiones_nulas(fsalida, simulate=True):
     i = 1
     tot = len(sqls)
     res = True
-    for sql in sqls:
+    for sql in tqdm(sqls, total=tot, desc="Dimensiones nulas"):
         sql = sql.format(conn.get_database(), murano.connection.CODEMPRESA)
         codigos = conn.run_sql(sql)
         report.write("{}/{}: {} artículos encontrados:\n".format(i, tot,
                                                                  len(codigos)))
-        for registro in tqdm(codigos):
+        for registro in tqdm(codigos, leave=False, desc="SQL {}".format(i)):
             codigo = registro['NumeroSerieLc']
             res = sync_articulo(codigo, fsalida, simulate) and res
         i += 1
@@ -384,10 +391,11 @@ def main():
             args.fsalida)
     # # Pruebas
     if args.codigos_articulos:
-        for codigo in tqdm(args.codigos_articulos):
+        for codigo in tqdm(args.codigos_articulos, desc="Artículos"):
             sync_articulo(codigo, args.fsalida, args.simulate)
+            sleep(0.1)  # ¿Desaparecerá el unknown database connection error?
     if args.codigos_productos:
-        for codigo in tqdm(args.codigos_productos):
+        for codigo in tqdm(args.codigos_productos, desc="Productos"):
             sync_producto(codigo, args.fsalida, args.simulate)
 
 
