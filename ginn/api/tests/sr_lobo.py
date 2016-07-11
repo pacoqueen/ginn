@@ -17,7 +17,6 @@ Realiza comprobaciones para detectar si hay discrepancias entre Murano y ginn.
 """
 
 from __future__ import print_function
-from time import sleep
 import datetime
 import sys
 import os
@@ -78,6 +77,14 @@ def sync_articulo(codigo, fsalida, simulate=True):
             (peso_bruto_murano,
              peso_neto_murano,
              superficie_murano) = murano.ops._get_dimensiones_murano(articulo)
+            # Solo trabajamos con 2 decimales. Redondeo para evitar falsos
+            # positivos en != por 0.00000001 unidad y cosas así.
+            peso_bruto = round(peso_bruto, 2)
+            peso_neto = round(peso_neto, 2)
+            superficie = round(superficie, 2)
+            peso_bruto_murano = round(peso_bruto_murano, 2)
+            peso_neto_murano = round(peso_neto_murano, 2)
+            superficie_murano = round(superficie_murano, 2)
             if (peso_bruto_murano != peso_bruto or
                     peso_neto_murano != peso_neto or
                     superficie_murano != superficie):
@@ -197,6 +204,7 @@ def check_campos_obligatorios(producto):
     return res
 
 
+# pylint: disable=too-many-locals
 def check_everything(fsalida):
     """
     Devuelve todos los códigos de artículos que hay en el almacén en ginn (eso
@@ -393,7 +401,6 @@ def main():
     if args.codigos_articulos:
         for codigo in tqdm(args.codigos_articulos, desc="Artículos"):
             sync_articulo(codigo, args.fsalida, args.simulate)
-            sleep(0.1)  # ¿Desaparecerá el unknown database connection error?
     if args.codigos_productos:
         for codigo in tqdm(args.codigos_productos, desc="Productos"):
             sync_producto(codigo, args.fsalida, args.simulate)
