@@ -449,7 +449,9 @@ def determinar_factor_conversion(producto):
     """
     res = 0
     if isinstance(producto, pclases.ProductoVenta) and producto.es_caja():
-        kilos_caja = producto.camposEspecificosBala.gramosBolsa / 1000.0
+        kilos_bolsa = producto.camposEspecificosBala.gramosBolsa / 1000.0
+        numbolsas = producto.camposEspecificosBala.bolsasCaja
+        kilos_caja = kilos_bolsa * numbolsas
         res = 1.0 / kilos_caja
     return res
 
