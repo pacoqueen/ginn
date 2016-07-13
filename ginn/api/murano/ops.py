@@ -2361,7 +2361,32 @@ def _create_producto_ginn(prod_murano):
     Crea un producto en ginn con el ID de Murano y devuelve el objeto
     recién creado.
     """
-    ide = int(prod_murano['CodigoArticulo'].replace("PV", ""))
+    id_murano = prod_murano['CodigoArticulo']
+    if "PV" in id_murano:
+        _create_producto_venta_ginn(prod_murano)
+    elif "PC" in id_murano:
+        _create_producto_compra_ginn(prod_murano)
+    else:
+        raise ValueError("Producto {} no soportado.".format(id_murano))
+
+
+def _create_producto_compra_ginn(prod_murano):
+    """
+    Crea un producto de compra en ginn con los datos de prod_murano.
+    """
+    id_murano = prod_murano['CodigoArticulo']
+    ide = int(id_murano.replace("PC", ""))
+    pc = pclases.ProductoCompra(id=ide)
+    _update_producto_ginn(pc, prod_murano)
+    return pc
+
+
+def _create_producto_venta_ginn(prod_murano):
+    """
+    Crea un producto de venta en ginn con los atributos de prod_murano.
+    """
+    id_murano = prod_murano['CodigoArticulo']
+    ide = int(id_murano.replace("PV", ""))
     try:
         pv = pclases.ProductoVenta(id=ide)
         if prod_murano['CodigoAreaCompetenciaLc'] == "ROLLO":
