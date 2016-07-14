@@ -456,7 +456,7 @@ class AlbaranesDeSalida(Ventana):
         #       comas, etc. aquí.
         strrango = utils.dialogo_entrada(titulo = 'INTRODUZCA RANGO',
                                       texto = """
-        Rango de número de balas/rollos o el código indovidual.
+        Rango de número de balas/rollos o el código individual.
         Escriba el rango de códigos de la forma "xxxx-yyyy", ambos inclusive.
         En caso de ambigüedad, introdúzcalos precedidos de R para geotextiles,
         B para fibra, C para fibra de cemento, Z para balas de cable, X para

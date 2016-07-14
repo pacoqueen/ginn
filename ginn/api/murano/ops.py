@@ -2407,7 +2407,7 @@ def _create_producto_venta_ginn(prod_murano):
             pv = None
     # pylint: disable=broad-except
     except Exception as excepcion:
-        # TODO: PORASQUI: Hasta que lea directamente el producto de Murano
+        # TODO: Hasta que lea directamente el producto de Murano
         # desde el parte y laboratorio, sincronizar manualmente con estas
         # funciones.
         strerror = "El producto {} no se pudo crear en ginn."\
@@ -2428,71 +2428,80 @@ def _update_producto_ginn(prod_ginn, prod_murano):
     Actualiza los campos de ginn según los valores del de Murano.
     Devuelve None si no se pudo actualizar, y el producto de ginn sí se pudo.
     """
-    # TODO: PORASQUI: Reescribir. Esto no funciona. Solo crea el registro y el registro relacionado; pero no actualiza campos en el registro relacionado. OJO: No hay que machacar las descripciones porque hay productos como el 865 que necesitan esa descripción tan larga en la etiqueta.
+    res = None
+    if isinstance(prod_ginn, pclases.ProductoCompra):
+        res = _update_producto_compra_ginn(prod_ginn, prod_murano)
+    elif isinstance(prod_ginn, pclases.ProductoVenta):
+        res = _update_producto_venta_ginn(prod_ginn, prod_murano)
+    return res
+
+
+def _get_tipo_de_material(codigo):
+    """
+    Devuelve el registro tipo de material de ginn correspondiente al código
+    recibido de Murano.
+    """
+    switcher = {'OIL': pclases.TipoDeMaterial.selectBy(
+                descripcion='Aceites y lubricantes')[0],
+                'COM': pclases.TipoDeMaterial.selectBy(
+                descripcion='Comercializados')[0],
+                'MAN': pclases.TipoDeMaterial.selectBy(
+                descripcion='Mantenimiento')[0],
+                'MAP': pclases.TipoDeMaterial.selectBy(
+                descripcion='Materia Prima')[0],
+                'MAT': pclases.TipoDeMaterial.selectBy(
+                descripcion='Material adicional')[0],
+                'MIV': pclases.TipoDeMaterial.selectBy(
+                descripcion='Mercancía inicial Valdemoro')[0],
+                'COM': pclases.TipoDeMaterial.selectBy(
+                descripcion='Productos comercializados')[0],
+                'REF': pclases.TipoDeMaterial.selectBy(
+                descripcion='Repuestos fibra')[0],
+                'REG': pclases.TipoDeMaterial.selectBy(
+                descripcion='Respuestos geotextiles')[0]}
+    return switcher.get(codigo, None)
+
+
+def _update_producto_compra_ginn(prod_ginn, prod_murano):
+    """
+    Actualiza los valores del producto de compra con los del producto en
+    Murano.
+    """
     res = prod_ginn
-    for campo_murano in prod_murano.keys():
-        valor_murano = prod_murano[campo_murano]
-        campo_ginn = field_murano2ginn(campo_murano)
-        if campo_ginn is None:
-            # Este campo no está contemplado para sincronizarse o todavía no
-            # se ha incluído en el diccionario de equivalencia. Lo ignoro.
-            continue
-        if isinstance(campo_ginn, type(lambda: None)):
-            # El campo es una función que me va a dar el valor en ginn
-            # equivalente al de Murano. El campo de ginn lo sacaré del
-            # tipo del propio valor de ginn.
-            valor_ginn = campo_ginn(valor_murano)
-            if valor_ginn:
-                campo_ginn = str(type(valor_ginn)).split(".")[-1].split("'")[0]
-                campo_ginn = campo_ginn[0].lower() + campo_ginn[1:]
-            else:
-                continue    # El valor en ginn es None. Me quedo sin saber
-                # el nombre del campo en ginn. No puedo actualizar nada.
-        # Si no, el campo es un campo de verdad que viene como cadena. Pero
-        # puede ser un campo del producto o de una tabla intermedia
-        # relacionada:
-        if "." not in campo_ginn:
-            try:
-                valor_ginn = getattr(prod_ginn, campo_ginn)
-            except AttributeError:
-                tabla_intermedia = getattr(prod_ginn, "camposEspecificosBala")
-                if not tabla_intermedia:    # Si no es uno, es otro.
-                    tabla_intermedia = getattr(prod_ginn,
-                                               "camposEspecificosRollo")
-                valor_ginn = getattr(tabla_intermedia, campo_ginn)
-        else:
-            tabla_intermedia, campo_ginn = campo_ginn.split(".")
-            if "/" in tabla_intermedia:     # Pueden ser dos registros los
-                                            # que lleven ese campo.
-                tablas = tabla_intermedia.split("/")
-                for tabla in tablas:
-                    # Busco el registro intermedio que **no es None**.
-                    registro_intermedio = getattr(prod_ginn, tabla)
-                    if registro_intermedio:
-                        break
-            else:
-                tabla = tabla_intermedia
-            try:
-                valor_ginn = getattr(getattr(prod_ginn, tabla), campo_ginn)
-            except AttributeError:
-                # Este tabla.campo no lo tiene. Es un rollo y estoy buscando
-                # algo de balas o al contrario.
-                continue
-        if valor_murano and valor_ginn != valor_murano:
-            # Si Murano tiene informado ese valor y no coincide con el de
-            # ginn, machaco el de ginn.
-            try:
-                setattr(prod_ginn, campo_ginn, valor_murano)
-                prod_ginn.syncUpdate()
-            # pylint: disable=broad-except
-            except Exception as excepcion:
-                res = None
-                strlog = "(EE)[S] Campo {} de {} no se pudo instanciar"\
-                         ": {}".format(campo_ginn, prod_ginn, excepcion)
-                print(strlog)
-                logging.error(strlog)
-                # break   Intento seguir actualizando campos, pero...
-                # TODO: ¿Y si ha cambiado el producto de rollo a bala? Habría
-                # que eliminarlo y volverlo a crear, porque no tendrá
-                # registro camposEspecificosBala y fallará hasta el final.
+    prod_ginn.descripcion = prod_murano['DescripcionArticulo']
+    prod_ginn.tipoDeMaterial = _get_tipo_de_material(
+        prod_murano['CodigoFamilia'])
+    prod_ginn.codigo = prod_murano['CodigoAlternativo']
+    prod_ginn.unidad = prod_murano['UnidadMedida2_']
+    prod_ginn.precioDefecto = prod_murano['PrecioVenta']
+    # Si es Material (M) sí lo lleva. Si es Inmaterial o Comentario, no.
+    prod_ginn.controlExistencias = prod_murano['TipoArticulo'] == "M"
+    prod_ginn.observaciones = prod_murano['ComentarioArticulo']
+    # Si está obsoleto para Murano, -1. Si no, 0
+    prod_ginn.obsoleto = prod_murano['ObsoletoLc'] == -1
+    try:
+        proveedor = pclases.Proveedor.get(prod_murano['CodigoProveedor'])
+    except (ValueError, pclases.SQLObjectNotFound):
+        # Es un ID de un proveedor que no existe en ginn o está mal informado
+        # en Murano y en lugar de un número es una cadena de texto.
+        proveedor = None
+    prod_ginn.proveedor = proveedor
+    prod_ginn.minimo = prod_murano['StockMinimo']
+    # Función de valoración y existencias ya no me interesan ni para sync.
+    # prod_ginn.fvaloracion =
+    # prod_ginn.existencias =
+    return res
+
+
+def _update_producto_venta_ginn(prod_ginn, prod_murano):
+    """
+    Actualiza el registro de ginn conforme a los datos del registro de Murano.
+    Tiene en cuenta el tipo de producto para actualizar también los valores
+    de los registros relacionados camposEspecificos*.
+    Se procura no machacar la descripción del producto en ginn. Admite más
+    caracteres que en Murano y se usa para imprimir las etiquetas. Preferimos
+    usar la descripción de ginn, que no está cortada para productos largos.
+    """
+    res = prod_ginn
+    # TODO: PORASQUI
     return res

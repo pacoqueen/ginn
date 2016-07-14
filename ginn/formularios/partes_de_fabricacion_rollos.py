@@ -2122,7 +2122,7 @@ class PartesDeFabricacionRollos(Ventana):
         """
         ultimo_mas_uno = pclases.Rollo._queryOne("""SELECT ultimo_codigo_rollo_mas_uno(); """)[0]
         rango = utils.dialogo_entrada(titulo = 'INTRODUZCA RANGO',
-                                      texto = 'Rango de números de rollos o el código indovidual.\nEscriba el rango de códigos de la forma "xxxx-yyyy", ambos inclusive.',
+                                      texto = 'Rango de números de rollos o el código individual.\nEscriba el rango de códigos de la forma "xxxx-yyyy", ambos inclusive.',
                                       padre = self.wids['ventana'],
                                       valor_por_defecto = ultimo_mas_uno)
         if rango == '' or rango == None:
@@ -2555,7 +2555,7 @@ class PartesDeFabricacionRollos(Ventana):
         y acaba en el último del rango.
         """
         rango = utils.dialogo_entrada(titulo = 'INTRODUZCA RANGO',
-                                      texto = 'Rango de números de bala o el código indovidual.\nEscriba el rango de códigos de la forma "xxxx-yyyy", ambos inclusive.',
+                                      texto = 'Rango de números de bala o el código individual.\nEscriba el rango de códigos de la forma "xxxx-yyyy", ambos inclusive.',
                                       padre = self.wids['ventana'])
         if rango == '' or rango == None:
             return rango
