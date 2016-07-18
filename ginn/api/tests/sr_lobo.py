@@ -41,7 +41,7 @@ from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
 sys.argv = _argv
 
 
-# pylint: disable=too-many-branches,too-many-statements
+# pylint: disable=too-many-branches,too-many-statements,too-many-locals
 def sync_articulo(codigo, fsalida, simulate=True):
     """
     Sincroniza el artículo de ginn cuyo código es "codigo", con el de
@@ -52,6 +52,7 @@ def sync_articulo(codigo, fsalida, simulate=True):
     - Superficie
     - Valor campo api
     - Código palé
+    - Producto de venta
     """
     report = open(fsalida, "a", 0)
     if simulate:
@@ -66,7 +67,7 @@ def sync_articulo(codigo, fsalida, simulate=True):
                 res = murano.ops.create_articulo(articulo)
             else:
                 res = True
-        else:
+        else:   # Si el artículo ya existe:
             altered = False
             peso_bruto = articulo.peso_bruto
             peso_neto = articulo.peso_neto
@@ -103,6 +104,7 @@ def sync_articulo(codigo, fsalida, simulate=True):
                                                                    superficie)
                 else:
                     res = True
+            # Si además es de tipo fibra de cemento, compruebo el palé:
             if articulo.caja and articulo.caja.pale:
                 pale_murano = murano.ops._get_codigo_pale(articulo)
                 codigo_pale_ginn = articulo.caja.pale.codigo
@@ -115,6 +117,18 @@ def sync_articulo(codigo, fsalida, simulate=True):
                         res = murano.ops.corregir_pale(articulo)
                     else:
                         res = True
+            # Y por último compruebo el producto:
+            prod_en_murano = murano.ops.get_producto_articulo_murano(articulo)
+            prod_en_ginn = articulo.productoVenta
+            if prod_en_murano != prod_en_ginn:
+                report.write("Corrigiendo producto de {}: {} -> {}".format(
+                    articulo.codigo, prod_en_murano.descripcion,
+                    prod_en_ginn.descripcion))
+                altered = True
+                if not simulate:
+                    res = murano.ops.update_producto(articulo, prod_en_ginn)
+                else:
+                    res = True
             if not altered:
                 report.write("Nada que hacer.")
                 res = True
