@@ -2458,7 +2458,7 @@ def _get_tipo_de_material(codigo):
                 'REF': pclases.TipoDeMaterial.selectBy(
                 descripcion='Repuestos fibra')[0],
                 'REG': pclases.TipoDeMaterial.selectBy(
-                descripcion='Respuestos geotextiles')[0]}
+                descripcion='Repuestos geotextiles')[0]}
     return switcher.get(codigo, None)
 
 
