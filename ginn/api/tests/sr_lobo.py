@@ -402,6 +402,8 @@ def main():
                         default=False, action='store_true')
     args = parser.parse_args()
     if args.ver_salida:
+        if not os.path.exists(args.fsalida):
+            open(args.fsalida, 'a').close()
         subprocess.Popen('gvim "{}"'.format(args.fsalida))
     # Primero termino de procesar todas las posibles imortaciones pendientes:
     finish_pendientes(args.fsalida, args.simulate)
