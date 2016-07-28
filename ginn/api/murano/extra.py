@@ -178,3 +178,17 @@ def _get_superficie(articulo):
     if articulo.es_rollo() or articulo.es_rollo_defectuoso():
         res = articulo.get_superficie()
     return res
+
+
+# Clases auxiliares
+class AttrDict(dict):
+    """
+    Permite acceder a los valores del diccionario tanto con la sintaxis [clave]
+    como con la de atributo: .clave
+    """
+    def __init__(self, *args, **kwargs):
+        """
+        Constructor.
+        """
+        super(AttrDict, self).__init__(*args, **kwargs)
+        self.__dict__ = self

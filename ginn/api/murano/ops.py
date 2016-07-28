@@ -21,7 +21,7 @@ import datetime
 from collections import namedtuple
 from connection import Connection, DEBUG, VERBOSE, CODEMPRESA
 from export import determinar_familia_murano
-from extra import get_peso_bruto, get_peso_neto, get_superficie
+from extra import get_peso_bruto, get_peso_neto, get_superficie, AttrDict
 
 try:
     import win32com.client
@@ -2323,6 +2323,7 @@ def get_producto_murano(codigo):
                                                  CODEMPRESA, codigo)
     try:
         prod_murano = conn.run_sql(SQL)[0]
+        prod_murano = AttrDict(prod_murano)
     except IndexError:
         strerr = "El código %s no existe en Murano." % (codigo)
         logging.error(strerr)
