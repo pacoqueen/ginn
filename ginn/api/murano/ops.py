@@ -2503,6 +2503,101 @@ def _update_producto_venta_ginn(prod_ginn, prod_murano):
     caracteres que en Murano y se usa para imprimir las etiquetas. Preferimos
     usar la descripción de ginn, que no está cortada para productos largos.
     """
+    res = _sync_campos_comunes_pv(prod_ginn, prod_murano)
+    res = _sync_campos_especificos(prod_ginn, prod_murano)
+    return res
+
+
+def _sync_campos_comunes_pv(prod_ginn, prod_murano):
+    """
+    Copia en el registro prod_ginn los valores de prod_murano comunes a todos
+    los productos de venta.
+    """
+    res = prod_ginn
+    prod_ginn.lineaDeProduccion = _get_linea_produccion_ginn(
+        prod_murano.DescripcionLinea)
+    prod_ginn.nombre = prod_murano.Descripcion2Articulo
+    prod_ginn.descripcion = prod_murano.DescripcionArticulo
+    prod_ginn.codigo = prod_murano.CodigoAlternativo
+    prod_ginn.arancel = prod_murano.CodigoArancelario
+    prod_ginn.prodestandar = prod_murano.GEO_ProdEstandar
+    prod_ginn.annoCertificacion = prod_murano.GEO_anno_certificacion
+    prod_ginn.dni = prod_murano.GEO_Dni
+    prod_ginn.uso = _get_uso_ginn(prod_murano.GEO_Uso)
+    prod_ginn.obsoleto = prod_murano.ObsoletoLc == -1
+    return res
+
+
+def _sync_campos_especificos(prod_ginn, prod_murano):
+    """
+    Sincroniza los campos específicos del producto de ginn con los de Murano.
+    """
+    if prod_ginn.camposEspecificosRollo:
+        res = _sync_campos_especificos_rollo(prod_ginn, prod_murano)
+    elif prod_ginn.camposEspecificosBala:
+        res = _sync_campos_especificos_bala(prod_ginn, prod_murano)
+    else:
+        res = _sync_campos_especificos_especial(prod_ginn, prod_murano)
+    return res
+
+
+def _sync_campos_especificos_rollo(prod_ginn, prod_murano):
+    """
+    Sincroniza los campos relacionados con los geotextiles.
+    """
+    res = prod_ginn
+    cer = prod_ginn.camposEspecificosRollo
+    cer.gramos = prod_murano.GEO_gramos
+    cer.codigoComposan = prod_murano.MarcaProducto
+    cer.ancho = prod_murano.GEO_ancho
+    cer.diametro = prod_murano.GEO_Diametro
+    cer.rollosPorCamion = prod_murano.GEO_rollos_por_camion
+    cer.metrosLineales = prod_murano.GEO_metros_lineales
+    cer.pesoEmbalaje = prod_murano.GEO_peso_embalaje
+    cer.modeloEtiqueta = _get_modelo_etiqueta_ginn(
+        prod_murano.GEO_Modelo_etiqueta_id)
+    cer.clienteID = (prod_murano.GEO_Cliente_id == '' and None or
+                     prod_murano.GEO_Cliente_id)
+    cer.fichaFabricacion = prod_murano.GEO_Ficha_fabricacion
+    res = _sync_marcado_ce(prod_ginn, prod_murano)
+    return res
+
+
+def _sync_marcado_ce(prod_ginn, prod_murano):
+    """
+    Sincroniza los valores del marcado CE. Si han cambiado, se crea un
+    registro histórico del marcado actual en ginn.
+    """
     res = prod_ginn
     # TODO: PORASQUI
+    return res
+
+
+def _sync_campos_especificos_bala(prod_ginn, prod_murano):
+    """
+    Sincroniza los campos relacionados con la fibra.
+    """
+    res = prod_ginn
+    ceb = prod_ginn.camposEspecificosBala
+    ceb.dtex = prod_murano.GEO_Dtex
+    ceb.corte = prod_murano.GEO_Corte
+    ceb.color = prod_murano.GEO_Color
+    ceb.antiuv = prod_murano.GEO_antiuv == -1
+    ceb.tipoMaterialBalaID = _get_tipo_material_bala_ginn(
+        prod_murano.GEO_Tipo_Material_bala_id)
+    ceb.consumoGranza = prod_murano.GEO_Consumo_granza
+    ceb.reciclada = prod_murano.GEO_Reciclada == -1
+    ceb.gramosBolsa = prod_murano.GEO_gramos_bolsa
+    ceb.bolsasCaja = prod_murano.GEO_bolsas_Caja
+    ceb.cajasPale = prod_murano.GEO_Cajas_pale
+    ceb.clienteID = prod_murano.GEO_Cliente_id
+    return res
+
+
+def _sync_campos_especificos_especial(prod_ginn, prod_murano):
+    """
+    No sincroniza nada porque los productos con CamposEspecificosEspedoal
+    son pocos y los campos, obsoletos.
+    """
+    res = prod_ginn
     return res
