@@ -2516,8 +2516,9 @@ def _sync_campos_comunes_pv(prod_ginn, prod_murano):
     res = prod_ginn
     prod_ginn.lineaDeProduccion = _get_linea_produccion_ginn(
         prod_murano.DescripcionLinea)
-    prod_ginn.nombre = prod_murano.Descripcion2Articulo
-    prod_ginn.descripcion = prod_murano.DescripcionArticulo
+    prod_ginn.nombre = prod_murano.DescripcionArticulo
+    if prod_murano.Descripcion2Articulo:
+        prod_ginn.descripcion = prod_murano.Descripcion2Articulo
     prod_ginn.codigo = prod_murano.CodigoAlternativo
     prod_ginn.arancel = prod_murano.CodigoArancelario
     prod_ginn.prodestandar = prod_murano.GEO_ProdEstandar
@@ -2556,8 +2557,10 @@ def _sync_campos_especificos_rollo(prod_ginn, prod_murano):
     cer.pesoEmbalaje = prod_murano.GEO_peso_embalaje
     cer.modeloEtiqueta = _get_modelo_etiqueta_ginn(
         prod_murano.GEO_Modelo_etiqueta_id)
-    cer.clienteID = (prod_murano.GEO_Cliente_id == '' and None or
-                     prod_murano.GEO_Cliente_id)
+    if prod_murano.GEO_Cliente_id:
+        cer.clienteID = prod_murano.GEO_Cliente_id
+    else:
+        cer.clienteID = None
     cer.fichaFabricacion = prod_murano.GEO_Ficha_fabricacion
     res = _sync_marcado_ce(prod_ginn, prod_murano)
     return res
@@ -2590,7 +2593,10 @@ def _sync_campos_especificos_bala(prod_ginn, prod_murano):
     ceb.gramosBolsa = prod_murano.GEO_gramos_bolsa
     ceb.bolsasCaja = prod_murano.GEO_bolsas_Caja
     ceb.cajasPale = prod_murano.GEO_Cajas_pale
-    ceb.clienteID = prod_murano.GEO_Cliente_id
+    if prod_murano.GEO_Cliente_id:
+        ceb.clienteID = prod_murano.GEO_Cliente_id
+    else:
+        ceb.clienteID = None
     return res
 
 
