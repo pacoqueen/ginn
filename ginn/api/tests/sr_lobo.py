@@ -212,7 +212,7 @@ def check_campos_obligatorios(producto):
     for indirecto in campos:
         if indirecto:
             for campo in campos[indirecto]:
-                valor = getattr(producto, campo)
+                valor = getattr(indirecto, campo)
                 if not valor:
                     res.append(campo)
     return res
