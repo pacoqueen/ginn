@@ -2477,7 +2477,10 @@ def _update_producto_compra_ginn(prod_ginn, prod_murano):
     prod_ginn.precioDefecto = prod_murano['PrecioVenta']
     # Si es Material (M) sí lo lleva. Si es Inmaterial o Comentario, no.
     prod_ginn.controlExistencias = prod_murano['TipoArticulo'] == "M"
-    prod_ginn.observaciones = prod_murano['ComentarioArticulo']
+    try:
+        prod_ginn.observaciones = prod_murano['ComentarioArticulo']
+    except UnicodeEncodeError:
+        prod_ginn.observaciones = prod_murano.ComentarioArticulo.encode("utf8")
     # Si está obsoleto para Murano, -1. Si no, 0
     prod_ginn.obsoleto = prod_murano['ObsoletoLc'] == -1
     try:
