@@ -2469,7 +2469,11 @@ def _update_producto_compra_ginn(prod_ginn, prod_murano):
     Murano.
     """
     res = prod_ginn
-    prod_ginn.descripcion = prod_murano['DescripcionArticulo']
+    try:
+        prod_ginn.descripcion = prod_murano['DescripcionArticulo']
+    except UnicodeEncodeError:
+        prod_ginn.descripcion = prod_murano['DescripcionArticulo'].encode(
+            "utf8")
     prod_ginn.tipoDeMaterial = _get_tipo_de_material(
         prod_murano['CodigoFamilia'])
     prod_ginn.codigo = prod_murano['CodigoAlternativo']
