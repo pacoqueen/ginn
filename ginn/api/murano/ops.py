@@ -103,7 +103,7 @@ SQL_STOCK = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
                '%s',    -- UnidadMedida2_ (la básica: ROLLO, BALA...)
                %f,      -- factor de conversión
                '%s',    -- comentario
-               '%s',    -- FIXME: XXX: Temporal para lo del cálculo de dividir entre 100 las unidades de todos los movimientos marcados con 'DIV' en CodigoCanal y evitar el BUG _syntax error_ de Murano de la coma. Solo debe ir con DIV en los artículos con trazabilidad.
+               '%s',    -- Canal. Antes DIV para evitar un bug de Murano.
                -- NULL,
                -- NULL,
                -- NULL,
@@ -987,16 +987,6 @@ def get_cantidad_dimension_especifica(articulo):
         # unidades = articulo.get_peso()
         # unidades = get_peso_bruto(articulo)  # En dimensión específica: kg
         unidades = get_peso_neto(articulo)  # En dimensión específica: kg
-    # XxX ### XxX ### XxX ### XxX ### XxX ### XxX ### XxX ### XxX ### XxX ##
-    # BUG: [Murano] Si mando un número entero (los m² siempre son enteros)
-    # en el peso (que entra como Unidades en la TmpIME y MovStock) sí lo
-    # hace bien Murano. Pero si no, la coma la interpreta como separador
-    # de campo de una consulta SQL en el proceso interno de convertir la
-    # TmpIME en MovStock, `da un syntax error near ,` en la traza y PETA.
-    # FIXME: Hasta que no se arregle, mando número entero multiplicado
-    # por 100 y en Murano se vuelve a dividir entre 100 para que se quede la
-    # cantidad correcta en kilos.
-    unidades = int(unidades * 100)  # XxX ### XxX ### XxX ### XxX ### XxX ##
     return unidades
 
 
@@ -1092,7 +1082,7 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
         else:
             id_proceso_IME = guid_proceso
         guid_movposicion = generar_guid(c)
-        canal_div = 'DIV'
+        canal_div = ''
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
                                     documento, codigo_articulo, codigo_almacen,
@@ -1173,7 +1163,7 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
         else:
             id_proceso_IME = guid_proceso
         guid_movposicion = generar_guid(c)
-        canal_div = 'DIV'
+        canal_div = ''
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
                                     documento, codigo_articulo, codigo_almacen,
@@ -1258,7 +1248,7 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
         else:
             id_proceso_IME = guid_proceso
         guid_movposicion = generar_guid(c)
-        canal_div = 'DIV'
+        canal_div = ''
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
                                     documento, codigo_articulo, codigo_almacen,
@@ -1341,7 +1331,7 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
         else:
             id_proceso_IME = guid_proceso
         guid_movposicion = generar_guid(c)
-        canal_div = 'DIV'
+        canal_div = ''
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
                                     documento, codigo_articulo, codigo_almacen,
@@ -2110,24 +2100,19 @@ def fire(guid_proceso, ignore_errors=False):
         logging.info(strverbose)
         if VERBOSE and DEBUG:
             print(strverbose)
-        # FIXME:XXX: Para evitar el bug de los decimales en Murano, mandamos
-        # las unidades del movimiento de stock multiplicadas por 100 (las
-        # balas solo van a tener una cifra decimal porque la báscula pesa de
-        # 500 en 500 gr, pero la definición nueva del peso bruto de los palés
-        # puede llevar hasta 2).
-        nombrescript = "GEO_DividirStock"
-        paramsscript = "Label:=Inicio"
-        strverbose = "Lanzando script `%s`..." % (
-            nombrescript)
-        logging.info(strverbose)
-        if VERBOSE and DEBUG:
-            print(strverbose)
-        retCode = burano.EjecutaScript(nombrescript, paramsscript)
-        strverbose = "Ejecución `%s` concluida con código de retorno: %s" % (
-            nombrescript, retCode)
-        logging.info(strverbose)
-        if VERBOSE and DEBUG:
-            print(strverbose)
+        # nombrescript = "GEO_DividirStock"
+        # paramsscript = "Label:=Inicio"
+        # strverbose = "Lanzando script `%s`..." % (
+        #     nombrescript)
+        # logging.info(strverbose)
+        # if VERBOSE and DEBUG:
+        #     print(strverbose)
+        # retCode = burano.EjecutaScript(nombrescript, paramsscript)
+        # strverbose = "Ejecución `%s` concluida con código de retorno: %s" % (
+        #     nombrescript, retCode)
+        # logging.info(strverbose)
+        # if VERBOSE and DEBUG:
+        #     print(strverbose)
     # El código de retorno es 1 para error y 0 para éxito o bien una tupla con
     # True/False en la primera posición. Cambio a boolean.
     if VERBOSE:
