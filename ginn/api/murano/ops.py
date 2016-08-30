@@ -2364,11 +2364,12 @@ def _create_producto_ginn(prod_murano):
     """
     id_murano = prod_murano['CodigoArticulo']
     if "PV" in id_murano:
-        _create_producto_venta_ginn(prod_murano)
+        res = _create_producto_venta_ginn(prod_murano)
     elif "PC" in id_murano:
-        _create_producto_compra_ginn(prod_murano)
+        res = _create_producto_compra_ginn(prod_murano)
     else:
         raise ValueError("Producto {} no soportado.".format(id_murano))
+    return res
 
 
 def _create_producto_compra_ginn(prod_murano):
