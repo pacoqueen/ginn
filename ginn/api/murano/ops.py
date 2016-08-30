@@ -2060,13 +2060,16 @@ def fire(guid_proceso, ignore_errors=False):
     # ¿Y si es None? Lo he visto en procesos con errores.
     #  Mucho me temo que si es None, no lo ha procesado. Y no se procesan más
     # adelante. Se quedan pendiente para siempre.
-    # XXX: **A no ser que se procese a mano**. Entonces se desbloquean todos
-    # los pendientes y deja entrar más. TODO: PORASQUI: Pero si se hace a mano
-    # no se ejecutan el AcumularCamposSeries y el GEO_DIV que divide entre 100.
+    # **A no ser que se procese a mano desde Murano**. Entonces se desbloquean
+    # todos los pendientes y deja entrar más.
+    # **Pero si se hace a mano no se ejecutan el AcumularCamposSeries y el
+    # GEO_DIV que divide entre 100.**
     # El GEO_DIV se ejecutará en la siguiente importación, porque se hace
     # para todos los pendientes. Pero el otro necesita un GUID de proceso
     # y habría que editarlo y ejecutarlo a mano uno por uno de los pendientes.
     # O bien tirar del Sr. Lobo y que haga el fire de todos los pendientes.
+    # [2016/08/30] UPDATE: En la versión 2016.70.000 se corrige el bug de
+    # Murano. Ya no es necesario usar el canal DIV.
     if retCode is None:
         logging.warning("Se cambia el valor None por 1 (FAIL).")
         retCode = 1
