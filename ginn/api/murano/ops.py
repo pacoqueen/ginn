@@ -1061,6 +1061,7 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
     if cantidad > 0 and duplica_articulo(articulo):
         logging.warning("La bala %s ya existe en Murano. Se ignora.",
                         bala.codigo)
+        res = False
     else:
         try:
             partida = bala.lote.codigo
@@ -1094,6 +1095,8 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
                                     numero_serie_lc, id_proceso_IME,
                                     guid_movposicion)
         if simulate:
+            # pylint: disable=redefined-variable-type
+            # Si es una simulación, devuelvo las consultas SQL y no un bool.
             res = [sql_movstock]
         else:
             c.run_sql(sql_movstock)
@@ -1132,7 +1135,7 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
             else:   # No proceso la importación. Todo ha ido bien hasta ahora.
                     # Devuelvo el guid, que me vale como True también.
                 res = id_proceso_IME
-        return res
+    return res
 
 
 def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
@@ -1688,6 +1691,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
     recibe ninguno, se usa el que tenga asociado en ginn. Si se recibe un
     objeto producto, se ignora el actual del artículo, se reemplaza en ginn
     por el recibido y se da de alta así en Murano.
+    Devuelve False si hubo errores y no se creó o
     """
     # TODO: ¿Y al descontar existencias? ¿Comprobar también que existan antes?
     # De todos modos el proceso de importación devolverá error si la serie
