@@ -4147,6 +4147,9 @@ def crear_nueva_bala(numbala, codigo_bala, peso_neto, peso_real, ventana_parte):
                 utils.dialogo_info(titulo = "ERROR DE IMPRESIÓN",
                                    texto = txt,
                                    padre = ventana_parte.wids['ventana'])
+            self.logger.debug("Volcando bala %s a Murano..." % articulo.codigo)
+            volcado_a_murano = murano.ops.create_articulo(articulo)
+            self.logger.debug("Resultado del volcado: %s -> %s" % (
             ventana_parte.actualizar_ventana()
     return bala
 
