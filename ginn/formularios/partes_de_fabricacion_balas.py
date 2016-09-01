@@ -2632,7 +2632,7 @@ class PartesDeFabricacionBalas(Ventana):
             self.logger.debug("Volcando bala %s a Murano..." % articulo.codigo)
             volcado_a_murano = murano.ops.create_articulo(articulo)
             self.logger.debug("Resultado del volcado: %s -> %s" % (
-                articulo.codigo, volcado_a_murano)
+                articulo.codigo, volcado_a_murano))
         if articulo != None:
             self.descontar_material_adicional(articulo)
             self.actualizar_ventana()
