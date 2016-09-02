@@ -493,6 +493,9 @@ def _get_modelo_etiqueta_ginn(id_etiqueta_murano):
         res = None
     if res:
         res = pclases.ModeloEtiqueta.get(res)
+    else:
+        # Valor por defecto
+        res = pclases.ModeloEtiqueta.get_default()
     return res
 
 

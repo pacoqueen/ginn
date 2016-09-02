@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2015 Francisco José Rodríguez Bogado,                    #
+# Copyright (C) 2005-2016 Francisco José Rodríguez Bogado,                    #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -11465,6 +11465,18 @@ class ModeloEtiqueta(SQLObject, PRPCTOO):
                 "El módulo %s no contiene ninguna función %s." % (
                     modulo, self.funcion)
         return fwrap
+
+    @staticmethod
+    def get_default():
+        """
+        Devuelve el modelo de etiqueta a usar por defecto.
+        """
+        try:
+            res = ModeloEtiqueta.selectBy(nombre="Normativa julio 2013")[0]
+        except IndexError:
+            res = None
+        return res
+
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
