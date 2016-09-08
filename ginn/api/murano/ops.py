@@ -2438,6 +2438,7 @@ def _get_tipo_de_material(codigo):
     Devuelve el registro tipo de material de ginn correspondiente al código
     recibido de Murano.
     """
+    # pylint: disable=bad-continuation
     switcher = {'OIL': pclases.TipoDeMaterial.selectBy(
                 descripcion='Aceites y lubricantes')[0],
                 'COM': pclases.TipoDeMaterial.selectBy(
@@ -2450,7 +2451,7 @@ def _get_tipo_de_material(codigo):
                 descripcion='Material adicional')[0],
                 'MIV': pclases.TipoDeMaterial.selectBy(
                 descripcion='Mercancía inicial Valdemoro')[0],
-                'COM': pclases.TipoDeMaterial.selectBy(
+                'PCOM': pclases.TipoDeMaterial.selectBy(
                 descripcion='Productos comercializados')[0],
                 'REF': pclases.TipoDeMaterial.selectBy(
                 descripcion='Repuestos fibra')[0],

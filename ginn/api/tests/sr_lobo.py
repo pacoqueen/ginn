@@ -400,6 +400,10 @@ def main():
     parser.add_argument("-v", "--view", dest="ver_salida",
                         help="Abre el fichero de salida en un editor externo.",
                         default=False, action='store_true')
+    parser.add_argument("-c", "--consumos", dest="consumos",
+                        help="Realiza los consumos atrasados",
+                        default=False, action='store_true')
+    # TODO: PORASQUI
     args = parser.parse_args()
     if args.ver_salida:
         if not os.path.exists(args.fsalida):
