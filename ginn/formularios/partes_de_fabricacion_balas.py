@@ -2225,6 +2225,10 @@ class PartesDeFabricacionBalas(Ventana):
             self.rellenar_datos_producto(self.producto)
             for a in self.objeto.articulos:
                 a.productoVenta = self.producto
+                self.logger.debug("Cambiando producto de %s en Murano a %s "
+                                  "[%s]." % (
+                    a.codigo, producto.descripcion, producto.puid))
+                murano.ops.update_producto(a, producto)
 
     def comprobar_silos_marcados(self):
         """
