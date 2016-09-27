@@ -528,7 +528,11 @@ def _get_linea_produccion_ginn(descripcion_linea):
     Devuelve el registro de ginn que se corresponde con la descripción de la
     línea de producción de Murano recibida.
     """
-    linea = descripcion_linea.split()[-1]
+    try:
+        linea = descripcion_linea.split()[-1]
+    except AttributeError:
+        # Es un producto de venta especial. Sin línea de producción.
+        linea = None
     try:
         lineas_ginn = pclases.LineaDeProduccion.select(
             pclases.LineaDeProduccion.q.nombre.contains(linea))
