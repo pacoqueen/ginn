@@ -2553,21 +2553,25 @@ def _sync_campos_especificos_rollo(prod_ginn, prod_murano):
     """
     res = prod_ginn
     cer = prod_ginn.camposEspecificosRollo
-    cer.gramos = prod_murano.GEO_gramos
-    cer.codigoComposan = prod_murano.MarcaProducto
-    cer.ancho = prod_murano.GEO_ancho
-    cer.diametro = prod_murano.GEO_Diametro
-    cer.rollosPorCamion = prod_murano.GEO_rollos_por_camion
-    cer.metrosLineales = prod_murano.GEO_metros_lineales
-    cer.pesoEmbalaje = prod_murano.GEO_peso_embalaje
-    cer.modeloEtiqueta = _get_modelo_etiqueta_ginn(
-        prod_murano.GEO_Modelo_etiqueta_id)
     if prod_murano.GEO_Cliente_id:
-        cer.clienteID = prod_murano.GEO_Cliente_id
+        try:
+            cer.clienteID = prod_murano.GEO_Cliente_id
+        except TypeError:
+            res = False
     else:
         cer.clienteID = None
-    cer.fichaFabricacion = prod_murano.GEO_Ficha_fabricacion
-    res = _sync_marcado_ce(prod_ginn, prod_murano)
+    if res:
+        cer.gramos = prod_murano.GEO_gramos
+        cer.codigoComposan = prod_murano.MarcaProducto
+        cer.ancho = prod_murano.GEO_ancho
+        cer.diametro = prod_murano.GEO_Diametro
+        cer.rollosPorCamion = prod_murano.GEO_rollos_por_camion
+        cer.metrosLineales = prod_murano.GEO_metros_lineales
+        cer.pesoEmbalaje = prod_murano.GEO_peso_embalaje
+        cer.modeloEtiqueta = _get_modelo_etiqueta_ginn(
+            prod_murano.GEO_Modelo_etiqueta_id)
+        cer.fichaFabricacion = prod_murano.GEO_Ficha_fabricacion
+        res = _sync_marcado_ce(prod_ginn, prod_murano)
     return res
 
 
