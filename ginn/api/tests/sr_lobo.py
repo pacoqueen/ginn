@@ -403,7 +403,7 @@ def main():
     parser.add_argument("-c", "--consumos", dest="consumos",
                         help="Realiza los consumos atrasados",
                         default=False, action='store_true')
-    # TODO: PORASQUI
+    # TODO: PORASQUI: Me falta implementar la opción de los consumos.
     args = parser.parse_args()
     if args.ver_salida:
         if not os.path.exists(args.fsalida):

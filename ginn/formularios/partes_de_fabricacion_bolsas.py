@@ -25,24 +25,24 @@
 
 
 ###################################################################
-## partes_de_fabricacion_bolsas.py - Partes embolsado fibra cem.
+# # partes_de_fabricacion_bolsas.py - Partes embolsado fibra cem.
 ###################################################################
-## NOTAS:
+#  NOTAS:
 ##
-## ----------------------------------------------------------------
-##
-###################################################################
-## Changelog:
-## 5 de mayo de 2009 -> Inicio
+#  ----------------------------------------------------------------
 ##
 ###################################################################
-## NOTAS:
+#  Changelog:
+#  5 de mayo de 2009 -> Inicio
+##
+###################################################################
+#  NOTAS:
 ##
 ###################################################################
 
 
-#import sys, os
-#sys.stdout = open("salida_debug.txt", "a")
+# import sys, os
+# sys.stdout = open("salida_debug.txt", "a")
 
 from ventana import Ventana
 from formularios import utils
@@ -1703,7 +1703,14 @@ class PartesDeFabricacionBolsas(Ventana):
         if codigo:
             codigo = codigo.replace(" ", "").replace("-", "").upper().strip()
             if not codigo.startswith("C"):
-                codigo = "C%d" % utils.parse_numero(codigo)
+                try:
+                    codigo = "C%d" % utils.parse_numero(codigo)
+                except TypeError:
+                    utils.dialogo_info(titulo="ERROR",
+                            texto="El texto introducido «%s» no es un número."
+                                % (codigo),
+                            padre=self.wids['ventana'])
+                    codigo = "erróneo"
             try:
                 bb = pclases.Bigbag.selectBy(codigo = codigo)[0]
             except IndexError:

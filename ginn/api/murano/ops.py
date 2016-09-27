@@ -1694,7 +1694,8 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
     recibe ninguno, se usa el que tenga asociado en ginn. Si se recibe un
     objeto producto, se ignora el actual del artículo, se reemplaza en ginn
     por el recibido y se da de alta así en Murano.
-    Devuelve False si hubo errores y no se creó o
+    Devuelve False si hubo errores y no se creó o True (o el GUID de proceso)
+    en otro caso.
     """
     # TODO: ¿Y al descontar existencias? ¿Comprobar también que existan antes?
     # De todos modos el proceso de importación devolverá error si la serie
