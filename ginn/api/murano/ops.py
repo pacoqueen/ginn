@@ -19,7 +19,7 @@ logging.basicConfig(filename="%s.log" % (NOMFLOG),
                     level=logging.DEBUG)
 import datetime
 from collections import namedtuple
-from connection import Connection, DEBUG, VERBOSE, CODEMPRESA
+from connection import Connection, DEBUG, VERBOSE, CODEMPRESA, CANALES
 from export import determinar_familia_murano
 from extra import get_peso_bruto, get_peso_neto, get_superficie, AttrDict
 
@@ -2630,14 +2630,14 @@ def get_canal(producto):
     Si el producto no existe, lanza una excepción.
     """
     if isinstance(producto, pclases.ProductoCompra):
-        codigo = "PC" + `producto.id`
+        codigo = "PC" + str(producto.id)
     elif isinstance(producto, pclases.ProductoVenta):
-        codigo = "PV" + `producto.id`
+        codigo = "PV" + str(producto.id)
     elif isinstance(producto, str):
         codigo = producto
     else:
-        raise TypeError, ("ops::get_canal -> producto debe ser un "
-                          "pclases.ProductoCompra o pclases.ProductoVenta")
+        raise TypeError("ops::get_canal -> producto debe ser un "
+                        "pclases.ProductoCompra o pclases.ProductoVenta")
     pmurano = get_producto_murano(codigo)
     canal = pmurano.CodigoCanal
     return CANALES[canal]
