@@ -2625,7 +2625,8 @@ def _sync_campos_especificos_especial(prod_ginn, prod_murano):
 def get_canal(producto):
     """
     Busca el canal del producto en Murano y devuelve el código de canal
-    (HARCODED en `connection`) correspondiente.
+    (HARCODED en `connection`) correspondiente. None si en Murano no tiene
+    canal informado.
     Acepta objeto de pclases o código (como cadena) directamente.
     Si el producto no existe, lanza una excepción.
     """
@@ -2640,4 +2641,8 @@ def get_canal(producto):
                         "pclases.ProductoCompra o pclases.ProductoVenta")
     pmurano = get_producto_murano(codigo)
     canal = pmurano.CodigoCanal
-    return CANALES[canal]
+    try:
+        cod_canal = CANALES[canal]
+    except KeyError:
+        cod_canal = None
+    return cod_canal
