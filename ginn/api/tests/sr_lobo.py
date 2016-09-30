@@ -39,8 +39,6 @@ from framework import pclases
 from api import murano
 from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
 sys.argv = _argv
-from murano.connection import RESIDUOS_FIBRA, RESIDUOS_GEOTEXTIL
-from murano.connection import COMERCIALIZADO
 
 
 # pylint: disable=too-many-branches,too-many-statements,too-many-locals
@@ -206,7 +204,9 @@ def check_campos_obligatorios(producto):
     res = []
     if not canal:
         res.append('CANAL')
-    elif canal not in (RESIDUOS_FIBRA, RESIDUOS_GEOTEXTIL, COMERCIALIZADO):
+    elif canal not in (murano.connection.RESIDUOS_FIBRA,
+                       murano.connection.RESIDUOS_GEOTEXTIL,
+                       murano.connection.COMERCIALIZADO):
         cer = producto.camposEspecificosRollo
         ceb = producto.camposEspecificosBala
         # Campos a chequear si son rollos o balas.
