@@ -2620,3 +2620,24 @@ def _sync_campos_especificos_especial(prod_ginn, prod_murano):
     """
     res = prod_ginn
     return res
+
+
+def get_canal(producto):
+    """
+    Busca el canal del producto en Murano y devuelve el código de canal
+    (HARCODED en `connection`) correspondiente.
+    Acepta objeto de pclases o código (como cadena) directamente.
+    Si el producto no existe, lanza una excepción.
+    """
+    if isinstance(producto, pclases.ProductoCompra):
+        codigo = "PC" + `producto.id`
+    elif isinstance(producto, pclases.ProductoVenta):
+        codigo = "PV" + `producto.id`
+    elif isinstance(producto, str):
+        codigo = producto
+    else:
+        raise TypeError, ("ops::get_canal -> producto debe ser un "
+                          "pclases.ProductoCompra o pclases.ProductoVenta")
+    pmurano = get_producto_murano(codigo)
+    canal = pmurano.CodigoCanal
+    return CANALES[canal]

@@ -21,6 +21,14 @@ import pymssql
 DEBUG = False
 VERBOSE = False
 CODEMPRESA = 10200  # Empresa de pruebas: 800. Cambiar a la 10200 en producción
+# Canales HARCODED
+(FIBRA, RESIDUOS_FIBRA,
+ GEOTEXTIL, RESIDUOS_GEOTEXTIL,
+ GEOCEM,
+ COMERCIALIZADO) = (100, 101, 200, 201, 300, 400)
+CANALES = {'100': FIBRA, '101': RESIDUOS_FIBRA,
+           '200': GEOTEXTIL, '201': RESIDUOS_GEOTEXTIL,
+           '300': GEOCEM, '400': COMERCIALIZADO}
 
 
 class Connection(object):

@@ -39,6 +39,8 @@ from framework import pclases
 from api import murano
 from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
 sys.argv = _argv
+from murano.connection import RESIDUOS_FIBRA, RESIDUOS_GEOTEXTIL
+from murano.connection import COMERCIALIZADO
 
 
 # pylint: disable=too-many-branches,too-many-statements,too-many-locals
@@ -200,21 +202,25 @@ def check_campos_obligatorios(producto):
     Devuelve False si alguno de los campos obligatorios para fabricar en ginn
     no tiene un valor correcto.
     """
+    canal = murano.ops.get_canal(producto)
     res = []
-    cer = producto.camposEspecificosRollo
-    ceb = producto.camposEspecificosBala
-    # Campos a chequear si son rollos o balas.
-    campos = {cer: ('modeloEtiqueta', 'gramos', 'ancho', 'pesoEmbalaje'),
-              ceb: ['dtex', 'corte', 'color']}
-    # En la fibra de cemento hay que comprobar alguno más:
-    if producto.es_caja():
-        campos[ceb] += ['gramosBolsa', 'bolsasCaja', 'cajasPale']
-    for indirecto in campos:
-        if indirecto:
-            for campo in campos[indirecto]:
-                valor = getattr(indirecto, campo)
-                if not valor:
-                    res.append(campo)
+    if not canal:
+        res.append('CANAL')
+    elif canal not in (RESIDUOS_FIBRA, RESIDUOS_GEOTEXTIL, COMERCIALIZADO):
+        cer = producto.camposEspecificosRollo
+        ceb = producto.camposEspecificosBala
+        # Campos a chequear si son rollos o balas.
+        campos = {cer: ('modeloEtiqueta', 'gramos', 'ancho', 'pesoEmbalaje'),
+                  ceb: ['dtex', 'corte', 'color']}
+        # En la fibra de cemento hay que comprobar alguno más:
+        if producto.es_caja():
+            campos[ceb] += ['gramosBolsa', 'bolsasCaja', 'cajasPale']
+        for indirecto in campos:
+            if indirecto:
+                for campo in campos[indirecto]:
+                    valor = getattr(indirecto, campo)
+                    if not valor:
+                        res.append(campo)
     return res
 
 
