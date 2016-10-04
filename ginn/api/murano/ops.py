@@ -2640,7 +2640,7 @@ def get_canal(producto):
         raise TypeError("ops::get_canal -> producto debe ser un "
                         "pclases.ProductoCompra o pclases.ProductoVenta")
     pmurano = get_producto_murano(codigo)
-    canal = pmurano.CodigoCanal
+    canal = pmurano.CodigoCanal     # pylint: disable=no-member
     try:
         cod_canal = CANALES[canal]
     except KeyError:
