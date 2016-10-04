@@ -75,7 +75,7 @@ def search_series(producto):
     sql = """SELECT CodigoAlmacen,
                     Partida,
                     COUNT(UnidadesSerie) AS bultos,
-                    SUM(PesoNeto) AS peso_neto,
+                    SUM(PesoNeto_) AS peso_neto,
                     SUM(MetrosCuadrados) AS metros_cuadrados
                FROM {}.dbo.ArticulosSeries
               WHERE CodigoEmpresa = '{}'
