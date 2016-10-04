@@ -141,10 +141,12 @@ def update_acumulados(data, producto, simulate=True):
              WHERE CodigoEmpresa = {}
                AND Ejercicio = {}
                AND Periodo = {}
+               AND CodigoArticulo = '{}'
           """.format(database,
                      codempresa,
                      ejercicio,
-                     periodo)
+                     periodo,
+                     producto.CodigoArticulo)
     if simulate:
         print("SQL:", sql)
         res = True
