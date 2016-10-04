@@ -79,7 +79,7 @@ def search_series(producto):
                     SUM(MetrosCuadrados) AS metros_cuadrados
                FROM {}.dbo.ArticulosSeries
               WHERE CodigoEmpresa = '{}'
-                AND CodigoArticuo = '{}'
+                AND CodigoArticulo = '{}'
                 AND UnidadesSerie <> 0
              GROUP BY CodigoAlmacen,
                       Partida;""".format(conn.get_database(),
