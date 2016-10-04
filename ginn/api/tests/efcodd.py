@@ -130,6 +130,10 @@ def update_acumulados(data, producto, simulate=True):
                                  """.format(conn.get_database(),
                                             murano.connection.CODEMPRESA))[0]
     periodo = 99    # En Murano, 99 = total. Si no, es el mes del 1 al 12.
+    if simulate:
+        codempresa = 10200
+    else:
+        codempresa = murano.connection.CODEMPRESA
     sql = """UPDATE {}.dbo.AcumuladoStock
              SET UnidadSaldo = 0,
                  UnidadSaldoTipo_ = 0
@@ -137,7 +141,7 @@ def update_acumulados(data, producto, simulate=True):
                AND Ejercicio = {}
                AND Periodo = {}
           """.format(conn.get_database(),
-                     murano.connection.CODEMPRESA,
+                     codempresa,
                      ejercicio,
                      periodo)
     if simulate:
