@@ -83,6 +83,7 @@ def search_series(producto):
                 AND CodigoArticulo = '{}'
                 AND UnidadesSerie <> 0
              GROUP BY CodigoAlmacen,
+                      CodigoTalla01_,
                       Partida;""".format(conn.get_database(),
                                          murano.connection.CODEMPRESA,
                                          producto.CodigoArticulo)
