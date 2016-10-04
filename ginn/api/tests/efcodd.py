@@ -74,6 +74,7 @@ def search_series(producto):
     conn = murano.connection.Connection()
     sql = """SELECT CodigoAlmacen,
                     Partida,
+                    CodigoTalla01_,
                     COUNT(UnidadesSerie) AS bultos,
                     SUM(PesoNeto_) AS peso_neto,
                     SUM(MetrosCuadrados) AS metros_cuadrados
