@@ -110,7 +110,7 @@ def group_data(rs):
     return res
 
 
-# pylint: disable=too-many-branches
+# pylint: disable=too-many-branches,too-many-locals
 def update_acumulados(data, producto, simulate=True):
     """
     Lanza una consulta SQL contra la tabla de acumulados para cambiar los
@@ -122,6 +122,8 @@ def update_acumulados(data, producto, simulate=True):
     # Reset de todos los registros 99 del producto.
     if simulate:
         ejercicio = datetime.date.today().year
+        codempresa = 10200
+        database = "GEOTEXAN"
     else:
         conn = murano.connection.Connection()
         ejercicio = conn.run_sql("""SELECT MAX(Ejercicio)
@@ -129,23 +131,22 @@ def update_acumulados(data, producto, simulate=True):
                                     WHERE CodigoEmpresa = {};
                                  """.format(conn.get_database(),
                                             murano.connection.CODEMPRESA))[0]
-    periodo = 99    # En Murano, 99 = total. Si no, es el mes del 1 al 12.
-    if simulate:
-        codempresa = 10200
-    else:
         codempresa = murano.connection.CODEMPRESA
+        database = conn.get_database()
+    periodo = 99    # En Murano, 99 = total. Si no, es el mes del 1 al 12.
     sql = """UPDATE {}.dbo.AcumuladoStock
              SET UnidadSaldo = 0,
                  UnidadSaldoTipo_ = 0
              WHERE CodigoEmpresa = {}
                AND Ejercicio = {}
                AND Periodo = {}
-          """.format(conn.get_database(),
+          """.format(database,
                      codempresa,
                      ejercicio,
                      periodo)
     if simulate:
         print("SQL:", sql)
+        res = True
     else:
         res = conn.run_sql(sql)
     # pylint: disable=too-many-nested-blocks
@@ -169,7 +170,7 @@ def update_acumulados(data, producto, simulate=True):
                                        AND CodigoAlmacen = '{}'
                                        AND Partida = '{}'
                                        AND CodigoArticulo = '{}';
-                                  """.format(conn.get_database(),
+                                  """.format(database,
                                              bultos,
                                              stock,
                                              murano.connection.CODEMPRESA,
