@@ -97,7 +97,7 @@ def group_data(rs):
     res = defaultdict(lambda: defaultdict(dict))
     for registro in rs:
         almacen = registro['CodigoAlmacen']
-        partida = registro['CodigoPartida']
+        partida = registro['Partida']
         calidad = registro['CodigoTalla01_']
         bultos = registro['bultos']
         peso_neto = registro['peso_neto']
