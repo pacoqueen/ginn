@@ -154,6 +154,7 @@ class Connection(object):
                         if VERBOSE and DEBUG:
                             print(strlog)
                         self.conn.commit()
+                        res = True
                         strlog = "\t\t\t\t[OK]"
                         logging.info(strlog)
                         if VERBOSE and DEBUG:
