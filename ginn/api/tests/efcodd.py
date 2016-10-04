@@ -126,11 +126,11 @@ def update_acumulados(data, producto, simulate=True):
         database = "GEOTEXAN"
     else:
         conn = murano.connection.Connection()
-        ejercicio = conn.run_sql("""SELECT MAX(Ejercicio)
+        ejercicio = conn.run_sql("""SELECT MAX(Ejercicio) AS e
                                     FROM {}.dbo.AcumuladoStock
                                     WHERE CodigoEmpresa = {};
                                  """.format(conn.get_database(),
-                                            murano.connection.CODEMPRESA))[0]
+                                            murano.connection.CODEMPRESA))['e']
         codempresa = murano.connection.CODEMPRESA
         database = conn.get_database()
     periodo = 99    # En Murano, 99 = total. Si no, es el mes del 1 al 12.
