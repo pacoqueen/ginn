@@ -2223,6 +2223,7 @@ class PartesDeFabricacionBalas(Ventana):
             self.guardar(None)
             self.producto = producto
             self.rellenar_datos_producto(self.producto)
+            # TODO: Meter una barra de progreso. Al conectar con Murano, tarda.
             for a in self.objeto.articulos:
                 a.productoVenta = self.producto
                 self.logger.debug("Cambiando producto de %s en Murano a %s "
