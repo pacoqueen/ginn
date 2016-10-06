@@ -382,6 +382,21 @@ def corregir_dimensiones_nulas(fsalida, simulate=True):
     return res
 
 
+def make_consumos(fsalida, simulate=True, fini=None, ffin=None):
+    """
+    Recorre todos los consumos entre la fecha inicial y la final. Para cada
+    consumo realiza el rebaje de stock en Murano mediante un movimiento de
+    salida y marca el _flag_ `api` a True para indicarlo.
+    Si simualte es True, no hace nada y solo actualiza el log de `fsalida`.
+    """
+    # Check de parámetros
+    if not fini:
+        fini = datetime.date(2016, 5, 31)   # Fecha en que entró Murano.
+    if not ffin:
+        ffin = datetime.date.today() + datetime.timedelta(days=1)
+    pass
+
+
 def main():
     """
     Rutina principal.
@@ -409,7 +424,6 @@ def main():
     parser.add_argument("-c", "--consumos", dest="consumos",
                         help="Realiza los consumos atrasados",
                         default=False, action='store_true')
-    # TODO: PORASQUI: Me falta implementar la opción de los consumos.
     args = parser.parse_args()
     if args.ver_salida:
         if not os.path.exists(args.fsalida):
@@ -430,6 +444,9 @@ def main():
     if args.codigos_articulos:
         for codigo in tqdm(args.codigos_articulos, desc="Artículos"):
             sync_articulo(codigo, args.fsalida, args.simulate)
+    # # Consumos
+    if args.consumos:
+        make_consumos(args.fsalida, args.simulate)
 
 
 if __name__ == "__main__":

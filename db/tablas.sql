@@ -780,7 +780,8 @@ CREATE TABLE consumo(
     despues FLOAT DEFAULT 0,    -- antes y después del consumo (por ejemplo en
                                 -- la granza de los silos en la línea de fibra)
     cantidad FLOAT DEFAULT 0.0,
-    silo_id INT REFERENCES silo DEFAULT NULL
+    silo_id INT REFERENCES silo DEFAULT NULL,
+    api BOOL DEFAULT FALSE      -- NEW! 06/10/2016. Indica si enviado a Murano.
 );
 
 -----------------------------------------------------------
