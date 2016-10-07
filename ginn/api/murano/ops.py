@@ -2656,8 +2656,8 @@ def get_stock_murano(producto, _almacen=None, _calidad=None, _unidad=None):
     para ese almacén y unidad.
     Ejemplos:
     {'GTX': {'A': {'KG': 100, 'ROLLO': 2},
-             'B': {'KG': 50, 'ROLLO': 1}},
-     'SUS': {'A': {'KG': 50, 'ROLLO': 1}}}
+             'B': {'KG': 500, 'ROLLO': 10}},
+     'SUS': {'A': {'KG': 500, 'ROLLO': 10}}}
     {'GTX': {'UD': 13},
      'RES': {'UD': 0}}
     """
@@ -2713,8 +2713,6 @@ def get_stock_murano(producto, _almacen=None, _calidad=None, _unidad=None):
             res[almacen][calidad][unidad_especifica] = stock_especifica
         res[almacen][calidad][unidad_basica] = stock_basica
     # Ahora filtro por los valores recibidos:
-    if _almacen:
-        res = res[almacen]
     if _calidad:
         _res = {}
         for almacen in res:
@@ -2723,6 +2721,8 @@ def get_stock_murano(producto, _almacen=None, _calidad=None, _unidad=None):
                 if calidad == _calidad:
                     _res[almacen] = res[almacen][calidad]
         res = _res
+    if _almacen:
+        res = res[almacen]
     # La unidad se filtra arriba directamente. La unidad (KG, BALA...) siempre
     # se devuelve para saber en qué está el valor. A no ser que (y por
     # simplificar) si me piden un almacén concreto, calidad y una dimensión
