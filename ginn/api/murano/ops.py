@@ -2682,7 +2682,7 @@ def get_stock_murano(producto, _almacen=None, _calidad=None, _unidad=None):
     codempresa = CODEMPRESA
     database = conn.get_database()
     periodo = 99
-    sql = """SELECT CodigoAlmacen, CodigoTalla01_, TipoUnidadMedida1_,
+    sql = """SELECT CodigoAlmacen, CodigoTalla01_, TipoUnidadMedida_,
                     UnidadSaldo, UnidadSaldoTipo_
                FROM {}.dbo.AcumuladoStock
               WHERE CodigoEmpresa = {}
@@ -2705,7 +2705,7 @@ def get_stock_murano(producto, _almacen=None, _calidad=None, _unidad=None):
             res[almacen][calidad] = {}
         stock_basica = registro['UnidadSaldo']
         stock_especifica = registro['UnidadSaldoTipo_']
-        unidad_especifica = registro['TipoUnidadMedida1_']
+        unidad_especifica = registro['TipoUnidadMedida_']
         unidad_basica = pmurano['UnidadMedida2_']
         if _unidad and unidad_especifica == _unidad:
             res[almacen][calidad][unidad_especifica] = stock_especifica
