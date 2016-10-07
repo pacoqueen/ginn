@@ -2693,7 +2693,7 @@ def get_stock_murano(producto, _almacen=None, _calidad=None, _unidad=None):
                        codempresa,
                        ejercicio,
                        periodo,
-                       producto.CodigoArticulo)
+                       pmurano['CodigoArticulo'])
     rs = conn.run_sql(sql)
     # Tratamiento de datos: los meto en un diccionario bien estructurado.
     for registro in rs:
@@ -2706,7 +2706,6 @@ def get_stock_murano(producto, _almacen=None, _calidad=None, _unidad=None):
         stock_basica = registro['UnidadSaldo']
         stock_especifica = registro['UnidadSaldoTipo_']
         unidad_especifica = registro['TipoUnidadMedida1_']
-        pmurano = get_producto_murano(codigo)
         unidad_basica = pmurano['UnidadMedida2_']
         if _unidad and unidad_especifica == _unidad:
             res[almacen][calidad][unidad_especifica] = stock_especifica
