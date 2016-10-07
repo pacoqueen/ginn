@@ -2646,3 +2646,89 @@ def get_canal(producto):
     except KeyError:
         cod_canal = None
     return cod_canal
+
+
+def get_stock_murano(producto, _almacen=None, _calidad=None, _unidad=None):
+    """
+    Devuelve un diccionario por almacén con el stock del producto recibido
+    tanto en unidades base como específica y calidad (si se aplican).
+    Si se especifica código de almacén o unidad, solo devuelve las existencias
+    para ese almacén y unidad.
+    Ejemplos:
+    {'GTX': {'A': {'KG': 100, 'ROLLO': 2},
+             'B': {'KG': 50, 'ROLLO': 1}},
+     'SUS': {'A': {'KG': 50, 'ROLLO': 1}}}
+    {'GTX': {'UD': 13},
+     'RES': {'UD': 0}}
+    """
+    if isinstance(producto, pclases.ProductoCompra):
+        codigo = "PC" + str(producto.id)
+    elif isinstance(producto, pclases.ProductoVenta):
+        codigo = "PV" + str(producto.id)
+    elif isinstance(producto, str):
+        codigo = producto
+    else:
+        raise TypeError("ops::get_canal -> producto debe ser un "
+                        "pclases.ProductoCompra o pclases.ProductoVenta")
+    pmurano = get_producto_murano(codigo)
+    res = {}
+    conn = Connection()
+    rs_ejercicio = conn.run_sql("""SELECT MAX(Ejercicio) AS ejercicio
+                                   FROM {}.dbo.AcumuladoStock
+                                   WHERE CodigoEmpresa = {};
+                                """.format(conn.get_database(),
+                                           CODEMPRESA))
+    ejercicio = rs_ejercicio[0]['ejercicio']
+    codempresa = CODEMPRESA
+    database = conn.get_database()
+    periodo = 99
+    sql = """SELECT CodigoAlmacen, CodigoTalla01_, TipoUnidadMedida1_,
+                    UnidadSaldo, UnidadSaldoTipo_
+               FROM {}.dbo.AcumuladoStock
+              WHERE CodigoEmpresa = {}
+                AND Ejercicio = {}
+                AND CodigoArticulo = '{}'
+                AND Periodo = {};
+            """.format(database,
+                       codempresa,
+                       ejercicio,
+                       periodo,
+                       producto.CodigoArticulo)
+    rs = conn.run_sql(sql)
+    # Tratamiento de datos: los meto en un diccionario bien estructurado.
+    for registro in rs:
+        almacen = registro['CodigoAlmacen']
+        calidad = registro['CodigoTalla01_']
+        if almacen not in res:
+            res[almacen] = {}
+        if calidad not in res[almacen]:
+            res[almacen][calidad] = {}
+        stock_basica = registro['UnidadSaldo']
+        stock_especifica = registro['UnidadSaldoTipo_']
+        unidad_especifica = registro['TipoUnidadMedida1_']
+        pmurano = get_producto_murano(codigo)
+        unidad_basica = pmurano['UnidadMedida2_']
+        if _unidad and unidad_especifica == _unidad:
+            res[almacen][calidad][unidad_especifica] = stock_especifica
+        if _unidad and unidad_basica == _unidad:
+            res[almacen][calidad][unidad_especifica] = stock_especifica
+        res[almacen][calidad][unidad_basica] = stock_basica
+    # Ahora filtro por los valores recibidos:
+    if _almacen:
+        res = res[almacen]
+    if _calidad:
+        _res = {}
+        for almacen in res:
+            _res[almacen] = {}
+            for calidad in res[almacen]:
+                if calidad == _calidad:
+                    _res[almacen] = res[almacen][calidad]
+        res = _res
+    # La unidad se filtra arriba directamente. La unidad (KG, BALA...) siempre
+    # se devuelve para saber en qué está el valor. A no ser que (y por
+    # simplificar) si me piden un almacén concreto, calidad y una dimensión
+    # concreta, solo tendré un valor en el diccionario. Lo devuelvo
+    # directamente.
+    if _almacen and _calidad and _unidad:
+        res = res[_almacen][_calidad][_unidad]
+    return res

@@ -390,11 +390,46 @@ def make_consumos(fsalida, simulate=True, fini=None, ffin=None):
     Si simualte es True, no hace nada y solo actualiza el log de `fsalida`.
     """
     # Check de parámetros
+    report = open(fsalida, "a", 0)
     if not fini:
         fini = datetime.date(2016, 5, 31)   # Fecha en que entró Murano.
     if not ffin:
         ffin = datetime.date.today() + datetime.timedelta(days=1)
-    pass
+    pdps = pclases.ParteDeProduccion.select(pclases.AND(
+        pclases.ParteDeProduccion.q.fechahorainicio >= fini,
+        pclases.ParteDeProduccion.q.fechahorafin <= ffin))
+    report.write("{} partes encontrados.".format(pdps.count()))
+    for pdp in pdps:
+        for consumo in pdp.consumos:
+            # Ignoro los ya tratados y los que no se completaron en ginn.
+            if not consumo.api and consumo.actualizado:
+                producto = consumo.productoCompra
+                idmurano = "PC{}".format(producto.id)
+                cantidad = consumo.cantidad
+                productomurano = murano.ops.get_producto_murano(idmurano)
+                unidad = productomurano['UnidadMedida2_']
+                # Todos los consumos siempre se hacen del almacén principal
+                stockmurano = murano.ops.get_stock_murano(productomurano,
+                                                          'GTX', '', unidad)
+                report.write("Actualizando {} ({}) en Murano:".format(
+                    producto.descripcion, idmurano))
+                report.write("\tExistencias anteriores: {} {}".format(
+                    stockmurano, unidad))
+                report.write("\tCantidad a descontar: {} {}".format(
+                    cantidad, producto.unidad))
+                # Aquí hacemos efectivo el rebaje de stock
+                res = murano.ops.update_stock(producto, cantidad, 'GTX',
+                                              simulate)
+                report.write("\tValor de retorno: {}".format(res))
+                if res and not simulate:
+                    consumo.api = True
+                    consumo.sync()
+                    report.write("\tValor api consumo actualizado.")
+                stockmuranoact = murano.ops.get_stock_murano(productomurano,
+                                                             'GTX', '', unidad)
+                report.write("\tExistencias actual: {} {}".format(
+                    stockmuranoact, unidad))
+    report.close()
 
 
 def main():
