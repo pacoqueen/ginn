@@ -2692,8 +2692,8 @@ def get_stock_murano(producto, _almacen=None, _calidad=None, _unidad=None):
             """.format(database,
                        codempresa,
                        ejercicio,
-                       periodo,
-                       pmurano['CodigoArticulo'])
+                       pmurano['CodigoArticulo'],
+                       periodo)
     rs = conn.run_sql(sql)
     # Tratamiento de datos: los meto en un diccionario bien estructurado.
     for registro in rs:
