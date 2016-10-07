@@ -2716,13 +2716,14 @@ def get_stock_murano(producto, _almacen=None, _calidad=None, _unidad=None):
     if _calidad:
         _res = {}
         for almacen in res:
-            _res[almacen] = {}
-            for calidad in res[almacen]:
-                if calidad == _calidad:
-                    _res[almacen] = res[almacen][calidad]
+            try:
+                _res[almacen] = res[almacen][_calidad]
+            except KeyError:
+                # Esa calidad no está presente en el almacén
+                _res[almacen] = {}
         res = _res
     if _almacen:
-        res = res[almacen]
+        res = res[_almacen]
     # La unidad se filtra arriba directamente. La unidad (KG, BALA...) siempre
     # se devuelve para saber en qué está el valor. A no ser que (y por
     # simplificar) si me piden un almacén concreto, calidad y una dimensión
