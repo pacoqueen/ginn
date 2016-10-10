@@ -419,7 +419,7 @@ def make_consumos(fsalida, simulate=True, fini=None, ffin=None):
                     cantidad, producto.unidad))
                 # Aquí hacemos efectivo el rebaje de stock
                 res = murano.ops.update_stock(producto, cantidad, 'GTX',
-                                              simulate)
+                                              simulate=simulate)
                 report.write("\tValor de retorno: {}".format(res))
                 if res and not simulate:
                     consumo.api = True
