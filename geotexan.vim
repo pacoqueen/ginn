@@ -1,6 +1,6 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim:
 " Vim session script.
-" Created by session.vim 2.13.1 on 30 septiembre 2016 at 13:41:37.
+" Created by session.vim 2.13.1 on 07 octubre 2016 at 15:48:18.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -12,7 +12,7 @@ if exists('g:did_indent_on') != 1 | filetype indent on | endif
 if &background != 'dark'
 	set background=dark
 endif
-if !exists('g:colors_name') || g:colors_name != 'sierra' | colorscheme sierra | endif
+if !exists('g:colors_name') || g:colors_name != 'kalisi' | colorscheme kalisi | endif
 call setqflist([])
 let SessionLoad = 1
 if &cp | set nocp | endif
@@ -26,11 +26,11 @@ endif
 set shortmess=aoO
 badd +1 ginn/api/murano/ops.py
 badd +1 ginn/api/tests/sr_lobo.py
-badd +1 ginn/api/murano/connection.py
 badd +52 ginn/api/murano/__init__.py
+badd +0 ginn/api/tests/efcodd.py
 argglobal
 silent! argdel *
-edit ginn/api/murano/connection.py
+edit ginn/api/tests/efcodd.py
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -42,10 +42,7 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-wincmd _ | wincmd |
-split
-4wincmd k
-wincmd w
+3wincmd k
 wincmd w
 wincmd w
 wincmd w
@@ -54,16 +51,14 @@ set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 exe 'vert 1resize ' . ((&columns * 22 + 58) / 117)
-exe '2resize ' . ((&lines * 10 + 27) / 54)
+exe '2resize ' . ((&lines * 1 + 27) / 54)
 exe 'vert 2resize ' . ((&columns * 94 + 58) / 117)
-exe '3resize ' . ((&lines * 17 + 27) / 54)
+exe '3resize ' . ((&lines * 23 + 27) / 54)
 exe 'vert 3resize ' . ((&columns * 94 + 58) / 117)
 exe '4resize ' . ((&lines * 10 + 27) / 54)
 exe 'vert 4resize ' . ((&columns * 94 + 58) / 117)
-exe '5resize ' . ((&lines * 1 + 27) / 54)
+exe '5resize ' . ((&lines * 15 + 27) / 54)
 exe 'vert 5resize ' . ((&columns * 94 + 58) / 117)
-exe '6resize ' . ((&lines * 10 + 27) / 54)
-exe 'vert 6resize ' . ((&columns * 94 + 58) / 117)
 argglobal
 enew
 file __Tagbar__
@@ -86,12 +81,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 26 - ((4 * winheight(0) + 5) / 10)
+let s:l = 137 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-26
-normal! 0
+137
+normal! 047|
 wincmd w
 argglobal
 edit ginn/api/murano/ops.py
@@ -104,12 +99,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 2637 - ((1 * winheight(0) + 8) / 17)
+let s:l = 2732 - ((20 * winheight(0) + 11) / 23)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-2637
-normal! 020|
+2732
+normal! 0135|
 wincmd w
 argglobal
 enew
@@ -133,36 +128,23 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 436 - ((5 * winheight(0) + 0) / 1)
+let s:l = 420 - ((8 * winheight(0) + 7) / 15)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-436
-normal! 05|
-wincmd w
-argglobal
-enew
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
+420
+normal! 021|
 wincmd w
 3wincmd w
 exe 'vert 1resize ' . ((&columns * 22 + 58) / 117)
-exe '2resize ' . ((&lines * 10 + 27) / 54)
+exe '2resize ' . ((&lines * 1 + 27) / 54)
 exe 'vert 2resize ' . ((&columns * 94 + 58) / 117)
-exe '3resize ' . ((&lines * 17 + 27) / 54)
+exe '3resize ' . ((&lines * 23 + 27) / 54)
 exe 'vert 3resize ' . ((&columns * 94 + 58) / 117)
 exe '4resize ' . ((&lines * 10 + 27) / 54)
 exe 'vert 4resize ' . ((&columns * 94 + 58) / 117)
-exe '5resize ' . ((&lines * 1 + 27) / 54)
+exe '5resize ' . ((&lines * 15 + 27) / 54)
 exe 'vert 5resize ' . ((&columns * 94 + 58) / 117)
-exe '6resize ' . ((&lines * 10 + 27) / 54)
-exe 'vert 6resize ' . ((&columns * 94 + 58) / 117)
 tabnext 1
 if exists('s:wipebuf')
 "   silent exe 'bwipe ' . s:wipebuf
@@ -191,19 +173,7 @@ if !getbufvar(s:bufnr_save, '&modified')
   endif
 endif
 execute "cd" fnameescape(s:cwd_save)
-6wincmd w
-tabnext 1
-let s:bufnr_save = bufnr("%")
-let s:cwd_save = getcwd()
-cwindow
-if !getbufvar(s:bufnr_save, '&modified')
-  let s:wipebuflines = getbufline(s:bufnr_save, 1, '$')
-  if len(s:wipebuflines) <= 1 && empty(get(s:wipebuflines, 0, ''))
-    silent execute 'bwipeout' s:bufnr_save
-  endif
-endif
-execute "cd" fnameescape(s:cwd_save)
-1resize 52|vert 1resize 22|2resize 10|vert 2resize 94|3resize 17|vert 3resize 94|4resize 10|vert 4resize 94|5resize 1|vert 5resize 94|6resize 10|vert 6resize 94|
+1resize 52|vert 1resize 22|2resize 1|vert 2resize 94|3resize 23|vert 3resize 94|4resize 10|vert 4resize 94|5resize 15|vert 5resize 94|
 3wincmd w
 tabnext 1
 if exists('s:wipebuf')

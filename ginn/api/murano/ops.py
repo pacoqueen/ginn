@@ -2713,22 +2713,23 @@ def get_stock_murano(producto, _almacen=None, _calidad=None, _unidad=None):
             res[almacen][calidad][unidad_especifica] = stock_especifica
         res[almacen][calidad][unidad_basica] = stock_basica
     # Ahora filtro por los valores recibidos:
-    if _calidad:
-        _res = {}
-        for almacen in res:
-            try:
-                _res[almacen] = res[almacen][_calidad]
-            except KeyError:
-                # Esa calidad no está presente en el almacén
-                _res[almacen] = {}
-        res = _res
-    if _almacen:
-        res = res[_almacen]
     # La unidad se filtra arriba directamente. La unidad (KG, BALA...) siempre
     # se devuelve para saber en qué está el valor. A no ser que (y por
     # simplificar) si me piden un almacén concreto, calidad y una dimensión
     # concreta, solo tendré un valor en el diccionario. Lo devuelvo
     # directamente.
-    if _almacen and _calidad and _unidad:
+    if _almacen is not None and _calidad is not None and _unidad is not None:
         res = res[_almacen][_calidad][_unidad]
+    else:
+        if _calidad:
+            _res = {}
+            for almacen in res:
+                try:
+                    _res[almacen] = res[almacen][_calidad]
+                except KeyError:
+                    # Esa calidad no está presente en el almacén
+                    _res[almacen] = {}
+            res = _res
+        if _almacen:
+            res = res[_almacen]
     return res
