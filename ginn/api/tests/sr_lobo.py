@@ -425,7 +425,7 @@ def make_consumos(fsalida, simulate=True, fini=None, ffin=None):
                     consumo.api = True
                     consumo.sync()
                     report.write("\tValor api consumo actualizado.")
-                stockmuranoact = murano.ops.get_stock_murano(productomurano,
+                stockmuranoact = murano.ops.get_stock_murano(producto,
                                                              'GTX', '', unidad)
                 report.write("\tExistencias actual: {} {}".format(
                     stockmuranoact, unidad))
