@@ -3057,6 +3057,8 @@ class PartesDeFabricacionRollos(Ventana):
                     "Impresión de etiqueta para rollo %s" % r.get_info())
                 elemento, fetiqueta = build_etiqueta(r)
                 rollos.append(elemento)
+                # CWT: [10/10/2016] Hay que imprimir 2 etiquetas por cada rollo
+                rollos.append(elemento)
             if boton.name == "b_etiquetas":
                 reports.abrir_pdf(
                     geninformes.etiquetasRollos(rollos, mostrar_marcado))
@@ -3807,6 +3809,8 @@ def imprimir_etiqueta(articulo, marcado_ce, ventana_parte, defectuoso = False):
                             'objeto': None,     # Si todavía no se ha creado, como defectuoso == False, geninformes no lo necesitará.
                             'productoVenta': articulo.productoVenta,
                            }    # OJO: Si el formato de código de rollo cambia, también hay que cambiarlo aquí.
+                rollos.append(elemento)
+                # [10/10/2016]: Se imprimen 2 etiquetas por cada rollo (por si se despega una del rollo)
                 rollos.append(elemento)
             # informes.mandar_a_imprimir_con_ghostscript(geninformes.etiquetasRollosEtiquetadora(rollos, marcado_ce))
             ventana_parte.ultima_etiqueta = ultima
