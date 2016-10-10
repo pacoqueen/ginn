@@ -1785,7 +1785,10 @@ def update_stock(producto, delta, almacen, guid_proceso=None,
     fecha = today.strftime("%Y-%m-%d %H:%M:%S")
     documento = int(today.strftime("%Y%m%d"))
     codigo_articulo = buscar_codigo_producto(producto)
-    codigo_almacen = buscar_codigo_almacen(almacen)
+    if isinstance(almacen, pclases.Almacen):
+        codigo_almacen = buscar_codigo_almacen(almacen)
+    else:
+        codigo_almacen = almacen    # He recibido un código directamente.
     codigo_talla = ""   # No hay calidades en los productos de compra.
     grupo_talla = 0  # No tratamiento de calidad en productos sin trazabilidad.
     if delta >= 0:
