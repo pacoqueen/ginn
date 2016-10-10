@@ -409,7 +409,7 @@ def make_consumos(fsalida, simulate=True, fini=None, ffin=None):
                 productomurano = murano.ops.get_producto_murano(idmurano)
                 unidad = productomurano['UnidadMedida2_']
                 # Todos los consumos siempre se hacen del almacén principal
-                stockmurano = murano.ops.get_stock_murano(productomurano,
+                stockmurano = murano.ops.get_stock_murano(producto,
                                                           'GTX', '', unidad)
                 report.write("Actualizando {} ({}) en Murano:".format(
                     producto.descripcion, idmurano))

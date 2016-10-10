@@ -2668,7 +2668,7 @@ def get_stock_murano(producto, _almacen=None, _calidad=None, _unidad=None):
     elif isinstance(producto, str):
         codigo = producto
     else:
-        raise TypeError("ops::get_canal -> producto debe ser un "
+        raise TypeError("ops::get_stock_murano -> producto debe ser un "
                         "pclases.ProductoCompra o pclases.ProductoVenta")
     pmurano = get_producto_murano(codigo)
     res = {}
