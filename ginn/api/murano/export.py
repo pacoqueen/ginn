@@ -520,7 +520,10 @@ def determinar_familia_murano(producto):
         elif producto.es_bolsa() or producto.es_caja():
             res = "FEM"     # Fibra embolsada
     elif isinstance(producto, pclases.ProductoCompra):
-        valor = producto.tipoDeMaterial.descripcion
+        try:
+            valor = producto.tipoDeMaterial.descripcion
+        except AttributeError:
+            valor = None    # No tiene tipo de material el producto.
         if valor:
             if valor == "Aceites y lubricantes":
                 res = "OIL"
