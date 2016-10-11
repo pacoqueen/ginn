@@ -398,7 +398,7 @@ def make_consumos(fsalida, simulate=True, fini=None, ffin=None):
     pdps = pclases.ParteDeProduccion.select(pclases.AND(
         pclases.ParteDeProduccion.q.fechahorainicio >= fini,
         pclases.ParteDeProduccion.q.fechahorafin <= ffin))
-    report.write("{} partes encontrados.".format(pdps.count()))
+    report.write("{} partes encontrados.\n".format(pdps.count()))
     for pdp in pdps:
         for consumo in pdp.consumos:
             # Ignoro los ya tratados y los que no se completaron en ginn.
@@ -411,23 +411,23 @@ def make_consumos(fsalida, simulate=True, fini=None, ffin=None):
                 # Todos los consumos siempre se hacen del almacén principal
                 stockmurano = murano.ops.get_stock_murano(producto,
                                                           'GTX', '', unidad)
-                report.write("Actualizando {} ({}) en Murano:".format(
+                report.write("Actualizando {} ({}) en Murano:\n".format(
                     producto.descripcion, idmurano))
-                report.write("\tExistencias anteriores: {} {}".format(
+                report.write("\tExistencias anteriores: {} {}\n".format(
                     stockmurano, unidad))
-                report.write("\tCantidad a descontar: {} {}".format(
+                report.write("\tCantidad a descontar: {} {}\n".format(
                     cantidad, producto.unidad))
                 # Aquí hacemos efectivo el rebaje de stock
                 res = murano.ops.update_stock(producto, cantidad, 'GTX',
                                               simulate=simulate)
-                report.write("\tValor de retorno: {}".format(res))
+                report.write("\tValor de retorno: {}\n".format(res))
                 if res and not simulate:
                     consumo.api = True
                     consumo.sync()
-                    report.write("\tValor api consumo actualizado.")
+                    report.write("\tValor api consumo actualizado.\n")
                 stockmuranoact = murano.ops.get_stock_murano(producto,
                                                              'GTX', '', unidad)
-                report.write("\tExistencias actual: {} {}".format(
+                report.write("\tExistencias actual: {} {}\n".format(
                     stockmuranoact, unidad))
     report.close()
 
