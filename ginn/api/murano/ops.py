@@ -2722,7 +2722,12 @@ def get_stock_murano(producto, _almacen=None, _calidad=None, _unidad=None):
     # concreta, solo tendré un valor en el diccionario. Lo devuelvo
     # directamente.
     if _almacen is not None and _calidad is not None and _unidad is not None:
-        res = res[_almacen][_calidad][_unidad]
+        try:
+            res = res[_almacen][_calidad][_unidad]
+        except KeyError:
+            # O no hay stock para ese almacén, o en esa calidad o la unidad
+            # es errónea.
+            res = 0.0
     else:
         if _calidad:
             _res = {}
