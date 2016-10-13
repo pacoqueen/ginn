@@ -399,7 +399,7 @@ def make_consumos(fsalida, simulate=True, fini=None, ffin=None):
         pclases.ParteDeProduccion.q.fechahorainicio >= fini,
         pclases.ParteDeProduccion.q.fechahorafin <= ffin))
     report.write("{} partes encontrados.\n".format(pdps.count()))
-    for pdp in pdps:
+    for pdp in tqdm(pdps):
         for consumo in pdp.consumos:
             # Ignoro los ya tratados y los que no se completaron en ginn.
             if not consumo.api and consumo.actualizado:
