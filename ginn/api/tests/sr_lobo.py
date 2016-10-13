@@ -405,7 +405,7 @@ def make_consumos(fsalida, simulate=True, fini=None, ffin=None):
             if not consumo.api and consumo.actualizado:
                 producto = consumo.productoCompra
                 idmurano = "PC{}".format(producto.id)
-                cantidad = consumo.cantidad
+                cantidad = -1.0 * consumo.cantidad
                 productomurano = murano.ops.get_producto_murano(idmurano)
                 unidad = productomurano['UnidadMedida2_']
                 # Todos los consumos siempre se hacen del almacén principal
