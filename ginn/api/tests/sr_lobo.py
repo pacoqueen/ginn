@@ -384,11 +384,34 @@ def corregir_dimensiones_nulas(fsalida, simulate=True):
 
 def make_consumos(fsalida, simulate=True, fini=None, ffin=None):
     """
+    Realiza todos los consumos de materiales y de balas cargadas en la línea.
+    """
+    make_consumos_materiales(fsalida, simulate, fini, ffin)
+    make_consumos_balas(fsalida, simulate, fini, ffin)
+
+
+def make_consumos_balas(fsalida, simulate=True, fini=None, ffin=None):
+    """
+    Realiza los consumos de balas cargadas en las partidas de carga para
+    consumo de la línea de geotextiles.
+    """
+    res = True
+# PORASQUI: De paso, piensa en una forma de dividir entre 100 las cantidades iniciales.
+# Sabemos las existencias que importamos, así que réstala al total y divide lo que haga falta. Plantea la ecuación en papel, cazurro.
+    # TODO
+    return res
+
+
+def make_consumos_materiales(fsalida, simulate=True, fini=None, ffin=None):
+    """
     Recorre todos los consumos entre la fecha inicial y la final. Para cada
     consumo realiza el rebaje de stock en Murano mediante un movimiento de
     salida y marca el _flag_ `api` a True para indicarlo.
     Si simualte es True, no hace nada y solo actualiza el log de `fsalida`.
+    Devuelve True si todos los consumos pendientes se han realizado. False si
+    alguno de ellos ha dado error.
     """
+    res = True
     # Check de parámetros
     report = open(fsalida, "a", 0)
     if not fini:
@@ -420,7 +443,7 @@ def make_consumos(fsalida, simulate=True, fini=None, ffin=None):
                     cantidad, producto.unidad))
                 # Aquí hacemos efectivo el rebaje de stock
                 res = murano.ops.update_stock(producto, cantidad, 'GTX',
-                                              simulate=simulate)
+                                              simulate=simulate) and res
                 report.write("\tValor de retorno: {}\n".format(res))
                 if res and not simulate:
                     consumo.api = True
@@ -431,6 +454,7 @@ def make_consumos(fsalida, simulate=True, fini=None, ffin=None):
                 report.write("\tExistencias actual: {} {}\n".format(
                     stockmuranoact, unidad))
     report.close()
+    return res
 
 
 def main():

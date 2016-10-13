@@ -1656,7 +1656,9 @@ CREATE TABLE partida_carga(
     id SERIAL PRIMARY KEY,
     numpartida INT8 UNIQUE,
     codigo TEXT DEFAULT '',
-    fecha TIMESTAMP DEFAULT LOCALTIMESTAMP(0)
+    fecha TIMESTAMP DEFAULT LOCALTIMESTAMP(0),
+    api BOOL DEFAULT FALSE  -- NEW! 13/10/2016. Indica si se han descontado
+    -- en Murano las balas consumidas en esta partida de carga.
 );
 
 ------------------
