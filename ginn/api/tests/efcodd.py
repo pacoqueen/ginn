@@ -171,6 +171,7 @@ def update_acumulados(data, producto, simulate=True):
                                        AND Ejercicio = {}
                                        AND Periodo = {}
                                        AND CodigoAlmacen = '{}'
+                                       AND CodigoTalla01_ = '{}'
                                        AND Partida = '{}'
                                        AND CodigoArticulo = '{}';
                                   """.format(database,
@@ -180,6 +181,7 @@ def update_acumulados(data, producto, simulate=True):
                                              ejercicio,
                                              periodo,
                                              almacen,
+                                             calidad,
                                              partida,
                                              producto.CodigoArticulo)
                             if simulate:

@@ -396,10 +396,35 @@ def make_consumos_balas(fsalida, simulate=True, fini=None, ffin=None):
     consumo de la línea de geotextiles.
     """
     res = True
-# PORASQUI: De paso, piensa en una forma de dividir entre 100 las cantidades iniciales.
-# Sabemos las existencias que importamos, así que réstala al total y divide lo que haga falta. Plantea la ecuación en papel, cazurro.
-    # TODO
+    # Check de parámetros
+    report = open(fsalida, "a", 0)
+    if not fini:
+        fini = datetime.date(2016, 5, 31)   # Fecha en que entró Murano.
+    if not ffin:
+        ffin = datetime.date.today() + datetime.timedelta(days=1)
+    pcargas = pclases.PartidaCarga.select(pclases.AND(
+        pclases.PartidaCarga.q.fecha >= fini,
+        pclases.PartidaCarga.q.fecha <= ffin,
+        pclases.PartidaCarga.q.api == False))
+    report.write("{} partidas de carga encontradas.\n".format(pcargas.count()))
+    for pcarga in tqdm(pcargas, total=pcargas.count(),
+                       desc="Partidas de carga", unit="partida"):
+        respartida = True
+        for bala in pcarga.balas:
+            report.write("Consumiendo bala {} [id {} ({})] de {}:\n".format(
+                bala.codigo, bala.id, bala.articulo.puid,
+                bala.productoVenta.descripcion))
+            # Aquí hacemos efectivo el rebaje de stock
+            _res = murano.ops.consume_bala(bala, simulate=simulate)
+            report.write("\tValor de retorno: {}\n".format(_res))
+            respartida = respartida and _res
+        if respartida and not simulate:
+            pcarga.api = True
+            pcarga.sync()
+            report.write("\tValor api partida de carga actualizado.\n")
+    report.close()
     return res
+# TODO: PORASQUI: De paso, piensa en una forma de dividir entre 100 las cantidades iniciales. Sabemos las existencias que importamos, así que réstala al total y divide lo que haga falta. Plantea la ecuación en papel, cazurro.
 
 
 def make_consumos_materiales(fsalida, simulate=True, fini=None, ffin=None):
@@ -442,13 +467,14 @@ def make_consumos_materiales(fsalida, simulate=True, fini=None, ffin=None):
                 report.write("\tCantidad a descontar: {} {}\n".format(
                     cantidad, producto.unidad))
                 # Aquí hacemos efectivo el rebaje de stock
-                res = murano.ops.update_stock(producto, cantidad, 'GTX',
-                                              simulate=simulate) and res
-                report.write("\tValor de retorno: {}\n".format(res))
-                if res and not simulate:
+                _res = murano.ops.update_stock(producto, cantidad, 'GTX',
+                                               simulate=simulate)
+                report.write("\tValor de retorno: {}\n".format(_res))
+                if _res and not simulate:
                     consumo.api = True
                     consumo.sync()
                     report.write("\tValor api consumo actualizado.\n")
+                res = res and _res
                 stockmuranoact = murano.ops.get_stock_murano(producto,
                                                              'GTX', '', unidad)
                 report.write("\tExistencias actual: {} {}\n".format(
