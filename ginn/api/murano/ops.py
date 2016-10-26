@@ -1158,7 +1158,10 @@ def consume_bala(bala, cantidad=-1, producto=None, guid_proceso=None,
     Si procesar es False no lanza el proceso de importación a través de la
     DDL OEM de Murano.
     """
-    articulo = bala.articulo
+    try:
+        articulo = bala.articulo
+    except AttributeError:  # Me han pasado directamente un artículo
+        articulo = bala
     if not existe_articulo(articulo):
         logging.warning("La bala %s no existe en Murano. Se ignora.",
                         bala.codigo)
@@ -1184,9 +1187,9 @@ def consume_bala(bala, cantidad=-1, producto=None, guid_proceso=None,
          factor_conversion, origen_movimiento) = prepare_params_movstock(
             articulo, cantidad, producto)   # pylint: disable=bad-continuation
         try:
-            documento = bala.partidaCarga.codigo
+            documento = bala.partidaCarga.numpartida  # No código. Solo números
         except AttributeError:
-            documento = "ERRORPC{}".format(documento)
+            pass    # Dejo la fecha, que es valor por defecto que trae.
         if not guid_proceso:
             id_proceso_IME = crear_proceso_IME(c)
         else:
