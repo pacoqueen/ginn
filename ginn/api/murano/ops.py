@@ -1145,8 +1145,8 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
     return res
 
 
-# pylint: disable=too-many-arguments
-def consume_bala(bala, cantidad=1, producto=None, guid_proceso=None,
+# pylint: disable=too-many-arguments,too-many-statements
+def consume_bala(bala, cantidad=-1, producto=None, guid_proceso=None,
                  simulate=False, procesar=True):
     """
     Crea un movimiento de salida de una bala en las tablas temporales de
@@ -1158,10 +1158,13 @@ def consume_bala(bala, cantidad=1, producto=None, guid_proceso=None,
     Si procesar es False no lanza el proceso de importación a través de la
     DDL OEM de Murano.
     """
-# TODO: PORASQUI: Cambiar esto para que cree un movimiento de salida de stock y de serie que indique claramente que es por consumo. Comprobar antes que la bala existía en Murano y que sigue en almacén.
     articulo = bala.articulo
     if not existe_articulo(articulo):
         logging.warning("La bala %s no existe en Murano. Se ignora.",
+                        bala.codigo)
+        res = False
+    elif not esta_en_almacen(articulo):
+        logging.warning("La bala %s no está en almacén en Murano. Se ignora.",
                         bala.codigo)
         res = False
     else:
@@ -1180,12 +1183,16 @@ def consume_bala(bala, cantidad=1, producto=None, guid_proceso=None,
          unidades, precio, importe, unidades2, unidad_medida2,
          factor_conversion, origen_movimiento) = prepare_params_movstock(
             articulo, cantidad, producto)   # pylint: disable=bad-continuation
+        try:
+            documento = bala.partidaCarga.codigo
+        except AttributeError:
+            documento = "ERRORPC{}".format(documento)
         if not guid_proceso:
             id_proceso_IME = crear_proceso_IME(c)
         else:
             id_proceso_IME = guid_proceso
         guid_movposicion = generar_guid(c)
-        canal_div = ''
+        canal_div = "CONSFIB"[:10]
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
                                     documento, codigo_articulo, codigo_almacen,
@@ -1606,7 +1613,7 @@ def consultar_producto(producto=None, nombre=None, ean=None):
             res = c.run_sql(sql)
         except TypeError:   # res es None. Error con la base de datos
             if DEBUG:
-                res = []
+                res = []    # pylint: disable=redefined-variable-type
     elif ean:   # Busco por código EAN (CodigoAlternativo)
         sql = "SELECT * FROM %s.dbo.Articulos WHERE " % (c.get_database())
         where = r"CodigoAlternativo = '%s';" % (ean)
@@ -2822,7 +2829,8 @@ def get_stock_murano(producto, _almacen=None, _calidad=None, _unidad=None):
         except KeyError:
             # O no hay stock para ese almacén, o en esa calidad o la unidad
             # es errónea.
-            res = 0.0
+            # Por simplificar, si pide una cantidad en concreto devuelvo float.
+            res = 0.0   # pylint: disable=redefined-variable-type
     else:
         if _calidad:
             _res = {}
