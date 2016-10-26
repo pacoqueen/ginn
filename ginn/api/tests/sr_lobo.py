@@ -411,7 +411,7 @@ def make_consumos_balas(fsalida, simulate=True, fini=None, ffin=None):
                        desc="Partidas de carga", unit="partida"):
         respartida = True
         if not pcarga.balas:    # Partida de carga vacía. No modifico `api`
-            report.write("Partida de carga {} vacía. Se ignora".format(
+            report.write("Partida de carga {} vacía. Se ignora.\n".format(
                 pcarga.codigo))
             continue
         for bala in pcarga.balas:

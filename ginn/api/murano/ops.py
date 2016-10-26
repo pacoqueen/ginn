@@ -530,13 +530,15 @@ def _get_linea_produccion_ginn(descripcion_linea):
     """
     try:
         linea = descripcion_linea.split()[-1]
+        if linea.endswith("s"):
+            linea = linea[:-1]
     except AttributeError:
         # Es un producto de venta especial. Sin línea de producción.
         linea = None
     try:
         lineas_ginn = pclases.LineaDeProduccion.select(
             pclases.LineaDeProduccion.q.nombre.contains(linea))
-        assert lineas_ginn.count == 1
+        assert lineas_ginn.count() == 1
         linea_ginn = lineas_ginn[0]
     except IndexError:
         linea_ginn = None
