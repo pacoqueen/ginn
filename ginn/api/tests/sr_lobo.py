@@ -417,7 +417,7 @@ def make_consumos_balas(fsalida, simulate=True, fini=None, ffin=None):
         for bala in pcarga.balas:
             report.write("Consumiendo bala {} [id {} ({})] de {}:\n".format(
                 bala.codigo, bala.id, bala.articulo.puid,
-                bala.productoVenta.descripcion))
+                bala.articulo.productoVenta.descripcion))
             # Aquí hacemos efectivo el rebaje de stock
             _res = murano.ops.consume_bala(bala, simulate=simulate)
             report.write("\tValor de retorno: {}\n".format(_res))
