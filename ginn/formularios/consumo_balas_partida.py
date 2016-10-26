@@ -24,15 +24,15 @@
 ###############################################################################
 
 ###################################################################
-## consumo_balas_partida.py -- Consumo de fibra por partida.
+# # consumo_balas_partida.py -- Consumo de fibra por partida.
 ###################################################################
-## NOTAS:
-##
-## ----------------------------------------------------------------
-##
+# # NOTAS:
+# #
+# # ---------------------------------------------------------------
+# #
 ###################################################################
-## Changelog:
-## 19 de septiembre de 2006 -> Inicio.
+# # Changelog:
+# # 19 de septiembre de 2006 -> Inicio.
 ##
 ###################################################################
 """
@@ -79,12 +79,11 @@ class ConsumoBalasPartida(Ventana):
                        'b_phaser/clicked': self.descargar_de_terminal,
                        'b_fecha/clicked': self.buscar_fecha,
                        'b_from_pdp/clicked': self.fecha_from_pdp,
-                       'b_from_albaran/clicked': self.fecha_from_albaran
-                      }
+                       'b_from_albaran/clicked': self.fecha_from_albaran}
         self.add_connections(connections)
         cols = (('Nº Bala', 'gobject.TYPE_STRING', False, True, True, None),
                 ('Peso', 'gobject.TYPE_FLOAT', True, True, False,
-                                                    self.cambiar_peso_bala),
+                    self.cambiar_peso_bala),
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(self.wids['tv_balas'], cols)
         # Al loro porque me voy a cargar la mitad de lo que ha hecho el
@@ -109,6 +108,10 @@ class ConsumoBalasPartida(Ventana):
                 ("Producto", "gobject.TYPE_STRING", False, True, False, None),
                 ("ID", "gobject.TYPE_STRING", False, False, False, None))
         utils.preparar_listview(self.wids['tv_gtx'], cols)
+        self.wids['ch_api'] = gtk.CheckButton("Partida volcada a Murano")
+        self.wids['b_add_balas'].parent.add(self.wids['ch_api'])
+        self.wids['b_add_balas'].parent.show_all()
+        self.wids['ch_api'].set_sensitive(False)
         if self.objeto is None:
             self.ir_a_primero()
         else:
@@ -120,9 +123,9 @@ class ConsumoBalasPartida(Ventana):
         Busca o crea una partida de geotextiles y la asocia con la de carga.
         """
         numpartida = utils.dialogo_entrada(
-                titulo="NÚMERO DE PARTIDA DE GEOTEXTILES",
-                texto="Introduzca el número de partida de geotextiles",
-                padre=self.wids['ventana'])
+            titulo="NÚMERO DE PARTIDA DE GEOTEXTILES",
+            texto="Introduzca el número de partida de geotextiles",
+            padre=self.wids['ventana'])
         if numpartida is not None:
             numpartida = numpartida.upper().strip().replace("P-", "")
             numpartida = utils.parse_numero(numpartida)
@@ -130,7 +133,7 @@ class ConsumoBalasPartida(Ventana):
                 encontradas = 0
             else:
                 partida = pclases.Partida.select(
-                            pclases.Partida.q.numpartida == numpartida)
+                    pclases.Partida.q.numpartida == numpartida)
                 try:
                     encontradas = partida.count()
                 except AttributeError:
@@ -215,12 +218,19 @@ class ConsumoBalasPartida(Ventana):
             self.wids['e_partida'].set_text("%d (%s)" % (partida.numpartida,
                                                          partida.codigo))
             self.wids['e_fecha'].set_text(utils.str_fechahora(partida.fecha))
+            self.wids['ch_api'].set_active(partida.api)
         else:
             self.wids['e_partida'].set_text("")
             self.wids['e_fecha'].set_text("")
+            self.wids['ch_api'].set_active(False)
         self.rellenar_balas()
         self.rellenar_partidas_gtx()
         self.comprobar_permisos()
+        api = self.wids['ch_api'].get_active()
+        self.wids['b_add_balas'].set_sensitive(not api)
+        self.wids['b_add_producto'].set_sensitive(not api)
+        self.wids['b_drop_bala'].set_sensitive(not api)
+        self.wids['b_phaser'].set_sensitive(not api)
 
     def comprobar_permisos(self):
         """

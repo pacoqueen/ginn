@@ -410,6 +410,10 @@ def make_consumos_balas(fsalida, simulate=True, fini=None, ffin=None):
     for pcarga in tqdm(pcargas, total=pcargas.count(),
                        desc="Partidas de carga", unit="partida"):
         respartida = True
+        if not pcarga.balas:    # Partida de carga vacía. No modifico `api`
+            report.write("Partida de carga {} vacía. Se ignora".format(
+                pcarga.codigo))
+            continue
         for bala in pcarga.balas:
             report.write("Consumiendo bala {} [id {} ({})] de {}:\n".format(
                 bala.codigo, bala.id, bala.articulo.puid,
