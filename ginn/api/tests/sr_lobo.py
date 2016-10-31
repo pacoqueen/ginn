@@ -528,6 +528,8 @@ def main():
         # Si no recibo argumentos, compruebo todos los artículos y productos.
         args.codigos_articulos, args.codigos_productos = check_everything(
             args.fsalida)
+        # Y los consumos
+        args.consumos = True
     # # Pruebas
     if args.codigos_productos:
         for codigo in tqdm(args.codigos_productos, desc="Productos"):
