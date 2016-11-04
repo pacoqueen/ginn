@@ -428,7 +428,6 @@ def make_consumos_balas(fsalida, simulate=True, fini=None, ffin=None):
             report.write("\tValor api partida de carga actualizado.\n")
     report.close()
     return res
-# TODO: PORASQUI: De paso, piensa en una forma de dividir entre 100 las cantidades iniciales. Sabemos las existencias que importamos, así que réstala al total y divide lo que haga falta. Plantea la ecuación en papel, cazurro.
 
 
 def make_consumos_materiales(fsalida, simulate=True, fini=None, ffin=None):
@@ -449,7 +448,8 @@ def make_consumos_materiales(fsalida, simulate=True, fini=None, ffin=None):
         ffin = datetime.date.today() + datetime.timedelta(days=1)
     pdps = pclases.ParteDeProduccion.select(pclases.AND(
         pclases.ParteDeProduccion.q.fechahorainicio >= fini,
-        pclases.ParteDeProduccion.q.fechahorafin <= ffin))
+        pclases.ParteDeProduccion.q.fechahorafin <= ffin,
+        pclases.ParteDeProduccion.q.bloqueado == True))
     report.write("{} partes encontrados.\n".format(pdps.count()))
     for pdp in tqdm(pdps, total=pdps.count(), desc="Partes a consumir",
                     unit="pdp"):
