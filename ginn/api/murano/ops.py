@@ -582,7 +582,10 @@ def buscar_codigo_producto(producto_venta):
                                                producto_venta.puid,
                                                res[0]['DescripcionArticulo'],
                                                res[0]['Descripcion2Articulo'])
-        print(strlog)
+        try:
+            print(strlog)
+        except IOError:     # pythonw. No estoy conectado a un terminal.
+            pass
         logging.warning(strlog)
     return codarticulo
 
