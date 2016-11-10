@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2016  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -24,13 +24,13 @@
 ###############################################################################
 
 ###################################################################
-## consulta_producido.py -- 
+## consulta_producido.py --
 ###################################################################
 ## NOTAS:
-##  
+##
 ###################################################################
 ## Changelog:
-## 
+##
 ###################################################################
 
 import datetime
@@ -55,7 +55,7 @@ from lib import charting
 pygtk.require('2.0')
 from formularios.consulta_ventas_por_producto import act_fecha
 from framework.memoize import memoized
-import sys    
+import sys
 from lib.myprint import myprint
 
 class ConsultaProducido(Ventana):
@@ -70,57 +70,57 @@ class ConsultaProducido(Ventana):
         self.metros = 0
         self.rollos = 0
         self.balas = 0
-        Ventana.__init__(self, 'consulta_producido.glade', objeto, 
+        Ventana.__init__(self, 'consulta_producido.glade', objeto,
                          usuario = usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar,
                        'b_imprimir/clicked': self.imprimir,
                        'b_fecha_inicio/clicked': self.set_inicio,
-                       'b_fecha_fin/clicked': self.set_fin, 
+                       'b_fecha_fin/clicked': self.set_fin,
                        'e_fechainicio/focus-out-event': act_fecha,
                        'e_fechafin/focus-out-event': act_fecha,
-                       "b_exportar/clicked": self.exportar, 
-                       #"im_graph/button-press-event": self.alternar_grafica, 
-                       #"eventbox_chart/button-press-event": 
-                       #                                 self.alternar_grafica, 
-                       "eventbox_hbox/button-press-event": 
+                       "b_exportar/clicked": self.exportar,
+                       #"im_graph/button-press-event": self.alternar_grafica,
+                       #"eventbox_chart/button-press-event":
+                       #                                 self.alternar_grafica,
+                       "eventbox_hbox/button-press-event":
                                                         self.alternar_grafica}
         self.add_connections(connections)
-        cols = [['Producto/Partida','gobject.TYPE_STRING', 
+        cols = [['Producto/Partida','gobject.TYPE_STRING',
                                                 False, True, False, None], # 0
                 ['m² A','gobject.TYPE_STRING', False, True, False, None],
                 ['m² B','gobject.TYPE_STRING', False, True, False, None],
                 ['m² C','gobject.TYPE_STRING', False, True, False, None],
                 ['m² totales','gobject.TYPE_STRING', False, True, False, None],
                 ['Kg A', 'gobject.TYPE_STRING', False, True, False, None],  # 5
-                ['Kg teórico A', 
-                    'gobject.TYPE_STRING', False, True, False, None], 
+                ['Kg teórico A',
+                    'gobject.TYPE_STRING', False, True, False, None],
                 ['Kg B','gobject.TYPE_STRING', False, True, False, None],
-                ['Kg teórico B', 
-                    'gobject.TYPE_STRING', False, True, False, None], 
+                ['Kg teórico B',
+                    'gobject.TYPE_STRING', False, True, False, None],
                 ['Kg C','gobject.TYPE_STRING', False, True, False, None],
-                ['Kg totales','gobject.TYPE_STRING', 
+                ['Kg totales','gobject.TYPE_STRING',
                                                 False, True, False, None], #10
-                ['Bultos A', 'gobject.TYPE_INT64', 
-                                                False, True, False, None], 
+                ['Bultos A', 'gobject.TYPE_INT64',
+                                                False, True, False, None],
                 ['Bultos B', 'gobject.TYPE_INT64', False, True, False, None],
                 ['Bultos C', 'gobject.TYPE_INT64', False, True, False, None],
-                ['Bultos totales', 'gobject.TYPE_INT64', 
+                ['Bultos totales', 'gobject.TYPE_INT64',
                     False, True, False, None],
-                ['Tiempo teórico', 'gobject.TYPE_STRING', 
+                ['Tiempo teórico', 'gobject.TYPE_STRING',
                     False, True, False, None],                            # 15
-                ['Tiempo real (total)', 'gobject.TYPE_STRING', 
-                    False, True, False, None], 
-                ['ID','gobject.TYPE_STRING', False, False, False, None]] 
+                ['Tiempo real (total)', 'gobject.TYPE_STRING',
+                    False, True, False, None],
+                ['ID','gobject.TYPE_STRING', False, False, False, None]]
         utils.preparar_treeview(self.wids['tv_gtx'], cols)
         for i in range(1, 17):
             col = self.wids['tv_gtx'].get_column(i)
             for cell in col.get_cell_renderers(): # One, actually
                 cell.set_property("xalign", 1.0)
         for nombre_tv in ("tv_fibra", "tv_cem"):
-            _cols = [c[:] for c in cols if not c[0].startswith('m² ') and 
+            _cols = [c[:] for c in cols if not c[0].startswith('m² ') and
                                                     not "Kg teórico" in c[0]]
-            if nombre_tv == "tv_fibra": 
+            if nombre_tv == "tv_fibra":
                 _cols[0][0] = _cols[0][0].replace("Partida", "Lote")
             utils.preparar_treeview(self.wids[nombre_tv], _cols)
             for i in range(1, len(_cols) - 1):
@@ -166,10 +166,10 @@ class ConsultaProducido(Ventana):
     def rellenar_tabla(self, tv, dic_prod, horas_huecos, tipo):
         """
         Rellena el model con los datos del diccionario.
-        El diccionario está organizado por puid de producto y contiene 
-        más diccionarios con las producciones en kg, m² (si corresponde), 
+        El diccionario está organizado por puid de producto y contiene
+        más diccionarios con las producciones en kg, m² (si corresponde),
         bultos y lo mismo por lote/partida.
-        """        
+        """
         vpro = VentanaProgreso(padre = self.wids['ventana'])
         vpro.mostrar()
         i = 0.0
@@ -226,24 +226,24 @@ class ConsultaProducido(Ventana):
             tiempo_real = dic_prod[pvpuid]['t_real']
             total_t_real += tiempo_real
             # Inserto la fila:
-            fila = [descripcion, 
-                    utils.float2str(kilos_a), 
-                    utils.float2str(kilos_b), 
-                    utils.float2str(kilos_c), 
-                    utils.float2str(kilos_a + kilos_b + kilos_c), 
-                    bultos_a, 
-                    bultos_b, 
-                    bultos_c, 
-                    bultos_a + bultos_b + bultos_c, 
-                    str_horas(tiempo_teorico), 
-                    str_horas(tiempo_real), 
+            fila = [descripcion,
+                    utils.float2str(kilos_a),
+                    utils.float2str(kilos_b),
+                    utils.float2str(kilos_c),
+                    utils.float2str(kilos_a + kilos_b + kilos_c),
+                    bultos_a,
+                    bultos_b,
+                    bultos_c,
+                    bultos_a + bultos_b + bultos_c,
+                    str_horas(tiempo_teorico),
+                    str_horas(tiempo_real),
                     pvpuid
                    ]
             if not metros_a is None:
                 fila = fila[:1] + [
-                    utils.float2str(metros_a), 
-                    utils.float2str(metros_b), 
-                    utils.float2str(metros_c), 
+                    utils.float2str(metros_a),
+                    utils.float2str(metros_b),
+                    utils.float2str(metros_c),
                     utils.float2str(metros_a + metros_b + metros_c)] + fila[1:]
                 fila.insert(6, utils.float2str(peso_teorico_a))
                 fila.insert(8, utils.float2str(peso_teorico_b))
@@ -274,91 +274,91 @@ class ConsultaProducido(Ventana):
                 tiempo_teorico = lista_lotes[lote_partida_puid]['t_teorico']
                 tiempo_real = lista_lotes[lote_partida_puid]['t_real']
                 # Inserto la fila:
-                fila = [codigo, 
-                        utils.float2str(kilos_a), 
-                        utils.float2str(kilos_b), 
-                        utils.float2str(kilos_c), 
-                        utils.float2str(kilos_a + kilos_b + kilos_c), 
-                        bultos_a, 
-                        bultos_b, 
-                        bultos_c, 
-                        bultos_a + bultos_b + bultos_c, 
-                        str_horas(tiempo_teorico), 
-                        str_horas(tiempo_real), 
+                fila = [codigo,
+                        utils.float2str(kilos_a),
+                        utils.float2str(kilos_b),
+                        utils.float2str(kilos_c),
+                        utils.float2str(kilos_a + kilos_b + kilos_c),
+                        bultos_a,
+                        bultos_b,
+                        bultos_c,
+                        bultos_a + bultos_b + bultos_c,
+                        str_horas(tiempo_teorico),
+                        str_horas(tiempo_real),
                         lote_partida_puid
                        ]
                 if not metros_a is None:
                     fila = fila[:1] + [
-                        utils.float2str(metros_a), 
-                        utils.float2str(metros_b), 
-                        utils.float2str(metros_c), 
+                        utils.float2str(metros_a),
+                        utils.float2str(metros_b),
+                        utils.float2str(metros_c),
                         utils.float2str(metros_a + metros_b + metros_c)
                         ] + fila[1:]
                     fila.insert(6, utils.float2str(peso_teorico_a))
                     fila.insert(8, utils.float2str(peso_teorico_b))
                 iterpartida = model.append(iterproducto, fila)
-        self.rellenar_totales(total_kilos_a, total_kilos_b, total_kilos_c, 
-                              total_bultos_a, total_bultos_b, total_bultos_c, 
-                              total_metros_a, total_metros_b, total_metros_c, 
-                              total_t_teorico, total_t_real, horas_huecos, 
+        self.rellenar_totales(total_kilos_a, total_kilos_b, total_kilos_c,
+                              total_bultos_a, total_bultos_b, total_bultos_c,
+                              total_metros_a, total_metros_b, total_metros_c,
+                              total_t_teorico, total_t_real, horas_huecos,
                               tipo)
         vpro.ocultar()
-    
-    def rellenar_totales(self, kilos_a, kilos_b, kilos_c, bultos_a, bultos_b, 
-                         bultos_c, metros_a, metros_b, metros_c, 
-                         total_t_teorico, total_t_real, horas_huecos, 
+
+    def rellenar_totales(self, kilos_a, kilos_b, kilos_c, bultos_a, bultos_b,
+                         bultos_c, metros_a, metros_b, metros_c,
+                         total_t_teorico, total_t_real, horas_huecos,
                          tipo):
         if tipo == "gtx":
-            pairs = [("e_%s_a_kg" % (tipo), 
-                         utils.float2str(kilos_a)), 
-                     ("e_%s_b_kg" % (tipo), 
+            pairs = [("e_%s_a_kg" % (tipo),
+                         utils.float2str(kilos_a)),
+                     ("e_%s_b_kg" % (tipo),
                          utils.float2str(kilos_b)),
-                     ("e_%s_c_kg" % (tipo), 
+                     ("e_%s_c_kg" % (tipo),
                          utils.float2str(kilos_c)),
-                     ("e_%s_total_kg" % (tipo), 
-                         utils.float2str(kilos_a + kilos_b + kilos_c)), 
-                     ("e_%s_a_m2" % (tipo), 
-                         utils.float2str(metros_a)), 
-                     ("e_%s_b_m2" % (tipo), 
+                     ("e_%s_total_kg" % (tipo),
+                         utils.float2str(kilos_a + kilos_b + kilos_c)),
+                     ("e_%s_a_m2" % (tipo),
+                         utils.float2str(metros_a)),
+                     ("e_%s_b_m2" % (tipo),
                          utils.float2str(metros_b)),
-                     ("e_%s_c_m2" % (tipo), 
+                     ("e_%s_c_m2" % (tipo),
                          utils.float2str(metros_c)),
-                     ("e_%s_total_m2" % (tipo), 
-                         utils.float2str(metros_a + metros_b + metros_c)), 
-                     ("e_%s_t_teorico" % (tipo), 
-                         str_horas(total_t_teorico)), 
-                     ("e_%s_t_real" % (tipo), 
-                         str_horas(total_t_real)), 
-                     ("e_%s_huecos" % (tipo), 
-                         str_horas(horas_huecos)) 
+                     ("e_%s_total_m2" % (tipo),
+                         utils.float2str(metros_a + metros_b + metros_c)),
+                     ("e_%s_t_teorico" % (tipo),
+                         str_horas(total_t_teorico)),
+                     ("e_%s_t_real" % (tipo),
+                         str_horas(total_t_real)),
+                     ("e_%s_huecos" % (tipo),
+                         str_horas(horas_huecos))
                     ]
         else:
-            pairs = [("e_%s_a" % (tipo), 
-                         utils.float2str(kilos_a)), 
-                     ("e_%s_b" % (tipo), 
+            pairs = [("e_%s_a" % (tipo),
+                         utils.float2str(kilos_a)),
+                     ("e_%s_b" % (tipo),
                          utils.float2str(kilos_b)),
-                     ("e_%s_c" % (tipo), 
+                     ("e_%s_c" % (tipo),
                          utils.float2str(kilos_c)),
-                     ("e_%s_total" % (tipo), 
-                         utils.float2str(kilos_a + kilos_b + kilos_c)), 
-                     ("e_%s_t_teorico" % (tipo), 
-                         str_horas(total_t_teorico)), 
-                     ("e_%s_t_real" % (tipo), 
-                         str_horas(total_t_real)), 
-                     ("e_%s_huecos" % (tipo), 
-                         str_horas(horas_huecos)) 
+                     ("e_%s_total" % (tipo),
+                         utils.float2str(kilos_a + kilos_b + kilos_c)),
+                     ("e_%s_t_teorico" % (tipo),
+                         str_horas(total_t_teorico)),
+                     ("e_%s_t_real" % (tipo),
+                         str_horas(total_t_real)),
+                     ("e_%s_huecos" % (tipo),
+                         str_horas(horas_huecos))
                     ]
         for nombre_wid, dato in pairs:
             self.wids[nombre_wid].set_text(dato)
-        
+
     def set_inicio(self, boton):
-        inicio = utils.mostrar_calendario(padre = self.wids['ventana'], 
+        inicio = utils.mostrar_calendario(padre = self.wids['ventana'],
                 fecha_defecto = self.wids['e_fechainicio'].get_text())
         inicio = utils.str_fecha(inicio)
         self.wids['e_fechainicio'].set_text(inicio)
 
     def set_fin(self, boton):
-        fin = utils.mostrar_calendario(padre = self.wids['ventana'], 
+        fin = utils.mostrar_calendario(padre = self.wids['ventana'],
                 fecha_defecto = self.wids['e_fechafin'].get_text())
         fin = utils.str_fecha(fin)
         self.wids['e_fechafin'].set_text(fin)
@@ -367,8 +367,8 @@ class ConsultaProducido(Ventana):
         """
         Dadas fecha de inicio y de fin, busca los productos A y B
         fabricados y cantidad en los partes de producción.
-        Para la producción C, que no lleva parte de producción, se filtra 
-        directamente por la fecha y hora de los artículos. OJO: Y no 
+        Para la producción C, que no lleva parte de producción, se filtra
+        directamente por la fecha y hora de los artículos. OJO: Y no
         cuentan para los cómputos de tiempo.
         """
         PDP = pclases.ParteDeProduccion
@@ -385,11 +385,11 @@ class ConsultaProducido(Ventana):
             self.fin = utils.parse_fecha(
                     self.wids['e_fechafin'].get_text())
         if not self.inicio:
-            pdps = PDP.select(PDP.q.fecha < self.fin, 
+            pdps = PDP.select(PDP.q.fecha < self.fin,
                               orderBy = 'fechahorainicio')
         else:
-            pdps = PDP.select(pclases.AND(PDP.q.fecha >= self.inicio, 
-                                          PDP.q.fecha < self.fin), 
+            pdps = PDP.select(pclases.AND(PDP.q.fecha >= self.inicio,
+                                          PDP.q.fecha < self.fin),
                               orderBy = 'fechahorainicio')
         vpro = ventana_progreso.VentanaProgreso(padre = self.wids['ventana'])
         tot = pdps.count()
@@ -408,13 +408,13 @@ class ConsultaProducido(Ventana):
         for pdp in pdps:
             vpro.set_valor(i/tot, 'Analizando partes %s...' % (
                 utils.str_fecha(pdp.fecha)))
-            delta_entre_partes, parte_anterior = detectar_hueco(pdp, 
+            delta_entre_partes, parte_anterior = detectar_hueco(pdp,
                                                                 self.huecos)
-            if (pdp.es_de_balas() 
+            if (pdp.es_de_balas()
                     and not "reenvas" in pdp.observaciones.lower()):
                 self.procesar_pdp_balas(pdp, prod_balas)
                 huecos_fibra += delta_entre_partes
-            elif (pdp.es_de_bolsas() 
+            elif (pdp.es_de_bolsas()
                     and not "reenvas" in pdp.observaciones.lower()):
                 self.procesar_pdp_cajas(pdp, prod_pales)
                 huecos_cem += delta_entre_partes
@@ -429,11 +429,11 @@ class ConsultaProducido(Ventana):
                                 pdp.get_info(), pdp.puid)
             i += 1
         vpro.ocultar()
-        self.rellenar_tabla(self.wids['tv_fibra'], prod_balas, huecos_fibra, 
+        self.rellenar_tabla(self.wids['tv_fibra'], prod_balas, huecos_fibra,
                 "fibra")
-        self.rellenar_tabla(self.wids['tv_gtx'], prod_rollos, huecos_gtx, 
+        self.rellenar_tabla(self.wids['tv_gtx'], prod_rollos, huecos_gtx,
                 "gtx")
-        self.rellenar_tabla(self.wids['tv_cem'], prod_pales, huecos_cem, 
+        self.rellenar_tabla(self.wids['tv_cem'], prod_pales, huecos_cem,
                 "cem")
         self.dibujar_grafica(prod_balas, prod_rollos, prod_pales)
         self.resumen_gtx(pdps_rollos)
@@ -445,8 +445,8 @@ class ConsultaProducido(Ventana):
                               orderBy = 'fechahora')
         else:
             rollosc = pclases.RolloC.select(pclases.AND(
-                                pclases.RolloC.q.fechahora >= self.inicio, 
-                                pclases.RolloC.q.fechahora < self.fin), 
+                                pclases.RolloC.q.fechahora >= self.inicio,
+                                pclases.RolloC.q.fechahora < self.fin),
                               orderBy = 'fechahora')
         for rolloc in rollosc:
             key = rolloc.productoVenta.puid
@@ -454,7 +454,7 @@ class ConsultaProducido(Ventana):
             tiempo_teorico = mx.DateTime.DateTimeDelta(0)
             tiempo_real = mx.DateTime.DateTimeDelta(0)
             metros = 0.0    # Producto C al peso.
-            update_dic_producto(prod_rollos, rolloc.productoVenta, 'c', 
+            update_dic_producto(prod_rollos, rolloc.productoVenta, 'c',
                                 cantidad, metros, tiempo_teorico, tiempo_real)
 
     def procesar_balas_c(self, prod_balas):
@@ -464,8 +464,8 @@ class ConsultaProducido(Ventana):
                               orderBy = 'fechahora')
         else:
             balasc = pclases.BalaCable.select(pclases.AND(
-                                pclases.BalaCable.q.fechahora >= self.inicio, 
-                                pclases.BalaCable.q.fechahora < self.fin), 
+                                pclases.BalaCable.q.fechahora >= self.inicio,
+                                pclases.BalaCable.q.fechahora < self.fin),
                               orderBy = 'fechahora')
         for balac in balasc:
             key = balac.productoVenta.puid
@@ -479,7 +479,11 @@ class ConsultaProducido(Ventana):
         for a in pdp.articulos:
             key = a.productoVenta.puid
             metros = a.superficie
-            peso_sin = a.peso_sin
+            #peso_sin = a.peso_sin
+            # [10/11/2016] peso_sin se ha convertido en el peso teórico (sin
+            # embalaje) por asuntos de Murano y la imagen que queremos dar
+            # al cliente final (CWT)
+            peso_sin = a.peso_real - a.peso_embalaje
             tiempo_teorico = mx.DateTime.DateTimeDeltaFrom(
                     hours = a.calcular_tiempo_teorico())
             partida = a.partida
@@ -497,36 +501,36 @@ class ConsultaProducido(Ventana):
                 tipo = 'c'  # No debería, pues los partes solo llevan A y B.
             else:
                 raise ValueError, "Artículo %s no es A, B ni C." % (a.puid)
-            update_dic_producto(prod_rollos, a.productoVenta, tipo, peso_sin, 
-                                metros, tiempo_teorico, 
+            update_dic_producto(prod_rollos, a.productoVenta, tipo, peso_sin,
+                                metros, tiempo_teorico,
                                 peso_teorico = peso_teorico)
-            update_lote_partida(prod_rollos[key], partida, tipo, peso_sin, 
-                                metros, tiempo_teorico, 
+            update_lote_partida(prod_rollos[key], partida, tipo, peso_sin,
+                                metros, tiempo_teorico,
                                 peso_teorico = peso_teorico)
-        # El tiempo real lo añado una vez por parte para evitar errores de 
+        # El tiempo real lo añado una vez por parte para evitar errores de
         # precisión por redondeos.
         tiempo_real = pdp.get_duracion()
         try:
-            update_dic_producto(prod_rollos, pdp.productoVenta, tipo, 0.0, 
-                                0.0, mx.DateTime.DateTimeDelta(0), tiempo_real, 
+            update_dic_producto(prod_rollos, pdp.productoVenta, tipo, 0.0,
+                                0.0, mx.DateTime.DateTimeDelta(0), tiempo_real,
                                 bultos = 0, peso_teorico = 0)
-            update_lote_partida(prod_rollos[pdp.productoVenta.puid], 
-                                pdp.partida, tipo, 0.0, 0.0, 
-                                mx.DateTime.DateTimeDelta(0), tiempo_real, 
+            update_lote_partida(prod_rollos[pdp.productoVenta.puid],
+                                pdp.partida, tipo, 0.0, 0.0,
+                                mx.DateTime.DateTimeDelta(0), tiempo_real,
                                 bultos = 0, peso_teorico = 0)
         except (UnboundLocalError, AttributeError):
-                    # No partida instanciada. No ha entrado en el for. No 
+                    # No partida instanciada. No ha entrado en el for. No
                     # artículos. No producción. No "tipo" instanciado siquiera.
             es_rollo = pdp.es_de_geotextiles()
-            tipo = "a"  # Cuento el tiempo empleado como producción A para 
-                        # el cálculo de productividad. Aunque no se haya 
+            tipo = "a"  # Cuento el tiempo empleado como producción A para
+                        # el cálculo de productividad. Aunque no se haya
                         # fabricado nada.
-            update_dic_producto(prod_rollos, es_rollo, tipo, 0.0, 
-                                0.0, mx.DateTime.DateTimeDelta(0), tiempo_real, 
+            update_dic_producto(prod_rollos, es_rollo, tipo, 0.0,
+                                0.0, mx.DateTime.DateTimeDelta(0), tiempo_real,
                                 bultos = 0, peso_teorico = 0)
-            update_lote_partida(prod_rollos[None], 
-                                pdp.partida, tipo, 0.0, 0.0, 
-                                mx.DateTime.DateTimeDelta(0), tiempo_real, 
+            update_lote_partida(prod_rollos[None],
+                                pdp.partida, tipo, 0.0, 0.0,
+                                mx.DateTime.DateTimeDelta(0), tiempo_real,
                                 bultos = 0, peso_teorico = 0)
 
     def procesar_pdp_cajas(self, pdp, prod_pales):
@@ -546,38 +550,38 @@ class ConsultaProducido(Ventana):
                 tipo = 'c'  # No debería, pues los partes solo llevan A y B.
             else:
                 raise ValueError, "Artículo %s no es A, B ni C." % (a.puid)
-            update_dic_producto(prod_pales, a.productoVenta, tipo, peso_sin, 
+            update_dic_producto(prod_pales, a.productoVenta, tipo, peso_sin,
                                 tiempo_teorico = tiempo_teorico)
-            update_lote_partida(prod_pales[key], partida, tipo, peso_sin, 
+            update_lote_partida(prod_pales[key], partida, tipo, peso_sin,
                                 tiempo_teorico = tiempo_teorico)
-        # El tiempo real lo añado una vez por parte para evitar errores de 
+        # El tiempo real lo añado una vez por parte para evitar errores de
         # precisión por redondeos.
         tiempo_real = pdp.get_duracion()
         try:
-            update_dic_producto(prod_pales, pdp.productoVenta, tipo, 0.0, 
-                                tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
-                                tiempo_real = tiempo_real, 
+            update_dic_producto(prod_pales, pdp.productoVenta, tipo, 0.0,
+                                tiempo_teorico = mx.DateTime.DateTimeDelta(0),
+                                tiempo_real = tiempo_real,
                                 bultos = 0)
-            update_lote_partida(prod_pales[pdp.productoVenta.puid], 
-                                pdp.partidaCem, tipo, 0.0, 
-                                tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
-                                tiempo_real = tiempo_real, 
+            update_lote_partida(prod_pales[pdp.productoVenta.puid],
+                                pdp.partidaCem, tipo, 0.0,
+                                tiempo_teorico = mx.DateTime.DateTimeDelta(0),
+                                tiempo_real = tiempo_real,
                                 bultos = 0)
         except (UnboundLocalError, AttributeError):
-                    # No partida instanciada. No ha entrado en el for. No 
+                    # No partida instanciada. No ha entrado en el for. No
                     # artículos. No producción. No "tipo" instanciado siquiera.
             es_rollo = pdp.es_de_geotextiles()
-            tipo = "a"  # Cuento el tiempo empleado como producción A para 
-                        # el cálculo de productividad. Aunque no se haya 
+            tipo = "a"  # Cuento el tiempo empleado como producción A para
+                        # el cálculo de productividad. Aunque no se haya
                         # fabricado nada.
-            update_dic_producto(prod_pales, es_rollo, tipo, 0.0, 
-                                tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
-                                tiempo_real = tiempo_real, 
+            update_dic_producto(prod_pales, es_rollo, tipo, 0.0,
+                                tiempo_teorico = mx.DateTime.DateTimeDelta(0),
+                                tiempo_real = tiempo_real,
                                 bultos = 0)
-            update_lote_partida(prod_pales[None], 
-                                pdp.partidaCem, tipo, 0.0, 
-                                tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
-                                tiempo_real = tiempo_real, 
+            update_lote_partida(prod_pales[None],
+                                pdp.partidaCem, tipo, 0.0,
+                                tiempo_teorico = mx.DateTime.DateTimeDelta(0),
+                                tiempo_real = tiempo_real,
                                 bultos = 0)
 
     def procesar_pdp_balas(self, pdp, prod_balas):
@@ -586,7 +590,7 @@ class ConsultaProducido(Ventana):
             peso_sin = a.peso_sin
             tiempo_teorico = mx.DateTime.DateTimeDeltaFrom(
                     hours = a.calcular_tiempo_teorico())
-            lote = a.lote or a.loteCem  # Dependiendo de si es fibra o 
+            lote = a.lote or a.loteCem  # Dependiendo de si es fibra o
                                         # geocem en bigbags
             if key not in prod_balas:
                 create_prod_bala(prod_balas, key)
@@ -598,42 +602,42 @@ class ConsultaProducido(Ventana):
                 tipo = 'c'  # No debería, pues los partes solo llevan A y B.
             else:
                 raise ValueError, "Artículo %s no es A, B ni C." % (a.puid)
-            update_dic_producto(prod_balas, a.productoVenta, tipo, peso_sin, 
-                                tiempo_teorico = tiempo_teorico) 
-            update_lote_partida(prod_balas[key], lote, tipo, peso_sin, 
-                                tiempo_teorico = tiempo_teorico) 
-        # El tiempo real lo añado una vez por parte para evitar errores de 
+            update_dic_producto(prod_balas, a.productoVenta, tipo, peso_sin,
+                                tiempo_teorico = tiempo_teorico)
+            update_lote_partida(prod_balas[key], lote, tipo, peso_sin,
+                                tiempo_teorico = tiempo_teorico)
+        # El tiempo real lo añado una vez por parte para evitar errores de
         # precisión por redondeos.
-        tiempo_real = pdp.get_duracion() 
+        tiempo_real = pdp.get_duracion()
         try:
-            update_dic_producto(prod_balas, pdp.productoVenta, tipo, 0.0, 
-                                tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
-                                tiempo_real = tiempo_real, 
+            update_dic_producto(prod_balas, pdp.productoVenta, tipo, 0.0,
+                                tiempo_teorico = mx.DateTime.DateTimeDelta(0),
+                                tiempo_real = tiempo_real,
                                 bultos = 0)
-            update_lote_partida(prod_balas[pdp.productoVenta.puid], 
+            update_lote_partida(prod_balas[pdp.productoVenta.puid],
                                 lote, tipo, 0.0,
-                                tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
-                                tiempo_real = tiempo_real, 
+                                tiempo_teorico = mx.DateTime.DateTimeDelta(0),
+                                tiempo_real = tiempo_real,
                                 bultos = 0)
         except (UnboundLocalError, AttributeError):
-                    # No partida instanciada. No ha entrado en el for. No 
+                    # No partida instanciada. No ha entrado en el for. No
                     # artículos. No producción. No "tipo" instanciado siquiera.
             es_rollo = pdp.es_de_geotextiles()
-            tipo = "a"  # Cuento el tiempo empleado como producción A para 
-                        # el cálculo de productividad. Aunque no se haya 
+            tipo = "a"  # Cuento el tiempo empleado como producción A para
+                        # el cálculo de productividad. Aunque no se haya
                         # fabricado nada.
-            update_dic_producto(prod_balas, es_rollo, tipo, 0.0, 
-                                tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
-                                tiempo_real = tiempo_real, 
+            update_dic_producto(prod_balas, es_rollo, tipo, 0.0,
+                                tiempo_teorico = mx.DateTime.DateTimeDelta(0),
+                                tiempo_real = tiempo_real,
                                 bultos = 0)
             # No lote. No producto.
-            update_lote_partida(prod_balas[None], 
-                                None, tipo, 0.0, 
-                                tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
-                                tiempo_real = tiempo_real, 
+            update_lote_partida(prod_balas[None],
+                                None, tipo, 0.0,
+                                tiempo_teorico = mx.DateTime.DateTimeDelta(0),
+                                tiempo_real = tiempo_real,
                                 bultos = 0)
 
-    def alternar_grafica(self, *args, **kw): 
+    def alternar_grafica(self, *args, **kw):
         if pychart_available:
             visible_pychart = self.wids['im_graph'].get_property("visible")
             visible_charting = self.wids['eventbox_chart'].get_property(
@@ -663,8 +667,8 @@ class ConsultaProducido(Ventana):
                 #self.wids['eventbox_chart'].remove(oldchart)
                 chart = oldchart
             else:
-                chart = charting.Chart(orient = "horizontal", 
-                                       orient_vertical = False, 
+                chart = charting.Chart(orient = "horizontal",
+                                       orient_vertical = False,
                                        values_on_bars = True)
                 self.wids['eventbox_chart'].add(chart)
             datachart = []
@@ -682,11 +686,11 @@ class ConsultaProducido(Ventana):
                   "Error al dibujar gráfica (charting): %s" % msg
             myprint(txt)
             self.logger.error(txt)
- 
+
     def dibujar_grafica(self, prod_fibra, prod_gtx, prod_cem):
         """
-        Dibuja el gráfico de tarta. Si se mezclan balas y rollos, usa 
-        kilogramos SOLO DE PRODUCTO A (balas o rollos). 
+        Dibuja el gráfico de tarta. Si se mezclan balas y rollos, usa
+        kilogramos SOLO DE PRODUCTO A (balas o rollos).
         """
         data = []
         for prod in (prod_fibra, prod_gtx, prod_cem):
@@ -694,7 +698,7 @@ class ConsultaProducido(Ventana):
                 try:
                     desc = pclases.getObjetoPUID(pvid).descripcion.replace(
                             "/", "//")
-                except: 
+                except:
                     desc = "Sin producción"
                 kg = prod[pvid]['kg']['a']
                 data.append((desc, kg))
@@ -709,11 +713,11 @@ class ConsultaProducido(Ventana):
             nomarchivo = "%s.%s" % (nombre_fichero, formato)
             nombregraph = os.path.join(tempdir, "%s") % (nomarchivo)
             can = canvas.init(fname = nombregraph, format = formato)
-            ar = area.T(size=(400, 200), 
-                        legend=legend.T(), 
-                        x_grid_style = None, 
+            ar = area.T(size=(400, 200),
+                        legend=legend.T(),
+                        x_grid_style = None,
                         y_grid_style = None)
-            can.show(15, 150, 
+            can.show(15, 150,
                      "/a90/12/hRKg de fibra\ny geotextiles fabricados")
             plot = pie_plot.T(data=data, arc_offsets=[0,10,0,10],
                               shadow = (2, -2, fill_style.gray50),
@@ -747,11 +751,11 @@ class ConsultaProducido(Ventana):
         """
         from informes.treeview2pdf import treeview2pdf, gtktable2list
         from formularios.reports import abrir_pdf
-        for nombre_tv, titulo in (("tv_fibra", "Fibra"), 
-                                  ("tv_gtx", "Geotextiles"),  
+        for nombre_tv, titulo in (("tv_fibra", "Fibra"),
+                                  ("tv_gtx", "Geotextiles"),
                                   ("tv_cem", "Fibra de cemento")):
             fecha = "[%s..%s)" % (
-                    self.inicio and utils.str_fecha(self.inicio) or "", 
+                    self.inicio and utils.str_fecha(self.inicio) or "",
                     utils.str_fecha(self.fin))
             tv = self.wids[nombre_tv]
             totales = range(1, tv.get_model().get_n_columns() - 3)
@@ -761,15 +765,15 @@ class ConsultaProducido(Ventana):
             t_real = self.wids[nome].get_text()
             nome = nombre_tv.replace("tv", "e") + "_huecos"
             huecos = self.wids[nome].get_text()
-            extra = [("Tiempo teórico: ", t_teorico), 
-                     ("Tiempo real: ", t_real), 
+            extra = [("Tiempo teórico: ", t_teorico),
+                     ("Tiempo real: ", t_real),
                      ("Huecos entre partes: ", huecos)]
             if nombre_tv == "tv_gtx":
                 extra += gtktable2list(self.wids['table2'])
-            abrir_pdf(treeview2pdf(tv, 
-                                   titulo = titulo, 
-                                   fecha = fecha, 
-                                   numcols_a_totalizar = totales, 
+            abrir_pdf(treeview2pdf(tv,
+                                   titulo = titulo,
+                                   fecha = fecha,
+                                   numcols_a_totalizar = totales,
                                    extra_data = extra))
 
     def resumen_gtx(self, pdps):
@@ -783,7 +787,7 @@ class ConsultaProducido(Ventana):
         #vpro = VentanaProgreso(padre = self.wids['ventana'])
         #vpro = VentanaProgreso()
         #vpro.mostrar()
-        widnames = WIDSRESUMEN 
+        widnames = WIDSRESUMEN
         tot = len(widnames)
         i = 0.0
         #vpro.set_valor(i / tot, "Calculando resumen de geotextiles...")
@@ -791,7 +795,7 @@ class ConsultaProducido(Ventana):
         pdps = tuple(pdps)  # Hashable y más rápido.
         for widname, func in widnames:
             i += 1
-            #vpro.set_valor(i / tot, 
+            #vpro.set_valor(i / tot,
             #    "Calculando resumen de geotextiles (%s)..." % (widname))
             entry = self.wids[widname]
             if func.func.func_code.co_argcount == 2: # 'cause memoize decorator
@@ -799,7 +803,7 @@ class ConsultaProducido(Ventana):
             elif func.func.func_code.co_argcount == 4:
                 result = func(self.inicio, self.fin, pclases.RolloC, self.wids)
             elif func.func.func_code.co_argcount == 5:
-                result = func(pdps, self.inicio, self.fin, pclases.RolloC, 
+                result = func(pdps, self.inicio, self.fin, pclases.RolloC,
                               self.wids)
             else:
                 # No debería
@@ -808,12 +812,12 @@ class ConsultaProducido(Ventana):
                 str_result = ""
             else:
                 if isinstance(result, float):
-                    str_result = utils.float2str(result, precision = 2, 
+                    str_result = utils.float2str(result, precision = 2,
                                                  autodec = True)
                 elif utils.es_interpretable_como_fechahora(result):
                     str_result = utils.str_fechahora(result)
-                elif isinstance(result, 
-                                (type(mx.DateTime.DateTimeDelta(0)), 
+                elif isinstance(result,
+                                (type(mx.DateTime.DateTimeDelta(0)),
                                  datetime.timedelta)):
                     str_result = str_horas(result)
                 else:
@@ -844,18 +848,18 @@ def str_horas(fh):
 
 def detectar_hueco(pdp, huecos):
     """
-    Compara el parte con el último de los existentes de su tipo en el 
-    diccionario y actualiza el tiempo faltante con la diferencia si 
+    Compara el parte con el último de los existentes de su tipo en el
+    diccionario y actualiza el tiempo faltante con la diferencia si
     la hubiera.
-    Si el tiempo entre dos partes del mismo tipo es de más de 8 horas se 
-    considera que no ha habido turno y se ignora. Si es menor, se devuelve 
-    el TimeDelta con la diferencia. 
+    Si el tiempo entre dos partes del mismo tipo es de más de 8 horas se
+    considera que no ha habido turno y se ignora. Si es menor, se devuelve
+    el TimeDelta con la diferencia.
     Además siempre se devuelve el parte anterior (si lo hubiera).
     """
     tiempo_faltante = mx.DateTime.DateTimeDeltaFrom(0)
     parte_anterior = None
-    for last_parte in huecos[:]:    # Hay un parte de cada tipo en la lista 
-                                    # para controlar huecos. Busco el de la 
+    for last_parte in huecos[:]:    # Hay un parte de cada tipo en la lista
+                                    # para controlar huecos. Busco el de la
                                     # misma línea que yo.
         if last_parte._es_del_mismo_tipo(pdp):
             huecos.remove(last_parte)
@@ -869,7 +873,7 @@ def detectar_hueco(pdp, huecos):
                 except AttributeError:  # Versión <2.7 de Python
                     horas_delta = delta.days * 24 + delta.seconds / 60.0 / 60.0
             if 0 < horas_delta < 8:
-                # Si el hueco es de más de un turno, es que no ha habido 
+                # Si el hueco es de más de un turno, es que no ha habido
                 # producción en ese turno.
                 tiempo_faltante = delta
                 if pclases.DEBUG:
@@ -883,13 +887,13 @@ def create_prod_bala(prod_balas, puid):
     Crea la estructura vacía de la producción de fibra (también palés).
     """
     prod_balas[puid]= {
-            'kg': {'a': 0.0, 
-                   'b': 0.0, 
-                   'c': 0.0}, 
-            '#': {'a': 0, 
-                  'b': 0, 
-                  'c': 0}, 
-            't_real': mx.DateTime.DateTimeDelta(0), 
+            'kg': {'a': 0.0,
+                   'b': 0.0,
+                   'c': 0.0},
+            '#': {'a': 0,
+                  'b': 0,
+                  'c': 0},
+            't_real': mx.DateTime.DateTimeDelta(0),
             't_teorico': mx.DateTime.DateTimeDelta(0),
             'lotes_partidas': {}
             }
@@ -899,66 +903,66 @@ def create_prod_rollo(prod_rollos, puid):
     Crea la estructura vacía de la producción de geotextiles, que lleva m².
     """
     prod_rollos[puid]= {
-            'kg': {'a': 0.0, 
-                   'b': 0.0, 
-                   'c': 0.0}, 
-            'm': {'a': 0.0, 
-                  'b': 0.0, 
+            'kg': {'a': 0.0,
+                   'b': 0.0,
+                   'c': 0.0},
+            'm': {'a': 0.0,
+                  'b': 0.0,
                   'c': 0.0},
-            '#': {'a': 0, 
-                  'b': 0, 
-                  'c': 0}, 
-            't_real': mx.DateTime.DateTimeDelta(0), 
+            '#': {'a': 0,
+                  'b': 0,
+                  'c': 0},
+            't_real': mx.DateTime.DateTimeDelta(0),
             't_teorico': mx.DateTime.DateTimeDelta(0),
-            'peso_teorico': {'a': 0, 'b': 0}, 
+            'peso_teorico': {'a': 0, 'b': 0},
             'lotes_partidas': {}
             }
 
-def update_lote_partida(dic_producto, lote_partida, tipo, cantidad, 
-                        metros = None, 
-                        tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
-                        tiempo_real = mx.DateTime.DateTimeDelta(0), 
+def update_lote_partida(dic_producto, lote_partida, tipo, cantidad,
+                        metros = None,
+                        tiempo_teorico = mx.DateTime.DateTimeDelta(0),
+                        tiempo_real = mx.DateTime.DateTimeDelta(0),
                         bultos = None, peso_teorico = 0):
     """
-    Actualiza el lote/partida del producto en las cantidades 
+    Actualiza el lote/partida del producto en las cantidades
     recibidas. Crea la clave si es necesario.
-    Bultos vendrá a cero cuando queramos contar el tiempo total de un 
+    Bultos vendrá a cero cuando queramos contar el tiempo total de un
     parte, pero no incrementar la producción con un artículo en concreto.
     """
     try:
         puid_lote_partida = lote_partida.puid
         if bultos is None:  # No estoy actualizando tiempo total del parte.
             bultos = 1
-    except AttributeError:  # CWT: No lote/partida. Parte sin producción, pero 
+    except AttributeError:  # CWT: No lote/partida. Parte sin producción, pero
         puid_lote_partida = None    # cuenta para el tiempo empleado en A (sic)
         if bultos is None:  # No estoy actualizando tiempo total del parte.
             bultos = 0
     if puid_lote_partida not in dic_producto['lotes_partidas']:
         dic_producto['lotes_partidas'][puid_lote_partida] = {
-                'kg': {'a': 0.0, 
+                'kg': {'a': 0.0,
                        'b': 0.0,
-                       'c': 0.0}, 
-                '#': {'a': 0, 
-                      'b': 0, 
-                      'c': 0}, 
-                't_real': mx.DateTime.DateTimeDelta(0), 
+                       'c': 0.0},
+                '#': {'a': 0,
+                      'b': 0,
+                      'c': 0},
+                't_real': mx.DateTime.DateTimeDelta(0),
                 't_teorico': mx.DateTime.DateTimeDelta(0)
             }
         try:
             es_rollo = lote_partida.productoVenta.es_rollo()
         except AttributeError: # Ni siquiera tiene producto. ¿Qué hace aquí?
-            # XXX: Puede entrar como tiempo teórico de un parte 
-            # de rollos sin producción. lote_partida es aquí None, pero 
-            # metros será None si es un parte de fibra y, al menos, 0 si es de 
+            # XXX: Puede entrar como tiempo teórico de un parte
+            # de rollos sin producción. lote_partida es aquí None, pero
+            # metros será None si es un parte de fibra y, al menos, 0 si es de
             # rollos.
             es_rollo = metros != None
         if es_rollo:
             dic_producto['lotes_partidas'][puid_lote_partida]['m'] = {
-                                                    'a': 0.0, 
-                                                    'b': 0.0, 
+                                                    'a': 0.0,
+                                                    'b': 0.0,
                                                     'c': 0.0}
             dic_producto['lotes_partidas'][puid_lote_partida]['peso_teorico'] = {
-                                                    'a': 0.0, 
+                                                    'a': 0.0,
                                                     'b': 0.0} # No C.
     dic_producto['lotes_partidas'][puid_lote_partida]['kg'][tipo] += cantidad
     dic_producto['lotes_partidas'][puid_lote_partida]['#'][tipo] += bultos
@@ -970,9 +974,9 @@ def update_lote_partida(dic_producto, lote_partida, tipo, cantidad,
     except KeyError:
         pass    # No es un rollo
 
-def update_dic_producto(prod, pv, tipo, cantidad, metros = 0.0, 
-                        tiempo_teorico = mx.DateTime.DateTimeDelta(0), 
-                        tiempo_real = mx.DateTime.DateTimeDelta(0), 
+def update_dic_producto(prod, pv, tipo, cantidad, metros = 0.0,
+                        tiempo_teorico = mx.DateTime.DateTimeDelta(0),
+                        tiempo_real = mx.DateTime.DateTimeDelta(0),
                         bultos = None, peso_teorico = 0):
     """
     Actualiza la producción del artículo en el diccionario de producciones.
@@ -981,11 +985,11 @@ def update_dic_producto(prod, pv, tipo, cantidad, metros = 0.0,
     try:
         puid_pv = pv.puid
         es_rollo = pv.es_rollo() or pv.es_rollo_c()
-        if bultos is None:  # No estoy actualizando tiempo real del parte, 
+        if bultos is None:  # No estoy actualizando tiempo real del parte,
             bultos = 1      # que viene con bultos = 0.
     except AttributeError:
         puid_pv = None  # Parte sin producción.
-        es_rollo = pv           # Si no tiene producción, aquí debe venir un 
+        es_rollo = pv           # Si no tiene producción, aquí debe venir un
                                 # boolean que diga si es o no un geotextil.
         if bultos is None:  # No estoy actualizando tiempo real del parte.
             bultos = 0
@@ -1010,10 +1014,10 @@ def update_dic_producto(prod, pv, tipo, cantidad, metros = 0.0,
 def get_my_entry(funcname, wids):
     """
     Devuelve el entry correspondiente a la función cuyo nombre se ha recibido.
-    Es el entry que esa función actualizará con el valor devuelto y al que 
+    Es el entry que esa función actualizará con el valor devuelto y al que
     moverá la barra de progreso.
-    `wids` es el diccionario de widgets de la ventana de consulta. Lo paso a 
-    todas las funciones auxiliares para que no cambie el "signature" de las 
+    `wids` es el diccionario de widgets de la ventana de consulta. Lo paso a
+    todas las funciones auxiliares para que no cambie el "signature" de las
     llamadas y así aprovechar el decorador memoize.
     """
     if wids:
@@ -1024,12 +1028,12 @@ def get_my_entry(funcname, wids):
                 func_mem_name = func.func.__name__
             if func_mem_name == funcname:
                 return wids[nomentry]
-    return gtk.Entry()  # Entry "fantasma" para evitar errores si me invoca 
+    return gtk.Entry()  # Entry "fantasma" para evitar errores si me invoca
                         # otra ventana.
 
 @memoized
 def obtener_fechahorainicio_primer_parte(pdps, wids):
-    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.5)
     while gtk.events_pending(): gtk.main_iteration(False)
     try:
@@ -1042,7 +1046,7 @@ def obtener_fechahorainicio_primer_parte(pdps, wids):
 
 @memoized
 def obtener_fechahorafin_ultimo_parte(pdps, wids):
-    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.5)
     while gtk.events_pending(): gtk.main_iteration(False)
     try:
@@ -1055,7 +1059,7 @@ def obtener_fechahorafin_ultimo_parte(pdps, wids):
 
 @memoized
 def obtener_diferencia_horas_partes(pdps, wids):
-    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.0)
     while gtk.events_pending(): gtk.main_iteration(False)
     ini = obtener_fechahorainicio_primer_parte(pdps, wids)
@@ -1074,7 +1078,7 @@ def obtener_diferencia_horas_partes(pdps, wids):
 
 @memoized
 def calcular_t_real_total(pdps, wids):
-    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.0)
     while gtk.events_pending(): gtk.main_iteration(False)
     i = 0.0
@@ -1091,7 +1095,7 @@ def calcular_t_real_total(pdps, wids):
 
 @memoized
 def calcular_t_teorico(pdps, wids):
-    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.0)
     while gtk.events_pending(): gtk.main_iteration(False)
     i = 0.0
@@ -1109,17 +1113,17 @@ def calcular_t_teorico(pdps, wids):
 
 @memoized
 def calcular_productividad_conjunta(pdps, wids = None):
-    # Esto no lo puedo calcular como la media de los rendimientos a no ser 
-    # que fuera media ponderada en función de los Kg producidos, que al final 
-    # es más complejo que si lo calculamos con la misma fórmula pero aplicada 
+    # Esto no lo puedo calcular como la media de los rendimientos a no ser
+    # que fuera media ponderada en función de los Kg producidos, que al final
+    # es más complejo que si lo calculamos con la misma fórmula pero aplicada
     # al conjunto de los partes.
     #try:
     #    res = sum([pdp.calcular_rendimiento() for pdp in pdps]) / len(pdps)
     #except ZeroDivisionError:
     #    res = 0.0
-    # OJO: Si volviera a cambiar la fórmula de la productividad, hay que 
+    # OJO: Si volviera a cambiar la fórmula de la productividad, hay que
     # redefinirla aquí también.
-    ## CWT: Hay que volverlo a cambiar. nzumer me dice por correo que hay 
+    ## CWT: Hay que volverlo a cambiar. nzumer me dice por correo que hay
     ##      que aplicar la productividad conjunta basada en tiempos. !!!
     #try:
     #    kgs_a = sum([pdp.calcular_kilos_peso_estandar_A() for pdp in pdps])
@@ -1130,7 +1134,7 @@ def calcular_productividad_conjunta(pdps, wids = None):
     #    res = kgs_a * 100.0 / kgs_teoricos
     #except ZeroDivisionError:
     #    res = 0.0
-    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.0)
     while gtk.events_pending(): gtk.main_iteration(False)
     tiempo_teorico = calcular_t_teorico(pdps, wids)
@@ -1150,10 +1154,10 @@ def calcular_productividad_conjunta(pdps, wids = None):
 @memoized
 def calcular_kgs_teoricos_a(pdps, wids):
     """
-    Devuelve el total de Kgs de que deberían pesar los rollos A producidos    
+    Devuelve el total de Kgs de que deberían pesar los rollos A producidos
     entre todos los partes recibidos.
     """
-    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.0)
     while gtk.events_pending(): gtk.main_iteration(False)
     res = 0.0
@@ -1175,10 +1179,10 @@ def calcular_kgs_teoricos_a(pdps, wids):
 @memoized
 def calcular_kgs_reales_a(pdps, wids):
     """
-    Devuelve los kgs reales SIN EMBALAJE producidos en A entre todos los 
+    Devuelve los kgs reales SIN EMBALAJE producidos en A entre todos los
     partes.
     """
-    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.0)
     while gtk.events_pending(): gtk.main_iteration(False)
     i = 0.0
@@ -1196,10 +1200,10 @@ def calcular_kgs_reales_a(pdps, wids):
 @memoized
 def calcular_diferencia_kgs_a(pdps, wids):
     """
-    Devuelve la diferencia entre los Kgs reales de A y los teóricos de A para 
+    Devuelve la diferencia entre los Kgs reales de A y los teóricos de A para
     todos los partes.
     """
-    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.25)
     while gtk.events_pending(): gtk.main_iteration(False)
     reales = calcular_kgs_reales_a(pdps, wids)
@@ -1216,10 +1220,10 @@ def calcular_diferencia_kgs_a(pdps, wids):
 @memoized
 def calcular_porcentaje_kgs(pdps, wids):
     """
-    Devuelve el porcentaje que representa la diferencia entre kgs reales y 
+    Devuelve el porcentaje que representa la diferencia entre kgs reales y
     teóricos sobre los kilos teóricos de A que deberían haber dado los partes.
     """
-    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.25)
     while gtk.events_pending(): gtk.main_iteration(False)
     diferencia = calcular_diferencia_kgs_a(pdps, wids)
@@ -1241,7 +1245,7 @@ def calcular_kgs_reales_b(pdps, wids):
     """
     Devuelve los kgs de B reales sin embalaje producidos en los partes.
     """
-    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.0)
     while gtk.events_pending(): gtk.main_iteration(False)
     i = 0.0
@@ -1259,19 +1263,19 @@ def calcular_kgs_reales_b(pdps, wids):
 @memoized
 def calcular_kgs_reales_c(fini, ffin, claseC, wids):
     """
-    Devuelve los kgs de C reales sin embalaje producidos entre las fechas 
-    recibidas (la fecha final no entra) del tipo de clase C recibido 
+    Devuelve los kgs de C reales sin embalaje producidos entre las fechas
+    recibidas (la fecha final no entra) del tipo de clase C recibido
     (pclases.RolloC o pclases.BalaC).
     """
     # res = sum([pdp.calcular_kilos_producidos_C() for pdp in pdps])
-    # Esto no se puede hacer así porque los artículos C no van en los partes 
-    # de producción DE MOMENTO. Así que lo calculo mirando las fechas 
+    # Esto no se puede hacer así porque los artículos C no van en los partes
+    # de producción DE MOMENTO. Así que lo calculo mirando las fechas
     # inicial y final de
-    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.0)
     while gtk.events_pending(): gtk.main_iteration(False)
     res = 0.0
-    objs = claseC.select(pclases.AND(claseC.q.fechahora >= fini, 
+    objs = claseC.select(pclases.AND(claseC.q.fechahora >= fini,
                                      claseC.q.fechahora < ffin))
     i = 0.0
     tot = objs.count()
@@ -1290,7 +1294,7 @@ def calcular_kg_total(pdps, fini, ffin, claseC, wids):
     """
     Devuelve los kilos reales totales fabricados de A+B+C.
     """
-    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.0)
     while gtk.events_pending(): gtk.main_iteration(False)
     A = calcular_kgs_reales_a(pdps, wids)
@@ -1310,14 +1314,14 @@ def calcular_kg_total(pdps, fini, ffin, claseC, wids):
 @memoized
 def calcular_desviaciones(pdps, fini, ffin, claseC, wids):
     """
-    Devuelve la suma de desviaciones (artículos B, artículos C y 
+    Devuelve la suma de desviaciones (artículos B, artículos C y
     diferencia entre A teóricos y A reales) sobre A.
     """
-    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.0)
     while gtk.events_pending(): gtk.main_iteration(False)
-    # Esto es casi pura programación funcional. Me va a costar mucho tiempo 
-    # repitiendo llamadas a funciones para calcular los mismos resultados en 
+    # Esto es casi pura programación funcional. Me va a costar mucho tiempo
+    # repitiendo llamadas a funciones para calcular los mismos resultados en
     # varios sitios que en Erlang estaría totalmente optimizado. For sure!
     diferencia_teoricos_reales = calcular_diferencia_kgs_a(pdps, wids)
     entry.set_progress_fraction(0.25)
@@ -1336,17 +1340,17 @@ def calcular_desviaciones(pdps, fini, ffin, claseC, wids):
 @memoized
 def calcular_consumo(pdps, wids):
     """
-    Devuelve el "consumo" de materia prima en kgs de los partes de producción 
+    Devuelve el "consumo" de materia prima en kgs de los partes de producción
     recibidos.
     En el caso de la fibra es la suma de consumos de granza.
-    En el caso de los geotextiles es la suma de la fibra CARGADA en los 
+    En el caso de los geotextiles es la suma de la fibra CARGADA en los
     cuartos para las partidas fabricadas en los partes.
     En el caso del cemento es la suma de los bigbags cargados en los partes.
-    En el caso de los productos C (rollos C y balas de cable) es cero porque 
+    En el caso de los productos C (rollos C y balas de cable) es cero porque
     actualmente no consumen (DE MOMENTO) y además no pertenecen a partes de
     producción "estándar", así que no se le invocaría porque no habría pdps.
     """
-    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.0)
     while gtk.events_pending(): gtk.main_iteration(False)
     i = 0.0
@@ -1364,10 +1368,10 @@ def calcular_consumo(pdps, wids):
 @memoized
 def calcular_diff_cons_prod(pdps, fini, ffin, claseC, wids):
     """
-    Devuelve la diferencia entre los kilos producidos sin embalaje de A, B y C 
+    Devuelve la diferencia entre los kilos producidos sin embalaje de A, B y C
     con los kilos de materia prima cargados o consumidos por los partes.
     """
-    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK 
+    entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.25)
     while gtk.events_pending(): gtk.main_iteration(False)
     producido = calcular_kg_total(pdps, fini, ffin, claseC, wids)
@@ -1382,24 +1386,24 @@ def calcular_diff_cons_prod(pdps, fini, ffin, claseC, wids):
     return res
 
 WIDSRESUMEN = (("e_pdp_ini_gtx", obtener_fechahorainicio_primer_parte),
-               ("e_pdp_fin_gtx", obtener_fechahorafin_ultimo_parte), 
-               ("e_pdp_dif_gtx", obtener_diferencia_horas_partes), 
-               ("e_t_total_gtx", calcular_t_real_total), 
-               ("e_t_total_a_gtx", calcular_t_teorico), 
-               ("e_productividad_gtx", calcular_productividad_conjunta), 
-               ("e_kg_teorico_a_gtx", calcular_kgs_teoricos_a), 
-               ("e_kg_real_a_gtx", calcular_kgs_reales_a), 
-               ("e_dif_real_teorico_gtx", calcular_diferencia_kgs_a), 
-               ("e_porcentaje_gtx", calcular_porcentaje_kgs), 
-               ("e_kg_real_b_gtx", calcular_kgs_reales_b), 
-               ("e_kg_real_c_gtx", calcular_kgs_reales_c), 
-               ("e_kg_real_total_gtx", calcular_kg_total), 
-               ("e_desviaciones_gtx", calcular_desviaciones), 
-               ("e_fibra_gtx", calcular_consumo), 
+               ("e_pdp_fin_gtx", obtener_fechahorafin_ultimo_parte),
+               ("e_pdp_dif_gtx", obtener_diferencia_horas_partes),
+               ("e_t_total_gtx", calcular_t_real_total),
+               ("e_t_total_a_gtx", calcular_t_teorico),
+               ("e_productividad_gtx", calcular_productividad_conjunta),
+               ("e_kg_teorico_a_gtx", calcular_kgs_teoricos_a),
+               ("e_kg_real_a_gtx", calcular_kgs_reales_a),
+               ("e_dif_real_teorico_gtx", calcular_diferencia_kgs_a),
+               ("e_porcentaje_gtx", calcular_porcentaje_kgs),
+               ("e_kg_real_b_gtx", calcular_kgs_reales_b),
+               ("e_kg_real_c_gtx", calcular_kgs_reales_c),
+               ("e_kg_real_total_gtx", calcular_kg_total),
+               ("e_desviaciones_gtx", calcular_desviaciones),
+               ("e_fibra_gtx", calcular_consumo),
                ("e_dif_cons_prod_gtx", calcular_diff_cons_prod)
               )
 
 
 if __name__ == '__main__':
-    t = ConsultaProducido() 
+    t = ConsultaProducido()
 

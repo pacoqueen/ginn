@@ -17444,10 +17444,12 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
 
     def calcular_kilos_producidos_A(self):
         """
-        Devuelve los kilos producidos **netos** --sin embalaje-- de producto A.
+        Devuelve los kilos producidos **netos** reales --sin embalaje-- de
+        producto A.
         """
         articulos_A = [a for a in self.articulos if a.es_clase_a()]
-        kg_producidos = sum([a.peso_sin for a in articulos_A])
+        kg_producidos = sum([a.peso_real - a.peso_embalaje
+                             for a in articulos_A])
         return kg_producidos
 
     def calcular_kilos_producidos_B(self):
