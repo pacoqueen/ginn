@@ -10014,7 +10014,10 @@ class Articulo(SQLObject, PRPCTOO):
             elif self.es_bigbag():
                 res = self.bigbag.peso
             elif self.es_caja():
-                res = None   # No tienen peso real de báscula.
+                # res = None   # No tienen peso real de báscula.
+                # Tomamos como peso real el peso teórico de las bolsas más
+                # el estimado de embalaje de la caja completa.
+                res = self.caja.peso + self.peso_embalaje
             else:
                 res = None
         else:  # Para los artículos posteriores, el valor de la base de datos.
@@ -17872,7 +17875,9 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
                     unidad = "kg"
                     cantidad_normalizada = a.peso_sin
                 if soy_parte_de_cemento:     # Cantidad viene en gramos
-                    cantidad_normalizada /= 1000.0
+                    # Ya no viene en gramos. Todo en kilos. Pero hay que
+                    # restarle el embalaje.
+                    cantidad_normalizada -= a.peso_embalaje
                 producido += cantidad_normalizada
         return producido, unidad
 
