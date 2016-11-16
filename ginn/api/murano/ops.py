@@ -532,6 +532,9 @@ def _get_linea_produccion_ginn(descripcion_linea):
         linea = descripcion_linea.split()[-1]
         if linea.endswith("s"):
             linea = linea[:-1]
+        if linea.lower() == "geocem":
+            # Problema entre el teclado y la silla. A veces se confunden...
+            linea = "embolsado"
     except AttributeError:
         # Es un producto de venta especial. Sin línea de producción.
         linea = None
