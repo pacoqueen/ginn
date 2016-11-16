@@ -2638,9 +2638,21 @@ def _sync_campos_comunes_pv(prod_ginn, prod_murano):
     res = prod_ginn
     prod_ginn.lineaDeProduccion = _get_linea_produccion_ginn(
         prod_murano.DescripcionLinea)
-    prod_ginn.nombre = prod_murano.Descripcion2Articulo
+    try:
+        prod_ginn.nombre = prod_murano.Descripcion2Articulo
+    except UnicodeDecodeError:
+        # Por un error de sqlobject, no parece estar reconociendo bien el
+        # encoding. Lo fuerzo para los casos del PV581 en polaco, por ejemplo.
+        connection = pclases.sqlhub.getConnection()
+        connection.dbEncoding = "utf-8"
+        prod_ginn.nombre = prod_murano.Descripcion2Articulo
     if prod_murano.DescripcionArticulo:
-        prod_ginn.descripcion = prod_murano.DescripcionArticulo
+        try:
+            prod_ginn.descripcion = prod_murano.DescripcionArticulo
+        except UnicodeDecodeError:
+            connection = pclases.sqlhub.getConnection()
+            connection.dbEncoding = "utf-8"
+            prod_ginn.descripcion = prod_murano.DescripcionArticulo
     prod_ginn.codigo = prod_murano.CodigoAlternativo
     prod_ginn.arancel = prod_murano.CodigoArancelario
     prod_ginn.prodestandar = prod_murano.GEO_ProdEstandar
