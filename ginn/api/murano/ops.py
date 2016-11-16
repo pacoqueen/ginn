@@ -2640,7 +2640,7 @@ def _sync_campos_comunes_pv(prod_ginn, prod_murano):
         prod_murano.DescripcionLinea)
     try:
         prod_ginn.nombre = prod_murano.Descripcion2Articulo
-    except UnicodeDecodeError:
+    except UnicodeEncodeError:
         # Por un error de sqlobject, no parece estar reconociendo bien el
         # encoding. Lo fuerzo para los casos del PV581 en polaco, por ejemplo.
         connection = pclases.sqlhub.getConnection()
@@ -2649,7 +2649,7 @@ def _sync_campos_comunes_pv(prod_ginn, prod_murano):
     if prod_murano.DescripcionArticulo:
         try:
             prod_ginn.descripcion = prod_murano.DescripcionArticulo
-        except UnicodeDecodeError:
+        except UnicodeEncodeError:
             connection = pclases.sqlhub.getConnection()
             connection.dbEncoding = "utf-8"
             prod_ginn.descripcion = prod_murano.DescripcionArticulo
