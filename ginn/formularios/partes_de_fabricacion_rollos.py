@@ -3058,7 +3058,7 @@ class PartesDeFabricacionRollos(Ventana):
                 elemento, fetiqueta = build_etiqueta(r)
                 rollos.append(elemento)
                 # CWT: [10/10/2016] Hay que imprimir 2 etiquetas por cada rollo
-                #rollos.append(elemento)
+                rollos.append(elemento)
             if boton.name == "b_etiquetas":
                 reports.abrir_pdf(
                     geninformes.etiquetasRollos(rollos, mostrar_marcado))
