@@ -1,0 +1,10 @@
+# Para ser copiado en /etc/logrotate.d/ginn
+
+/home/compartido/ginn/ginn/*.log {
+    su nobody nogroup
+    size 15M
+    copytruncate
+    dateext
+    nocompress
+    missingok
+}
