@@ -1793,9 +1793,12 @@ CREATE TABLE bigbag(
                                     -- llevar fibra mal cortada, etc...
     motivo TEXT DEFAULT '',         -- Motivo por el cual la calidad del
                                     -- bigbag es B.
-    parte_de_produccion_id INT REFERENCES parte_de_produccion DEFAULT NULL
+    parte_de_produccion_id INT REFERENCES parte_de_produccion DEFAULT NULL,
         -- Parte de producción en el que se ha consumido el bigbag para
         -- fabricar bolsas de fibra de cemento.
+    api BOOLEAN DEFAULT FALSE -- Indica si el consumo de este bigbag (en caso
+        -- de que se haya consumido en un parte_de_produccion_id) se ha
+        -- contabilizado ya en Murano o no.
 );
 
 -------------------------------

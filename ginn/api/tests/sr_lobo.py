@@ -388,6 +388,47 @@ def make_consumos(fsalida, simulate=True, fini=None, ffin=None):
     """
     make_consumos_materiales(fsalida, simulate, fini, ffin)
     make_consumos_balas(fsalida, simulate, fini, ffin)
+    make_consumos_bigbags(fsalida, simulate, fini, ffin)
+
+
+def make_consumos_bigbags(fsalida, simulate=True, fini=None, ffin=None):
+    """
+    Realiza los consumos de fibra en bigbag por parte de la línea de cemento.
+    """
+    # Check de parámetros
+    report = open(fsalida, "a", 0)
+    if not fini:
+        fini = datetime.date(2016, 5, 31)   # Fecha en que entró Murano.
+    if not ffin:
+        ffin = datetime.date.today() + datetime.timedelta(days=1)
+    pdps = pclases.ParteDeProduccion.select(pclases.AND(
+        pclases.ParteDeProduccion.q.fechahorainicio >= fini,
+        pclases.ParteDeProduccion.q.fechahorafin <= ffin,
+        pclases.ParteDeProduccion.q.bloqueado == True))
+    report.write("{} partes encontrados.\n".format(pdps.count()))
+    res = True
+    for pdp in tqdm(pdps, total=pdps.count(), desc="Partes a consumir",
+                    unit="pdp"):
+        for bb in pdp.bigbags:
+            # Ignoro los ya tratados y los que no se completaron en ginn.
+            if not bb.api:
+                res = res and consumir_bigbag(report, bb, simulate)
+    report.close()
+    return res
+
+
+def consumir_bigbag(report, bb, simulate=True):
+    """
+    Descuenta el bigbag del almacén de Murano indicando que es un consumo
+    de un parte de la línea de cemento embolsado en el movimiento de serie.
+    """
+    report.write("Consumiendo bigbag {} [id {} ({})] de {}:\n".format(
+        bb.codigo, bb.id, bb.articulo.puid,
+        bb.articulo.productoVenta.descripcion))
+    # Aquí hacemos efectivo el rebaje de stock
+    res = murano.ops.consume_bigbag(bb, simulate=simulate)
+    report.write("\tValor de retorno: {}\n".format(res))
+    return res
 
 
 def make_consumos_balas(fsalida, simulate=True, fini=None, ffin=None):
@@ -439,7 +480,6 @@ def make_consumos_materiales(fsalida, simulate=True, fini=None, ffin=None):
     Devuelve True si todos los consumos pendientes se han realizado. False si
     alguno de ellos ha dado error.
     """
-    res = True
     # Check de parámetros
     report = open(fsalida, "a", 0)
     if not fini:
@@ -451,39 +491,48 @@ def make_consumos_materiales(fsalida, simulate=True, fini=None, ffin=None):
         pclases.ParteDeProduccion.q.fechahorafin <= ffin,
         pclases.ParteDeProduccion.q.bloqueado == True))
     report.write("{} partes encontrados.\n".format(pdps.count()))
+    res = True
     for pdp in tqdm(pdps, total=pdps.count(), desc="Partes a consumir",
                     unit="pdp"):
         for consumo in pdp.consumos:
             # Ignoro los ya tratados y los que no se completaron en ginn.
             if not consumo.api and consumo.actualizado:
-                producto = consumo.productoCompra
-                idmurano = "PC{}".format(producto.id)
-                cantidad = -1.0 * consumo.cantidad
-                productomurano = murano.ops.get_producto_murano(idmurano)
-                unidad = productomurano['UnidadMedida2_']
-                # Todos los consumos siempre se hacen del almacén principal
-                stockmurano = murano.ops.get_stock_murano(producto,
-                                                          'GTX', '', unidad)
-                report.write("Actualizando {} ({}) en Murano:\n".format(
-                    producto.descripcion, idmurano))
-                report.write("\tExistencias anteriores: {} {}\n".format(
-                    stockmurano, unidad))
-                report.write("\tCantidad a descontar: {} {}\n".format(
-                    cantidad, producto.unidad))
-                # Aquí hacemos efectivo el rebaje de stock
-                _res = murano.ops.update_stock(producto, cantidad, 'GTX',
-                                               simulate=simulate)
-                report.write("\tValor de retorno: {}\n".format(_res))
-                if _res and not simulate:
-                    consumo.api = True
-                    consumo.sync()
-                    report.write("\tValor api consumo actualizado.\n")
-                res = res and _res
-                stockmuranoact = murano.ops.get_stock_murano(producto,
-                                                             'GTX', '', unidad)
-                report.write("\tExistencias actual: {} {}\n".format(
-                    stockmuranoact, unidad))
+                res = res and consumir_mp(consumo, report, simulate)
     report.close()
+    return res
+
+
+def consumir_mp(consumo, report, simulate=True):
+    """
+    Descuenta las cantidades que indica el consumo en el producto de compra
+    del mismo.
+    """
+    producto = consumo.productoCompra
+    idmurano = "PC{}".format(producto.id)
+    cantidad = -1.0 * consumo.cantidad
+    productomurano = murano.ops.get_producto_murano(idmurano)
+    unidad = productomurano['UnidadMedida2_']
+    # Todos los consumos siempre se hacen del almacén principal
+    stockmurano = murano.ops.get_stock_murano(producto,
+                                              'GTX', '', unidad)
+    report.write("Actualizando {} ({}) en Murano:\n".format(
+        producto.descripcion, idmurano))
+    report.write("\tExistencias anteriores: {} {}\n".format(
+        stockmurano, unidad))
+    report.write("\tCantidad a descontar: {} {}\n".format(
+        cantidad, producto.unidad))
+    # Aquí hacemos efectivo el rebaje de stock
+    res = murano.ops.update_stock(producto, cantidad, 'GTX',
+                                  simulate=simulate)
+    report.write("\tValor de retorno: {}\n".format(res))
+    if res and not simulate:
+        consumo.api = True
+        consumo.sync()
+        report.write("\tValor api consumo actualizado.\n")
+    stockmuranoact = murano.ops.get_stock_murano(producto,
+                                                 'GTX', '', unidad)
+    report.write("\tExistencias actual: {} {}\n".format(
+        stockmuranoact, unidad))
     return res
 
 

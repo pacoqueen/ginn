@@ -1258,6 +1258,117 @@ def consume_bala(bala, cantidad=-1, producto=None, guid_proceso=None,
     return res
 
 
+# pylint: disable=too-many-arguments,too-many-statements
+def consume_bigbag(bigbag, cantidad=-1, producto=None, guid_proceso=None,
+                 simulate=False, procesar=True):
+    """
+    Crea un movimiento de salida de un bigbag en las tablas temporales de
+    Murano.
+    Recibe un objeto bigbag de ginn.
+    `cantidad` es un parámetro obsoleto que no se usa.
+    Si simulate es True, devuelve las dos consultas SQL generadas. En otro
+    caso, el valor de ejecutar el proceso de importación.
+    Si procesar es False no lanza el proceso de importación a través de la
+    DDL OEM de Murano.
+    """
+    try:
+        articulo = bigbag.articulo
+    except AttributeError:  # Me han pasado directamente un artículo
+        articulo = bigbag
+    if not existe_articulo(articulo):
+        logging.warning("El bigbag %s no existe en Murano. Se ignora.",
+                        bigbag.codigo)
+        res = False
+    elif not esta_en_almacen(articulo):
+        logging.warning("El bigbag %s no está en almacén en Murano. Se ignora.",
+                        bigbag.codigo)
+        res = False
+    else:
+        try:
+            partida = bigbag.loteCem.codigo
+        except AttributeError:
+            partida = ""  # Balas C no tienen lote. No pasa nada. Murano traga.
+        unidad_medida = "KG"
+        comentario = ("Consumo bigbag ginn: [%s]" % bigbag.get_info())[:40]
+        ubicacion = "Almac. de fibra."[:15]
+        numero_serie_lc = ""
+        # Sage me indica que no informe de la serie en el movimiento de stock
+        # para solucionar lo del registro duplicado creado por Murano.
+        (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
+         codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
+         unidades, precio, importe, unidades2, unidad_medida2,
+         factor_conversion, origen_movimiento) = prepare_params_movstock(
+            articulo, cantidad, producto)   # pylint: disable=bad-continuation
+        try:
+            documento = bigbag.parteDeProduccion.id  # Única forma
+            # numérica de localizarlo.
+        except AttributeError:
+            pass    # Dejo la fecha, que es valor por defecto que trae.
+        if not guid_proceso:
+            id_proceso_IME = crear_proceso_IME(c)
+        else:
+            id_proceso_IME = guid_proceso
+        guid_movposicion = generar_guid(c)
+        canal_div = "CONSBB"[:10]
+        sql_movstock = SQL_STOCK % (database,
+                                    CODEMPRESA, ejercicio, periodo, fecha,
+                                    documento, codigo_articulo, codigo_almacen,
+                                    partida, grupo_talla, codigo_talla,
+                                    tipo_movimiento, unidades, unidad_medida,
+                                    precio, importe, unidades2, unidad_medida2,
+                                    factor_conversion, comentario, canal_div,
+                                    ubicacion, origen_movimiento,
+                                    numero_serie_lc, id_proceso_IME,
+                                    guid_movposicion)
+        if simulate:
+            # pylint: disable=redefined-variable-type
+            # Si es una simulación, devuelvo las consultas SQL y no un bool.
+            res = [sql_movstock]
+        else:
+            c.run_sql(sql_movstock)
+        if cantidad < 0:
+            origen_documento = 11
+        else:
+            origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
+        # 11 (salida de stock), 12 (inventario)
+        # mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
+        mov_posicion_origen = guid_movposicion
+        # En el movimiento de serie la UnidadMedida1_ es la básica:ROLLO,BALA..
+        unidad_medida1 = buscar_unidad_medida_basica(articulo.productoVenta,
+                                                     articulo)
+        numero_serie_lc = bigbag.codigo
+        peso_bruto = get_peso_bruto(articulo)
+        peso_neto = get_peso_neto(articulo)
+        sql_movserie = SQL_SERIE % (database,
+                                    CODEMPRESA, codigo_articulo,
+                                    numero_serie_lc, fecha, origen_documento,
+                                    ejercicio, documento, mov_posicion_origen,
+                                    codigo_talla, codigo_almacen, ubicacion,
+                                    partida, unidad_medida1, comentario,
+                                    id_proceso_IME,
+                                    # articulo.peso, articulo.peso_sin,
+                                    peso_bruto, peso_neto,
+                                    0.0,  # Metros cuadrados. Decimal NOT NULL
+                                    ""   # Código palé. Varchar NOT NULL
+                                    )  # pylint: disable=bad-continuation
+        if simulate:
+            res.append(sql_movserie)
+        else:
+            c.run_sql(sql_movserie)
+            # pylint: disable=redefined-variable-type
+            if procesar:
+                res = fire(id_proceso_IME)
+                # Solo actualizo el valor del api si no se ha simulado y estoy
+                # seguro de que en Murano se ha descontado el bigbag. Prefiero
+                # intentar volver a consumir el mismo bigbag que creer que se
+                # ha consumido y no volverlo a intentar jamás dejando un
+                # descuadre entre ginn y Murano.
+                bigbag.api = res
+            else:   # No proceso la importación. Todo ha ido bien hasta ahora.
+                    # Devuelvo el guid, que me vale como True también.
+                res = id_proceso_IME
+    return res
+
 def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
                   simulate=False, procesar=True):
     """
