@@ -1861,7 +1861,9 @@ def esta_en_almacen(articulo):
                FROM {}.dbo.ArticulosSeries
               WHERE CodigoEmpresa = {}
                 AND UnidadesSerie <> 0
-           ORDER BY FechaInicial;""".format(c.get_database(), CODEMPRESA)
+                AND NumeroSerieLc = '{}'
+           ORDER BY FechaInicial;""".format(c.get_database(), CODEMPRESA,
+                                            articulo.codigo)
     articulos_serie = c.run_sql(sql)
     try:
         almacen = articulos_serie[-1]['CodigoAlmacen']
