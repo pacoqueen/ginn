@@ -1260,7 +1260,7 @@ def consume_bala(bala, cantidad=-1, producto=None, guid_proceso=None,
 
 # pylint: disable=too-many-arguments,too-many-statements
 def consume_bigbag(bigbag, cantidad=-1, producto=None, guid_proceso=None,
-                 simulate=False, procesar=True):
+                   simulate=False, procesar=True):
     """
     Crea un movimiento de salida de un bigbag en las tablas temporales de
     Murano.
@@ -1280,8 +1280,8 @@ def consume_bigbag(bigbag, cantidad=-1, producto=None, guid_proceso=None,
                         bigbag.codigo)
         res = False
     elif not esta_en_almacen(articulo):
-        logging.warning("El bigbag %s no está en almacén en Murano. Se ignora.",
-                        bigbag.codigo)
+        logging.warning("El bigbag %s no está en almacén en Murano."
+                        " Se ignora.", bigbag.codigo)
         res = False
     else:
         try:
@@ -1368,6 +1368,7 @@ def consume_bigbag(bigbag, cantidad=-1, producto=None, guid_proceso=None,
                     # Devuelvo el guid, que me vale como True también.
                 res = id_proceso_IME
     return res
+
 
 def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
                   simulate=False, procesar=True):
@@ -1837,8 +1838,8 @@ def existe_articulo(articulo, productoVenta=None):
 
 def esta_en_almacen(articulo):
     """
-    Devuelve True si el artículo está en algún almacén de Murano. Sea del
-    producto que sea.
+    Devuelve el código de almacén si el artículo está en algún almacén de
+    Murano. Sea del producto que sea.
     False en caso contrario.
     """
     if not isinstance(articulo, pclases.Articulo):
@@ -1846,16 +1847,30 @@ def esta_en_almacen(articulo):
         # artículo.
         articulo = pclases.Articulo.get_articulo(articulo)
     c = Connection()
-    movserie = get_ultimo_movimiento_articulo_serie(c, articulo)
-    if not movserie:
-        # Si no ha tenido movimientos de serie, nunca ha existido en Murano.
+    # movserie = get_ultimo_movimiento_articulo_serie(c, articulo)
+    # if not movserie:
+    #     # Si no ha tenido movimientos de serie, nunca ha existido en Murano.
+    #     res = False
+    # else:
+    #     if es_movimiento_de_salida(movserie):
+    #         # Ha tenido movimientos, pero el último ha sido de salida.
+    #         res = False
+    #     else:
+    #         res = True
+    sql = """SELECT CodigoAlmacen
+               FROM {}.dbo.ArticulosSeries
+              WHERE CodigoEmpresa = {}
+                AND UnidadesSerie <> 0
+           ORDER BY FechaInicial;""".format(c.get_database(), CODEMPRESA)
+    articulos_serie = c.run_sql(sql)
+    try:
+        almacen = articulos_serie[-1]['CodigoAlmacen']
+    except IndexError:
+        almacen = None
+    if not almacen:
         res = False
     else:
-        if es_movimiento_de_salida(movserie):
-            # Ha tenido movimientos, pero el último ha sido de salida.
-            res = False
-        else:
-            res = True
+        res = almacen
     return res
 
 
@@ -2427,8 +2442,10 @@ def _get_peso_bruto_murano(articulo):
     """
     conn = Connection()
     SQL = r"""SELECT PesoBruto_ FROM %s.dbo.ArticulosSeries
-              WHERE NumeroSerieLc = '%s';""" % (conn.get_database(),
-                                                articulo.codigo)
+               WHERE NumeroSerieLc = '%s'
+                 AND CodigoEmpresa = %d;""" % (conn.get_database(),
+                                               articulo.codigo,
+                                               CODEMPRESA)
     try:
         res = conn.run_sql(SQL)[0]['PesoBruto_']
     except IndexError:
@@ -2444,8 +2461,10 @@ def _get_peso_neto_murano(articulo):
     """
     conn = Connection()
     SQL = r"""SELECT PesoNeto_ FROM %s.dbo.ArticulosSeries
-              WHERE NumeroSerieLc = '%s';""" % (conn.get_database(),
-                                                articulo.codigo)
+               WHERE NumeroSerieLc = '%s'
+                 AND CodigoEmpresa = %d;""" % (conn.get_database(),
+                                               articulo.codigo,
+                                               CODEMPRESA)
     try:
         res = conn.run_sql(SQL)[0]['PesoNeto_']
     except IndexError:
@@ -2461,8 +2480,10 @@ def _get_superficie_murano(articulo):
     """
     conn = Connection()
     SQL = r"""SELECT MetrosCuadrados FROM %s.dbo.ArticulosSeries
-              WHERE NumeroSerieLc = '%s';""" % (conn.get_database(),
-                                                articulo.codigo)
+               WHERE NumeroSerieLc = '%s'
+                 AND CodigoEmpresa = %d;""" % (conn.get_database(),
+                                               articulo.codigo,
+                                               CODEMPRESA)
     try:
         res = conn.run_sql(SQL)[0]['MetrosCuadrados']
     except IndexError:
