@@ -407,8 +407,8 @@ def make_consumos_bigbags(fsalida, simulate=True, fini=None, ffin=None):
         pclases.ParteDeProduccion.q.bloqueado == True))
     report.write("{} partes encontrados.\n".format(pdps.count()))
     res = True
-    for pdp in tqdm(pdps, total=pdps.count(), desc="Partes a consumir",
-                    unit="pdp"):
+    for pdp in tqdm(pdps, total=pdps.count(),
+                    desc="Partes a consumir (bigbags)", unit="pdp"):
         for bb in pdp.bigbags:
             # Ignoro los ya tratados y los que no se completaron en ginn.
             if not bb.api:
@@ -492,8 +492,8 @@ def make_consumos_materiales(fsalida, simulate=True, fini=None, ffin=None):
         pclases.ParteDeProduccion.q.bloqueado == True))
     report.write("{} partes encontrados.\n".format(pdps.count()))
     res = True
-    for pdp in tqdm(pdps, total=pdps.count(), desc="Partes a consumir",
-                    unit="pdp"):
+    for pdp in tqdm(pdps, total=pdps.count(),
+                    desc="Partes a consumir (materia prima)", unit="pdp"):
         for consumo in pdp.consumos:
             # Ignoro los ya tratados y los que no se completaron en ginn.
             if not consumo.api and consumo.actualizado:

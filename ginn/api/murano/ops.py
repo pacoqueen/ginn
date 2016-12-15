@@ -1880,6 +1880,7 @@ def es_movimiento_de_salida(movserie):
     """
     Recibe un registro MovimientoArticuloSerie de Murano (diccionario) y
     devuelve True si es un movimiento de salida.
+    No tiene en cuenta si es un interalmacén (lo tomará como salida también).
     """
     res = (es_movimiento_salida_fabricacion(movserie) or
            es_movimiento_salida_albaran(movserie))
