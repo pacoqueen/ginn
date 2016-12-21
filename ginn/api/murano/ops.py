@@ -1174,7 +1174,7 @@ def consume_bala(bala, cantidad=-1, producto=None, guid_proceso=None,
         logging.warning("La bala %s no existe en Murano. Se ignora.",
                         bala.codigo)
         res = False
-    elif not esta_en_almacen(articulo):
+    elif esta_en_almacen(articulo) is False:
         logging.warning("La bala %s no está en almacén en Murano. Se ignora.",
                         bala.codigo)
         res = False
