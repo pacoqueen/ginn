@@ -288,7 +288,7 @@ def finish_pendientes(fsalida, simulate=True):
              FROM {}.dbo.Iniciador_TmpIME
              WHERE FechaFin IS NULL;""".format(conn.get_database())
     guids = conn.run_sql(sql)
-    report.write("{} procesos pendients encontrados.\n".format(len(guids)))
+    report.write("{} procesos pendientes encontrados.\n".format(len(guids)))
     for proceso in tqdm(guids, desc="Procesos pendientes"):
         guid = proceso['IdProcesoIME']
         if not simulate:
