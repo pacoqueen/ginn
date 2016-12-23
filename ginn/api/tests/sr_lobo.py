@@ -447,6 +447,9 @@ def make_consumos_balas(fsalida, simulate=True, fini=None, ffin=None):
         pclases.PartidaCarga.q.fecha >= fini,
         pclases.PartidaCarga.q.fecha <= ffin,
         pclases.PartidaCarga.q.api == False))
+    # TODO: Debería meter un filtro más para no consumir las partidas de carga
+    # que no tengan todos los partes de producción verificados. Así doy margen
+    # a Jesús para que pueda modificarlas. Si no tiene partes, no volcar tampoco.
     report.write("{} partidas de carga encontradas.\n".format(pcargas.count()))
     for pcarga in tqdm(pcargas, total=pcargas.count(),
                        desc="Partidas de carga", unit="partida"):
