@@ -412,7 +412,7 @@ def make_consumos_bigbags(fsalida, simulate=True, fini=None, ffin=None):
         for bb in pdp.bigbags:
             # Ignoro los ya tratados y los que no se completaron en ginn.
             if not bb.api:
-                res = res and consumir_bigbag(report, bb, simulate)
+                res = consumir_bigbag(report, bb, simulate) and res
     report.close()
     return res
 
@@ -497,7 +497,7 @@ def make_consumos_materiales(fsalida, simulate=True, fini=None, ffin=None):
         for consumo in pdp.consumos:
             # Ignoro los ya tratados y los que no se completaron en ginn.
             if not consumo.api and consumo.actualizado:
-                res = res and consumir_mp(consumo, report, simulate)
+                res = consumir_mp(consumo, report, simulate) and res
     report.close()
     return res
 
