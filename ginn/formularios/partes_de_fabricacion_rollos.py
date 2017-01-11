@@ -69,14 +69,15 @@
 #import sys, os
 #sys.stdout = open("salida_debug.txt", "a")
 
+import time
+import pygtk
+pygtk.require('2.0')
+import gtk
+import mx.DateTime
 from ventana import Ventana
 from formularios import utils
 from formularios import reports
-import pygtk
-pygtk.require('2.0')
-import gtk, time
 from framework import pclases
-import mx.DateTime
 from informes import geninformes
 from utils import _float as float
 try:
@@ -2152,6 +2153,14 @@ class PartesDeFabricacionRollos(Ventana):
             return range(-fin, -ini + 1)[::-1]  # HACK: Python 2.3 no tiene __reversed__ en el xrange.
 
     def drop_rollo(self, boton):
+        if not self.usuario or self.usuario.nivel > 1:
+            utils.dialogo_info(titulo="PERMISOS INSUFICIENTES",
+                    texto="No puede borrar artículos fabricados.\n\n"
+                          "Solicite su eliminación por escrito indicando\n"
+                          "claramente los motivos y el código de\n"
+                          "trazabilidad del artículo en cuestión.",
+                    padre=self.wids['ventana'])
+            return
         if not MURANO:
             utils.dialogo_info(titulo="ERROR DE CONEXIÓN CON MURANO",
                                texto="No puede eliminar rollos. Solo consultas.",

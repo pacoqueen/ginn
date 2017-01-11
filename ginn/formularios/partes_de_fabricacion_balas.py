@@ -2680,6 +2680,14 @@ class PartesDeFabricacionBalas(Ventana):
         return articulo
 
     def drop_bala(self, boton):
+        if not self.usuario or self.usuario.nivel > 1:
+            utils.dialogo_info(titulo="PERMISOS INSUFICIENTES",
+                    texto="No puede borrar artículos fabricados.\n\n"
+                          "Solicite su eliminación por escrito indicando\n"
+                          "claramente los motivos y el código de\n"
+                          "trazabilidad del artículo en cuestión.",
+                    padre=self.wids['ventana'])
+            return
         if not MURANO:
             utils.dialogo_info(titulo="ERROR DE CONEXIÓN CON MURANO",
                            texto="No puede eliminar balas. Solo consultas.",
