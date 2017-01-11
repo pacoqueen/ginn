@@ -66,11 +66,11 @@ def fix_stock_producto(codigo, fsalida, simulate=True):
 
 def search_series(producto):
     """
-    Lanza una consulta SQL contra la base de datos de Murano y revuelve una
-    lista de diccionarios con los nombres de las columnas como clave y
-    los datos de cada registro como valores.
+    Lanza una consulta SQL contra la base de datos de Murano para obtener todas
+    las series de un producto y devuelve una lista de diccionarios con los
+    nombres de las columnas como clave y los datos de cada registro como
+    valores.
     """
-    rs = []
     conn = murano.connection.Connection()
     sql = """SELECT CodigoAlmacen,
                     Partida,
@@ -210,7 +210,7 @@ def main():
     ahora = datetime.datetime.today().strftime("%Y%m%d_%H")
     parser.add_argument("-o", dest="fsalida",
                         help="Guardar resultados en fichero de salida.",
-                        default="%s_sr_lobo.txt" % (ahora))
+                        default="%s_efcodd.txt" % (ahora))
     parser.add_argument("-v", "--view", dest="ver_salida",
                         help="Abre el fichero de salida en un editor externo.",
                         default=False, action='store_true')

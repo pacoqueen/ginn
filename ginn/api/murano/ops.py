@@ -539,6 +539,7 @@ def _get_linea_produccion_ginn(descripcion_linea):
         # Es un producto de venta especial. Sin línea de producción.
         linea = None
     try:
+        # pylint: disable=no-member
         lineas_ginn = pclases.LineaDeProduccion.select(
             pclases.LineaDeProduccion.q.nombre.contains(linea))
         assert lineas_ginn.count() == 1
@@ -926,7 +927,8 @@ def crear_proceso_IME(conexion):
 
 
 # pylint: disable=too-many-locals
-def prepare_params_movstock(articulo, cantidad=1, producto=None):
+def prepare_params_movstock(articulo, cantidad=1, producto=None,
+                            codigo_almacen=None):
     """
     Prepara los parámetros comunes a todos los artículos con movimiento de
     serie y devuelve la conexión a la base de datos MS-SQLServer.
@@ -949,7 +951,8 @@ def prepare_params_movstock(articulo, cantidad=1, producto=None):
         tipo_movimiento = 1     # 1 = entrada, 2 = salida.
     else:
         tipo_movimiento = 2
-    codigo_almacen = buscar_codigo_almacen(articulo.almacen, articulo)
+    if not codigo_almacen:
+        codigo_almacen = buscar_codigo_almacen(articulo.almacen, articulo)
     # OJO: Este caso no se dará cuando pasemos a producción. Todos los bultos a
     # consumir ya estarían en Murano previamente y con un almacén asignado.
     # Para pruebas me aseguro de que se envía un almacén buscando el último
@@ -1062,7 +1065,7 @@ def estimar_precio_coste(articulo, precio_kg):
 
 # pylint: disable=too-many-arguments
 def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
-                simulate=False, procesar=True):
+                simulate=False, procesar=True, codigo_almacen=None):
     """
     Crea una bala en las tablas temporales de Murano.
     Recibe un objeto bala de ginn.
@@ -1088,11 +1091,12 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
         numero_serie_lc = ""
         # Sage me indica que no informe de la serie en el movimiento de stock
         # para solucionar lo del registro duplicado creado por Murano.
+        # pylint: disable=bad-continuation
         (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
          codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
          unidades, precio, importe, unidades2, unidad_medida2,
          factor_conversion, origen_movimiento) = prepare_params_movstock(
-            articulo, cantidad, producto)   # pylint: disable=bad-continuation
+            articulo, cantidad, producto, codigo_almacen)
         if not guid_proceso:
             id_proceso_IME = crear_proceso_IME(c)
         else:
@@ -1371,7 +1375,7 @@ def consume_bigbag(bigbag, cantidad=-1, producto=None, guid_proceso=None,
 
 
 def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
-                  simulate=False, procesar=True):
+                  simulate=False, procesar=True, codigo_almacen=None):
     """
     Crea un bigbag en Murano a partir de la información del bigbag en ginn.
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
@@ -1388,11 +1392,12 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
         # para solucionar lo del registro duplicado creado por Murano.
         ubicacion = "Almac. de fibra."[:15]
         unidad_medida = "KG"
+        # pylint: disable=bad-continuation
         (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
          codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
          unidades, precio, importe, unidades2, unidad_medida2,
          factor_conversion, origen_movimiento) = prepare_params_movstock(
-            articulo, cantidad, producto)  # pylint: disable=bad-continuation
+            articulo, cantidad, producto, codigo_almacen)
         if not guid_proceso:
             id_proceso_IME = crear_proceso_IME(c)
         else:
@@ -1453,7 +1458,7 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
 
 
 def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
-                 simulate=False, procesar=True):
+                 simulate=False, procesar=True, codigo_almacen=None):
     """
     Crea un rollo en Murano a partir de la información del rollo en ginn.
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
@@ -1473,11 +1478,12 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
         # para solucionar lo del registro duplicado creado por Murano.
         ubicacion = "Almac. de geotextiles."[:15]
         unidad_medida = "M2"
+        # pylint: disable=bad-continuation
         (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
          codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
          unidades, precio, importe, unidades2, unidad_medida2,
          factor_conversion, origen_movimiento) = prepare_params_movstock(
-            articulo, cantidad, producto)  # pylint: disable=bad-continuation
+            articulo, cantidad, producto, codigo_almacen)
         if not guid_proceso:
             id_proceso_IME = crear_proceso_IME(c)
         else:
@@ -1539,7 +1545,7 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
 
 
 def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
-                simulate=False, procesar=True):
+                simulate=False, procesar=True, codigo_almacen=None):
     """
     Crea una caja en Murano a partir de la información del objeto caja en ginn.
     Si cantidad es 1, realiza un decremento.
@@ -1556,11 +1562,12 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
         numero_serie_lc = ""
         # Sage me indica que no informe de la serie en el movimiento de stock
         # para solucionar lo del registro duplicado creado por Murano.
+        # pylint: disable=bad-continuation
         (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
          codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
          unidades, precio, importe, unidades2, unidad_medida2,
          factor_conversion, origen_movimiento) = prepare_params_movstock(
-            articulo, cantidad, producto)  # pylint: disable=bad-continuation
+            articulo, cantidad, producto, codigo_almacen)
         if not guid_proceso:
             id_proceso_IME = crear_proceso_IME(c)
         else:
@@ -1934,7 +1941,7 @@ def es_movimiento_salida_albaran(movserie):
 
 
 def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
-                    simulate=False):
+                    simulate=False, codigo_almacen=None):
     """
     Crea un artículo nuevo en Murano con el producto recibido. Si no se
     recibe ninguno, se usa el que tenga asociado en ginn. Si se recibe un
@@ -1957,31 +1964,38 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
             if articulo.es_bala():
                 res = create_bala(articulo.bala, delta, producto,
                                   guid_proceso=guid_proceso,
-                                  simulate=simulate)
+                                  simulate=simulate,
+                                  codigo_almacen=codigo_almacen)
             elif articulo.es_balaCable():
                 res = create_bala(articulo.balaCable, delta, producto,
                                   guid_proceso=guid_proceso,
-                                  simulate=simulate)
+                                  simulate=simulate,
+                                  codigo_almacen=codigo_almacen)
             elif articulo.es_bigbag():
                 res = create_bigbag(articulo.bigbag, delta, producto,
                                     guid_proceso=guid_proceso,
-                                    simulate=simulate)
+                                    simulate=simulate,
+                                    codigo_almacen=codigo_almacen)
             elif articulo.es_caja():
                 res = create_caja(articulo.caja, delta, producto,
                                   guid_proceso=guid_proceso,
-                                  simulate=simulate)
+                                  simulate=simulate,
+                                  codigo_almacen=codigo_almacen)
             elif articulo.es_rollo():
                 res = create_rollo(articulo.rollo, delta, producto,
                                    guid_proceso=guid_proceso,
-                                   simulate=simulate)
+                                   simulate=simulate,
+                                   codigo_almacen=codigo_almacen)
             elif articulo.es_rollo_defectuoso():
                 res = create_rollo(articulo.rolloDefectuoso, delta, producto,
                                    guid_proceso=guid_proceso,
-                                   simulate=simulate)
+                                   simulate=simulate,
+                                   codigo_almacen=codigo_almacen)
             elif articulo.es_rolloC():
                 res = create_rollo(articulo.rolloC, delta, producto,
                                    guid_proceso=guid_proceso,
-                                   simulate=simulate)
+                                   simulate=simulate,
+                                   codigo_almacen=codigo_almacen)
             else:
                 raise ValueError("El artículo %s no es bala, bala de cable, "
                                  "bigbag, caja, rollo ni rollo C."
@@ -2001,8 +2015,10 @@ def update_producto(articulo, producto):
     """
     Cambia el artículo recibido al producto indicado.
     """
-    delete_articulo(articulo)
-    create_articulo(articulo, producto=producto)
+    res = delete_articulo(articulo)
+    if res:
+        res = create_articulo(articulo, producto=producto)
+    return res
 
 
 def update_stock(producto, delta, almacen, guid_proceso=None,
@@ -2080,7 +2096,7 @@ def update_stock(producto, delta, almacen, guid_proceso=None,
     return res
 
 
-def delete_articulo(articulo):
+def delete_articulo(articulo, codigo_almacen=None):
     """
     Elimina el artículo en Murano mediante la creación de un movimiento de
     stock negativo de ese código de producto.
@@ -2089,14 +2105,18 @@ def delete_articulo(articulo):
     # baja de ESE producto en concreto. Seguramente no sea el que tiene
     # asignado en ginn y fallará si intentamos crear el movimiento negativo
     # contra él.
+    res = False
     conn = Connection()
     movserie = get_ultimo_movimiento_articulo_serie(conn, articulo)
     if movserie:
         id_producto_anterior = movserie["CodigoArticulo"]
         producto_anterior = get_producto_ginn(id_producto_anterior)
-        create_articulo(articulo, cantidad=-1, producto=producto_anterior)
+        res = create_articulo(articulo, cantidad=-1,
+                              producto=producto_anterior,
+                              codigo_almacen=codigo_almacen)
     else:
         logging.warning("El artículo %s no existe en Murano.", articulo.codigo)
+    return res
 
 
 def consumir(productoCompra, cantidad, almacen=None, consumo=None):
@@ -2567,6 +2587,10 @@ def get_producto_murano(codigo):
     (de Murano) recibido. El valor devuelto es un diccionario cuyas claves
     son los nombres de los campos o None si no lo encuentra.
     """
+    if isinstance(codigo, pclases.ProductoVenta):
+        codigo = "PV{}".format(codigo.id)
+    elif isinstance(codigo, pclases.ProductoCompra):
+        codigo = "PC{}".format(codigo.id)
     conn = Connection()
     SQL = r"""SELECT * FROM %s.dbo.Articulos
               WHERE CodigoEmpresa = '%s'
@@ -2589,6 +2613,7 @@ def producto_murano2ginn(codigo, sync=False):
     Si el ID ya existe, machaca la información de ginn con la de Murano si
     el flag «sync» está activo. En otro caso, lanza una excepción.
     """
+    # pylint: disable=redefined-variable-type
     prod_murano = get_producto_murano(codigo)
     if not prod_murano:
         strerr = "El código %s no existe en Murano." % (codigo)
@@ -2613,6 +2638,7 @@ def _create_producto_ginn(prod_murano):
     Crea un producto en ginn con el ID de Murano y devuelve el objeto
     recién creado.
     """
+    # pylint: disable=redefined-variable-type
     id_murano = prod_murano['CodigoArticulo']
     if "PV" in id_murano:
         res = _create_producto_venta_ginn(prod_murano)
@@ -2629,6 +2655,7 @@ def _create_producto_compra_ginn(prod_murano):
     """
     id_murano = prod_murano['CodigoArticulo']
     ide = int(id_murano.replace("PC", ""))
+    # pylint: disable=unexpected-keyword-arg, no-value-for-parameter
     pc = pclases.ProductoCompra(id=ide)
     _update_producto_ginn(pc, prod_murano)
     return pc
@@ -2641,6 +2668,7 @@ def _create_producto_venta_ginn(prod_murano):
     id_murano = prod_murano['CodigoArticulo']
     ide = int(id_murano.replace("PV", ""))
     try:
+        # pylint: disable=unexpected-keyword-arg, no-value-for-parameter
         pv = pclases.ProductoVenta(id=ide)
         if prod_murano['CodigoAreaCompetenciaLc'] == "ROLLO":
             pv.camposEspecificosRollo = pclases.CamposEspecificosRollo()
