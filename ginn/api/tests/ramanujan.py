@@ -243,7 +243,7 @@ def get_ventas(producto_murano, fini, ffin):
     for total in totales:
         calidad = total['CodigoTalla01_']
         unidad = total['UnidadMedida1_']
-        assert total['Unidades2_'] % 1.0 == 0.0, "Bultos debe ser un entero."
+        assert float(total['Unidades2_']) % 1.0 == 0.0, "Bultos debe ser un entero."
         bultos[calidad] += int(total['Unidades2_'])
         if unidad == 'M2':
             totalmetros = float(total['Unidades'])
