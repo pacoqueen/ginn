@@ -124,7 +124,7 @@ def cuentalavieja(producto_ginn, fini, ffin, report, dev=False):
     return res
 
 
-def get_existencias(producto, fecha):
+def get_existencias(producto_murano, fecha):
     """
     Devuelve las existencias que Murano tenía en la fecha `fecha`. Se hace
     filtrando los movimientos de series por la fecha recibida (no incluida).
@@ -138,8 +138,7 @@ def get_existencias(producto, fecha):
     almacen = "GTX"
     fini = DEFAULT_FINI.strftime("%Y-%m-%d")
     ffin = fecha.strftime("%Y-%m-%d")
-    # pylint: disable=no-member
-    codigo = murano.ops.get_producto_murano(producto).CodigoArticulo
+    codigo = producto_murano.CodigoArticulo
     sql = """USE GEOTEXAN;
         SELECT
            ArticulosSeries.CodigoAlmacen,
@@ -193,7 +192,7 @@ def get_existencias(producto, fecha):
     return (sumbultos, summetros, sumkilos)
 
 
-def get_ventas(producto, fini, ffin):
+def get_ventas(producto_murano, fini, ffin):
     """
     Devuelve las salidas de albarán en Murano del producto recibido entre
     las fechas de inicio y de fin. Ojo, **no las ventas facturadas** sino las
@@ -208,8 +207,7 @@ def get_ventas(producto, fini, ffin):
     almacen = "GTX"
     fini = fini.strftime("%Y-%m-%d")
     ffin = ffin.strftime("%Y-%m-%d")
-    # pylint: disable=no-member
-    codigo = murano.ops.get_producto_murano(producto).CodigoArticulo
+    codigo = producto_murano.CodigoArticulo
     bultos = {'A': 0, 'B': 0, 'C': 0, '': 0}
     metros = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
     kilos = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
@@ -247,8 +245,9 @@ def get_ventas(producto, fini, ffin):
 
 
 # pylint: disable=too-many-arguments
-def get_volcados(producto, fini, ffin, origen_documento, tipo_movimiento,
-                 origen_movimiento, codigo_canal, comentario=None):
+def get_volcados(producto_murano, fini, ffin, origen_documento,
+                 tipo_movimiento, origen_movimiento, codigo_canal,
+                 comentario=None):
     """
     Devuelve los volcados realizados de cada tipo, que viene determinado por
     los parámetros a pasar a la consulta SQL.
@@ -259,8 +258,7 @@ def get_volcados(producto, fini, ffin, origen_documento, tipo_movimiento,
     almacen = "GTX"
     fini = fini.strftime("%Y-%m-%d")
     ffin = ffin.strftime("%Y-%m-%d")
-    # pylint: disable=no-member
-    codigo = murano.ops.get_producto_murano(producto).CodigoArticulo
+    codigo = producto_murano.CodigoArticulo
     bultos = {'A': 0, 'B': 0, 'C': 0, '': 0}
     metros = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
     kilos = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
@@ -329,7 +327,7 @@ def get_volcados(producto, fini, ffin, origen_documento, tipo_movimiento,
     return (sumbultos, summetros, sumkilos)
 
 
-def get_altas(producto, fini, ffin):
+def get_altas(producto_murano, fini, ffin):
     """
     Devuelve los movimientos de series de tipo FAB (las que proceden del API
     de ginn)  en Murano con fecha de registro entre las recibidas para contar
@@ -356,9 +354,9 @@ def get_altas(producto, fini, ffin):
             CodigoCcanal = ''
     """
     # Lo primero son las altas:
-    altas = get_volcados(producto, fini, ffin, 2, 1, 'F', '')
+    altas = get_volcados(producto_murano, fini, ffin, 2, 1, 'F', '')
     # Ahora las bajas por eliminación desde partes, no por consumo.
-    bajas = get_volcados(producto, fini, ffin, 11, 2, 'F', '', '!Consumo%',)
+    bajas = get_volcados(producto_murano, fini, ffin, 11, 2, 'F', '', '!Consumo%',)
     # Y ahora las sumo (los movimientos de salida vienen en positivo de Murano
     # y viene todo sumado, sin desglose por calidades).
     sumbultos = altas[0] - bajas[0]
@@ -367,7 +365,7 @@ def get_altas(producto, fini, ffin):
     return (sumbultos, summetros, sumkilos)
 
 
-def get_bajas_consumo(producto, fini, ffin):
+def get_bajas_consumo(producto_murano, fini, ffin):
     """
     Devuelve los movimientos de series de tipo FAB (las que proceden del API
     de ginn) con fecha de registro entre las recibidas y que sean de consumos.
@@ -381,9 +379,9 @@ def get_bajas_consumo(producto, fini, ffin):
         origenMovimiento = 'F' (Fabricación)
         CodigoCanal: CONSFIB|CONSBB
     """
-    consumos_balas = get_volcados(producto, fini, ffin, 11, 2, 'F',
+    consumos_balas = get_volcados(producto_murano, fini, ffin, 11, 2, 'F',
                                   'CONSFIB', 'Consumo%')
-    consumos_bigbags = get_volcados(producto, fini, ffin, 11, 2, 'F',
+    consumos_bigbags = get_volcados(producto_murano, fini, ffin, 11, 2, 'F',
                                     'CONSBB', 'Consumo%')
     sumbultos = consumos_balas[0] + consumos_bigbags[0]
     summetros = consumos_balas[1] + consumos_bigbags[1]
@@ -391,7 +389,7 @@ def get_bajas_consumo(producto, fini, ffin):
     return (sumbultos, summetros, sumkilos)
 
 
-def get_produccion(producto, fini, ffin, strict=False):
+def get_produccion(producto_ginn, fini, ffin, strict=False):
     """
     Devuelve todos la producción del producto entre las fechas. Se obtiene de
     ginn.
@@ -424,8 +422,8 @@ def get_produccion(producto, fini, ffin, strict=False):
         pdps = PDP.select(pclases.AND(PDP.q.fechahorafin >= fini,
                                       PDP.q.fechahorafin < ffin,
                                       A.q.parteDeProduccionID == PDP.q.id,
-                                      A.q.productoVentaID == producto.id))
-        for pdp in tqdm(pdps, desc="Producción {}".format(producto.puid),
+                                      A.q.productoVentaID == producto_ginn.id))
+        for pdp in tqdm(pdps, desc="Producción {}".format(producto_ginn.puid),
                         leave=False):
             for a in tqdm(pdp.articulos, desc=pdp.puid, leave=False):
                 if a.es_clase_a():
@@ -445,7 +443,7 @@ def get_produccion(producto, fini, ffin, strict=False):
         articulos = pclases.Articulo.select(pclases.AND(
             pclases.Articulo.q.fechahora >= fini,
             pclases.Articulo.q.fechahora < ffin,
-            pclases.Articulo.q.productoVentaID == producto.id))
+            pclases.Articulo.q.productoVentaID == producto_ginn.id))
         for a in tqdm(articulos, desc="Artículos"):
             if a.es_clase_a():
                 bultos['A'] += 1
@@ -466,7 +464,7 @@ def get_produccion(producto, fini, ffin, strict=False):
 
 
 # pylint:disable=too-many-branches
-def get_consumos(producto, fini, ffin):
+def get_consumos(producto_ginn, fini, ffin):
     """
     Devuelve los consumos del producto entre las fechas. Los consumos se toman
     de ginn y la fecha usada para determinar si entra en el filtro es la
@@ -487,13 +485,13 @@ def get_consumos(producto, fini, ffin):
     pdps = PDP.select(pclases.AND(PDP.q.fechahorafin >= fini,
                                   PDP.q.fechahorafin < ffin))
     # pylint: disable=too-many-nested-blocks
-    for pdp in tqdm(pdps, desc="Consumos {}".format(producto.descripcion)):
+    for pdp in tqdm(pdps, desc="Consumos {}".format(producto_ginn.descripcion)):
         # Si estamos buscando consumos de bigbags miro directamente en los
         # partes los bigbags asociados.
-        if producto.es_bigbag():
+        if producto_ginn.es_bigbag():
             for bb in pdp.bigbags:
                 articulo = bb.articulo
-                if articulo.productoVenta == producto:
+                if articulo.productoVenta == producto_ginn:
                     if articulo.es_clase_a():
                         bultos['A'] += 1
                         metros['A'] += get_superficie(articulo) or 0
@@ -513,7 +511,7 @@ def get_consumos(producto, fini, ffin):
         # consecutivas. Solo se contará el consumo de un mismo producto una
         # vez. En consecutivas llamadas ya será otro producto y no duplicará
         # el resultado.
-        elif producto.es_bala():
+        elif producto_ginn.es_bala():
             try:
                 pc = pdp.partidaCarga
                 if not pc:  # El parte no ha consumido nada.
@@ -524,7 +522,7 @@ def get_consumos(producto, fini, ffin):
             else:
                 for bala in pc.balas:
                     articulo = bala.articulo
-                    if articulo.productoVenta == producto:
+                    if articulo.productoVenta == producto_ginn:
                         if articulo.es_clase_a():
                             bultos['A'] += 1
                             metros['A'] += get_superficie(articulo) or 0
