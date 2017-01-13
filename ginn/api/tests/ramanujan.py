@@ -87,9 +87,9 @@ def cuentalavieja(producto_ginn, fini, ffin, report, dev=False):
         try:
             report.write("{}: {}\n".format(producto_murano.CodigoArticulo,
                                            producto_ginn.descripcion))
-        except IndexError:
+        except AttributeError:
             report.write("{}: {}\n".format(
-                "**¡Producto no encontrado en Murano!**",
+                "***¡Producto no encontrado en Murano!***",
                 producto_ginn.descripcion))
     else:
         report.write("PV{}: {}\n".format(producto_ginn.id,
@@ -97,10 +97,12 @@ def cuentalavieja(producto_ginn, fini, ffin, report, dev=False):
     # 3.- Compruebo que los datos del ERP y Murano son iguales:
     if produccion != volcados_murano:
         report.write("> Producción ginn: {}; entradas Murano: {}\n".format(
-            produccion, volcados_murano))
+            ["{:n}".format(i) for i in produccion],
+            ["{:n}".format(i) for i in volcados_murano]))
     if consumos != bajas_volcadas_murano:
         report.write("> Consumos ginn: {}; bajas Murano: {}\n".format(
-            consumos, bajas_volcadas_murano))
+            ["{:n}".format(i) for i in consumos],
+            ["{:n}".format(i) for i in bajas_volcadas_murano]))
     entradas = produccion
     # Las salidas vienen en positivo. Si quiero restar, hay que *-1
     salidas = [-sum(x) for x in zip(ventas, consumos)]
@@ -108,17 +110,18 @@ def cuentalavieja(producto_ginn, fini, ffin, report, dev=False):
     desviacion = [sum(x) for x in zip(existencias_fin, total)]
     res = desviacion == [0, 0, 0]
     # 4.- Escribo los resultados al report.
-    report.write("Existencias inicales: {}\n".format(existencias_ini))
-    report.write("Existencias finales: {}\n".format(existencias_fin))
-    report.write("Producción: {}\n".format(produccion))
-    report.write("Ventas: {}\n".format(ventas))
-    report.write("Consumos: {}\n".format(consumos))
+    report.write("Existencias inicales: {}\n".format(
+        ["{:n}".format(i) for i in existencias_ini]))
+    report.write("Existencias finales: {}\n".format(["{:n}".format(i) for i in existencias_fin]))
+    report.write("Producción: {}\n".format(["{:n}".format(i) for i in produccion]))
+    report.write("Ventas: {}\n".format(["{:n}".format(i) for i in ventas]))
+    report.write("Consumos: {}\n".format(["{:n}".format(i) for i in consumos]))
     if not res:
         report.write("**")
     report.write("Desviación")
     if not res:
         report.write("**")
-    report.write(": {}\n".format(desviacion))
+    report.write(": {}\n".format(["{:n}".format(i) for i in desviacion]))
     report.write("-"*70)
     if res:
         report.write(" _[OK]_ \n")
@@ -240,7 +243,8 @@ def get_ventas(producto_murano, fini, ffin):
     for total in totales:
         calidad = total['CodigoTalla01_']
         unidad = total['UnidadMedida1_']
-        bultos[calidad] += total['Unidades2_']
+        assert total['Unidades2_'] % 1.0 == 0.0, "Bultos debe ser un entero."
+        bultos[calidad] += int(total['Unidades2_'])
         if unidad == 'M2':
             totalmetros = float(total['Unidades'])
             totalkilos = float(total['PesoNeto_'])
