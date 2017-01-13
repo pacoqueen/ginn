@@ -37,7 +37,7 @@ sys.argv = _argv
 DEFAULT_FINI = datetime.date(2016, 5, 31)  # La fecha de implantación de Murano
 
 
-# pylint: disable=too-many-locals
+# pylint: disable=too-many-locals, too-many-statements
 def cuentalavieja(producto_ginn, fini, ffin, report, dev=False):
     """
     Recibe un producto de ginn y comprueba que entre las fechas fini y ffin
@@ -84,8 +84,13 @@ def cuentalavieja(producto_ginn, fini, ffin, report, dev=False):
     # 2.- Cabecera del informe de resultados:
     if not dev:
         # pylint: disable=no-member
-        report.write("{}: {}\n".format(producto_murano.CodigoArticulo,
-                                       producto_ginn.descripcion))
+        try:
+            report.write("{}: {}\n".format(producto_murano.CodigoArticulo,
+                                           producto_ginn.descripcion))
+        except IndexError:
+            report.write("{}: {}\n".format(
+                "**¡Producto no encontrado en Murano!**",
+                producto_ginn.descripcion))
     else:
         report.write("PV{}: {}\n".format(producto_ginn.id,
                                          producto_ginn.descripcion))
@@ -210,7 +215,10 @@ def get_ventas(producto_murano, fini, ffin):
     almacen = "GTX"
     fini = fini.strftime("%Y-%m-%d")
     ffin = ffin.strftime("%Y-%m-%d")
-    codigo = producto_murano.CodigoArticulo
+    try:
+        codigo = producto_murano.CodigoArticulo
+    except AttributeError:  # Ya no existe en Murano
+        codigo = None
     bultos = {'A': 0, 'B': 0, 'C': 0, '': 0}
     metros = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
     kilos = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
@@ -261,7 +269,10 @@ def get_volcados(producto_murano, fini, ffin, origen_documento,
     almacen = "GTX"
     fini = fini.strftime("%Y-%m-%d")
     ffin = ffin.strftime("%Y-%m-%d")
-    codigo = producto_murano.CodigoArticulo
+    try:
+        codigo = producto_murano.CodigoArticulo
+    except AttributeError:
+        codigo = None
     bultos = {'A': 0, 'B': 0, 'C': 0, '': 0}
     metros = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
     kilos = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
