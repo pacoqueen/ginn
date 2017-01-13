@@ -1123,7 +1123,7 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
             origen_documento = 11
         else:
             origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
-        # 11 (salida de stock), 12 (inventario)
+        # 11 (salida de stock), 12 (inventario), 1 (venta)
         # mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
         mov_posicion_origen = guid_movposicion
         # En el movimiento de serie la UnidadMedida1_ es la básica:ROLLO,BALA..
@@ -2063,6 +2063,7 @@ def update_stock(producto, delta, almacen, guid_proceso=None,
     origen_movimiento = "F"  # E = Entrada de Stock (entrada directa),
     # F (fabricación), I (inventario),
     # M (rechazo fabricación), S (Salida stock)
+    # P (apertura), B(albarán de compra), A(albarán de venta)
     if not guid_proceso:
         id_proceso_IME = crear_proceso_IME(c)
     else:

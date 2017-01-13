@@ -12204,7 +12204,8 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         """
         # NOTA: Desgraciadamente, por el momento sólo es posible discernir el
         # tipo de producto "fibra de cemento" si la descripción contiene GEOCEM.
-        return "GEOCEM" in self.descripcion
+        # TODO: Esto no es así. La fibra embolsada también contiene "GEOCEM".
+        return "GEOCEM" in self.descripcion and not self.es_caja()
 
     def es_bala_cable(self):
         """

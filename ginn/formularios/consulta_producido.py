@@ -33,6 +33,8 @@
 ##
 ###################################################################
 
+# TODO: Mostrar los bultos también en la ventana. Solo se ven metros y kilos.
+
 import datetime
 from formularios import ventana_progreso
 from framework import pclases
