@@ -184,8 +184,8 @@ def get_existencias(producto_murano, fecha):
     for total in totales:
         calidad = total['calidad']
         bultos[calidad] += total['bultos']
-        metros[calidad] += total['metros_cuadrados']
-        kilos[calidad] += total['peso_neto']
+        metros[calidad] += float(total['metros_cuadrados'])
+        kilos[calidad] += float(total['peso_neto'])
     sumbultos = sum([bultos[i] for i in bultos])
     summetros = sum([metros[i] for i in metros])
     sumkilos = sum([kilos[i] for i in kilos])
@@ -231,11 +231,11 @@ def get_ventas(producto_murano, fini, ffin):
         unidad = total['UnidadMedida1_']
         bultos[calidad] += total['Unidades2_']
         if unidad == 'M2':
-            totalmetros = total['Unidades']
-            totalkilos = total['PesoNeto_']
+            totalmetros = float(total['Unidades'])
+            totalkilos = float(total['PesoNeto_'])
         else:
-            totalkilos = total['Unidades']
-            totalmetros = total['MetrosCuadrados']
+            totalkilos = float(total['Unidades'])
+            totalmetros = float(total['MetrosCuadrados'])
         metros[calidad] += totalmetros
         kilos[calidad] += totalkilos
     sumbultos = sum([bultos[i] for i in bultos])
@@ -287,10 +287,10 @@ def get_volcados(producto_murano, fini, ffin, origen_documento,
         unidad = total['UnidadMedida1_']
         bultos[calidad] += total['Unidades2_']
         if unidad == 'M2':
-            totalmetros = total['Unidades']
+            totalmetros = float(total['Unidades'])
             metros[calidad] += totalmetros
         else:
-            totalkilos = total['Unidades']
+            totalkilos = float(total['Unidades'])
             kilos[calidad] += totalkilos
     # Y la dimensión adicional (metros cuadrados o kilos) de otra:
     # (Aunque también se podría haber obtenido todo de aquí, pero así me
@@ -316,10 +316,10 @@ def get_volcados(producto_murano, fini, ffin, origen_documento,
         calidad = total['CodigoTalla01_']
         unidad = total['UnidadMedida1_']
         if unidad == 'ROLLO' and total['MetrosCuadrados'] != 0:
-            totalkilos = total['PesoNeto_']
+            totalkilos = float(total['PesoNeto_'])
             kilos[calidad] += totalkilos
         else:   # Serán cero seguro, pero por... belleza.
-            totalmetros = total['MetrosCuadrados']
+            totalmetros = float(total['MetrosCuadrados'])
             metros[calidad] += totalmetros
     sumbultos = sum([bultos[i] for i in bultos])
     summetros = sum([metros[i] for i in metros])
