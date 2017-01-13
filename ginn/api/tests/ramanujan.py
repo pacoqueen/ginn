@@ -262,7 +262,36 @@ def get_volcados(producto_murano, fini, ffin, origen_documento,
     bultos = {'A': 0, 'B': 0, 'C': 0, '': 0}
     metros = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
     kilos = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
-    # Aquí primero se obtienen 2 dimensiones de una tabla
+    # Aquí primero se obtiene 1 dimensión de una tabla (MovimientoStock):
+    sql = """USE GEOTEXAN;
+             SELECT *
+               FROM MovimientoStock
+              WHERE CodigoEmpresa = '10200'
+                AND Fecha >= '{}'
+                AND Fecha < '{}'
+                AND CodigoArticulo = '{}'
+                AND CodigoAlmacen = '{}'
+                AND TipoMovimiento = {}
+                AND OrigenMovimiento = '{}'
+                AND CodigoCanal = '{}'
+              ORDER BY FechaRegistro;""".format(fini, ffin, codigo, almacen,
+                                                tipo_movimiento,
+                                                origen_movimiento,
+                                                codigo_canal)
+    conn = connection.Connection()
+    totales = conn.run_sql(sql)
+    for total in totales:
+        calidad = total['CodigoTalla01_']
+        unidad = total['UnidadMedida1_']
+        if unidad == 'M2':
+            totalmetros = float(total['Unidades'])
+            metros[calidad] += totalmetros
+        else:
+            totalkilos = float(total['Unidades'])
+            kilos[calidad] += totalkilos
+    # Bultos y la dimensión adicional (metros cuadrados o kilos) de otra:
+    # (Aunque también se podría haber obtenido todo de aquí, pero así me
+    # aseguro --double-check-- de que es coherente entre las 2 tablas)
     sql = """USE GEOTEXAN;
              SELECT *
                FROM MovimientoArticuloSerie
@@ -285,40 +314,11 @@ def get_volcados(producto_murano, fini, ffin, origen_documento,
     for total in totales:
         calidad = total['CodigoTalla01_']
         unidad = total['UnidadMedida1_']
-        bultos[calidad] += total['Unidades2_']
-        if unidad == 'M2':
-            totalmetros = float(total['Unidades'])
-            metros[calidad] += totalmetros
-        else:
-            totalkilos = float(total['Unidades'])
-            kilos[calidad] += totalkilos
-    # Y la dimensión adicional (metros cuadrados o kilos) de otra:
-    # (Aunque también se podría haber obtenido todo de aquí, pero así me
-    # aseguro --double-check-- de que es coherente entre las 2 tablas)
-    sql = """USE GEOTEXAN;
-             SELECT *
-               FROM MovimientoStock
-              WHERE CodigoEmpresa = '10200'
-                AND Fecha >= '{}'
-                AND Fecha < '{}'
-                AND CodigoArticulo = '{}'
-                AND CodigoAlmacen = '{}'
-                AND TipoMovimiento = {}
-                AND OrigenMovimiento = '{}'
-                AND CodigoCanal = '{}'
-              ORDER BY FechaRegistro;""".format(fini, ffin, codigo, almacen,
-                                                tipo_movimiento,
-                                                origen_movimiento,
-                                                codigo_canal)
-    conn = connection.Connection()
-    totales = conn.run_sql(sql)
-    for total in totales:
-        calidad = total['CodigoTalla01_']
-        unidad = total['UnidadMedida1_']
-        if unidad == 'ROLLO' and total['MetrosCuadrados'] != 0:
+        bultos[calidad] += total['UnidadesSerie']
+        if unidad == 'ROLLO' and total['MetrosCuadrados']: #No C que, va por kg
             totalkilos = float(total['PesoNeto_'])
             kilos[calidad] += totalkilos
-        else:   # Serán cero seguro, pero por... belleza.
+        else:   # Será cero, pero por... belleza.
             totalmetros = float(total['MetrosCuadrados'])
             metros[calidad] += totalmetros
     sumbultos = sum([bultos[i] for i in bultos])
