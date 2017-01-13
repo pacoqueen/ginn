@@ -222,7 +222,7 @@ def get_ventas(producto_murano, fini, ffin):
                 AND FechaAlbaran >= '{}'
                 AND FechaAlbaran < '{}'
                 AND CodigoArticulo = '{}'
-                AND CodigoAlmacen = {}'
+                AND CodigoAlmacen = '{}'
               ORDER BY FechaRegistro;""".format(fini, ffin, codigo, almacen)
     conn = connection.Connection()
     totales = conn.run_sql(sql)
