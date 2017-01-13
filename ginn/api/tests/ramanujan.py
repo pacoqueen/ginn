@@ -138,7 +138,10 @@ def get_existencias(producto_murano, fecha):
     almacen = "GTX"
     fini = DEFAULT_FINI.strftime("%Y-%m-%d")
     ffin = fecha.strftime("%Y-%m-%d")
-    codigo = producto_murano.CodigoArticulo
+    try:
+        codigo = producto_murano.CodigoArticulo
+    except AttributeError:
+        codigo = None   # Producto no existe en Murano.
     sql = """USE GEOTEXAN;
         SELECT
            ArticulosSeries.CodigoAlmacen,
