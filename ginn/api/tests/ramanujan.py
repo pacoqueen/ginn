@@ -445,8 +445,13 @@ def get_produccion(producto_ginn, fini, ffin, strict=False):
                                       PDP.q.fechahorafin < ffin,
                                       A.q.parteDeProduccionID == PDP.q.id,
                                       A.q.productoVentaID == producto_ginn.id))
+        # Porque el groupBy necesitaría un poco de low-level en el SQLObject:
+        tratados = []
         for pdp in tqdm(pdps, desc="Producción {}".format(producto_ginn.puid),
                         leave=False):
+            if pdp in tratados:
+                continue    # Ya contado, me lo salto.
+            tratados.append(pdp)
             for a in tqdm(pdp.articulos, desc=pdp.puid, leave=False):
                 if a.es_clase_a():
                     bultos['A'] += 1
