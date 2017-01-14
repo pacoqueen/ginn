@@ -107,8 +107,8 @@ def cuentalavieja(producto_ginn, fini, ffin, report, dev=False):
     # Las salidas vienen en positivo. Si quiero restar, hay que *-1
     salidas = [-sum(x) for x in zip(ventas, consumos)]
     total = [-sum(x) for x in zip(existencias_ini, entradas, salidas)]
-    desviacion = [sum(x) for x in zip(existencias_fin, total)]
-    res = desviacion == [0, 0, 0]
+    desviacion = [round(sum(x), 2) for x in zip(existencias_fin, total)]
+    res = desviacion == [.0, .0, .0]
     # 4.- Escribo los resultados al report.
     report.write("Existencias inicales: {}\n".format(
         ["{:n}".format(round(i, 2)) for i in existencias_ini]))
