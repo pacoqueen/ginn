@@ -512,6 +512,7 @@ def get_consumos(producto_ginn, fini, ffin):
     pdps = PDP.select(pclases.AND(PDP.q.fechahorafin >= fini,
                                   PDP.q.fechahorafin < ffin))
     # pylint: disable=too-many-nested-blocks
+    pcs_tratadas = []
     for pdp in tqdm(pdps, desc="Consumos {}".format(producto_ginn.descripcion)):
         # Si estamos buscando consumos de bigbags miro directamente en los
         # partes los bigbags asociados.
@@ -532,17 +533,16 @@ def get_consumos(producto_ginn, fini, ffin):
                         metros['C'] += get_superficie(articulo) or 0
                         kilos['C'] += get_peso_neto(articulo)
         # Pero si lo que estamos buscando son consumos de fibra, miro las
-        # partidas de carga. Aunque dos partes pueden estar asociados a la
-        # misma partida de carga, como solo contamos los consumos del producto
-        # recibido, me da igual tratar una misma partida en varias llamadas
-        # consecutivas. Solo se contará el consumo de un mismo producto una
-        # vez. En consecutivas llamadas ya será otro producto y no duplicará
-        # el resultado.
+        # partidas de carga. Como dos partes pueden estar asociados a la
+        # misma partida de carga, llevo el control de los ya tratados.
         elif producto_ginn.es_bala():
             try:
                 pc = pdp.partidaCarga
                 if not pc:  # El parte no ha consumido nada.
                     continue
+                if pc in pcs_tratadas:
+                    continue
+                pcs_tratadas.append(pc)
             except ValueError:
                 # No es un parte de geotextiles.
                 pass
