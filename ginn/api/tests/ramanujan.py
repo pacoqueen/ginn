@@ -95,7 +95,7 @@ def cuentalavieja(producto_ginn, fini, ffin, report, dev=False):
         report.write("PV{}: {}\n".format(producto_ginn.id,
                                          producto_ginn.descripcion))
     # 3.- Compruebo que los datos del ERP y Murano son iguales:
-    if produccion != volcados_murano:
+    if ([round(i, 2) for i in produccion] != [round(i, 2) for i in volcados_murano]):
         report.write("> Producción ginn: {}; entradas Murano: {}\n".format(
             ["{:n}".format(round(i, 2)) for i in produccion],
             ["{:n}".format(round(i, 2)) for i in volcados_murano]))
@@ -204,7 +204,7 @@ def get_existencias(producto_murano, fecha):
     sumbultos = sum([bultos[i] for i in bultos])
     summetros = sum([metros[i] for i in metros])
     sumkilos = sum([kilos[i] for i in kilos])
-    return (sumbultos, summetros, sumkilos)
+    return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
 def get_ventas(producto_murano, fini, ffin):
@@ -260,7 +260,7 @@ def get_ventas(producto_murano, fini, ffin):
     sumbultos = sum([bultos[i] for i in bultos])
     summetros = sum([metros[i] for i in metros])
     sumkilos = sum([kilos[i] for i in kilos])
-    return (sumbultos, summetros, sumkilos)
+    return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
 # pylint: disable=too-many-arguments
@@ -346,7 +346,7 @@ def get_volcados(producto_murano, fini, ffin, origen_documento,
     sumbultos = sum([bultos[i] for i in bultos])
     summetros = sum([metros[i] for i in metros])
     sumkilos = sum([kilos[i] for i in kilos])
-    return (sumbultos, summetros, sumkilos)
+    return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
 def get_altas(producto_murano, fini, ffin):
@@ -384,7 +384,7 @@ def get_altas(producto_murano, fini, ffin):
     sumbultos = altas[0] - bajas[0]
     summetros = altas[1] - bajas[1]
     sumkilos = altas[2] - bajas[2]
-    return (sumbultos, summetros, sumkilos)
+    return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
 def get_bajas_consumo(producto_murano, fini, ffin):
@@ -408,7 +408,7 @@ def get_bajas_consumo(producto_murano, fini, ffin):
     sumbultos = consumos_balas[0] + consumos_bigbags[0]
     summetros = consumos_balas[1] + consumos_bigbags[1]
     sumkilos = consumos_balas[2] + consumos_bigbags[2]
-    return (sumbultos, summetros, sumkilos)
+    return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
 def get_produccion(producto_ginn, fini, ffin, strict=False):
@@ -487,7 +487,7 @@ def get_produccion(producto_ginn, fini, ffin, strict=False):
     sumbultos = sum([bultos[i] for i in bultos])
     summetros = sum([metros[i] for i in metros])
     sumkilos = sum([kilos[i] for i in kilos])
-    return (sumbultos, summetros, sumkilos)
+    return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
 # pylint:disable=too-many-branches
@@ -565,7 +565,7 @@ def get_consumos(producto_ginn, fini, ffin):
     sumbultos = sum([bultos[i] for i in bultos])
     summetros = sum([metros[i] for i in metros])
     sumkilos = sum([kilos[i] for i in kilos])
-    return (sumbultos, summetros, sumkilos)
+    return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
 def parse_fecha(cadfecha):
