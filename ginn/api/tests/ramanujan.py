@@ -264,9 +264,9 @@ def get_ventas(producto_murano, fini, ffin):
 
 
 # pylint: disable=too-many-arguments
-def get_volcados(producto_murano, fini, ffin, origen_documento,
-                 tipo_movimiento, origen_movimiento, codigo_canal,
-                 comentario=None):
+def get_volcados(producto_murano, fini, ffin, tipo_movimiento,
+                 origen_movimiento, codigo_canal,
+                 origen_documento, comentario=None):
     """
     Devuelve los volcados realizados de cada tipo, que viene determinado por
     los parámetros a pasar a la consulta SQL.
@@ -376,9 +376,9 @@ def get_altas(producto_murano, fini, ffin):
             CodigoCcanal = ''
     """
     # Lo primero son las altas:
-    altas = get_volcados(producto_murano, fini, ffin, 2, 1, 'F', '')
+    altas = get_volcados(producto_murano, fini, ffin, 1, 'F', '', 2)
     # Ahora las bajas por eliminación desde partes, no por consumo.
-    bajas = get_volcados(producto_murano, fini, ffin, 11, 2, 'F', '', '!Consumo%',)
+    bajas = get_volcados(producto_murano, fini, ffin, 2, 'F', '', 11, '!Consumo%',)
     # Y ahora las sumo (los movimientos de salida vienen en positivo de Murano
     # y viene todo sumado, sin desglose por calidades).
     sumbultos = altas[0] - bajas[0]
@@ -401,10 +401,10 @@ def get_bajas_consumo(producto_murano, fini, ffin):
         origenMovimiento = 'F' (Fabricación)
         CodigoCanal: CONSFIB|CONSBB
     """
-    consumos_balas = get_volcados(producto_murano, fini, ffin, 11, 2, 'F',
-                                  'CONSFIB', 'Consumo%')
-    consumos_bigbags = get_volcados(producto_murano, fini, ffin, 11, 2, 'F',
-                                    'CONSBB', 'Consumo%')
+    consumos_balas = get_volcados(producto_murano, fini, ffin, 2, 'F',
+                                    'CONSFIB', 11, 'Consumo bala%')
+    consumos_bigbags = get_volcados(producto_murano, fini, ffin, 2, 'F',
+                                    'CONSBB', 11, 'Consumo bigbag%')
     sumbultos = consumos_balas[0] + consumos_bigbags[0]
     summetros = consumos_balas[1] + consumos_bigbags[1]
     sumkilos = consumos_balas[2] + consumos_bigbags[2]
@@ -540,13 +540,13 @@ def get_consumos(producto_ginn, fini, ffin):
                 pc = pdp.partidaCarga
                 if not pc:  # El parte no ha consumido nada.
                     continue
-                if pc in pcs_tratadas:
+                if pc in pcs_tratadas:  # La partida de carga ya la he contado.
                     continue
-                pcs_tratadas.append(pc)
             except ValueError:
                 # No es un parte de geotextiles.
                 pass
             else:
+                pcs_tratadas.append(pc)
                 for bala in pc.balas:
                     articulo = bala.articulo
                     if articulo.productoVenta == producto_ginn:
