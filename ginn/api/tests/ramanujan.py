@@ -97,12 +97,12 @@ def cuentalavieja(producto_ginn, fini, ffin, report, dev=False):
     # 3.- Compruebo que los datos del ERP y Murano son iguales:
     if produccion != volcados_murano:
         report.write("> Producción ginn: {}; entradas Murano: {}\n".format(
-            ["{:n}".format(i) for i in produccion],
-            ["{:n}".format(i) for i in volcados_murano]))
+            ["{:n}".format(round(i, 2)) for i in produccion],
+            ["{:n}".format(round(i, 2)) for i in volcados_murano]))
     if consumos != bajas_volcadas_murano:
         report.write("> Consumos ginn: {}; bajas Murano: {}\n".format(
-            ["{:n}".format(i) for i in consumos],
-            ["{:n}".format(i) for i in bajas_volcadas_murano]))
+            ["{:n}".format(round(i, 2)) for i in consumos],
+            ["{:n}".format(round(i, 2)) for i in bajas_volcadas_murano]))
     entradas = produccion
     # Las salidas vienen en positivo. Si quiero restar, hay que *-1
     salidas = [-sum(x) for x in zip(ventas, consumos)]
@@ -111,17 +111,21 @@ def cuentalavieja(producto_ginn, fini, ffin, report, dev=False):
     res = desviacion == [0, 0, 0]
     # 4.- Escribo los resultados al report.
     report.write("Existencias inicales: {}\n".format(
-        ["{:n}".format(i) for i in existencias_ini]))
-    report.write("Existencias finales: {}\n".format(["{:n}".format(i) for i in existencias_fin]))
-    report.write("Producción: {}\n".format(["{:n}".format(i) for i in produccion]))
+        ["{:n}".format(round(i, 2)) for i in existencias_ini]))
+    report.write("Existencias finales: {}\n".format(
+        ["{:n}".format(round(i)) for i in existencias_fin]))
+    report.write("Producción: {}\n".format(["{:n}".format(
+        round(i)) for i in produccion]))
     report.write("Ventas: {}\n".format(["{:n}".format(i) for i in ventas]))
-    report.write("Consumos: {}\n".format(["{:n}".format(i) for i in consumos]))
+    report.write("Consumos: {}\n".format(["{:n}".format(
+        round(i)) for i in consumos]))
     if not res:
         report.write("**")
     report.write("Desviación")
     if not res:
         report.write("**")
-    report.write(": {}\n".format(["{:n}".format(i) for i in desviacion]))
+    report.write(": {}\n".format(["{:n}".format(
+        round(i)) for i in desviacion]))
     report.write("-"*70)
     if res:
         report.write(" _[OK]_ \n")
