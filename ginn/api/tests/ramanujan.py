@@ -96,7 +96,7 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
     res = desviacion == [.0, .0, .0]
     # ¿Esa desviación corresponde con algún albarán hecho justo el día del
     # inventario?
-    if not res:
+    if not res and not dev:
         nventas = get_ventas(producto_murano,
                              fini + datetime.timedelta(days=1), ffin)
         ndesviacion = calcular_desviacion(existencias_ini, produccion, nventas,
@@ -489,6 +489,7 @@ def get_bajas_consumo(producto_murano, fini, ffin):
     return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
+# pylint: disable=too-many-branches
 def get_produccion(producto_ginn, fini, ffin, strict=False):
     """
     Devuelve todos la producción del producto entre las fechas. Se obtiene de
@@ -547,11 +548,8 @@ def get_produccion(producto_ginn, fini, ffin, strict=False):
                     kilos['C'] += get_peso_neto(a)
     else:   # En vez de por partes, filtro por fecha de registro **real** en
             # la base de datos de cada artículo.
-        articulos = pclases.Articulo.select(pclases.AND(
-            pclases.Articulo.q.fechahora >= fini,
-            pclases.Articulo.q.fechahora < ffin,
-            pclases.Articulo.q.productoVentaID == producto_ginn.id))
-        for a in tqdm(articulos, desc="Artículos"):
+        articulos = query_articulos(producto_ginn, fini, ffin)
+        for a in articulos:
             if a.es_clase_a():
                 bultos['A'] += 1
                 metros['A'] += get_superficie(a) or 0
@@ -569,6 +567,27 @@ def get_produccion(producto_ginn, fini, ffin, strict=False):
     sumkilos = sum([kilos[i] for i in kilos])
     return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
+
+def query_articulos(producto, fini, ffin):
+    """
+    Devuelve los registros Articulo de ginn comprendidos entre las fechas
+    recibidas. Los artículos en sí no guardan la fecha y hora de fabricación.
+    Son los rollo/bala/bala_cable/rollo_c/etc. los que lo hacen.
+    """
+    articulos = []
+    tablas = (pclases.Bala, pclases.BalaCable, pclases.Caja, pclases.Bigbag,
+              pclases.Rollo, pclases.RolloC)
+    # PLAN: Esto se podría optimizar. Es tontería recorrer todos los artículos
+    # entre las dos fechas por cada producto que el script va a comprobar
+    # cuando después se va a filtrar para quedarnos con los que coincidan.
+    for tabla in tablas:
+        # pylint: disable=no-member
+        rs = tabla.select(pclases.AND(tabla.q.fechahora >= fini,
+                                      tabla.q.fechahora < ffin))
+        for item in tqdm(rs, desc="Artículos (strict)", total=rs.count()):
+            if item.articulo.productoVenta == producto:
+                articulos.append(item.articulo)
+    return articulos
 
 # pylint:disable=too-many-branches
 def get_consumos(producto_ginn, fini, ffin):
