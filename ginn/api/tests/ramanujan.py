@@ -679,7 +679,7 @@ def buscar_ultimo_fichero_inventario(ruta="."):
 def find_fich_inventario(ruta):
     """
     Si ruta es un directorio, devuelve el último .xls del directorio.
-    Si es una ruta a un fichero, comprueba que sea .xls o .ods y devuelve
+    Si es una ruta a un fichero, comprueba que sea .xls, .ods o .csv y devuelve
     la ruta completa al mismo.
     """
     if os.path.isdir(ruta):
@@ -694,7 +694,7 @@ def load_inventario(fich_inventario):
     """
     Devuelve los datos del excel/ods del inventario como un Dataset de tablib.
     """
-    data = tablib.Dataset().load(open(fich_inventario).read())
+    data = tablib.Dataset().load(open(fich_inventario, "r+b").read())
     return data
 
 
