@@ -41,6 +41,22 @@ from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
 sys.argv = _argv
 
 
+def calcular_desviacion(existencias_ini, produccion, ventas, consumos,
+                        existencias_fin):
+    """
+    Hace y devuelve el cálculo en sí:
+    existencias_fin - (existencias_ini + produccion - ventas - consumos)
+    """
+    entradas = produccion
+    # Las salidas vienen en positivo. Si quiero restar, hay que multiplicar *-1
+    salidas = [-sum(x) for x in zip(ventas, consumos)]
+    # Salidas ya van en negativo, entradas y existencias en positivo.
+    # El resultado (total) lo paso a negativo para restarlo a las existencias_0
+    total = [-sum(x) for x in zip(existencias_ini, entradas, salidas)]
+    desviacion = [round(sum(x), 2) for x in zip(existencias_fin, total)]
+    return desviacion
+
+
 # pylint: disable=too-many-locals, too-many-statements, too-many-arguments
 def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
                   dev=False):
@@ -70,23 +86,26 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
     """
     res = False
     # 0.- Localizo el producto todos los datos que solo puedo sacar de Murano.
-    if not dev:
-        producto_murano = murano.ops.get_producto_murano(producto_ginn)
-        existencias_fin = get_existencias_murano(producto_murano)
-        ventas = get_ventas(producto_murano, fini, ffin)
-        volcados_murano = get_altas(producto_murano, fini, ffin)
-        bajas_volcadas_murano = get_bajas_consumo(producto_murano, fini, ffin)
-    else:
-        producto_murano = None
-        existencias_fin = 0, 0, 0
-        ventas = 0, 0, 0
-        volcados_murano = 0, 0, 0
-        bajas_volcadas_murano = 0, 0, 0
-    existencias_ini = get_existencias_inventario(data_inventario,
-                                                 producto_ginn)
-    # 1.- Obtengo los datos de producción y consumos del ERP.
-    produccion = get_produccion(producto_ginn, fini, ffin)
-    consumos = get_consumos(producto_ginn, fini, ffin)
+    (producto_murano, existencias_ini, existencias_fin,
+     produccion, ventas, consumos,
+     volcados_murano, bajas_volcadas_murano) = calcular_movimientos(
+         producto_ginn, data_inventario, fini, ffin, dev)
+    # 1,- La "cuenta" en sí.
+    desviacion = calcular_desviacion(existencias_ini, produccion, ventas,
+                                     consumos, existencias_fin)
+    res = desviacion == [.0, .0, .0]
+    # ¿Esa desviación corresponde con algún albarán hecho justo el día del
+    # inventario?
+    if not res:
+        nventas = get_ventas(producto_murano,
+                             fini + datetime.timedelta(days=1), ffin)
+        ndesviacion = calcular_desviacion(existencias_ini, produccion, ventas,
+                                          consumos, existencias_fin)
+        nres = desviacion == [.0, .0, .0]
+        if nres:
+            res = nres
+            desviacion = ndesviacion
+            ventas = nventas
     # 2.- Cabecera del informe de resultados:
     if not dev:
         # pylint: disable=no-member
@@ -109,14 +128,8 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
         report.write("> Consumos ginn: {}; bajas Murano: {}\n".format(
             ["{:n}".format(round(i, 2)) for i in consumos],
             ["{:n}".format(round(i, 2)) for i in bajas_volcadas_murano]))
-    entradas = produccion
-    # Las salidas vienen en positivo. Si quiero restar, hay que *-1
-    salidas = [-sum(x) for x in zip(ventas, consumos)]
-    total = [-sum(x) for x in zip(existencias_ini, entradas, salidas)]
-    desviacion = [round(sum(x), 2) for x in zip(existencias_fin, total)]
-    res = desviacion == [.0, .0, .0]
     # 4.- Escribo los resultados al report.
-    report.write("Existencias inicales: {}\n".format(
+    report.write("Existencias iniciales: {}\n".format(
         ["{:n}".format(round(i, 2)) for i in existencias_ini]))
     report.write("Existencias finales: {}\n".format(
         ["{:n}".format(round(i)) for i in existencias_fin]))
@@ -140,6 +153,41 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
     report.write("\n")
     # 5.- Y devuelvo si todo cuadra (True) o hay alguna desviación (False)
     return res
+
+
+def calcular_movimientos(producto_ginn, data_inventario, fini, ffin, dev=False):
+    """
+    Lanza las consultas, hace los cálculos y devuelve:
+    - existencias iniciales
+    - existencias actuales
+    - producción entre [fini..ffin)
+    - ventas entre [fini..ffin)
+    - consumos entre [fini..ffin)
+    - altas desde API ginn entre [fini..ffin)
+    - bajas desde API ginn entre [fini..ffin)
+    """
+    # Datos de Murano. Si estoy en el equipo de desarrollo, uso 0 para todos.
+    if not dev:
+        producto_murano = murano.ops.get_producto_murano(producto_ginn)
+        existencias_fin = get_existencias_murano(producto_murano)
+        ventas = get_ventas(producto_murano, fini, ffin)
+        volcados_murano = get_altas(producto_murano, fini, ffin)
+        bajas_volcadas_murano = get_bajas_consumo(producto_murano, fini, ffin)
+    else:
+        producto_murano = None
+        existencias_fin = 0, 0, 0
+        ventas = 0, 0, 0
+        volcados_murano = 0, 0, 0
+        bajas_volcadas_murano = 0, 0, 0
+    existencias_ini = get_existencias_inventario(data_inventario,
+                                                 producto_ginn)
+    # Obtengo los datos de producción y consumos del ERP.
+    produccion = get_produccion(producto_ginn, fini, ffin)
+    consumos = get_consumos(producto_ginn, fini, ffin)
+    #  Los volcados los devuelvo para chequear los volcados de la API.
+    return (producto_murano, existencias_ini, existencias_fin,
+            produccion, ventas, consumos,
+            volcados_murano, bajas_volcadas_murano)
 
 
 def get_existencias_inventario(data_inventario, producto_ginn):
