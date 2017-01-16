@@ -516,6 +516,8 @@ def get_produccion(producto_ginn, fini, ffin, strict=False):
     metros = {'A': 0.0, 'B': 0.0, 'C': 0.0}
     kilos = {'A': 0.0, 'B': 0.0, 'C': 0.0}
     # pylint: disable=no-member
+    if pv.es_clase_c():     # Los productos C se pesan sin parte de producción.
+        strict = True
     if not strict:
         PDP = pclases.ParteDeProduccion
         A = pclases.Articulo
