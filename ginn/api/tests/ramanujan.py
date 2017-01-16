@@ -11,9 +11,16 @@ from __future__ import print_function
 import datetime
 import sys
 import os
+import re
 import subprocess
 import logging
 import argparse
+try:
+    import tablib
+except ImportError:
+    sys.stderr.write("Es necesario instalar tablib para leer las existencias"
+                     " inciales: pip install tablib")
+    sys.exit(1)
 LOGFILENAME = "%s.log" % (".".join(os.path.basename(__file__).split(".")[:-1]))
 logging.basicConfig(filename=LOGFILENAME,
                     format="%(asctime)s %(levelname)-8s : %(message)s",
@@ -34,11 +41,9 @@ from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
 sys.argv = _argv
 
 
-DEFAULT_FINI = datetime.date(2016, 5, 31)  # La fecha de implantación de Murano
-
-
-# pylint: disable=too-many-locals, too-many-statements
-def cuentalavieja(producto_ginn, fini, ffin, report, dev=False):
+# pylint: disable=too-many-locals, too-many-statements, too-many-arguments
+def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
+                  dev=False):
     """
     Recibe un producto de ginn y comprueba que entre las fechas fini y ffin
     (recibidas como `datetimes`) es correcto el cálculo
@@ -47,7 +52,8 @@ def cuentalavieja(producto_ginn, fini, ffin, report, dev=False):
     entradas_0->1 = producción_0->1
     salidas_0->1 = ventas_albaranes_0->1 + consumos_0->1
 
-    Los datos de existencias los obtiene de Murano.
+    Los datos de existencias los obtiene de Murano, los actuales, y del
+    fichero excel recibido para las iniciales.
     Los de producción los obtiene de ginn.
     Los de ventas se sacan de los albaranes de salida **desde** el almacén
     principal. Estén o no facturados.
@@ -66,18 +72,18 @@ def cuentalavieja(producto_ginn, fini, ffin, report, dev=False):
     # 0.- Localizo el producto todos los datos que solo puedo sacar de Murano.
     if not dev:
         producto_murano = murano.ops.get_producto_murano(producto_ginn)
-        existencias_ini = get_existencias(producto_murano, fini)
-        existencias_fin = get_existencias(producto_murano, ffin)
+        existencias_fin = get_existencias_murano(producto_murano)
         ventas = get_ventas(producto_murano, fini, ffin)
         volcados_murano = get_altas(producto_murano, fini, ffin)
         bajas_volcadas_murano = get_bajas_consumo(producto_murano, fini, ffin)
     else:
         producto_murano = None
-        existencias_ini = 0, 0, 0
         existencias_fin = 0, 0, 0
         ventas = 0, 0, 0
         volcados_murano = 0, 0, 0
         bajas_volcadas_murano = 0, 0, 0
+    existencias_ini = get_existencias_inventario(data_inventario,
+                                                 producto_ginn)
     # 1.- Obtengo los datos de producción y consumos del ERP.
     produccion = get_produccion(producto_ginn, fini, ffin)
     consumos = get_consumos(producto_ginn, fini, ffin)
@@ -88,9 +94,9 @@ def cuentalavieja(producto_ginn, fini, ffin, report, dev=False):
             report.write("{}: {}\n".format(producto_murano.CodigoArticulo,
                                            producto_ginn.descripcion))
         except AttributeError:
-            report.write("{}: {}\n".format(
+            report.write("{}: _({}) {}_\n".format(
                 "***¡Producto no encontrado en Murano!***",
-                producto_ginn.descripcion))
+                producto_ginn.puid, producto_ginn.descripcion))
     else:
         report.write("PV{}: {}\n".format(producto_ginn.id,
                                          producto_ginn.descripcion))
@@ -136,20 +142,40 @@ def cuentalavieja(producto_ginn, fini, ffin, report, dev=False):
     return res
 
 
-def get_existencias(producto_murano, fecha):
+def get_existencias_inventario(data_inventario, producto_ginn):
     """
-    Devuelve las existencias que Murano tenía en la fecha `fecha`. Se hace
-    filtrando los movimientos de series por la fecha recibida (no incluida).
-    No es un métido muy exacto o fiable, pero no hay otra forma.
+    Devuelve las existencias que se registraron en el fichero de inventario.
+    """
+    # No me queda más remedio que obtener este dato únicamente del fichero y
+    # no mediante consulta SQL por 2 motivos:
+    # - Las subconsultas y anidaciones que tendría que hacer al SQL me
+    #   llevarían días.
+    # - Nicky siempre va a tomar como base los Excel de los inventarios y
+    #   cualquier otra cosa que salga de aquí no valdrá. De todos modos, si
+    #   alguien hace cambios y nuestros cálculos se basan en movimientos
+    #   donde **ya** están esos cambios, el resultado no será fiable.
+    almacen = 'GTX'
+    codigo = 'PV{}'.format(producto_ginn.id)
+    res = [0, .0, .0]   # Bultos, metros, kilos
+    for fila in data_inventario.dict:
+        if fila[u'Código producto'] == codigo and fila[u'Almacén'] == almacen:
+            # No distinguimos A, B y C.
+            res[0] += int(fila['Bultos'])
+            res[1] += float(fila['Metros cuadrados'])
+            res[2] += float(fila['Peso neto'])
+    return res
+
+
+def get_existencias_murano(producto_murano):
+    """
+    Devuelve las existencias que Murano tiene en este momento.
     Devuelve una tupla (bultos, m², kg).
     Obtiene todos los datos de la tabla ArticulosSerie.
     **Solo se consulta sobre el almacén GTX.**
     """
-    # PLAN: ¿Y si las recibo por parámetro en la línea de comandos o desde un
-    # fichero externo?
+    # TODO: También podría recibir un fichero de inventario para calcular
+    # desviaciones entre dos .xls.
     almacen = "GTX"
-    fini = DEFAULT_FINI.strftime("%Y-%m-%d")
-    ffin = fecha.strftime("%Y-%m-%d")
     try:
         codigo = producto_murano.CodigoArticulo
     except AttributeError:
@@ -174,10 +200,7 @@ def get_existencias(producto_murano, fecha):
                 AND Articulos.CodigoEmpresa = '10200'
         WHERE ArticulosSeries.CodigoEmpresa = '10200'
           AND ArticulosSeries.CodigoArticulo = '{}'
-        --  AND ArticulosSeries.Partida = 'P-11253'
           AND ArticulosSeries.CodigoAlmacen = '{}'
-          AND ArticulosSeries.FechaInicial >= '{}'
-          AND ArticulosSeries.FechaInicial < '{}'
           AND ArticulosSeries.UnidadesSerie > 0
         GROUP BY ArticulosSeries.CodigoArticulo,
           Articulos.DescripcionArticulo,
@@ -188,8 +211,7 @@ def get_existencias(producto_murano, fecha):
         ORDER BY Articulos.CodigoFamilia,
           Articulos.DescripcionArticulo,
           ArticulosSeries.Partida,
-          ArticulosSeries.CodigoTalla01_;""".format(codigo, almacen, fini,
-                                                    ffin)
+          ArticulosSeries.CodigoTalla01_;""".format(codigo, almacen)
     conn = connection.Connection()
     totales = conn.run_sql(sql)
     #  No debería haber series sin calidad (''), pero por si acaso las cuento:
@@ -402,7 +424,7 @@ def get_bajas_consumo(producto_murano, fini, ffin):
         CodigoCanal: CONSFIB|CONSBB
     """
     consumos_balas = get_volcados(producto_murano, fini, ffin, 2, 'F',
-                                    'CONSFIB', 11, 'Consumo bala%')
+                                  'CONSFIB', 11, 'Consumo bala%')
     consumos_bigbags = get_volcados(producto_murano, fini, ffin, 2, 'F',
                                     'CONSBB', 11, 'Consumo bigbag%')
     sumbultos = consumos_balas[0] + consumos_bigbags[0]
@@ -579,6 +601,7 @@ def parse_fecha(cadfecha):
     311217 = 31122017 => 31/12/2017
     3101 => 31/01/2017 (si estamos en 2017)
     01 => 01/01/2017 (si estamos en enero de 2017)
+    20170115 => 15/01/2017
     """
     hoy = datetime.date.today()
     if "-" in cadfecha:
@@ -604,6 +627,67 @@ def parse_fecha(cadfecha):
     return res
 
 
+def parse_fecha_xls(ruta):
+    """
+    Devuelve la fecha correspondiente a la ruta del fichero recibido.
+    Si el fichero se llama, por ejemplo: 20161223*.xls, la fecha se
+    correspondería a 23/12/2016.
+    Si no se puede encontrar una cadena de números equivalente, entonces
+    devolverá la fecha de creación del fichero.
+    Devuelve un datetime.
+    """
+    regex = re.compile("[0-9]{8}")
+    try:
+        cadfecha = regex.findall(ruta)[-1]
+    except IndexError:
+        fecha_ultima_modificacion = datetime.datetime.utcfromtimestamp(
+            os.path.getmtime(ruta))
+        res = fecha_ultima_modificacion
+    else:
+        try:
+            res = parse_fecha(cadfecha)
+        except ValueError:  # El orden es al contrario, ceporro.
+            cadfecha = cadfecha[6:] + cadfecha[4:6] + cadfecha[:4]
+            res = parse_fecha(cadfecha)
+    return res
+
+
+def buscar_ultimo_fichero_inventario(ruta="."):
+    """
+    Busca el último fichero acabado en .xls del directorio y devuelve su ruta.
+    None si no se encontró ninguno **acabado en `.xls`**.
+    """
+    try:
+        res = max([os.path.join(ruta, f) for f in os.listdir(ruta)
+                   if f.endswith('.xls')], key=os.path.getctime)
+    except ValueError:
+        print("Fichero .xls no encontrado en `{}`.".format(ruta))
+        sys.exit(2)
+    return res
+
+
+def find_fich_inventario(ruta):
+    """
+    Si ruta es un directorio, devuelve el último .xls del directorio.
+    Si es una ruta a un fichero, comprueba que sea .xls o .ods y devuelve
+    la ruta completa al mismo.
+    """
+    if os.path.isdir(ruta):
+        res = buscar_ultimo_fichero_inventario(ruta)
+    else:
+        res = ruta
+    res = os.path.abspath(res)
+    return res
+
+
+def load_inventario(fich_inventario):
+    """
+    Devuelve los datos del excel/ods del inventario como un Dataset de tablib.
+    """
+    data = tablib.Dataset().load(open(fich_inventario).read())
+    return data
+
+
 def main():
     """
     Rutina principal.
@@ -612,14 +696,13 @@ def main():
     parser = argparse.ArgumentParser(
         description="Soy Srinivasa Iyengar Ramanujan.\n"
                     "Calculo entradas y salidas por producto para detectar "
-                    "desviaciones en las existencias entre dos fechas.\n"
+                    "desviaciones en las existencias desde la fecha inicial.\n"
                     "Todavía no me ha encontrado Hardy, así que de momento"
                     "solo sé hacer los cálculos para productos de venta y "
                     "el almacén principal.")
-    def_fini = DEFAULT_FINI.strftime("%d-%m-%Y")
-    parser.add_argument("--fecha_inicial", dest="fini", default=def_fini)
-    today = datetime.datetime.today().strftime("%d%m%Y")
-    parser.add_argument("--fecha_final", dest="ffin", default=today)
+    def_fich_ini = buscar_ultimo_fichero_inventario()
+    parser.add_argument("--fichero_stock_inicial", dest="fich_inventario",
+                        default=def_fich_ini)
     parser.add_argument("-p", "--productos", dest="codigos_productos",
                         help="Códigos de productos a comprobar.",
                         nargs="+", default=[])
@@ -651,21 +734,23 @@ def main():
         for pv in tqdm(pclases.ProductoVenta.select(orderBy="id"),
                        desc="Buscando productos ginn"):
             productos.append(pv)
-    fini = parse_fecha(args.fini)
-    ffin = parse_fecha(args.ffin)
+    fich_inventario = find_fich_inventario(args.fich_inventario)
+    fini = parse_fecha_xls(fich_inventario)
+    today = datetime.datetime.today()
     # Para evitar problemas con las fechas que incluyen horas, y para que
     # éstas entren en el intervalo, agrego un día a la fecha final y hago
     # el filtro con menor estricto: una producción del 02/01/17 23:00
     # la consideramos como que entra en el día 2, y entraría en el filtro
     # [01/01/17..02/01/17] porque en realidad sería [01/01/17..03/01/17).
-    ffin += datetime.timedelta(days=1)
+    ffin = today + datetime.timedelta(days=1)
     report = open(args.fsalida, "a", 0)
     report.write("Analizando desde {} a {}, ambas incluidas.\n".format(
         fini.strftime("%d/%m/%Y"), ffin.strftime("%d/%m/%Y")))
     report.write("=========================================================="
                  "\n")
+    data_inventario = load_inventario(fich_inventario)
     for producto in tqdm(productos, desc="Productos"):
-        res = cuentalavieja(producto, fini, ffin, report,
+        res = cuentalavieja(producto, data_inventario, fini, ffin, report,
                             args.debug)
         # TODO: ¿Has visto el tablib? ¿Has visto que exporta a Excel? Pues eso.
         results.append(res)
