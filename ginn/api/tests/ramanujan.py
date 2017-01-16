@@ -708,7 +708,7 @@ def main():
                     "Todavía no me ha encontrado Hardy, así que de momento"
                     "solo sé hacer los cálculos para productos de venta y "
                     "el almacén principal.")
-    def_fich_ini = buscar_ultimo_fichero_inventario()
+    def_fich_ini = '.'
     parser.add_argument("--fichero_stock_inicial", dest="fich_inventario",
                         default=def_fich_ini)
     parser.add_argument("-p", "--productos", dest="codigos_productos",
