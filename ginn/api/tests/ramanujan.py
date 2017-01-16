@@ -99,7 +99,7 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
     if not res:
         nventas = get_ventas(producto_murano,
                              fini + datetime.timedelta(days=1), ffin)
-        ndesviacion = calcular_desviacion(existencias_ini, produccion, ventas,
+        ndesviacion = calcular_desviacion(existencias_ini, produccion, nventas,
                                           consumos, existencias_fin)
         nres = desviacion == [.0, .0, .0]
         if nres:
