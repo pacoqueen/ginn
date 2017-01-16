@@ -397,9 +397,9 @@ def get_volcados(producto_murano, fini, ffin, tipo_movimiento,
         sql += "AND CodigoCanal = '{}' ".format(codigo_canal)
     if serie is not None:
         if serie[0] == '!':
-            sql += "AND Serie = '{}' ".format(serie[1:])
+            sql += " AND Serie <> '{}' ".format(serie[1:])
         else:
-            sql += "AND Serie <> '{}' ".format(serie)
+            sql += " AND Serie = '{}' ".format(serie)
     sql += "ORDER BY FechaRegistro;"
     conn = connection.Connection()
     totales = conn.run_sql(sql)
@@ -432,9 +432,9 @@ def get_volcados(producto_murano, fini, ffin, tipo_movimiento,
             sql += "AND Comentario LIKE '{}' ".format(comentario)
     if serie is not None:
         if serie[0] == '!':
-            sql += "AND SerieDocumento = '{}' ".format(serie[1:])
+            sql += "AND SerieDocumento <> '{}' ".format(serie[1:])
         else:
-            sql += "AND SerieDocumento <> '{}' ".format(serie)
+            sql += "AND SerieDocumento = '{}' ".format(serie)
     sql += "ORDER BY FechaRegistro;"
     conn = connection.Connection()
     totales = conn.run_sql(sql)
