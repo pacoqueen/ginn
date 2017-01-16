@@ -158,7 +158,15 @@ def get_existencias_inventario(data_inventario, producto_ginn):
     codigo = 'PV{}'.format(producto_ginn.id)
     res = [0, .0, .0]   # Bultos, metros, kilos
     for fila in data_inventario.dict:
-        if fila[u'Código producto'] == codigo and fila[u'Almacén'] == almacen:
+        try:
+            codigo_sheet = fila[u'Código producto']
+        except KeyError:    # El orden siempre es el mismo...
+            codigo_sheet = fila[fila.keys()[2]]
+        try:
+            almacen_sheet = fila[u'Almacén']
+        except KeyError:    # aunque haya cambiado el nombre de las columnas.
+            almacen_sheet = fila[fila.keys()[0]]
+        if codigo_sheet == codigo and almacen_sheet == almacen:
             # No distinguimos A, B y C.
             res[0] += int(fila['Bultos'])
             res[1] += float(fila['Metros cuadrados'])
