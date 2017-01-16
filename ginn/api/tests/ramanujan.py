@@ -654,6 +654,8 @@ def parse_fecha_xls(ruta):
     else:
         try:
             res = parse_fecha(cadfecha)
+            if res.year < 2000:     # Ha cogido mes+dia como año.
+                raise ValueError
         except ValueError:  # El orden es al contrario, ceporro.
             cadfecha = cadfecha[6:] + cadfecha[4:6] + cadfecha[:4]
             res = parse_fecha(cadfecha)
