@@ -41,15 +41,21 @@ from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
 sys.argv = _argv
 
 
-def calcular_desviacion(existencias_ini, produccion, ventas, consumos,
+# TODO: Hacer un parámetro para demonio o algo que saque la consulta de
+# inventario a lo cron y lo vuelque a un Excel.
+
+
+# pylint: disable=too-many-arguments
+def calcular_desviacion(existencias_ini, produccion, ventas, consumos, ajustes,
                         existencias_fin):
     """
     Hace y devuelve el cálculo en sí:
     existencias_fin - (existencias_ini + produccion - ventas - consumos)
     """
     entradas = produccion
-    # Las salidas vienen en positivo. Si quiero restar, hay que multiplicar *-1
-    salidas = [-sum(x) for x in zip(ventas, consumos)]
+    # Las salidas vienen en positivo. Si quiero restar, hay que multiplicar
+    # por -1 **una vez sumadas**.
+    salidas = [-sum(x) for x in zip(ventas, consumos, ajustes)]
     # Salidas ya van en negativo, entradas y existencias en positivo.
     # El resultado (total) lo paso a negativo para restarlo a las existencias_0
     total = [-sum(x) for x in zip(existencias_ini, entradas, salidas)]
@@ -88,11 +94,11 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
     # 0.- Localizo el producto todos los datos que solo puedo sacar de Murano.
     (producto_murano, existencias_ini, existencias_fin,
      produccion, ventas, consumos,
-     volcados_murano, bajas_volcadas_murano) = calcular_movimientos(
+     volcados_murano, bajas_volcadas_murano, ajustes) = calcular_movimientos(
          producto_ginn, data_inventario, fini, ffin, dev)
     # 1,- La "cuenta" en sí.
     desviacion = calcular_desviacion(existencias_ini, produccion, ventas,
-                                     consumos, existencias_fin)
+                                     consumos, ajustes, existencias_fin)
     res = desviacion == [.0, .0, .0]
     # ¿Esa desviación corresponde con algún albarán hecho justo el día del
     # inventario?
@@ -100,7 +106,7 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
         nventas = get_ventas(producto_murano,
                              fini + datetime.timedelta(days=1), ffin)
         ndesviacion = calcular_desviacion(existencias_ini, produccion, nventas,
-                                          consumos, existencias_fin)
+                                          consumos, ajustes, existencias_fin)
         nres = ndesviacion == [.0, .0, .0]
         if nres:
             res = nres
@@ -131,20 +137,23 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
     # 4.- Escribo los resultados al report.
     report.write("Existencias iniciales: {}\n".format(
         ["{:n}".format(round(i, 2)) for i in existencias_ini]))
+    report.write("Producción: {}\n".format(
+        ["{:n}".format(round(i, 2)) for i in produccion]))
+    report.write("Ventas: {}\n".format(
+        ["{:n}".format(i) for i in ventas]))
+    report.write("Consumos: {}\n".format(
+        ["{:n}".format(round(i, 2)) for i in consumos]))
+    report.write("Ajustes: {}\n".format(
+        ["{:n}".format(round(i, 2)) for i in ajustes]))
     report.write("Existencias finales: {}\n".format(
-        ["{:n}".format(round(i)) for i in existencias_fin]))
-    report.write("Producción: {}\n".format(["{:n}".format(
-        round(i)) for i in produccion]))
-    report.write("Ventas: {}\n".format(["{:n}".format(i) for i in ventas]))
-    report.write("Consumos: {}\n".format(["{:n}".format(
-        round(i)) for i in consumos]))
+        ["{:n}".format(round(i, 2)) for i in existencias_fin]))
     if not res:
         report.write("**")
     report.write("Desviación")
     if not res:
         report.write("**")
-    report.write(": {}\n".format(["{:n}".format(
-        round(i)) for i in desviacion]))
+    report.write(": {}\n".format(
+        ["{:n}".format(round(i, 2)) for i in desviacion]))
     report.write("-"*70)
     if res:
         report.write(" _[OK]_ \n")
@@ -165,6 +174,7 @@ def calcular_movimientos(producto_ginn, data_inventario, fini, ffin, dev=False):
     - consumos entre [fini..ffin)
     - altas desde API ginn entre [fini..ffin)
     - bajas desde API ginn entre [fini..ffin)
+    - ajustes manuales hechos en Murano para regularizaciones, etc. (serie MAN)
     """
     # Datos de Murano. Si estoy en el equipo de desarrollo, uso 0 para todos.
     if not dev:
@@ -173,12 +183,14 @@ def calcular_movimientos(producto_ginn, data_inventario, fini, ffin, dev=False):
         ventas = get_ventas(producto_murano, fini, ffin)
         volcados_murano = get_altas(producto_murano, fini, ffin)
         bajas_volcadas_murano = get_bajas_consumo(producto_murano, fini, ffin)
+        ajustes = get_ajustes(producto_murano, fini, ffin)
     else:
         producto_murano = None
         existencias_fin = 0, 0, 0
         ventas = 0, 0, 0
         volcados_murano = 0, 0, 0
         bajas_volcadas_murano = 0, 0, 0
+        ajustes = 0, 0, 0
     existencias_ini = get_existencias_inventario(data_inventario,
                                                  producto_ginn)
     # Obtengo los datos de producción y consumos del ERP.
@@ -187,7 +199,8 @@ def calcular_movimientos(producto_ginn, data_inventario, fini, ffin, dev=False):
     #  Los volcados los devuelvo para chequear los volcados de la API.
     return (producto_murano, existencias_ini, existencias_fin,
             produccion, ventas, consumos,
-            volcados_murano, bajas_volcadas_murano)
+            volcados_murano, bajas_volcadas_murano,
+            ajustes)
 
 
 def get_existencias_inventario(data_inventario, producto_ginn):
@@ -341,16 +354,20 @@ def get_ventas(producto_murano, fini, ffin):
     return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-arguments, too-many-branches
 def get_volcados(producto_murano, fini, ffin, tipo_movimiento,
                  origen_movimiento, codigo_canal,
-                 origen_documento, comentario=None):
+                 origen_documento, comentario=None, serie=None):
     """
     Devuelve los volcados realizados de cada tipo, que viene determinado por
     los parámetros a pasar a la consulta SQL.
     El parámetro «Comentario» se tratará con LIKE y debe incluir los comodines.
     No se agregan aquí. Si la primera letra es `!`, entonces se hará un
     NOT LIKE.
+    El parámetro «serie» se utiliza tanto en movimientos de stock como en
+    los movimientos de serie para los ajustes manuales desde el propio Murano.
+    Si serie es None, no se aplica. Si es '!MAN' se hace un <> 'MAN' y si es
+    'MAN' se hace un Serie[Documento] = 'MAN';
     """
     almacen = "GTX"
     fini = fini.strftime("%Y-%m-%d")
@@ -372,12 +389,18 @@ def get_volcados(producto_murano, fini, ffin, tipo_movimiento,
                 AND CodigoArticulo = '{}'
                 AND CodigoAlmacen = '{}'
                 AND TipoMovimiento = {}
-                AND OrigenMovimiento = '{}'
-                AND CodigoCanal = '{}'
-              ORDER BY FechaRegistro;""".format(fini, ffin, codigo, almacen,
-                                                tipo_movimiento,
-                                                origen_movimiento,
-                                                codigo_canal)
+                AND OrigenMovimiento = '{}' """.format(fini, ffin, codigo,
+                                                       almacen,
+                                                       tipo_movimiento,
+                                                       origen_movimiento)
+    if codigo_canal is not None:
+        sql += "AND CodigoCanal = '{}' ".format(codigo_canal)
+    if serie is not None:
+        if serie[0] == '!':
+            sql += "AND Serie = '{}' ".format(serie[1:])
+        else:
+            sql += "AND Serie <> '{}' ".format(serie)
+    sql += "ORDER BY FechaRegistro;"
     conn = connection.Connection()
     totales = conn.run_sql(sql)
     for total in totales:
@@ -404,10 +427,14 @@ def get_volcados(producto_murano, fini, ffin, tipo_movimiento,
               """.format(fini, ffin, codigo, almacen, origen_documento)
     if comentario is not None:
         if comentario[0] == '!':
-            comentario = comentario[1:]
-            sql += "AND Comentario NOT LIKE '{}' ".format(comentario)
+            sql += "AND Comentario NOT LIKE '{}' ".format(comentario[1:])
         else:
             sql += "AND Comentario LIKE '{}' ".format(comentario)
+    if serie is not None:
+        if serie[0] == '!':
+            sql += "AND SerieDocumento = '{}' ".format(serie[1:])
+        else:
+            sql += "AND SerieDocumento <> '{}' ".format(serie)
     sql += "ORDER BY FechaRegistro;"
     conn = connection.Connection()
     totales = conn.run_sql(sql)
@@ -437,26 +464,32 @@ def get_altas(producto_murano, fini, ffin):
     (eliminaciones de artículos) procedentes de fabricación.
     La serie 'FAB' también se podría usar para filtrar, pero con
     el OrigenDocumento 'F' nos vale.
+    Lo que sí nos va a valer para identificar los movimientos manuales
+    por regularizaciones de inventario, principalmente, es usar la serie 'MAN'.
     Altas:
-        MovimientoArticuloSerie:
-            OrigenDocumento = 2 (Fabricación)
         MovimientoStock:
             tipoMovimiento = 1 (entrada)
-            origenMovimiento = 'F' (Fabricación)
+            OrigenMovimiento = 'F' (Fabricación)
             CodigoCanal = ''
+        MovimientoArticuloSerie:
+            OrigenDocumento = 2 (Fabricación)
+            SerieDocumento <> 'MAN'
     Bajas:
+        MovimientoStock:
+            TipoMovimiento = 2 (salida)
+            OrigenMovimiento = 'F' (Fabricación)
+            CodigoCcanal = ''
         MovimientoArticuloSerie:
             OrigenDocumento = 11 (Salida de stock)
             Comentario NOT LIKE 'Consumo%'
-        MovimientoStock:
-            tipoMovimiento = 2 (salida)
-            origenMovimiento = 'F' (Fabricación)
-            CodigoCcanal = ''
+            SerieDocumento <> 'MAN'
     """
     # Lo primero son las altas:
-    altas = get_volcados(producto_murano, fini, ffin, 1, 'F', '', 2)
+    altas = get_volcados(producto_murano, fini, ffin, 1, 'F', '', 2,
+                         serie="!MAN")
     # Ahora las bajas por eliminación desde partes, no por consumo.
-    bajas = get_volcados(producto_murano, fini, ffin, 2, 'F', '', 11, '!Consumo%',)
+    bajas = get_volcados(producto_murano, fini, ffin, 2, 'F', '',
+                         11, '!Consumo%', serie="!MAN")
     # Y ahora las sumo (los movimientos de salida vienen en positivo de Murano
     # y viene todo sumado, sin desglose por calidades).
     sumbultos = altas[0] - bajas[0]
@@ -474,18 +507,38 @@ def get_bajas_consumo(producto_murano, fini, ffin):
     MovimientoArticuloSerie:
         OrigenDocumento = 11 (Salida de stock)
         Comentario LIKE 'Consumo%'
+        SerieDocumento <> 'MAN'
     MovimientoStock:
-        tipoMovimiento = 2 (salida)
-        origenMovimiento = 'F' (Fabricación)
+        TipoMovimiento = 2 (salida)
+        OrigenMovimiento = 'F' (Fabricación)
         CodigoCanal: CONSFIB|CONSBB
     """
     consumos_balas = get_volcados(producto_murano, fini, ffin, 2, 'F',
-                                  'CONSFIB', 11, 'Consumo bala%')
+                                  'CONSFIB', 11, 'Consumo bala%', '!MAN')
     consumos_bigbags = get_volcados(producto_murano, fini, ffin, 2, 'F',
-                                    'CONSBB', 11, 'Consumo bigbag%')
+                                    'CONSBB', 11, 'Consumo bigbag%', '!MAN')
     sumbultos = consumos_balas[0] + consumos_bigbags[0]
     summetros = consumos_balas[1] + consumos_bigbags[1]
     sumkilos = consumos_balas[2] + consumos_bigbags[2]
+    return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
+
+
+def get_ajustes(producto_murano, fini, ffin):
+    """
+    Ajustes manuales:
+        MovimientoStock:
+            TipoMovimiento = 2 (salida)
+            OrigenMovimiento = 'S' (Movimiento de salida)
+            Serie = 'MAN'
+        MovimientoArticuloSerie:
+            OrigenDocumento = 11 (Salida de stock)
+            SerieDocumento = 'MAN'
+    """
+    # Eliminaciones manuales, movimientos manuales de salida por ajustes...
+    # El código canal a None hará que no se use ese parámetro en el SQL
+    ajustes = get_volcados(producto_murano, fini, ffin, 2, 'S', None,
+                           11, serie='MAN')
+    sumbultos, summetros, sumkilos = ajustes
     return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
@@ -823,7 +876,7 @@ def main():
     # [01/01/17..02/01/17] porque en realidad sería [01/01/17..03/01/17).
     ffin = today + datetime.timedelta(days=1)
     report = open(args.fsalida, "a", 0)
-    report.write("Analizando desde {} a {}, ambas incluidas.\n".format(
+    report.write("Analizando desde {} a {}, fin no incluido.\n".format(
         fini.strftime("%d/%m/%Y"), ffin.strftime("%d/%m/%Y")))
     report.write("=========================================================="
                  "\n")
