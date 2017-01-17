@@ -95,20 +95,21 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
     res = False
     # 0.- Localizo el producto todos los datos que solo puedo sacar de Murano.
     (producto_murano, existencias_ini, existencias_fin,
-     produccion, ventas, consumos,
-     volcados_murano, bajas_volcadas_murano, ajustes) = calcular_movimientos(
+     produccion_ginn, ventas, consumos_ginn,
+     volcados_murano, consumos_murano, ajustes) = calcular_movimientos(
          producto_ginn, data_inventario, fini, ffin, dev)
     # 1,- La "cuenta" en sí.
-    desviacion = calcular_desviacion(existencias_ini, produccion, ventas,
-                                     consumos, ajustes, existencias_fin)
+    desviacion = calcular_desviacion(existencias_ini, produccion_ginn, ventas,
+                                     consumos_ginn, ajustes, existencias_fin)
     res = desviacion == [.0, .0, .0]
     # ¿Esa desviación corresponde con algún albarán hecho justo el día del
     # inventario?
     if not res and not dev:
         nventas = get_ventas(producto_murano,
                              fini + datetime.timedelta(days=1), ffin)
-        ndesviacion = calcular_desviacion(existencias_ini, produccion, nventas,
-                                          consumos, ajustes, existencias_fin)
+        ndesviacion = calcular_desviacion(existencias_ini, produccion_ginn,
+                                          nventas, consumos_ginn, ajustes,
+                                          existencias_fin)
         nres = ndesviacion == [.0, .0, .0]
         if nres:
             res = nres
@@ -128,23 +129,24 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
         report.write("PV{}: {}\n".format(producto_ginn.id,
                                          producto_ginn.descripcion))
     # 3.- Compruebo que los datos del ERP y Murano son iguales:
-    if ([round(i, 2) for i in produccion] != [round(i, 2) for i in volcados_murano]):
+    if ([round(i, 2) for i in produccion_ginn]
+            != [round(i, 2) for i in volcados_murano]):
         report.write("> Producción ginn: {}; entradas Murano: {}\n".format(
-            ["{:n}".format(round(i, 2)) for i in produccion],
+            ["{:n}".format(round(i, 2)) for i in produccion_ginn],
             ["{:n}".format(round(i, 2)) for i in volcados_murano]))
-    if consumos != bajas_volcadas_murano:
+    if consumos_ginn != consumos_murano:
         report.write("> Consumos ginn: {}; bajas Murano: {}\n".format(
-            ["{:n}".format(round(i, 2)) for i in consumos],
-            ["{:n}".format(round(i, 2)) for i in bajas_volcadas_murano]))
+            ["{:n}".format(round(i, 2)) for i in consumos_ginn],
+            ["{:n}".format(round(i, 2)) for i in consumos_murano]))
     # 4.- Escribo los resultados al report.
     report.write("Existencias iniciales: {}\n".format(
         ["{:n}".format(round(i, 2)) for i in existencias_ini]))
     report.write("Producción: {}\n".format(
-        ["{:n}".format(round(i, 2)) for i in produccion]))
+        ["{:n}".format(round(i, 2)) for i in produccion_ginn]))
     report.write("Ventas: {}\n".format(
         ["{:n}".format(i) for i in ventas]))
     report.write("Consumos: {}\n".format(
-        ["{:n}".format(round(i, 2)) for i in consumos]))
+        ["{:n}".format(round(i, 2)) for i in consumos_ginn]))
     report.write("Ajustes: {}\n".format(
         ["{:n}".format(round(i, 2)) for i in ajustes]))
     report.write("Existencias finales: {}\n".format(
@@ -168,15 +170,15 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
                      existencias_ini[0],   # A
                      existencias_ini[1],   # B
                      existencias_ini[2],   # C
-                     produccion[0],
-                     produccion[1],
-                     produccion[2],
+                     produccion_ginn[0],
+                     produccion_ginn[1],
+                     produccion_ginn[2],
                      ventas[0],
                      ventas[1],
                      ventas[2],
-                     consumos[0],
-                     consumos[1],
-                     consumos[2],
+                     consumos_ginn[0],
+                     consumos_ginn[1],
+                     consumos_ginn[2],
                      ajustes[0],
                      ajustes[1],
                      ajustes[2],
@@ -193,39 +195,45 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
 def calcular_movimientos(producto_ginn, data_inventario, fini, ffin, dev=False):
     """
     Lanza las consultas, hace los cálculos y devuelve:
+    - La representación del registro del producto en Murano
     - existencias iniciales
     - existencias actuales
     - producción entre [fini..ffin)
     - ventas entre [fini..ffin)
     - consumos entre [fini..ffin)
-    - altas desde API ginn entre [fini..ffin)
-    - bajas desde API ginn entre [fini..ffin)
+    - volcados de producción desde API ginn entre [fini..ffin)
+    - consumos desde API ginn entre [fini..ffin)
     - ajustes manuales hechos en Murano para regularizaciones, etc. (serie MAN)
+    - ajustes manuales hechos desde ginn (produccion - volcados)
     """
     # Datos de Murano. Si estoy en el equipo de desarrollo, uso 0 para todos.
     if not dev:
         producto_murano = murano.ops.get_producto_murano(producto_ginn)
         existencias_fin = get_existencias_murano(producto_murano)
         ventas = get_ventas(producto_murano, fini, ffin)
-        volcados_murano = get_altas(producto_murano, fini, ffin)
-        bajas_volcadas_murano = get_bajas_consumo(producto_murano, fini, ffin)
-        ajustes = get_ajustes(producto_murano, fini, ffin)
+        volcados_murano = get_volcados_api(producto_murano, fini, ffin)
+        consumos_murano = get_bajas_consumo(producto_murano, fini, ffin)
+        ajustes_murano = get_ajustes_murano(producto_murano, fini, ffin)
     else:
         producto_murano = None
         existencias_fin = 0, 0, 0
         ventas = 0, 0, 0
         volcados_murano = 0, 0, 0
-        bajas_volcadas_murano = 0, 0, 0
-        ajustes = 0, 0, 0
+        consumos_murano = 0, 0, 0
+        ajustes_murano = 0, 0, 0
     existencias_ini = get_existencias_inventario(data_inventario,
                                                  producto_ginn)
     # Obtengo los datos de producción y consumos del ERP.
-    produccion = get_produccion(producto_ginn, fini, ffin)
-    consumos = get_consumos(producto_ginn, fini, ffin)
+    produccion_ginn = get_produccion(producto_ginn, fini, ffin)
+    consumos_ginn = get_consumos(producto_ginn, fini, ffin)
+    # Si hay procesos de importación pendientes de pasar a Murano, contarán
+    # como ajustes negativos. Hay que asegurarse de ejecutar el Sr. Lobo antes.
+    ajustes_ginn = [x-y for x, y in zip(volcados_murano, produccion_ginn)]
+    ajustes = [sum(t) for t in zip(ajustes_ginn, ajustes_murano)]
     #  Los volcados los devuelvo para chequear los volcados de la API.
     return (producto_murano, existencias_ini, existencias_fin,
-            produccion, ventas, consumos,
-            volcados_murano, bajas_volcadas_murano,
+            produccion_ginn, ventas, consumos_ginn,
+            volcados_murano, consumos_murano,
             ajustes)
 
 
@@ -480,7 +488,7 @@ def get_volcados(producto_murano, fini, ffin, tipo_movimiento,
     return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
-def get_altas(producto_murano, fini, ffin):
+def get_volcados_api(producto_murano, fini, ffin):
     """
     Devuelve los movimientos de series de tipo FAB (las que proceden del API
     de ginn)  en Murano con fecha de registro entre las recibidas para contar
@@ -514,8 +522,8 @@ def get_altas(producto_murano, fini, ffin):
     altas = get_volcados(producto_murano, fini, ffin, 1, 'F', '', 2,
                          serie="!MAN")
     # Ahora las bajas por eliminación desde partes, no por consumo.
-    bajas = get_volcados(producto_murano, fini, ffin, 2, 'F', '',
-                         11, '!Consumo%', serie="!MAN")
+    bajas = get_volcados(producto_murano, fini, ffin, 2, 'F', '', 11,
+                         '!Consumo%', serie="!MAN")
     # Y ahora las sumo (los movimientos de salida vienen en positivo de Murano
     # y viene todo sumado, sin desglose por calidades).
     sumbultos = altas[0] - bajas[0]
@@ -549,7 +557,7 @@ def get_bajas_consumo(producto_murano, fini, ffin):
     return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
-def get_ajustes(producto_murano, fini, ffin):
+def get_ajustes_murano(producto_murano, fini, ffin):
     """
     Ajustes manuales:
         MovimientoStock:
@@ -1039,7 +1047,7 @@ def main():
                             data_res, args.debug)
         results.append((producto, res))
         do_inventario(producto, inventario, desglose)
-    fallos = [p for p in results if p[1]]
+    fallos = [p for p in results if not p[1]]
     report.write("Encontradas {} desviaciones: {}".format(
         len(fallos), "; ".join(['PV{}'.format(p[0].id) for p in fallos])))
     report.close()
