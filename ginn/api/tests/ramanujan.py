@@ -928,9 +928,31 @@ def do_inventario(producto, totales, desglose):
     rs_totales = conn.run_sql(sql_totales)
     rs_desgloses = conn.run_sql(sql_desglose)
     for rs_total in rs_totales:
-        totales.append(rs_total)
+        fila_total = [rs_total['CodigoAlmacen'],
+                      rs_total['familia'],
+                      rs_total['CodigoArticulo'],
+                      rs_total['DescripcionArticulo'],
+                      rs_total['Partida'],
+                      rs_total['calidad'],
+                      rs_total['bultos'],
+                      rs_total['peso_neto'],
+                      rs_total['peso_bruto'],
+                      rs_total['metros_cuadrados']]
+        totales.append(fila_total)
     for rs_desglose in rs_desgloses:
-        desglose.append(rs_desglose)
+        fila_desglose = [rs_desglose['CodigoAlmacen'],
+                         rs_desglose['familia'],
+                         rs_desglose['CodigoArticulo'],
+                         rs_desglose['DescripcionArticulo'],
+                         rs_desglose['NumeroSerieLc'],
+                         rs_desglose['Partida'],
+                         rs_desglose['calidad'],
+                         rs_desglose['bultos'],
+                         rs_desglose['peso_neto'],
+                         rs_desglose['peso_bruto'],
+                         rs_desglose['metros_cuadrados'],
+                         rs_desglose['fecha_fabricacion']]
+        desglose.append(fila_desglose)
 
 
 def main():
