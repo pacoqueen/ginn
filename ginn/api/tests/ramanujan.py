@@ -911,7 +911,7 @@ def do_inventario(producto, totales, desglose):
            CAST(ArticulosSeries.PesoBruto_ AS NUMERIC(36,2)) AS peso_bruto,
            CAST(ArticulosSeries.MetrosCuadrados AS NUMERIC(36,2))
                                                         AS metros_cuadrados,
-           ArticulosSeries.FechaInicial AS fecha_fabricación
+           ArticulosSeries.FechaInicial AS fecha_fabricacion
     FROM ArticulosSeries LEFT OUTER JOIN Articulos
         ON ArticulosSeries.CodigoArticulo = Articulos.CodigoArticulo
             AND Articulos.CodigoEmpresa = '10200'
