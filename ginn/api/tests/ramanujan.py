@@ -1017,9 +1017,9 @@ def main():
                             data_res, args.debug)
         results.append((producto, res))
         do_inventario(producto, inventario, desglose)
-        fallos = [p for p in res if p[1]]
-        report.write("Encontradas {} desviaciones: {}".format(
-            len(fallos), "; ".join(['PV{}'.format(p[0].id) for p in fallos])))
+    fallos = [p for p in results if p[1]]
+    report.write("Encontradas {} desviaciones: {}".format(
+        len(fallos), "; ".join(['PV{}'.format(p[0].id) for p in fallos])))
     report.close()
     fout = args.fsalida.replace(".md", ".xls")
     book = tablib.Databook((data_res, inventario, desglose))
