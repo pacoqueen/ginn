@@ -135,7 +135,7 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
             ["{:n}".format(round(i, 2)) for i in produccion_ginn],
             ["{:n}".format(round(i, 2)) for i in volcados_murano]))
     if consumos_ginn != consumos_murano:
-        report.write("> Consumos ginn: {}; bajas Murano: {}\n".format(
+        report.write("> Consumos ginn: {}; consumos Murano: {}\n".format(
             ["{:n}".format(round(i, 2)) for i in consumos_ginn],
             ["{:n}".format(round(i, 2)) for i in consumos_murano]))
     # 4.- Escribo los resultados al report.
@@ -225,7 +225,7 @@ def calcular_movimientos(producto_ginn, data_inventario, fini, ffin, dev=False):
                                                  producto_ginn)
     # Obtengo los datos de producción y consumos del ERP.
     produccion_ginn = get_produccion(producto_ginn, fini, ffin)
-    consumos_ginn = get_consumos(producto_ginn, fini, ffin)
+    consumos_ginn = get_consumos_ginn(producto_ginn, fini, ffin)
     # Si hay procesos de importación pendientes de pasar a Murano, contarán
     # como ajustes negativos. Hay que asegurarse de ejecutar el Sr. Lobo antes.
     ajustes_ginn = [x-y for x, y in zip(volcados_murano, produccion_ginn)]
@@ -677,7 +677,7 @@ def query_articulos(producto, fini, ffin):
     return articulos
 
 # pylint:disable=too-many-branches
-def get_consumos(producto_ginn, fini, ffin):
+def get_consumos_ginn(producto_ginn, fini, ffin):
     """
     Devuelve los consumos del producto entre las fechas. Los consumos se toman
     de ginn y la fecha usada para determinar si entra en el filtro es la
@@ -686,7 +686,14 @@ def get_consumos(producto_ginn, fini, ffin):
     Murano instantáneamente. Para permitir al operario irlas metiendo poco a
     poco en sus ratos "libres" lo que se hace es ejecutar cada cierto tiempo
     un script que busca las pendientes de volcar y da de baja las balas/bigbag
-    en Murano en forma de movimiento de serie FAB en el canal CONS*.
+    en Murano en forma de movimiento de serie FAB en el canal CONS*. Este
+    script solo da por buenos los consumos de los partes que estén ya
+    verificados; por lo que los más recientes es posible que no hayan entrado
+    en Murano, pero se contarán aquí. Para eso está el chequeo que se hace
+    en otra función entre los consumos de ginn y los volcados de consumos
+    en Murano.
+    Para el caso del consumo de bigbag, se mira la fecha del parte (sin horas,
+    solo la fecha de inicio) que es por donde se filtra en la consulta de ginn.
     Todos los consumos se hacen sobre el almacén GTX. No es necesario filtrar
     por almacén.
     """
@@ -695,8 +702,8 @@ def get_consumos(producto_ginn, fini, ffin):
     kilos = {'A': 0.0, 'B': 0.0, 'C': 0.0}
     PDP = pclases.ParteDeProduccion
     # pylint: disable=no-member
-    pdps = PDP.select(pclases.AND(PDP.q.fechahorafin >= fini,
-                                  PDP.q.fechahorafin < ffin))
+    pdps = PDP.select(pclases.AND(PDP.q.fecha >= fini,
+                                  PDP.q.fecha < ffin))
     # pylint: disable=too-many-nested-blocks
     pcs_tratadas = []
     for pdp in tqdm(pdps, desc="Consumos {}".format(producto_ginn.descripcion)):
