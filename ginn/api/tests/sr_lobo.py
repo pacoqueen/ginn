@@ -241,7 +241,7 @@ def check_everything(fsalida):
     fini = datetime.datetime(
         2016, 5, 31, 17, 30) - datetime.timedelta(hours=17.5)
     report.write("Buscando todos los artículos... ")
-    # pylint: disable=bad-continuation
+    # pylint: disable=bad-continuation, no-member
     articulos_en_almacen = pclases.Articulo.select(     # NOQA
         pclases.Articulo.q.almacen != None)
     partes_fabricacion = pclases.ParteDeProduccion.select(
@@ -401,6 +401,7 @@ def make_consumos_bigbags(fsalida, simulate=True, fini=None, ffin=None):
         fini = datetime.date(2016, 5, 31)   # Fecha en que entró Murano.
     if not ffin:
         ffin = datetime.date.today() + datetime.timedelta(days=1)
+    # pylint: disable=no-member, singleton-comparison
     pdps = pclases.ParteDeProduccion.select(pclases.AND(
         pclases.ParteDeProduccion.q.fechahorainicio >= fini,
         pclases.ParteDeProduccion.q.fechahorafin <= ffin,
@@ -443,6 +444,7 @@ def make_consumos_balas(fsalida, simulate=True, fini=None, ffin=None):
         fini = datetime.date(2016, 5, 31)   # Fecha en que entró Murano.
     if not ffin:
         ffin = datetime.date.today() + datetime.timedelta(days=1)
+    # pylint: disable=no-member, singleton-comparison
     pcargas = pclases.PartidaCarga.select(pclases.AND(
         pclases.PartidaCarga.q.fecha >= fini,
         pclases.PartidaCarga.q.fecha <= ffin,
@@ -489,6 +491,7 @@ def make_consumos_materiales(fsalida, simulate=True, fini=None, ffin=None):
         fini = datetime.date(2016, 5, 31)   # Fecha en que entró Murano.
     if not ffin:
         ffin = datetime.date.today() + datetime.timedelta(days=1)
+    # pylint: disable=no-member, singleton-comparison
     pdps = pclases.ParteDeProduccion.select(pclases.AND(
         pclases.ParteDeProduccion.q.fechahorainicio >= fini,
         pclases.ParteDeProduccion.q.fechahorafin <= ffin,
@@ -539,6 +542,22 @@ def consumir_mp(consumo, report, simulate=True):
     return res
 
 
+def check_unidades_series_positivas():
+    """
+    Si algún artículo de la empresa 10200 tiene el campo UnidadesSerie en
+    negativo, lanzo una excepción. Hay que corregir eso manualmente antes de
+    hacer nada más. Ni consumos ni nada. Lo primero es lo primero.
+    """
+    conn = murano.connection.Connection()
+    sql = """SELECT * FROM {}.dbo.ArticulosSeries
+              WHERE UnidadesSerie < 0 AND CodigoEmpresa = {};""".format(
+                  conn.get_database(), murano.connection.CODEMPRESA)
+    articulos = conn.run_sql(sql)
+    assert len(articulos) == 0, "Se detectaron artículos con UnidadesSerie "\
+            "negativas: {}".format("; ".join(
+                [a['NumeroSerieLc'] for a in articulos]))
+
+
 def main():
     """
     Rutina principal.
@@ -583,6 +602,7 @@ def main():
         # Y los consumos
         args.consumos = True
     # # Pruebas
+    check_unidades_series_positivas()
     if args.codigos_productos:
         for codigo in tqdm(args.codigos_productos, desc="Productos"):
             sync_producto(codigo, args.fsalida, args.simulate)

@@ -7,6 +7,8 @@ este script sea capaz de cuadrar los números de existencias, producciones,
 ventas y consumos de cada producto para la detección temprana de desviaciones.
 """
 
+# pylint: disable=too-many-lines
+
 from __future__ import print_function
 import datetime
 import sys
@@ -840,8 +842,95 @@ def load_inventario(fich_inventario):
     """
     Devuelve los datos del excel/ods del inventario como un Dataset de tablib.
     """
-    data = tablib.Dataset().load(open(fich_inventario, "r+b").read())
+    book = tablib.Databook().load(None, open(fich_inventario, "r+b").read())
+    sheets = book.sheets()
+    assert 2 <= len(sheets) <= 3, "El fichero '{}' no parece ser "\
+                                  "válido.".format(fich_inventario)
+    found = False
+    data = None
+    for data in sheets:
+        if "totales" in data.__repr__().lower():
+            found = True
+            break
+    if not found:
+        sys.stderr.write("Hoja de inventario no encontrada en {}.".format(
+            fich_inventario))
+        sys.exit(3)
     return data
+
+
+def do_inventario(producto, totales, desglose):
+    """
+    Agrega a los datasets de tablib las existencias actuales del producto y
+    el desglose por bultos del mismo.
+    """
+    codarticulo = 'PV{}'.format(producto.id)
+    codalmacen = 'GTX'
+    sql_totales = """USE GEOTEXAN;
+    SELECT ArticulosSeries.CodigoAlmacen,
+       Articulos.CodigoFamilia as familia,
+       ArticulosSeries.CodigoArticulo,
+       Articulos.DescripcionArticulo,
+       ArticulosSeries.Partida,
+       ArticulosSeries.CodigoTalla01_ AS calidad,
+       COUNT(ArticulosSeries.UnidadesSerie) AS bultos,
+       CAST(SUM(ArticulosSeries.PesoNeto_) AS NUMERIC(36,2)) AS peso_neto,
+       CAST(SUM(ArticulosSeries.PesoBruto_) AS NUMERIC(36,2)) AS peso_bruto,
+       CAST(SUM(ArticulosSeries.MetrosCuadrados) AS NUMERIC(36,2))
+                                                        AS metros_cuadrados
+    FROM ArticulosSeries LEFT OUTER JOIN Articulos
+      ON ArticulosSeries.CodigoArticulo = Articulos.CodigoArticulo
+         AND Articulos.CodigoEmpresa = '10200'
+    WHERE ArticulosSeries.CodigoEmpresa = '10200'
+      AND ArticulosSeries.CodigoArticulo = '{}'
+      AND ArticulosSeries.CodigoAlmacen = '{}'
+      -- AND ArticulosSeries.FechaInicial >= @fecha_ini
+      -- AND ArticulosSeries.FechaInicial < @fecha_fin
+      AND ArticulosSeries.UnidadesSerie > 0
+    GROUP BY ArticulosSeries.CodigoArticulo,
+             Articulos.DescripcionArticulo,
+             ArticulosSeries.CodigoAlmacen,
+             ArticulosSeries.CodigoTalla01_,
+             ArticulosSeries.Partida,
+             Articulos.CodigoFamilia
+    ORDER BY Articulos.CodigoFamilia,
+             Articulos.DescripcionArticulo,
+             ArticulosSeries.Partida,
+             ArticulosSeries.CodigoTalla01_;
+    """.format(codarticulo, codalmacen)
+    sql_desglose = """USE GEOTEXAN;
+    SELECT ArticulosSeries.CodigoAlmacen,
+           Articulos.CodigoFamilia as familia,
+           ArticulosSeries.CodigoArticulo,
+           Articulos.DescripcionArticulo,
+           ArticulosSeries.NumeroSerieLc,
+           ArticulosSeries.Partida,
+           ArticulosSeries.CodigoTalla01_ AS calidad,
+           ArticulosSeries.UnidadesSerie AS bultos,
+           CAST(ArticulosSeries.PesoNeto_ AS NUMERIC(36,2)) AS peso_neto,
+           CAST(ArticulosSeries.PesoBruto_ AS NUMERIC(36,2)) AS peso_bruto,
+           CAST(ArticulosSeries.MetrosCuadrados AS NUMERIC(36,2))
+                                                        AS metros_cuadrados,
+           ArticulosSeries.FechaInicial AS fecha_fabricación
+    FROM ArticulosSeries LEFT OUTER JOIN Articulos
+        ON ArticulosSeries.CodigoArticulo = Articulos.CodigoArticulo
+            AND Articulos.CodigoEmpresa = '10200'
+    WHERE ArticulosSeries.CodigoEmpresa = '10200'
+      AND ArticulosSeries.CodigoArticulo = '{}'
+      AND ArticulosSeries.CodigoAlmacen = '{}'
+      AND ArticulosSeries.UnidadesSerie > 0
+    ORDER BY Articulos.CodigoFamilia,
+             Articulos.DescripcionArticulo,
+             ArticulosSeries.Partida,
+             ArticulosSeries.CodigoTalla01_;
+    """.format(codarticulo, codalmacen)
+    conn = connection.Connection()
+    rs_totales = conn.run_sql(sql_totales)
+    rs_desgloses = conn.run_sql(sql_desglose)
+    for rs_total in rs_totales:
+        totales.append(rs_total)
+    for rs_desglose in rs_desgloses:
+        desglose.append(rs_desglose)
 
 
 def main():
@@ -905,23 +994,38 @@ def main():
     report.write("=========================================================="
                  "\n")
     data_inventario = load_inventario(fich_inventario)
-    data_res = tablib.Dataset()
+    data_res = tablib.Dataset(title="Desviaciones")
+    inventario = tablib.Dataset(title="Totales")
+    desglose = tablib.Dataset(title="Desglose")
     data_res.headers = ['Código', 'Producto',
-                        'Iniciales (A)', 'Iniciales (B)', 'Iniciales (C)',
-                        'Producción (A)', 'Producción (B)', 'Producción (C)',
-                        'Ventas (A)', 'Ventas (B)', 'Ventas (C)',
-                        'Consumos (A)', 'Consumos (B)', 'Consumos (C)',
-                        'Ajustes (A)', 'Ajustes (B)', 'Ajustes (C)',
-                        'Finales (A)', 'Finales (B)', 'Finales (C)',
-                        'Desviación (A)', 'Desviación (B)', 'Desviación (C)']
+                        'Ini. (bultos)', 'Ini. (m²)', 'Ini. (kg)',
+                        'Prod. (bultos)', 'Prod. (m²)', 'Prod. (kg)',
+                        'Ventas (bultos)', 'Ventas (m²)', 'Ventas (kg)',
+                        'Cons. (bultos)', 'Cons. (m²)', 'Cons. (kg)',
+                        'Ajustes (bultos)', 'Ajustes (m²)', 'Ajustes (kg)',
+                        'Fin. (bultos)', 'Fin. (m²)', 'Fin. (kg)',
+                        'Dif. (bultos)', 'Dif. (m²)', 'Dif. (kg)']
+    inventario.headers = ['Almacén', 'Familia', 'Código producto',
+                          'Descripción', 'Partida', 'Calidad', 'Bultos',
+                          'Peso neto', 'Peso bruto', 'Metros cuadrados']
+    desglose.headers = ['Almacén', 'Familia', 'Código producto',
+                        'Descripción', 'Código trazabilidad', 'Partida',
+                        'Calidad', 'Bultos', 'Peso neto', 'Peso bruto',
+                        'Metros cuadrados', 'Fecha importación a Murano']
     for producto in tqdm(productos, desc="Productos"):
         res = cuentalavieja(producto, data_inventario, fini, ffin, report,
                             data_res, args.debug)
-        results.append(res)
+        results.append((producto, res))
+        do_inventario(producto, inventario, desglose)
+        fallos = [p for p in res if p[1]]
+        report.write("Encontradas {} desviaciones: {}".format(
+            len(fallos), "; ".join(['PV{}'.format(p[0].id) for p in fallos])))
     report.close()
     fout = args.fsalida.replace(".md", ".xls")
+    book = tablib.Databook((data_res, inventario, desglose))
     with open(fout, 'wb') as f:
-        f.write(data_res.xls)
+        # pylint: disable=no-member
+        f.write(book.xls)
 
 
 if __name__ == "__main__":
