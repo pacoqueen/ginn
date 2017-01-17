@@ -65,7 +65,7 @@ def calcular_desviacion(existencias_ini, produccion, ventas, consumos, ajustes,
 
 # pylint: disable=too-many-locals, too-many-statements, too-many-arguments
 def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
-                  dev=False):
+                  data_res, dev=False):
     """
     Recibe un producto de ginn y comprueba que entre las fechas fini y ffin
     (recibidas como `datetimes`) es correcto el cálculo
@@ -160,7 +160,31 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
     else:
         report.write(" **[KO]**\n")
     report.write("\n")
-    # 5.- Y devuelvo si todo cuadra (True) o hay alguna desviación (False)
+    # 5.- Guardo los resultados en el Dataset para exportarlos después.
+    data_res.append(['PV{}'.format(producto_ginn.id),
+                     producto_ginn.descripcion,
+                     existencias_ini[0],   # A
+                     existencias_ini[1],   # B
+                     existencias_ini[2],   # C
+                     produccion[0],
+                     produccion[1],
+                     produccion[2],
+                     ventas[0],
+                     ventas[1],
+                     ventas[2],
+                     consumos[0],
+                     consumos[1],
+                     consumos[2],
+                     ajustes[0],
+                     ajustes[1],
+                     ajustes[2],
+                     existencias_fin[0],
+                     existencias_fin[1],
+                     existencias_fin[2],
+                     desviacion[0],
+                     desviacion[1],
+                     desviacion[2]])
+    # 6.- Y devuelvo si todo cuadra (True) o hay alguna desviación (False)
     return res
 
 
@@ -379,7 +403,7 @@ def get_volcados(producto_murano, fini, ffin, tipo_movimiento,
     bultos = {'A': 0, 'B': 0, 'C': 0, '': 0}
     metros = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
     kilos = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
-    # Aquí primero se obtiene 1 dimensión de una tabla (MovimientoStock):
+    # Primero se obtiene la dimensión principal de una tabla (MovimientoStock):
     sql = """USE GEOTEXAN;
              SELECT *
                FROM MovimientoStock
@@ -445,7 +469,7 @@ def get_volcados(producto_murano, fini, ffin, tipo_movimiento,
         if unidad == 'ROLLO' and total['MetrosCuadrados']: #No C que, va por kg
             totalkilos = float(total['PesoNeto_'])
             kilos[calidad] += totalkilos
-        else:   # Será cero, pero por... belleza.
+        else:   # Será cero para BALAS, BIGBAG y CAJAS, pero por... belleza.
             totalmetros = float(total['MetrosCuadrados'])
             metros[calidad] += totalmetros
     sumbultos = sum([bultos[i] for i in bultos])
@@ -881,12 +905,23 @@ def main():
     report.write("=========================================================="
                  "\n")
     data_inventario = load_inventario(fich_inventario)
+    data_res = tablib.Dataset()
+    data_res.headers = ['Código', 'Producto',
+                        'Iniciales (A)', 'Iniciales (B)', 'Iniciales (C)',
+                        'Producción (A)', 'Producción (B)', 'Producción (C)',
+                        'Ventas (A)', 'Ventas (B)', 'Ventas (C)',
+                        'Consumos (A)', 'Consumos (B)', 'Consumos (C)',
+                        'Ajustes (A)', 'Ajustes (B)', 'Ajustes (C)',
+                        'Finales (A)', 'Finales (B)', 'Finales (C)',
+                        'Desviación (A)', 'Desviación (B)', 'Desviación (C)']
     for producto in tqdm(productos, desc="Productos"):
         res = cuentalavieja(producto, data_inventario, fini, ffin, report,
-                            args.debug)
-        # TODO: ¿Has visto el tablib? ¿Has visto que exporta a Excel? Pues eso.
+                            data_res, args.debug)
         results.append(res)
     report.close()
+    fout = args.fsalida.replace(".md", ".xls")
+    with open(fout, 'wb') as f:
+        f.write(data_res.xls)
 
 
 if __name__ == "__main__":
