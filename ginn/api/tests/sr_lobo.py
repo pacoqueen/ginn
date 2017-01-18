@@ -403,8 +403,8 @@ def make_consumos_bigbags(fsalida, simulate=True, fini=None, ffin=None):
         ffin = datetime.date.today() + datetime.timedelta(days=1)
     # pylint: disable=no-member, singleton-comparison
     pdps = pclases.ParteDeProduccion.select(pclases.AND(
-        pclases.ParteDeProduccion.q.fechahorainicio >= fini,
-        pclases.ParteDeProduccion.q.fechahorafin <= ffin,
+        pclases.ParteDeProduccion.q.fecha >= fini,
+        pclases.ParteDeProduccion.q.fecha < ffin,
         pclases.ParteDeProduccion.q.bloqueado == True))
     report.write("{} partes encontrados.\n".format(pdps.count()))
     res = True

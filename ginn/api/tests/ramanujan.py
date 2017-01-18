@@ -54,10 +54,12 @@ def calcular_desviacion(existencias_ini, produccion, ventas, consumos, ajustes,
     Hace y devuelve el cálculo en sí:
     existencias_fin - (existencias_ini + produccion - ventas - consumos)
     """
-    entradas = produccion
     # Las salidas vienen en positivo. Si quiero restar, hay que multiplicar
     # por -1 **una vez sumadas**.
-    salidas = [-sum(x) for x in zip(ventas, consumos, ajustes)]
+    salidas = [-sum(x) for x in zip(ventas, consumos)]
+    # Los ajustes van en positivo si son entradas y en negativo si son salidas.
+    # Los sumo sin cambio de signo
+    entradas = [sum(x) for x in zip(produccion, ajustes)]
     # Salidas ya van en negativo, entradas y existencias en positivo.
     # El resultado (total) lo paso a negativo para restarlo a las existencias_0
     total = [-sum(x) for x in zip(existencias_ini, entradas, salidas)]
@@ -1057,6 +1059,8 @@ def main():
     fallos = [p for p in results if not p[1]]
     report.write("Encontradas {} desviaciones: {}".format(
         len(fallos), "; ".join(['PV{}'.format(p[0].id) for p in fallos])))
+    report.write("\n\nFecha y hora de generación del informe: {}".format(
+        datetime.datetime.now().strftime("%d/%m/%Y %H:%M")))
     report.close()
     fout = args.fsalida.replace(".md", ".xls")
     book = tablib.Databook((data_res, inventario, desglose))
