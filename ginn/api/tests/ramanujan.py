@@ -230,7 +230,16 @@ def calcular_movimientos(producto_ginn, data_inventario, fini, ffin, dev=False):
     consumos_ginn = get_consumos_ginn(producto_ginn, fini, ffin)
     # Si hay procesos de importación pendientes de pasar a Murano, contarán
     # como ajustes negativos. Hay que asegurarse de ejecutar el Sr. Lobo antes.
-    ajustes_ginn = [x-y for x, y in zip(volcados_murano, produccion_ginn)]
+    ## ajustes_ginn = [x-y for x, y in zip(volcados_murano, produccion_ginn)]
+    # Si calculo así los ajuste desde ginn, siempre balanceará la diferencia
+    # entre la producción y las entradas efectivas en Murano. ¿Por qué? Porque
+    # esos ajustes hechos a través de la API se hacen como borrado+creación
+    # del artículo en el nuevo producto desde un terminal; y, por tanto, son
+    # indistinguibles de las creaciones y borrados hechos desde el parte. Usan
+    # las musmas funciones de ops.py. Es decir, que si lo calculo así,
+    # entrarían dos veces en el cálculo de la desviación: como parte del total
+    # de producción, y como supuestos ajustes manuales con signo contrario.
+    ajustes_ginn = [0, 0, 0]
     ajustes = [sum(t) for t in zip(ajustes_ginn, ajustes_murano)]
     #  Los volcados los devuelvo para chequear los volcados de la API.
     return (producto_murano, existencias_ini, existencias_fin,
@@ -1061,6 +1070,7 @@ def main():
         len(fallos), "; ".join(['PV{}'.format(p[0].id) for p in fallos])))
     report.write("\n\nFecha y hora de generación del informe: {}".format(
         datetime.datetime.now().strftime("%d/%m/%Y %H:%M")))
+    report.write("___\n\n")
     report.close()
     fout = args.fsalida.replace(".md", ".xls")
     book = tablib.Databook((data_res, inventario, desglose))
