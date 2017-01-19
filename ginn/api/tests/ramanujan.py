@@ -1070,7 +1070,7 @@ def main():
         len(fallos), "; ".join(['PV{}'.format(p[0].id) for p in fallos])))
     report.write("\n\nFecha y hora de generación del informe: {}".format(
         datetime.datetime.now().strftime("%d/%m/%Y %H:%M")))
-    report.write("___\n\n")
+    report.write("\n\n___\n\n")
     report.close()
     fout = args.fsalida.replace(".md", ".xls")
     book = tablib.Databook((data_res, inventario, desglose))
