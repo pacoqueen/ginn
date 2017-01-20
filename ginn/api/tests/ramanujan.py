@@ -1014,7 +1014,7 @@ def main():
     if args.ver_salida:
         if not os.path.exists(args.fsalida):
             open(args.fsalida, 'a').close()
-        subprocess.Popen(args.fsalida, executable="gvim")
+        subprocess.Popen(["gvim", args.fsalida])
     # # Pruebas
     productos = []
     results = []    # Resultados de las comprobaciones para cada `productos`.
