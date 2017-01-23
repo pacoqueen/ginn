@@ -578,13 +578,15 @@ def get_ajustes_murano(producto_murano, fini, ffin):
         MovimientoArticuloSerie:
             OrigenDocumento = 11 (Salida de stock)
             SerieDocumento = 'MAN'
+    Los ajustes son movimientos de salida, así que los devuelvo en negativo.
     """
     # Eliminaciones manuales, movimientos manuales de salida por ajustes...
     # El código canal a None hará que no se use ese parámetro en el SQL
     ajustes = get_volcados(producto_murano, fini, ffin, 2, 'S', None,
                            11, serie='MAN')
     sumbultos, summetros, sumkilos = ajustes
-    return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
+    res = (-round(sumbultos, 2), -round(summetros, 2), -round(sumkilos, 2))
+    return res
 
 
 # pylint: disable=too-many-branches
