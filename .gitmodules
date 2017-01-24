@@ -40,3 +40,6 @@
 [submodule "ginn/lib/tqdm"]
 	path = ginn/lib/tqdm
 	url = git@github.com:pacoqueen/tqdm.git
+[submodule "ginn/lib/pyqrcode"]
+	path = ginn/lib/pyqrcode
+	url = git@github.com:Geotexan/pyqrcode
