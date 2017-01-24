@@ -1791,7 +1791,7 @@ def update_calidad(articulo, calidad):
     else:
         res = delete_articulo(articulo)
         if res:
-            res = create_articulo(articulo, producto=producto)
+            res = create_articulo(articulo, calidad=calidad)
     return res
 
 
