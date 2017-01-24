@@ -928,7 +928,7 @@ def crear_proceso_IME(conexion):
 
 # pylint: disable=too-many-locals
 def prepare_params_movstock(articulo, cantidad=1, producto=None,
-                            codigo_almacen=None):
+                            codigo_almacen=None, calidad=None):
     """
     Prepara los parámetros comunes a todos los artículos con movimiento de
     serie y devuelve la conexión a la base de datos MS-SQLServer.
@@ -945,7 +945,10 @@ def prepare_params_movstock(articulo, cantidad=1, producto=None,
     if not producto:
         producto = articulo.productoVenta
     codigo_articulo = buscar_codigo_producto(producto)
-    codigo_talla = articulo.get_str_calidad()
+    if calidad is None:
+        codigo_talla = articulo.get_str_calidad()
+    else:
+        codigo_talla = calidad.upper()
     grupo_talla = buscar_grupo_talla(producto)
     if cantidad == 1:
         tipo_movimiento = 1     # 1 = entrada, 2 = salida.
@@ -1065,7 +1068,8 @@ def estimar_precio_coste(articulo, precio_kg):
 
 # pylint: disable=too-many-arguments
 def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
-                simulate=False, procesar=True, codigo_almacen=None):
+                simulate=False, procesar=True, codigo_almacen=None,
+                calidad=None):
     """
     Crea una bala en las tablas temporales de Murano.
     Recibe un objeto bala de ginn.
@@ -1096,7 +1100,7 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
          codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
          unidades, precio, importe, unidades2, unidad_medida2,
          factor_conversion, origen_movimiento) = prepare_params_movstock(
-            articulo, cantidad, producto, codigo_almacen)
+            articulo, cantidad, producto, codigo_almacen, calidad)
         if not guid_proceso:
             id_proceso_IME = crear_proceso_IME(c)
         else:
@@ -1375,7 +1379,8 @@ def consume_bigbag(bigbag, cantidad=-1, producto=None, guid_proceso=None,
 
 
 def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
-                  simulate=False, procesar=True, codigo_almacen=None):
+                  simulate=False, procesar=True, codigo_almacen=None,
+                  calidad=None):
     """
     Crea un bigbag en Murano a partir de la información del bigbag en ginn.
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
@@ -1397,7 +1402,7 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
          codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
          unidades, precio, importe, unidades2, unidad_medida2,
          factor_conversion, origen_movimiento) = prepare_params_movstock(
-            articulo, cantidad, producto, codigo_almacen)
+            articulo, cantidad, producto, codigo_almacen, calidad)
         if not guid_proceso:
             id_proceso_IME = crear_proceso_IME(c)
         else:
@@ -1458,7 +1463,8 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
 
 
 def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
-                 simulate=False, procesar=True, codigo_almacen=None):
+                 simulate=False, procesar=True, codigo_almacen=None,
+                 calidad=None):
     """
     Crea un rollo en Murano a partir de la información del rollo en ginn.
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
@@ -1483,7 +1489,7 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
          codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
          unidades, precio, importe, unidades2, unidad_medida2,
          factor_conversion, origen_movimiento) = prepare_params_movstock(
-            articulo, cantidad, producto, codigo_almacen)
+            articulo, cantidad, producto, codigo_almacen, calidad)
         if not guid_proceso:
             id_proceso_IME = crear_proceso_IME(c)
         else:
@@ -1545,7 +1551,8 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
 
 
 def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
-                simulate=False, procesar=True, codigo_almacen=None):
+                simulate=False, procesar=True, codigo_almacen=None,
+                calidad=None):
     """
     Crea una caja en Murano a partir de la información del objeto caja en ginn.
     Si cantidad es 1, realiza un decremento.
@@ -1567,7 +1574,7 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
          codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
          unidades, precio, importe, unidades2, unidad_medida2,
          factor_conversion, origen_movimiento) = prepare_params_movstock(
-            articulo, cantidad, producto, codigo_almacen)
+            articulo, cantidad, producto, codigo_almacen, calidad)
         if not guid_proceso:
             id_proceso_IME = crear_proceso_IME(c)
         else:
@@ -1777,9 +1784,15 @@ def update_calidad(articulo, calidad):
     # DONE: [Marcos Sage] No modificamos tablas. Hacemos salida del producto A
     # y volvemos a insertarlo como C. En ese caso no importa que se repita el
     # código para el mismo producto porque antes hemos hecho la salida.
-    # TODO: Ojo porque si cambio a calidad C probablemente implique un cambio
-    # de producto.
-    raise NotImplementedError("Función no disponible por el momento.")
+    if calidad in "Cc":
+        # TODO: Ojo porque si cambio a calidad C probablemente implique un
+        # cambio de producto.
+        raise NotImplementedError("Función no disponible por el momento.")
+    else:
+        res = delete_articulo(articulo)
+        if res:
+            res = create_articulo(articulo, producto=producto)
+    return res
 
 
 def duplica_articulo(articulo, producto=None):
@@ -1941,7 +1954,7 @@ def es_movimiento_salida_albaran(movserie):
 
 
 def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
-                    simulate=False, codigo_almacen=None):
+                    simulate=False, codigo_almacen=None, calidad=None):
     """
     Crea un artículo nuevo en Murano con el producto recibido. Si no se
     recibe ninguno, se usa el que tenga asociado en ginn. Si se recibe un
@@ -1965,37 +1978,44 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
                 res = create_bala(articulo.bala, delta, producto,
                                   guid_proceso=guid_proceso,
                                   simulate=simulate,
-                                  codigo_almacen=codigo_almacen)
+                                  codigo_almacen=codigo_almacen,
+                                  calidad=calidad)
             elif articulo.es_balaCable():
                 res = create_bala(articulo.balaCable, delta, producto,
                                   guid_proceso=guid_proceso,
                                   simulate=simulate,
-                                  codigo_almacen=codigo_almacen)
+                                  codigo_almacen=codigo_almacen,
+                                  calidad=calidad)
             elif articulo.es_bigbag():
                 res = create_bigbag(articulo.bigbag, delta, producto,
                                     guid_proceso=guid_proceso,
                                     simulate=simulate,
-                                    codigo_almacen=codigo_almacen)
+                                    codigo_almacen=codigo_almacen,
+                                    calidad=calidad)
             elif articulo.es_caja():
                 res = create_caja(articulo.caja, delta, producto,
                                   guid_proceso=guid_proceso,
                                   simulate=simulate,
-                                  codigo_almacen=codigo_almacen)
+                                  codigo_almacen=codigo_almacen,
+                                  calidad=calidad)
             elif articulo.es_rollo():
                 res = create_rollo(articulo.rollo, delta, producto,
                                    guid_proceso=guid_proceso,
                                    simulate=simulate,
-                                   codigo_almacen=codigo_almacen)
+                                   codigo_almacen=codigo_almacen,
+                                   calidad=calidad)
             elif articulo.es_rollo_defectuoso():
                 res = create_rollo(articulo.rolloDefectuoso, delta, producto,
                                    guid_proceso=guid_proceso,
                                    simulate=simulate,
-                                   codigo_almacen=codigo_almacen)
+                                   codigo_almacen=codigo_almacen,
+                                   calidad=calidad)
             elif articulo.es_rolloC():
                 res = create_rollo(articulo.rolloC, delta, producto,
                                    guid_proceso=guid_proceso,
                                    simulate=simulate,
-                                   codigo_almacen=codigo_almacen)
+                                   codigo_almacen=codigo_almacen,
+                                   calidad=calidad)
             else:
                 raise ValueError("El artículo %s no es bala, bala de cable, "
                                  "bigbag, caja, rollo ni rollo C."
