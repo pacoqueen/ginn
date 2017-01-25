@@ -1955,6 +1955,7 @@ class PartesDeFabricacionRollos(Ventana):
                 a.productoVenta = self.producto
                 a.rollo.densidad = a.rollo.calcular_densidad()
                 a.rollo.syncUpdate()
+                murano.ops.update_producto(a, a.productoVenta)
             self.actualizar_ventana()
         else:
             self.producto = None

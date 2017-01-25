@@ -235,12 +235,13 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
             bidicode = pyqrcode.create(codigo_rollo)
             nomfichbidi = os.path.join(gettempdir(),
                                        "bidi_%s.svg" % give_me_the_name_baby())
-            bidicode.svg(nomfichbidi)
+            bidicode.svg(nomfichbidi, scale=3)
             from lib.svglib.svglib import svglib
             drawing = svglib.svg2rlg(nomfichbidi)
             drawing.drawOn(c, margen, alto - margen - 1.0*cm)
         except ImportError:
             pass    # No hay bidi porque no hay lxml instalado. Probablemente.
+            print("No se generará código QR. Puede intentar lo siguiente:")
             print("C:\Python27\Scripts\easy_install.exe pip")
             print('pip install "D:\Informatica\Software\softwin python 2.7'
                   '\lxml-3.7.2-cp27-cp27m-win32.whl"')
