@@ -224,7 +224,10 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
         xcode = ancho / 2.0
         ycode = 0.15*cm
         c.setFont("Courier-Bold", 9)
-        c.drawCentredString(xcode, ycode, codigo_rollo,charSpace=0.25*cm)
+        try:
+            c.drawCentredString(xcode, ycode, codigo_rollo,charSpace=0.25*cm)
+        except TypeError:   # Versión antigua de ReportLab.
+            c.drawCentredString(xcode, ycode, codigo_rollo)
         c.restoreState()
         # Y el QR de regalo
         from lib.pyqrcode import pyqrcode
