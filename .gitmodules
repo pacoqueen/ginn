@@ -43,3 +43,6 @@
 [submodule "ginn/lib/pyqrcode"]
 	path = ginn/lib/pyqrcode
 	url = git@github.com:Geotexan/pyqrcode
+[submodule "ginn/lib/lxml"]
+	path = ginn/lib/lxml
+	url = git@github.com:Geotexan/lxml.git

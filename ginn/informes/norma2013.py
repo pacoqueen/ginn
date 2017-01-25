@@ -225,19 +225,25 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
         ycode = 0.15*cm
         c.setFont("Courier-Bold", 9)
         try:
-            c.drawCentredString(xcode, ycode, codigo_rollo,charSpace=0.25*cm)
+            c.drawCentredString(xcode, ycode, codigo_rollo, charSpace=0.25*cm)
         except TypeError:   # Versión antigua de ReportLab.
             c.drawCentredString(xcode, ycode, codigo_rollo)
         c.restoreState()
         # Y el QR de regalo
-        from lib.pyqrcode import pyqrcode
-        bidicode = pyqrcode.create(codigo_rollo)
-        nomfichbidi = os.path.join(gettempdir(),
-                                   "bidi_%s.svg" % give_me_the_name_baby())
-        bidicode.svg(nomfichbidi)
-        from lib.svglib.svglib import svglib
-        drawing = svglib.svg2rlg(nomfichbidi)
-        drawing.drawOn(c, margen, alto - margen - 1.0*cm)
+        try:
+            from lib.pyqrcode import pyqrcode
+            bidicode = pyqrcode.create(codigo_rollo)
+            nomfichbidi = os.path.join(gettempdir(),
+                                       "bidi_%s.svg" % give_me_the_name_baby())
+            bidicode.svg(nomfichbidi)
+            from lib.svglib.svglib import svglib
+            drawing = svglib.svg2rlg(nomfichbidi)
+            drawing.drawOn(c, margen, alto - margen - 1.0*cm)
+        except ImportError:
+            pass    # No hay bidi porque no hay lxml instalado. Probablemente.
+            print("C:\Python27\Scripts\easy_install.exe pip")
+            print('pip install "D:\Informatica\Software\softwin python 2.7'
+                  '\lxml-3.7.2-cp27-cp27m-win32.whl"')
         #######################################################################
         c.showPage()
     c.save()
