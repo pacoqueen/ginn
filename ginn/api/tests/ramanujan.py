@@ -10,6 +10,7 @@ ventas y consumos de cada producto para la detección temprana de desviaciones.
 # pylint: disable=too-many-lines
 
 from __future__ import print_function
+import time
 import datetime
 import sys
 import os
@@ -988,6 +989,7 @@ def main():
     Rutina principal.
     """
     # # Parámetros
+    tini = time.time()
     parser = argparse.ArgumentParser(
         description="Soy Srinivasa Iyengar Ramanujan.\n"
                     "Calculo entradas y salidas por producto para detectar "
@@ -1070,8 +1072,13 @@ def main():
     fallos = [p for p in results if not p[1]]
     report.write("Encontradas {} desviaciones: {}".format(
         len(fallos), "; ".join(['PV{}'.format(p[0].id) for p in fallos])))
-    report.write("\n\nFecha y hora de generación del informe: {}".format(
+    report.write("\n\nFecha y hora de generación del informe: {}\n".format(
         datetime.datetime.now().strftime("%d/%m/%Y %H:%M")))
+    tfin = time.time()
+    hours, rem = divmod(tfin - tini, 3600)
+    minutes, seconds = divmod(rem, 60)
+    report.write("Tiempo transcurrido: {:0>2}:{:0>2}:{:05.2f}\n".format(
+        int(hours), int(minutes), seconds))
     report.write("\n\n___\n\n")
     report.close()
     fout = args.fsalida.replace(".md", ".xls")
