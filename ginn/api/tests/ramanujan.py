@@ -142,17 +142,17 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
             ["{:n}".format(round(i, 2)) for i in consumos_ginn],
             ["{:n}".format(round(i, 2)) for i in consumos_murano]))
     # 4.- Escribo los resultados al report.
-    report.write("Existencias iniciales: {}\n".format(
+    report.write("Existencias iniciales: \t{}\n".format(
         ["{:n}".format(round(i, 2)) for i in existencias_ini]))
-    report.write("Producción: {}\n".format(
+    report.write("Producción: \t\t{}\n".format(
         ["{:n}".format(round(i, 2)) for i in produccion_ginn]))
-    report.write("Ventas: {}\n".format(
+    report.write("Ventas: \t\t{}\n".format(
         ["{:n}".format(i) for i in ventas]))
-    report.write("Consumos: {}\n".format(
+    report.write("Consumos: \t\t{}\n".format(
         ["{:n}".format(round(i, 2)) for i in consumos_ginn]))
-    report.write("Ajustes: {}\n".format(
+    report.write("Ajustes: \t\t{}\n".format(
         ["{:n}".format(round(i, 2)) for i in ajustes]))
-    report.write("Existencias finales: {}\n".format(
+    report.write("Existencias finales: \t{}\n".format(
         ["{:n}".format(round(i, 2)) for i in existencias_fin]))
     if not res:
         report.write("**")
@@ -160,7 +160,7 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
     if not res:
         report.write("**")
     report.write(": {}\n".format(
-        ["{:n}".format(round(i, 2)) for i in desviacion]))
+        ["\t\t{:n}".format(round(i, 2)) for i in desviacion]))
     report.write("-"*70)
     if res:
         report.write(" _[OK]_ \n")
@@ -384,6 +384,8 @@ def get_ventas(producto_murano, fini, ffin):
     for total in totales:
         calidad = total['CodigoTalla01_']
         unidad = total['UnidadMedida1_']
+        # Este assert no es cierto para producto sin tratamiento de series como
+        # el PV185 (Restos de geotextiles) que se vende por KG.
         # assert float(total['Unidades2_']) % 1.0 == 0.0, "Bultos debe ser un entero."
         bultos[calidad] += int(total['Unidades2_'])
         if unidad == 'M2':
@@ -1045,6 +1047,7 @@ def main():
         fini.strftime("%d/%m/%Y"), ffin.strftime("%d/%m/%Y")))
     report.write("=========================================================="
                  "\n")
+    report.write("## Todas las cantidades son en (bultos, m², kg).\n")
     data_inventario = load_inventario(fich_inventario)
     data_res = tablib.Dataset(title="Desviaciones")
     inventario = tablib.Dataset(title="Totales")
