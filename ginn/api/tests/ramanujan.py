@@ -159,8 +159,8 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
     report.write("Desviación")
     if not res:
         report.write("**")
-    report.write(": {}\n".format(
-        ["\t\t{:n}".format(round(i, 2)) for i in desviacion]))
+    report.write(": \t\t{}\n".format(
+        ["{:n}".format(round(i, 2)) for i in desviacion]))
     report.write("-"*70)
     if res:
         report.write(" _[OK]_ \n")
