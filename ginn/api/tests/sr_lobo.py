@@ -62,11 +62,22 @@ def sync_articulo(codigo, fsalida, simulate=True):
     articulo = pclases.Articulo.get_articulo(codigo)
     if articulo:
         if not murano.ops.existe_articulo(articulo):
-            report.write("Creando... ")
-            if not simulate:
-                res = murano.ops.create_articulo(articulo)
+            if murano.ops.esta_en_almacen(articulo):
+                # No existe como ese producto, pero sí que existe. Hay que
+                # cambiarlo a su producto correcto:
+                report.write("Cambiando producto en Murano...")
+                if not simulate:
+                    res = murano.ops.update_producto(articulo,
+                                                     articulo.productoVenta)
+                else:
+                    res = True
             else:
-                res = True
+                # No existe con el producto de ginn ni con ningún otro.
+                report.write("Creando... ")
+                if not simulate:
+                    res = murano.ops.create_articulo(articulo)
+                else:
+                    res = True
         else:   # Si el artículo ya existe:
             altered = False
             peso_bruto = articulo.peso_bruto
