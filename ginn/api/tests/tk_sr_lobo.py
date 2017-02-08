@@ -13,11 +13,17 @@ from threading import Thread
 from Queue import Queue, Empty
 from collections import deque
 from itertools import islice
-from Tkinter import Tk, BOTH, RIGHT, LEFT, X, PhotoImage, END, NORMAL, DISABLED
+from Tkinter import Tk, BOTH, RIGHT, LEFT, X, END, NORMAL, DISABLED
 from ttk import Frame, Button, Style, Label
 import ScrolledText
 import tkFileDialog
 
+
+# TODO: Ya, si aprendes a empaquetar bien los widgets para aprovechar mejor
+# el espacio de la ventana, haces un bind de "/" y "n" para buscar y eso,
+# consigues arreglar el desaguisado de las barras de progreso, que vaya la
+# interfaz más fluida y arreglar el bug que carga el report que no es...
+# lo bordas.
 
 # Funciones para hilos
 def iter_except(function, exception):
