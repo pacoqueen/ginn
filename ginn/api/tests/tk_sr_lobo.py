@@ -201,6 +201,8 @@ class SrLoboViewer(Frame):
         Recarga el contenido del fichero en el widget si ha cambiado o si
         se ha pulsado el botón.
         """
+        if not self.textfile and force_reload:
+            self.textfile = search_reportfile()
         if self.textfile:
             stamp = os.stat(self.textfile)
             if force_reload or stamp != self._cached_stamp:
