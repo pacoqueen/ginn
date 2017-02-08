@@ -29,6 +29,22 @@ def iter_except(function, exception):
         return
 
 
+# Funciones auxiliares
+def search_reportfile(ruta="."):
+    """
+    Busca el último log creado por sr_lobo usando el nombre por defecto y
+    devuelve su ruta.
+    """
+    try:
+        res = max([os.path.join(ruta, f) for f in os.listdir(ruta)
+                   if f.endswith('sr_lobo.txt')], key=os.path.getctime)
+    except ValueError:
+        print "Fichero *sr_lobo.txt no encontrado en `{}`.".format(ruta)
+        sys.exit(1)
+    return res
+
+
+
 # pylint: disable=too-few-public-methods
 class RedirectText(object):
     """
@@ -55,7 +71,7 @@ class RedirectText(object):
         return sys.stdout.fileno()
 
 
-# pylint: disable=too-many-ancestors
+# pylint: disable=too-many-ancestors,too-many-instance-attributes
 class SrLoboViewer(Frame):
     """
     Class around all GUI stuff.
@@ -142,10 +158,12 @@ class SrLoboViewer(Frame):
         recibida «path_report», que será con lo que se invoque sr_lobo. Si no
         se recibe nada, usa el que genere sr_lobo.py por defecto.
         """
+        comando = ["python", "-u", "sr_lobo.py"]
         if path_report:
             self.textfile = path_report
-        # TODO: ejecutar sr_lobo con la ruta recibida como fichero de salida.
-        comando = ["python", "-u", "/tmp/testpy.py", path_report]
+            comando.append(path_report)
+        else:
+            self.textfile = None
         # ##
         self._process = subprocess.Popen(comando,
                                          shell=False,
@@ -156,8 +174,10 @@ class SrLoboViewer(Frame):
         thread = Thread(target=self.reader_thread, args=[queue])
         thread.start()
         self.update_queue(queue)
+        # Busco el fichero que ha debido generar el Sr. Lobo
+        if not self.textfile:
+            self.textfile = search_reportfile()
         # Cada vez que se actualice el fichero...
-        cached_stamp = 0
         th_output = Thread(target=self.reload, args=[False])
         th_output.start()
 
@@ -173,10 +193,8 @@ class SrLoboViewer(Frame):
 
     def reader_thread(self, queue):
         """Read subprocess output and put it into the queue."""
-        print("reader_thread starting...")
         sys.stdout.flush()
         for line in iter(self._process.stdout.readline, b''):
-            print "reader_thread", line,
             sys.stdout.flush()
             queue.put(line)
 
@@ -185,26 +203,25 @@ class SrLoboViewer(Frame):
         Recarga el contenido del fichero en el widget si ha cambiado o si
         se ha pulsado el botón.
         """
-        stamp = os.stat(self.textfile)
-        if force_reload or stamp != self._cached_stamp:
-            filein = open(self.textfile, "r")
-            content = filein.read()
-            filein.close()
-            self.reportpad.config(state=NORMAL)
-            self.reportpad.delete('1.0', END)
-            self.reportpad.insert("1.0", content)
-            self.reportpad.see(END)
-            self.reportpad.config(state=DISABLED)
-            self._cached_stamp = stamp
+        if self.textfile:
+            stamp = os.stat(self.textfile)
+            if force_reload or stamp != self._cached_stamp:
+                filein = open(self.textfile, "r")
+                content = filein.read()
+                filein.close()
+                self.reportpad.config(state=NORMAL)
+                self.reportpad.delete('1.0', END)
+                self.reportpad.insert("1.0", content)
+                self.reportpad.see(END)
+                self.reportpad.config(state=DISABLED)
+                self._cached_stamp = stamp
 
 
 def main():
     """ Main function. """
     root = Tk()
     app = SrLoboViewer(root)
-    # FIXME: Solo para pruebas:
-    fp_report = "tk_sr_lobo.py"
-    app.run_sr_lobo(fp_report)
+    app.run_sr_lobo()
     root.mainloop()
 
 if __name__ == "__main__":
