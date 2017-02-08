@@ -90,10 +90,8 @@ class SrLoboViewer(Frame):
         """ Crea la ventana. """
         self.parent.title("Sr. Lobo - Soluciono problemas")
         dirname = os.path.abspath(os.path.dirname(__file__))
-        iconpath = os.path.join(dirname, "mr_wolf.png")
-        icon = PhotoImage(file=iconpath)
-        # pylint: disable=protected-access
-        self.parent.tk.call("wm", "iconphoto", self.parent._w, icon)
+        iconpath = os.path.join(dirname, "mr_wolf.ico")
+        self.parent.iconbitmap(iconpath)
         self.style = Style()
         self.style.theme_use("default")
         self.pack(fill=BOTH, expand=True)
