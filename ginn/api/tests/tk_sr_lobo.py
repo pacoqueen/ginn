@@ -131,8 +131,8 @@ class SrLoboViewer(Frame):
 
     def center_window(self):
         """ Centra la ventana en la pantalla. """
-        width = 640
-        height = 480
+        width = 800
+        height = 600
         screenw = self.parent.winfo_screenwidth()
         screenh = self.parent.winfo_screenheight()
         xpos = (screenw - width)/2
