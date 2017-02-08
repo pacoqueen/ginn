@@ -1830,7 +1830,9 @@ def duplica_articulo(articulo, producto=None):
 def existe_articulo(articulo, productoVenta=None):
     """
     Devuelve True si el artículo ya existe en Murano **Y** es del producto
-    recibido. Se permite especificar producto para el caso del cambio de
+    recibido. Si ni se recibe producto, se mira si existe con el producto del
+    propio artículo según ginn.
+    Se permite especificar producto para el caso del cambio de
     producto, donde no me interesa si el artículo existe, sino que si existe
     con el producto de destino para no duplicarlo.
     Se considera que si un artículo ha salido del almacén, sigue existiendo

@@ -16,6 +16,17 @@ Realiza comprobaciones para detectar si hay discrepancias entre Murano y ginn.
 - Si existen los mismos productos de compra y si sus campos sin idénticos.
 """
 
+# TODO: ¿Debería empezar a usar otra serie para los ajustes manuales que hago
+# con bpython y así diferenciarlos de los verdaderos movimientos de entrada y
+# salida de la serie FAB hechos desde los partes de producción? Quizás si
+# permito recibir un parámetro que cambie FAB por MAN o algo así al consutrir
+# las consultas SQL... O tan sencillo como recibir unas observaciones, y si
+# se reciben, que use la serie MAN o MANFAB o algo y las ponga en el campo
+# comentario en lugar del texto por defecto que se usa ahora. Es más. Debería
+# ser al contrario. Que desde los partes se fuerce a FAB con el comentario por
+# defecto y si lo hago desde bpython que exiga de alguna manera unas
+# observaciones para así dejar constancia de por qué hice el ajuste.
+
 from __future__ import print_function
 import datetime
 import sys
@@ -63,8 +74,9 @@ def sync_articulo(codigo, fsalida, simulate=True):
     if articulo:
         if not murano.ops.existe_articulo(articulo):
             if murano.ops.esta_en_almacen(articulo):
-                # No existe como ese producto, pero sí que existe. Hay que
-                # cambiarlo a su producto correcto:
+                # No existe como ese producto, pero sí que existe porque está
+                # almacén, pero con otro producto entonces. Hay que cambiarlo
+                # a su producto correcto según ginn:
                 report.write("Cambiando producto en Murano...")
                 if not simulate:
                     res = murano.ops.update_producto(articulo,
@@ -72,11 +84,20 @@ def sync_articulo(codigo, fsalida, simulate=True):
                 else:
                     res = True
             else:
-                # No existe con el producto de ginn ni con ningún otro.
-                report.write("Creando... ")
-                if not simulate:
-                    res = murano.ops.create_articulo(articulo)
-                else:
+                # No existe con el producto de ginn, pero puede que con algún
+                # otro y ya no está en almacén o que no exista en absoluto.
+                movserie = murano.ops.get_ultimo_movimiento_articulo_serie(
+                        murano.connection.Connection(), articulo)
+                if not movserie:
+                    report.write("Creando... ")
+                    if not simulate:
+                        res = murano.ops.create_articulo(articulo)
+                    else:
+                        res = True
+                else:   # Hay un movserie, seguramente de salida de albarán.
+                    pvmurano = movserie['CodigoArticulo']
+                    report.write("Arículo ya vendido como {}. ".format(
+                        pvmurano))
                     res = True
         else:   # Si el artículo ya existe:
             altered = False
