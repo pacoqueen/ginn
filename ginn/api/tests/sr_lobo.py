@@ -16,17 +16,6 @@ Realiza comprobaciones para detectar si hay discrepancias entre Murano y ginn.
 - Si existen los mismos productos de compra y si sus campos sin idénticos.
 """
 
-# TODO: ¿Debería empezar a usar otra serie para los ajustes manuales que hago
-# con bpython y así diferenciarlos de los verdaderos movimientos de entrada y
-# salida de la serie FAB hechos desde los partes de producción? Quizás si
-# permito recibir un parámetro que cambie FAB por MAN o algo así al consutrir
-# las consultas SQL... O tan sencillo como recibir unas observaciones, y si
-# se reciben, que use la serie MAN o MANFAB o algo y las ponga en el campo
-# comentario en lugar del texto por defecto que se usa ahora. Es más. Debería
-# ser al contrario. Que desde los partes se fuerce a FAB con el comentario por
-# defecto y si lo hago desde bpython que exija de alguna manera unas
-# observaciones para así dejar constancia de por qué hice el ajuste.
-
 from __future__ import print_function
 import datetime
 import sys

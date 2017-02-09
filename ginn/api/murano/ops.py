@@ -1850,6 +1850,7 @@ def duplica_articulo(articulo, producto=None):
     movserie = get_ultimo_movimiento_articulo_serie(conn, articulo)
     if (not movserie or
             es_movimiento_salida_fabricacion(movserie) or
+            es_movimiento_ajuste_api(movserie) or
             es_movimiento_salida_manual(movserie)):
         res = False
     else:
@@ -1935,6 +1936,7 @@ def es_movimiento_de_salida(movserie):
     No tiene en cuenta si es un interalmacén (lo tomará como salida también).
     """
     res = (es_movimiento_salida_fabricacion(movserie) or
+           es_movimiento_ajuste_api(movserie) or
            es_movimiento_salida_albaran(movserie))
     return res
 
@@ -1957,6 +1959,16 @@ def es_movimiento_salida_fabricacion(movserie):
     """
     res = (movserie['OrigenDocumento'] == 11 and
            movserie['SerieDocumento'] == 'FAB')
+    return res
+
+
+def es_movimiento_ajuste_api(movserie):
+    """
+    True si el registro MovimientoArticuloSerie es de salida de fabricación
+    (borrado en partes).
+    """
+    res = (movserie['OrigenDocumento'] == 11 and
+           movserie['SerieDocumento'] == 'API')
     return res
 
 
