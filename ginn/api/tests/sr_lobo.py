@@ -24,7 +24,7 @@ Realiza comprobaciones para detectar si hay discrepancias entre Murano y ginn.
 # se reciben, que use la serie MAN o MANFAB o algo y las ponga en el campo
 # comentario en lugar del texto por defecto que se usa ahora. Es más. Debería
 # ser al contrario. Que desde los partes se fuerce a FAB con el comentario por
-# defecto y si lo hago desde bpython que exiga de alguna manera unas
+# defecto y si lo hago desde bpython que exija de alguna manera unas
 # observaciones para así dejar constancia de por qué hice el ajuste.
 
 from __future__ import print_function
@@ -79,19 +79,23 @@ def sync_articulo(codigo, fsalida, simulate=True):
                 # a su producto correcto según ginn:
                 report.write("Cambiando producto en Murano...")
                 if not simulate:
+                    obs = "[sr_lobo] Producto dif. ginn y Murano."
                     res = murano.ops.update_producto(articulo,
-                                                     articulo.productoVenta)
+                                                     articulo.productoVenta,
+                                                     observaciones=obs)
                 else:
                     res = True
             else:
                 # No existe con el producto de ginn, pero puede que con algún
                 # otro y ya no está en almacén o que no exista en absoluto.
                 movserie = murano.ops.get_ultimo_movimiento_articulo_serie(
-                        murano.connection.Connection(), articulo)
+                    murano.connection.Connection(), articulo)
                 if not movserie:
                     report.write("Creando... ")
                     if not simulate:
-                        res = murano.ops.create_articulo(articulo)
+                        obs = "[sr_lobo] Art. en ginn pero no en Murano"
+                        res = murano.ops.create_articulo(articulo,
+                                                         observaciones=obs)
                     else:
                         res = True
                 else:   # Hay un movserie, seguramente de salida de albarán.
@@ -153,12 +157,15 @@ def sync_articulo(codigo, fsalida, simulate=True):
             prod_en_murano = murano.ops.get_producto_articulo_murano(articulo)
             prod_en_ginn = articulo.productoVenta
             if prod_en_murano != prod_en_ginn:
+                # Creo que esta rama está "muerta". Aquí no entraría nunca.
                 report.write("Corrigiendo producto de {}: {} -> {}".format(
                     articulo.codigo, prod_en_murano.descripcion,
                     prod_en_ginn.descripcion))
                 altered = True
                 if not simulate:
-                    res = murano.ops.update_producto(articulo, prod_en_ginn)
+                    obs = "[sr_lobo] Prod. corregido acorde a ginn"
+                    res = murano.ops.update_producto(articulo, prod_en_ginn,
+                                                     obs)
                 else:
                     res = True
             if not altered:

@@ -2232,7 +2232,7 @@ class PartesDeFabricacionBalas(Ventana):
                 self.logger.debug("Cambiando producto de %s en Murano a %s "
                                   "[%s]." % (
                     a.codigo, producto.descripcion, producto.puid))
-                murano.ops.update_producto(a, producto)
+                murano.ops.update_producto(a, producto, observaciones="")
 
     def comprobar_silos_marcados(self):
         """
@@ -2638,7 +2638,8 @@ class PartesDeFabricacionBalas(Ventana):
                             pesoReal=peso)
             pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
             self.logger.debug("Volcando bala %s a Murano..." % articulo.codigo)
-            volcado_a_murano = murano.ops.create_articulo(articulo)
+            volcado_a_murano = murano.ops.create_articulo(articulo,
+                                                          observaciones="")
             self.logger.debug("Resultado del volcado: %s -> %s" % (
                 articulo.codigo, volcado_a_murano))
         if articulo != None:
@@ -2679,7 +2680,7 @@ class PartesDeFabricacionBalas(Ventana):
                             almacen = pclases.Almacen.get_almacen_principal(),
                             pesoReal = peso)
         pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
-        murano.ops.create_articulo(articulo)
+        murano.ops.create_articulo(articulo, observaciones="")
         return articulo
 
     def drop_bala(self, boton):
@@ -2756,7 +2757,8 @@ class PartesDeFabricacionBalas(Ventana):
                                     articulo.bigbag = bigbag
                                 self.descontar_material_adicional(articulo, restar = True)
                                 if ret_murano:
-                                    murano.ops.create_articulo(articulo)
+                                    murano.ops.create_articulo(articulo,
+                                                               observaciones="")
                             except pclases.SQLObjectNotFound:
                                 pass
                             except AttributeError:  # Existe el artículo pero ya no tiene bala
@@ -4164,7 +4166,8 @@ def crear_nueva_bala(numbala, codigo_bala, peso_neto, peso_real, ventana_parte):
                                    texto = txt,
                                    padre = ventana_parte.wids['ventana'])
             ventana_parte.logger.debug("Volcando bala %s a Murano..." % articulo.codigo)
-            volcado_a_murano = murano.ops.create_articulo(articulo)
+            volcado_a_murano = murano.ops.create_articulo(articulo,
+                                                          observaciones="")
             ventana_parte.logger.debug("Resultado del volcado: %s -> %s" % (
                 articulo.codigo, volcado_a_murano))
             ventana_parte.actualizar_ventana()

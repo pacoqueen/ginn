@@ -143,7 +143,7 @@ class BalasCable(Ventana):
                     % (self.usuario and self.usuario.usuario + ": " or "", a.id, b.id, b.codigo, msg))
                 #a.balaCable = b
                 if murano_deleted:
-                    murano.ops.create_articulo(a)
+                    murano.ops.create_articulo(a, observaciones="")
             else:
                 try:
                     b.destroy(ventana = __file__)
@@ -222,7 +222,7 @@ class BalasCable(Ventana):
                                     pclases.Almacen.get_almacen_principal(),
                                 pesoReal = peso)
                 pclases.Auditoria.nuevo(a, self.usuario, __file__)
-                murano.ops.create_articulo(a)
+                murano.ops.create_articulo(a, observaciones="")
             except:
                 b.destroy(ventana = __file__)
                 b = None

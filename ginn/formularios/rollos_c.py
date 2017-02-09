@@ -174,7 +174,7 @@ class RollosC(Ventana):
                 a.rolloC = b
                 self.consumir(b)
                 if murano_deleted:
-                    murano.ops.create_articulo(a)
+                    murano.ops.create_articulo(a, observaciones="")
             else:
                 try:
                     b.destroy(ventana = __file__)
@@ -270,7 +270,7 @@ class RollosC(Ventana):
                                 almacen = pclases.Almacen.get_almacen_principal(),
                                 pesoReal = peso)
                 pclases.Auditoria.nuevo(a, self.usuario, __file__)
-                murano.ops.create_articulo(a)
+                murano.ops.create_articulo(a, observaciones="")
             except:
                 b.destroy(ventana = __file__)
                 b = None

@@ -44,9 +44,11 @@ def insertar_pvs(guid_proceso):
         pclases.Articulo.q.almacen != None))    # NOQA
     for articulo in tqdm(articulos, total=articulos.count()):
         try:
+            obs = "[dump_existencias] Volcado inicial."
             sqls = murano.ops.create_articulo(articulo,
                                               guid_proceso=guid_proceso,
-                                              simulate=True)
+                                              simulate=True,
+                                              observaciones=obs)
         # pylint: disable=broad-except
         except Exception as e:
             strer = "El artículo {} no se pudo insertar. Excepción: {}".format(

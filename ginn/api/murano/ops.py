@@ -1069,7 +1069,7 @@ def estimar_precio_coste(articulo, precio_kg):
 # pylint: disable=too-many-arguments
 def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
                 simulate=False, procesar=True, codigo_almacen=None,
-                calidad=None):
+                calidad=None, comentario=None):
     """
     Crea una bala en las tablas temporales de Murano.
     Recibe un objeto bala de ginn.
@@ -1078,6 +1078,7 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
     caso, el valor de ejecutar el proceso de importación.
     Si procesar es False no lanza el proceso de importación a través de la
     DDL OEM de Murano.
+    Si no se especifica comentario (None o ""), se usa uno por defecto.
     """
     articulo = bala.articulo
     if cantidad > 0 and duplica_articulo(articulo):
@@ -1090,7 +1091,9 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
         except AttributeError:
             partida = ""  # Balas C no tienen lote. No pasa nada. Murano traga.
         unidad_medida = "KG"
-        comentario = ("Bala ginn: [%s]" % bala.get_info())[:40]
+        if not comentario:
+            comentario = "[ginn] {}".format(bala.get_info())
+        comentario = comentario[:40]    # Por restricciones de Murano.
         ubicacion = "Almac. de fibra."[:15]
         numero_serie_lc = ""
         # Sage me indica que no informe de la serie en el movimiento de stock
@@ -1192,7 +1195,7 @@ def consume_bala(bala, cantidad=-1, producto=None, guid_proceso=None,
         except AttributeError:
             partida = ""  # Balas C no tienen lote. No pasa nada. Murano traga.
         unidad_medida = "KG"
-        comentario = ("Consumo bala ginn: [%s]" % bala.get_info())[:40]
+        comentario = "Consumo bala [ginn] {}".format(bala.get_info())[:40]
         ubicacion = "Almac. de fibra."[:15]
         numero_serie_lc = ""
         # Sage me indica que no informe de la serie en el movimiento de stock
@@ -1297,7 +1300,7 @@ def consume_bigbag(bigbag, cantidad=-1, producto=None, guid_proceso=None,
         except AttributeError:
             partida = ""  # Balas C no tienen lote. No pasa nada. Murano traga.
         unidad_medida = "KG"
-        comentario = ("Consumo bigbag ginn: [%s]" % bigbag.get_info())[:40]
+        comentario = "Consumo bigbag [ginn] {}".format(bigbag.get_info())[:40]
         ubicacion = "Almac. de fibra."[:15]
         numero_serie_lc = ""
         # Sage me indica que no informe de la serie en el movimiento de stock
@@ -1380,10 +1383,11 @@ def consume_bigbag(bigbag, cantidad=-1, producto=None, guid_proceso=None,
 
 def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
                   simulate=False, procesar=True, codigo_almacen=None,
-                  calidad=None):
+                  calidad=None, comentario=None):
     """
     Crea un bigbag en Murano a partir de la información del bigbag en ginn.
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
+    Si no se especifica comentario, se usa uno por defecto.
     """
     articulo = bigbag.articulo
     if cantidad > 0 and duplica_articulo(articulo):
@@ -1391,7 +1395,9 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
                         articulo.codigo)
     else:
         partida = bigbag.loteCem.codigo
-        comentario = ("Bigbag ginn: [%s]" % bigbag.get_info())[:40]
+        if not comentario:
+            comentario = "[ginn] {}".format(bigbag.get_info())
+        comentario = comentario[:40]    # Por restricciones de Murano.
         numero_serie_lc = ""
         # Sage me indica que no informe de la serie en el movimiento de stock
         # para solucionar lo del registro duplicado creado por Murano.
@@ -1464,10 +1470,11 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
 
 def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
                  simulate=False, procesar=True, codigo_almacen=None,
-                 calidad=None):
+                 calidad=None, comentario=None):
     """
     Crea un rollo en Murano a partir de la información del rollo en ginn.
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
+    Si no se especifica comentario, se usa uno por defecto.
     """
     articulo = rollo.articulo
     if cantidad > 0 and duplica_articulo(articulo):
@@ -1478,7 +1485,9 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
             partida = rollo.partida.codigo
         except AttributeError:
             partida = ""   # DONE: Los rollos C no tienen partida. No pasa nada
-        comentario = ("Rollo ginn: [%s]" % rollo.get_info())[:40]
+        if not comentario:
+            comentario = "[ginn] {}".format(rollo.get_info())
+        comentario = comentario[:40]    # Por restricciones de Murano.
         numero_serie_lc = ""
         # Sage me indica que no informe de la serie en el movimiento de stock
         # para solucionar lo del registro duplicado creado por Murano.
@@ -1552,10 +1561,11 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
 
 def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
                 simulate=False, procesar=True, codigo_almacen=None,
-                calidad=None):
+                calidad=None, comentario=None):
     """
     Crea una caja en Murano a partir de la información del objeto caja en ginn.
     Si cantidad es 1, realiza un decremento.
+    Si no se especifica comentario, se usa uno por defecto.
     """
     articulo = caja.articulo
     if cantidad > 0 and duplica_articulo(articulo):
@@ -1564,7 +1574,9 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
     else:
         partida = caja.partidaCem.codigo
         unidad_medida = "KG"
-        comentario = ("Caja ginn: [%s]" % caja.get_info())[:40]
+        if not comentario:
+            comentario = "[ginn] {}".format(caja.get_info())
+        comentario = comentario[:40]    # Por restricciones de Murano.
         ubicacion = "Almac. de fibra embolsada."[:15]
         numero_serie_lc = ""
         # Sage me indica que no informe de la serie en el movimiento de stock
@@ -1637,11 +1649,13 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
 
 # pylint: disable=too-many-arguments
 def create_pale(pale, cantidad=1, producto=None, guid_proceso=None,
-                simulate=False, procesar=True):
+                simulate=False, procesar=True, observaciones=None):
     """
     Crea un palé con todas sus cajas en Murano a partir del palé de ginn.
     Si cantidad es -1 saca el palé del almacén.
     """
+    assert observaciones is not None, "murano.ops.create_pale::"\
+            "Debe indicar el motivo en el parámetro «observaciones»."
     # Los palés se crean automáticamente al crear las cajas con el código de
     # palé informado. No hay que crear movimiento de stock ni de número de
     # serie para eso.
@@ -1668,7 +1682,8 @@ def create_pale(pale, cantidad=1, producto=None, guid_proceso=None,
                                    producto=producto,
                                    guid_proceso=guid_proceso,
                                    simulate=simulate,
-                                   procesar=False)
+                                   procesar=False,
+                                   comentario=observaciones)
     # No es necesario. Cada caja lanza su proceso y el palé no crea
     # registros en la base de datos. No hay que lanzar ninún proceso adicional.
     if procesar:
@@ -1789,9 +1804,11 @@ def update_calidad(articulo, calidad):
         # cambio de producto.
         raise NotImplementedError("Función no disponible por el momento.")
     else:
-        res = delete_articulo(articulo)
+        res = delete_articulo(articulo,
+                observaciones="Cambio a calidad {}".format(calidad))
         if res:
-            res = create_articulo(articulo, calidad=calidad)
+            res = create_articulo(articulo, calidad=calidad,
+                    observaciones="Cambio a calidad {}.".format(calidad))
     return res
 
 
@@ -1956,7 +1973,8 @@ def es_movimiento_salida_albaran(movserie):
 
 
 def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
-                    simulate=False, codigo_almacen=None, calidad=None):
+                    simulate=False, codigo_almacen=None, calidad=None,
+                    observaciones=None):
     """
     Crea un artículo nuevo en Murano con el producto recibido. Si no se
     recibe ninguno, se usa el que tenga asociado en ginn. Si se recibe un
@@ -1964,7 +1982,13 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
     por el recibido y se da de alta así en Murano.
     Devuelve False si hubo errores y no se creó o True (o el GUID de proceso)
     en otro caso.
+    Las observaciones van como «comentario» en los registros de mov. de Murano.
+    Si las observaciones son "", se usa el comentario por defecto del
+    create_bala, *_rollo, etc. Pero se fuerza al usuario (más bien al código
+    de partes_de_fabricacion_*) a que especifiquen la cadena vacía.
     """
+    assert observaciones is not None, "murano.ops.create_articulo::"\
+            "Debe indicar el motivo en el parámetro «observaciones»."
     # TODO: ¿Y al descontar existencias? ¿Comprobar también que existan antes?
     # De todos modos el proceso de importación devolverá error si la serie
     # está duplicada.
@@ -1981,43 +2005,50 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
                                   guid_proceso=guid_proceso,
                                   simulate=simulate,
                                   codigo_almacen=codigo_almacen,
-                                  calidad=calidad)
+                                  calidad=calidad,
+                                  comentario=observaciones)
             elif articulo.es_balaCable():
                 res = create_bala(articulo.balaCable, delta, producto,
                                   guid_proceso=guid_proceso,
                                   simulate=simulate,
                                   codigo_almacen=codigo_almacen,
-                                  calidad=calidad)
+                                  calidad=calidad,
+                                  comentario=observaciones)
             elif articulo.es_bigbag():
                 res = create_bigbag(articulo.bigbag, delta, producto,
                                     guid_proceso=guid_proceso,
                                     simulate=simulate,
                                     codigo_almacen=codigo_almacen,
-                                    calidad=calidad)
+                                    calidad=calidad,
+                                    comentario=observaciones)
             elif articulo.es_caja():
                 res = create_caja(articulo.caja, delta, producto,
                                   guid_proceso=guid_proceso,
                                   simulate=simulate,
                                   codigo_almacen=codigo_almacen,
-                                  calidad=calidad)
+                                  calidad=calidad,
+                                  comentario=observaciones)
             elif articulo.es_rollo():
                 res = create_rollo(articulo.rollo, delta, producto,
                                    guid_proceso=guid_proceso,
                                    simulate=simulate,
                                    codigo_almacen=codigo_almacen,
-                                   calidad=calidad)
+                                   calidad=calidad,
+                                   comentario=observaciones)
             elif articulo.es_rollo_defectuoso():
                 res = create_rollo(articulo.rolloDefectuoso, delta, producto,
                                    guid_proceso=guid_proceso,
                                    simulate=simulate,
                                    codigo_almacen=codigo_almacen,
-                                   calidad=calidad)
+                                   calidad=calidad,
+                                   comentario=observaciones)
             elif articulo.es_rolloC():
                 res = create_rollo(articulo.rolloC, delta, producto,
                                    guid_proceso=guid_proceso,
                                    simulate=simulate,
                                    codigo_almacen=codigo_almacen,
-                                   calidad=calidad)
+                                   calidad=calidad,
+                                   comentario=observaciones)
             else:
                 raise ValueError("El artículo %s no es bala, bala de cable, "
                                  "bigbag, caja, rollo ni rollo C."
@@ -2033,13 +2064,14 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
     return res
 
 
-def update_producto(articulo, producto):
+def update_producto(articulo, producto, observaciones=None):
     """
     Cambia el artículo recibido al producto indicado.
     """
-    res = delete_articulo(articulo)
+    res = delete_articulo(articulo, observaciones=observaciones)
     if res:
-        res = create_articulo(articulo, producto=producto)
+        res = create_articulo(articulo, producto=producto,
+                              observaciones=observaciones)
     return res
 
 
@@ -2054,7 +2086,7 @@ def update_stock(producto, delta, almacen, guid_proceso=None,
     assert isinstance(producto, pclases.ProductoCompra)
     partida = ""
     unidad_medida = ""  # producto.unidad
-    comentario = ("Stock ginn: %f [%s]" % (delta, producto.get_info()))[:40]
+    comentario = ("Stock [ginn] %f (%s)" % (delta, producto.get_info()))[:40]
     ubicacion = "Almacén general"[:15]
     numero_serie_lc = ""
     c = Connection()
@@ -2119,7 +2151,7 @@ def update_stock(producto, delta, almacen, guid_proceso=None,
     return res
 
 
-def delete_articulo(articulo, codigo_almacen=None):
+def delete_articulo(articulo, codigo_almacen=None, observaciones=None):
     """
     Elimina el artículo en Murano mediante la creación de un movimiento de
     stock negativo de ese código de producto.
@@ -2136,7 +2168,8 @@ def delete_articulo(articulo, codigo_almacen=None):
         producto_anterior = get_producto_ginn(id_producto_anterior)
         res = create_articulo(articulo, cantidad=-1,
                               producto=producto_anterior,
-                              codigo_almacen=codigo_almacen)
+                              codigo_almacen=codigo_almacen,
+                              observaciones=observaciones)
     else:
         logging.warning("El artículo %s no existe en Murano.", articulo.codigo)
     return res

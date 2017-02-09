@@ -1955,7 +1955,7 @@ class PartesDeFabricacionRollos(Ventana):
                 a.productoVenta = self.producto
                 a.rollo.densidad = a.rollo.calcular_densidad()
                 a.rollo.syncUpdate()
-                murano.ops.update_producto(a, a.productoVenta)
+                murano.ops.update_producto(a, a.productoVenta, observaciones="")
             self.actualizar_ventana()
         else:
             self.producto = None
@@ -3629,7 +3629,7 @@ def crear_articulo(numrollo,
                 objeto_ventana_parte and objeto_ventana_parte.usuario or None,
                 __file__)
         try:
-            murano.ops.create_articulo(articulo)
+            murano.ops.create_articulo(articulo, observaciones="")
         except:
             print("Error al conectar con Murano.")
     else:

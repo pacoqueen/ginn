@@ -770,6 +770,9 @@ class PartesDeFabricacionBolsas(Ventana):
                         for pale in self.objeto.partidaCem.pales:
                             for caja in pale.cajas:
                                 a = caja.articulo
+                                # FIXME: ¿Estoy cambiando el producto sin
+                                # cambiar el peso de las cajas? ¿Y qué opina
+                                # Murano de esto?
                                 a.productoVenta = pv
                                 a.syncUpdate()
                         self.producto = pv
@@ -914,7 +917,7 @@ class PartesDeFabricacionBolsas(Ventana):
             # 3.- Creo el palé en Murano
             vpro.set_valor(icont / tot,
                            "Creando palé {}...".format(pale.codigo))
-            murano.ops.create_pale(pale)
+            murano.ops.create_pale(pale, observaciones="")
             # OJO: Le paso el último artículo porque la formulación de esta
             # línea será por PALÉS COMPLETOS.
             pales_a_etiquetar.append(pale)
