@@ -76,12 +76,14 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
     (recibidas como `datetimes`) es correcto el cálculo
     existencias_1 = existencias_0 + entradas_0->1 - salidas_0->1
     Donde:
-    entradas_0->1 = producción_0->1
+    entradas_0->1 = producción_0->1 + ajustes_0->1
     salidas_0->1 = ventas_albaranes_0->1 + consumos_0->1
 
     Los datos de existencias los obtiene de Murano, los actuales, y del
     fichero excel recibido para las iniciales.
     Los de producción los obtiene de ginn.
+    Las de ajustes, aunque procedan de ginn, se obtienen de Murano filtrando
+    por la serie del documento.
     Los de ventas se sacan de los albaranes de salida **desde** el almacén
     principal. Estén o no facturados.
     Los consumos se obtienen también de ginn.
@@ -96,7 +98,7 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
     Devuelve True si todo cuadra.
     """
     res = False
-    # 0.- Localizo el producto todos los datos que solo puedo sacar de Murano.
+    # 0.- Localizo el producto y todos los datos que solo puedo sacar de Murano.
     (producto_murano, existencias_ini, existencias_fin,
      produccion_ginn, ventas, consumos_ginn,
      volcados_murano, consumos_murano, ajustes) = calcular_movimientos(
@@ -207,16 +209,17 @@ def calcular_movimientos(producto_ginn, data_inventario, fini, ffin, dev=False):
     - volcados de producción desde API ginn entre [fini..ffin)
     - consumos desde API ginn entre [fini..ffin)
     - ajustes manuales hechos en Murano para regularizaciones, etc. (serie MAN)
-    - ajustes manuales hechos desde ginn (produccion - volcados)
+    - ajustes manuales hechos desde API ginn en Murano (serie API)
     """
     # Datos de Murano. Si estoy en el equipo de desarrollo, uso 0 para todos.
     if not dev:
         producto_murano = murano.ops.get_producto_murano(producto_ginn)
         existencias_fin = get_existencias_murano(producto_murano)
         ventas = get_ventas(producto_murano, fini, ffin)
-        volcados_murano = get_volcados_api(producto_murano, fini, ffin)
+        volcados_murano = get_volcados_fab(producto_murano, fini, ffin)
         consumos_murano = get_bajas_consumo(producto_murano, fini, ffin)
         ajustes_murano = get_ajustes_murano(producto_murano, fini, ffin)
+        ajustes_ginn = get_volcados_api(producto_murano, fini, ffin)
     else:
         producto_murano = None
         existencias_fin = 0, 0, 0
@@ -224,6 +227,7 @@ def calcular_movimientos(producto_ginn, data_inventario, fini, ffin, dev=False):
         volcados_murano = 0, 0, 0
         consumos_murano = 0, 0, 0
         ajustes_murano = 0, 0, 0
+        ajustes_ginn = 0, 0, 0
     existencias_ini = get_existencias_inventario(data_inventario,
                                                  producto_ginn)
     # Obtengo los datos de producción y consumos del ERP.
@@ -240,7 +244,6 @@ def calcular_movimientos(producto_ginn, data_inventario, fini, ffin, dev=False):
     # las musmas funciones de ops.py. Es decir, que si lo calculo así,
     # entrarían dos veces en el cálculo de la desviación: como parte del total
     # de producción, y como supuestos ajustes manuales con signo contrario.
-    ajustes_ginn = [0, 0, 0]
     ajustes = [sum(t) for t in zip(ajustes_ginn, ajustes_murano)]
     #  Los volcados los devuelvo para chequear los volcados de la API.
     return (producto_murano, existencias_ini, existencias_fin,
@@ -414,8 +417,8 @@ def get_volcados(producto_murano, fini, ffin, tipo_movimiento,
     NOT LIKE.
     El parámetro «serie» se utiliza tanto en movimientos de stock como en
     los movimientos de serie para los ajustes manuales desde el propio Murano.
-    Si serie es None, no se aplica. Si es '!MAN' se hace un <> 'MAN' y si es
-    'MAN' se hace un Serie[Documento] = 'MAN';
+    Si serie es None, no se aplica. Si, por ejemplo, es '!MAN' se hace un
+    <> 'MAN' y si es 'MAN' se hace un Serie[Documento] = 'MAN';
     """
     almacen = "GTX"
     fini = fini.strftime("%Y-%m-%d")
@@ -502,11 +505,12 @@ def get_volcados(producto_murano, fini, ffin, tipo_movimiento,
     return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
-def get_volcados_api(producto_murano, fini, ffin):
+def get_volcados_fab(producto_murano, fini, ffin):
     """
     Devuelve los movimientos de series de tipo FAB (las que proceden del API
     de ginn)  en Murano con fecha de registro entre las recibidas para contar
-    los bultos.
+    los bultos. No cuenta los movimientos 'API' hechos desde el API de ginn
+    pero no procedentes de fabricación, sino de ajustes manuales (ipython).
     Busca los movimientos de stock para las unidades: m² o kg.
     Las altas a contar para producción son las entradas **menos** las salidas
     (eliminaciones de artículos) procedentes de fabricación.
@@ -521,7 +525,7 @@ def get_volcados_api(producto_murano, fini, ffin):
             CodigoCanal = ''
         MovimientoArticuloSerie:
             OrigenDocumento = 2 (Fabricación)
-            SerieDocumento <> 'MAN'
+            SerieDocumento = 'FAB'
     Bajas:
         MovimientoStock:
             TipoMovimiento = 2 (salida)
@@ -530,14 +534,14 @@ def get_volcados_api(producto_murano, fini, ffin):
         MovimientoArticuloSerie:
             OrigenDocumento = 11 (Salida de stock)
             Comentario NOT LIKE 'Consumo%'
-            SerieDocumento <> 'MAN'
+            SerieDocumento = 'FAB'
     """
     # Lo primero son las altas:
     altas = get_volcados(producto_murano, fini, ffin, 1, 'F', '', 2,
-                         serie="!MAN")
+                         serie="FAB")
     # Ahora las bajas por eliminación desde partes, no por consumo.
     bajas = get_volcados(producto_murano, fini, ffin, 2, 'F', '', 11,
-                         '!Consumo%', serie="!MAN")
+                         '!Consumo%', serie="FAB")
     # Y ahora las sumo (los movimientos de salida vienen en positivo de Murano
     # y viene todo sumado, sin desglose por calidades).
     sumbultos = altas[0] - bajas[0]
@@ -552,14 +556,14 @@ def get_bajas_consumo(producto_murano, fini, ffin):
     de ginn) con fecha de registro entre las recibidas y que sean de consumos.
     Tanto de balas en las partidas de carga como de bigbags en los partes de
     embolsado. Son:
-    MovimientoArticuloSerie:
-        OrigenDocumento = 11 (Salida de stock)
-        Comentario LIKE 'Consumo%'
-        SerieDocumento <> 'MAN'
     MovimientoStock:
         TipoMovimiento = 2 (salida)
         OrigenMovimiento = 'F' (Fabricación)
         CodigoCanal: CONSFIB|CONSBB
+    MovimientoArticuloSerie:
+        OrigenDocumento = 11 (Salida de stock)
+        Comentario LIKE 'Consumo %'
+        SerieDocumento <> 'MAN'
     """
     consumos_balas = get_volcados(producto_murano, fini, ffin, 2, 'F',
                                   'CONSFIB', 11, 'Consumo bala%', '!MAN')
@@ -590,6 +594,48 @@ def get_ajustes_murano(producto_murano, fini, ffin):
     sumbultos, summetros, sumkilos = ajustes
     res = (-round(sumbultos, 2), -round(summetros, 2), -round(sumkilos, 2))
     return res
+
+
+def get_volcados_api(producto_murano, fini, ffin):
+    """
+    Devuelve los movimientos de series de tipo API (las que proceden del API
+    de ginn) en Murano con fecha de registro entre las recibidas para contar
+    los bultos. No cuenta los movimientos 'FAB' hechos desde el API de ginn
+    pero procedentes de fabricación, no de ajustes manuales desde consola.
+    Busca los movimientos de stock para las unidades: m² o kg.
+    Las altas a contar para estos ajustes son las entradas **menos** las
+    salidas (eliminaciones de artículos) procedentes directamente de la API.
+    Altas:
+        MovimientoStock:
+            tipoMovimiento = 1 (entrada)
+            OrigenMovimiento = 'F' (Fabricación)
+            CodigoCanal = ''
+        MovimientoArticuloSerie:
+            OrigenDocumento = 2 (Fabricación)
+            SerieDocumento = 'API'
+    Bajas:
+        MovimientoStock:
+            TipoMovimiento = 2 (salida)
+            OrigenMovimiento = 'F' (Fabricación)
+            CodigoCcanal = ''
+        MovimientoArticuloSerie:
+            OrigenDocumento = 11 (Salida de stock)
+            Comentario NOT LIKE 'Consumo%'
+            SerieDocumento = 'API'
+    """
+    # Lo primero son las altas:
+    altas = get_volcados(producto_murano, fini, ffin, 1, 'F', '', 2,
+                         serie="API")
+    # Ahora las bajas por eliminación desde partes, no por consumo.
+    bajas = get_volcados(producto_murano, fini, ffin, 2, 'F', '', 11,
+                         '!Consumo%', serie="API")
+    # Y ahora las sumo (los movimientos de salida vienen en positivo de Murano
+    # y viene todo sumado, sin desglose por calidades).
+    sumbultos = altas[0] - bajas[0]
+    summetros = altas[1] - bajas[1]
+    sumkilos = altas[2] - bajas[2]
+    return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
+
 
 
 # pylint: disable=too-many-branches

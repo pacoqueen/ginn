@@ -84,7 +84,7 @@ SQL_STOCK = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoStock](
                %d,      -- ejercicio
                %d,      -- periodo
                '%s',    -- fecha
-               'FAB',
+               '%s',    -- serie ('FAB'|'API')
                %d,      -- documento
                '%s',    -- codigo_articulo
                '%s',    -- codigo_almacen
@@ -159,7 +159,7 @@ SQL_SERIE = """INSERT INTO [%s].[dbo].[TmpIME_MovimientoSerie](
                 '%s',   -- fecha
                 %d,     -- origen documento
                 %d,     -- ejercicio
-                'FAB',
+                '%s',   -- serie ('FAB'|'API')
                 %d,     -- documento
                 '%s',   -- mov. posición origen
                 -- NULL,
@@ -1091,8 +1091,10 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
         except AttributeError:
             partida = ""  # Balas C no tienen lote. No pasa nada. Murano traga.
         unidad_medida = "KG"
+        serie = 'API'   # Si comentario es "", viene de fabricación. Serie FAB.
         if not comentario:
             comentario = "[ginn] {}".format(bala.get_info())
+            serie = 'FAB'
         comentario = comentario[:40]    # Por restricciones de Murano.
         ubicacion = "Almac. de fibra."[:15]
         numero_serie_lc = ""
@@ -1112,6 +1114,7 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
         canal_div = ''
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
+                                    serie,
                                     documento, codigo_articulo, codigo_almacen,
                                     partida, grupo_talla, codigo_talla,
                                     tipo_movimiento, unidades, unidad_medida,
@@ -1142,10 +1145,10 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
         sql_movserie = SQL_SERIE % (database,
                                     CODEMPRESA, codigo_articulo,
                                     numero_serie_lc, fecha, origen_documento,
-                                    ejercicio, documento, mov_posicion_origen,
-                                    codigo_talla, codigo_almacen, ubicacion,
-                                    partida, unidad_medida1, comentario,
-                                    id_proceso_IME,
+                                    ejercicio, serie, documento,
+                                    mov_posicion_origen, codigo_talla,
+                                    codigo_almacen, ubicacion, partida,
+                                    unidad_medida1, comentario, id_proceso_IME,
                                     # articulo.peso, articulo.peso_sin,
                                     peso_bruto, peso_neto,
                                     0.0,  # Metros cuadrados. Decimal NOT NULL
@@ -1196,6 +1199,7 @@ def consume_bala(bala, cantidad=-1, producto=None, guid_proceso=None,
             partida = ""  # Balas C no tienen lote. No pasa nada. Murano traga.
         unidad_medida = "KG"
         comentario = "Consumo bala [ginn] {}".format(bala.get_info())[:40]
+        serie = 'FAB'
         ubicacion = "Almac. de fibra."[:15]
         numero_serie_lc = ""
         # Sage me indica que no informe de la serie en el movimiento de stock
@@ -1217,6 +1221,7 @@ def consume_bala(bala, cantidad=-1, producto=None, guid_proceso=None,
         canal_div = "CONSFIB"[:10]
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
+                                    serie,
                                     documento, codigo_articulo, codigo_almacen,
                                     partida, grupo_talla, codigo_talla,
                                     tipo_movimiento, unidades, unidad_medida,
@@ -1247,10 +1252,10 @@ def consume_bala(bala, cantidad=-1, producto=None, guid_proceso=None,
         sql_movserie = SQL_SERIE % (database,
                                     CODEMPRESA, codigo_articulo,
                                     numero_serie_lc, fecha, origen_documento,
-                                    ejercicio, documento, mov_posicion_origen,
-                                    codigo_talla, codigo_almacen, ubicacion,
-                                    partida, unidad_medida1, comentario,
-                                    id_proceso_IME,
+                                    ejercicio, serie, documento,
+                                    mov_posicion_origen, codigo_talla,
+                                    codigo_almacen, ubicacion, partida,
+                                    unidad_medida1, comentario, id_proceso_IME,
                                     # articulo.peso, articulo.peso_sin,
                                     peso_bruto, peso_neto,
                                     0.0,  # Metros cuadrados. Decimal NOT NULL
@@ -1301,6 +1306,7 @@ def consume_bigbag(bigbag, cantidad=-1, producto=None, guid_proceso=None,
             partida = ""  # Balas C no tienen lote. No pasa nada. Murano traga.
         unidad_medida = "KG"
         comentario = "Consumo bigbag [ginn] {}".format(bigbag.get_info())[:40]
+        serie = 'FAB'
         ubicacion = "Almac. de fibra."[:15]
         numero_serie_lc = ""
         # Sage me indica que no informe de la serie en el movimiento de stock
@@ -1323,6 +1329,7 @@ def consume_bigbag(bigbag, cantidad=-1, producto=None, guid_proceso=None,
         canal_div = "CONSBB"[:10]
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
+                                    serie,
                                     documento, codigo_articulo, codigo_almacen,
                                     partida, grupo_talla, codigo_talla,
                                     tipo_movimiento, unidades, unidad_medida,
@@ -1353,10 +1360,10 @@ def consume_bigbag(bigbag, cantidad=-1, producto=None, guid_proceso=None,
         sql_movserie = SQL_SERIE % (database,
                                     CODEMPRESA, codigo_articulo,
                                     numero_serie_lc, fecha, origen_documento,
-                                    ejercicio, documento, mov_posicion_origen,
-                                    codigo_talla, codigo_almacen, ubicacion,
-                                    partida, unidad_medida1, comentario,
-                                    id_proceso_IME,
+                                    ejercicio, serie, documento,
+                                    mov_posicion_origen, codigo_talla,
+                                    codigo_almacen, ubicacion, partida,
+                                    unidad_medida1, comentario, id_proceso_IME,
                                     # articulo.peso, articulo.peso_sin,
                                     peso_bruto, peso_neto,
                                     0.0,  # Metros cuadrados. Decimal NOT NULL
@@ -1395,8 +1402,10 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
                         articulo.codigo)
     else:
         partida = bigbag.loteCem.codigo
+        serie = 'API'   # Si comentario es "", viene de fabricación. Serie FAB.
         if not comentario:
             comentario = "[ginn] {}".format(bigbag.get_info())
+            serie = 'FAB'
         comentario = comentario[:40]    # Por restricciones de Murano.
         numero_serie_lc = ""
         # Sage me indica que no informe de la serie en el movimiento de stock
@@ -1417,6 +1426,7 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
         canal_div = ''
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
+                                    serie,
                                     documento, codigo_articulo, codigo_almacen,
                                     partida, grupo_talla, codigo_talla,
                                     tipo_movimiento, unidades, unidad_medida,
@@ -1444,9 +1454,8 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
         peso_neto = get_peso_neto(articulo)
         sql_movserie = SQL_SERIE % (database,
                                     CODEMPRESA, codigo_articulo,
-                                    numero_serie_lc,
-                                    fecha, origen_documento, ejercicio,
-                                    documento,
+                                    numero_serie_lc, fecha, origen_documento,
+                                    ejercicio, serie, documento,
                                     mov_posicion_origen, codigo_talla,
                                     codigo_almacen, ubicacion, partida,
                                     unidad_medida1, comentario, id_proceso_IME,
@@ -1485,8 +1494,10 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
             partida = rollo.partida.codigo
         except AttributeError:
             partida = ""   # DONE: Los rollos C no tienen partida. No pasa nada
+        serie = 'API'   # Si comentario es "", viene de fabricación. Serie FAB.
         if not comentario:
             comentario = "[ginn] {}".format(rollo.get_info())
+            serie = 'FAB'
         comentario = comentario[:40]    # Por restricciones de Murano.
         numero_serie_lc = ""
         # Sage me indica que no informe de la serie en el movimiento de stock
@@ -1507,6 +1518,7 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
         canal_div = ''
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
+                                    serie,
                                     documento, codigo_articulo, codigo_almacen,
                                     partida, grupo_talla, codigo_talla,
                                     tipo_movimiento, unidades, unidad_medida,
@@ -1535,9 +1547,8 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
         peso_neto = get_peso_neto(articulo)
         sql_movserie = SQL_SERIE % (database,
                                     CODEMPRESA, codigo_articulo,
-                                    numero_serie_lc,
-                                    fecha, origen_documento, ejercicio,
-                                    documento,
+                                    numero_serie_lc, fecha, origen_documento,
+                                    ejercicio, serie, documento,
                                     mov_posicion_origen, codigo_talla,
                                     codigo_almacen, ubicacion, partida,
                                     unidad_medida1, comentario, id_proceso_IME,
@@ -1574,8 +1585,10 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
     else:
         partida = caja.partidaCem.codigo
         unidad_medida = "KG"
+        serie = 'API'   # Si comentario es "", viene de fabricación. Serie FAB.
         if not comentario:
             comentario = "[ginn] {}".format(caja.get_info())
+            serie = 'FAB'
         comentario = comentario[:40]    # Por restricciones de Murano.
         ubicacion = "Almac. de fibra embolsada."[:15]
         numero_serie_lc = ""
@@ -1595,6 +1608,7 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
         canal_div = ''
         sql_movstock = SQL_STOCK % (database,
                                     CODEMPRESA, ejercicio, periodo, fecha,
+                                    serie,
                                     documento, codigo_articulo, codigo_almacen,
                                     partida, grupo_talla, codigo_talla,
                                     tipo_movimiento, unidades, unidad_medida,
@@ -1622,9 +1636,8 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
         peso_neto = get_peso_neto(articulo)
         sql_movserie = SQL_SERIE % (database,
                                     CODEMPRESA, codigo_articulo,
-                                    numero_serie_lc,
-                                    fecha, origen_documento, ejercicio,
-                                    documento,
+                                    numero_serie_lc, fecha, origen_documento,
+                                    ejercicio, serie, documento,
                                     mov_posicion_origen, codigo_talla,
                                     codigo_almacen, ubicacion, partida,
                                     unidad_medida1, comentario, id_proceso_IME,
@@ -2087,6 +2100,7 @@ def update_stock(producto, delta, almacen, guid_proceso=None,
     partida = ""
     unidad_medida = ""  # producto.unidad
     comentario = ("Stock [ginn] %f (%s)" % (delta, producto.get_info()))[:40]
+    serie = 'FAB'
     ubicacion = "Almacén general"[:15]
     numero_serie_lc = ""
     c = Connection()
@@ -2131,6 +2145,7 @@ def update_stock(producto, delta, almacen, guid_proceso=None,
     canal_div = ''
     sql_movstock = SQL_STOCK % (database,
                                 CODEMPRESA, ejercicio, periodo, fecha,
+                                serie,
                                 documento, codigo_articulo, codigo_almacen,
                                 partida, grupo_talla, codigo_talla,
                                 tipo_movimiento, unidades, unidad_medida,
