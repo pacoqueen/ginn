@@ -667,15 +667,15 @@ def main():
         args.consumos = True
     # # Pruebas
     check_unidades_series_positivas()
+    # ## Consumos
+    if args.consumos:
+        make_consumos(args.fsalida, args.simulate)
     if args.codigos_productos:
         for codigo in tqdm(args.codigos_productos, desc="Productos"):
             sync_producto(codigo, args.fsalida, args.simulate)
     if args.codigos_articulos:
         for codigo in tqdm(args.codigos_articulos, desc="Artículos"):
             sync_articulo(codigo, args.fsalida, args.simulate)
-    # # Consumos
-    if args.consumos:
-        make_consumos(args.fsalida, args.simulate)
 
 
 if __name__ == "__main__":
