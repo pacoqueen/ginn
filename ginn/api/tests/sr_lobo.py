@@ -206,7 +206,9 @@ def sync_producto(codigo, fsalida, simulate=True):
     res = murano.ops.producto_murano2ginn(codigo, sync=True)
     # 2.- Compruebo que los valores obligatorios están "informados".
     producto_ginn.sync()    # Por si ha cambiado algo.
-    if isinstance(producto_ginn, pclases.ProductoVenta):
+    if (isinstance(producto_ginn, pclases.ProductoVenta)
+            and not producto_ginn.obsoleto):
+        # Si hemos marcado el producto como obsoleto, me da igual entonces.
         campos_incorrectos = check_campos_obligatorios(producto_ginn)
         for campo in campos_incorrectos:
             report.write(" !{}".format(campo))
@@ -477,7 +479,7 @@ def make_consumos_balas(fsalida, simulate=True, fini=None, ffin=None):
         pclases.PartidaCarga.q.fecha >= fini,
         pclases.PartidaCarga.q.fecha <= ffin,
         pclases.PartidaCarga.q.api == False))
-    # TODO: Debería meter un filtro más para no consumir las partidas de carga
+    # DONE: Debería meter un filtro más para no consumir las partidas de carga
     # que no tengan todos los partes de producción verificados. Así doy margen
     # a Jesús para que pueda modificarlas. Si no tiene partes, no volcar tampoco.
     report.write("{} partidas de carga encontradas.\n".format(pcargas.count()))
@@ -488,18 +490,37 @@ def make_consumos_balas(fsalida, simulate=True, fini=None, ffin=None):
             report.write("Partida de carga {} vacía. Se ignora.\n".format(
                 pcarga.codigo))
             continue
+        pdps_sin_verificar = [pdp for pdp in pcarga.partes_partidas
+                              if not pdp.bloqueado]
+        if pdps_sin_verificar:
+            report.write("Partida de carga {} con {}/{} partes sin verificar"
+                         ". Se ignora.".format(pcarga.codigo,
+                                               len(pdps_sin_verificar),
+                                               len(pcarga.partes_partidas)))
+            continue
+        if not pcarga.partes_partidas:
+            report.write("Partida de carga {} sin partes de producción."
+                         "Se ignora.".format(pcarga.codigo))
+            continue
         for bala in pcarga.balas:
             report.write("Consumiendo bala {} [id {} ({})] de {}:\n".format(
                 bala.codigo, bala.id, bala.articulo.puid,
                 bala.articulo.productoVenta.descripcion))
             # Aquí hacemos efectivo el rebaje de stock
-            _res = murano.ops.consume_bala(bala, simulate=simulate)
-            report.write("\tValor de retorno: {}\n".format(_res))
+            fecha_consumo = murano.ops.esta_consumido(bala.articulo)
+            if fecha_consumo:
+                _res = True
+                report.write("\tBala ya consumida el {}\n".format(
+                    fecha_consumo))
+            else:
+                _res = murano.ops.consume_bala(bala, simulate=simulate)
+                report.write("\tValor de retorno: {}\n".format(_res))
             respartida = respartida and _res
         if respartida and not simulate:
             pcarga.api = True
             pcarga.sync()
             report.write("\tValor api partida de carga actualizado.\n")
+        res = res and respartida
     report.close()
     return res
 

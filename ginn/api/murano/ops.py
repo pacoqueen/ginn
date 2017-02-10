@@ -1167,6 +1167,26 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
     return res
 
 
+def esta_consumido(articulo):
+    """
+    Devuelve la fecha de consumo si el artículo se ha consumido. None en
+    otro caso.
+    Los valores a mirar si se ha consumido son la serie, origen documento y
+    comentario del último registro de MovimientoArticuloSerie y deberían
+    ser, si es un consumo: FAB, 11 y "Consumo (bala|bigbag) ginn.*".
+    """
+    conn = Connection()
+    movserie = get_ultimo_movimiento_articulo_serie(conn, articulo)
+    # HARDCODED
+    if (movserie['SerieDocumento'] == 'FAB'
+            and movserie['OrigenDocumento'] == 11
+            and movserie['Comentario'].startswith('Consumo')):
+        res = movserie['Fecha']
+    else:
+        res = None
+    return res
+
+
 # pylint: disable=too-many-arguments,too-many-statements
 def consume_bala(bala, cantidad=-1, producto=None, guid_proceso=None,
                  simulate=False, procesar=True):
@@ -1179,6 +1199,8 @@ def consume_bala(bala, cantidad=-1, producto=None, guid_proceso=None,
     caso, el valor de ejecutar el proceso de importación.
     Si procesar es False no lanza el proceso de importación a través de la
     DDL OEM de Murano.
+    Si la bala ya estaba consumida, no se puede volver a consumir, de modo que
+    devuelve False también.
     """
     try:
         articulo = bala.articulo
@@ -1818,10 +1840,12 @@ def update_calidad(articulo, calidad):
         raise NotImplementedError("Función no disponible por el momento.")
     else:
         res = delete_articulo(articulo,
-                observaciones="Cambio a calidad {}".format(calidad))
+                              observaciones="Cambio a calidad {}".format(
+                                  calidad))
         if res:
             res = create_articulo(articulo, calidad=calidad,
-                    observaciones="Cambio a calidad {}.".format(calidad))
+                                  observaciones="Cambio a calidad {}.".format(
+                                      calidad))
     return res
 
 
@@ -1956,6 +1980,7 @@ def es_movimiento_salida_fabricacion(movserie):
     """
     True si el registro MovimientoArticuloSerie es de salida de fabricación
     (borrado en partes).
+    OrigenDocumento es 2 para altas y 11 para bajas.
     """
     res = (movserie['OrigenDocumento'] == 11 and
            movserie['SerieDocumento'] == 'FAB')
