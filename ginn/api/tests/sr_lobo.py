@@ -62,7 +62,7 @@ def sync_articulo(codigo, fsalida, simulate=True):
     articulo = pclases.Articulo.get_articulo(codigo)
     if articulo:
         if not murano.ops.existe_articulo(articulo):
-            if murano.ops.esta_en_almacen(articulo):
+            if murano.ops.esta_en_almacen(articulo) == 'GTX':
                 # No existe como ese producto, pero sí que existe porque está
                 # almacén, pero con otro producto entonces. Hay que cambiarlo
                 # a su producto correcto según ginn:
@@ -74,6 +74,12 @@ def sync_articulo(codigo, fsalida, simulate=True):
                                                      observaciones=obs)
                 else:
                     res = True
+            elif murano.ops.esta_en_almacen(articulo):
+                # Está en otro almacén que no es el principal.
+                report.write("Artículo como otro producto en almacén {}"
+                             ".".format(murano.ops.esta_en_almacen(articulo)))
+                # Corregir a mano cambiando el producto en ginn o lo que sea.
+                res = False
             else:
                 # No existe con el producto de ginn, pero puede que con algún
                 # otro y ya no está en almacén o que no exista en absoluto.
@@ -436,14 +442,23 @@ def make_consumos_bigbags(fsalida, simulate=True, fini=None, ffin=None):
         pclases.ParteDeProduccion.q.fecha >= fini,
         pclases.ParteDeProduccion.q.fecha < ffin,
         pclases.ParteDeProduccion.q.bloqueado == True))
-    report.write("{} partes encontrados.\n".format(pdps.count()))
+    report.write("Consumos bigbag: {} partes encontrados.\n".format(
+        pdps.count()))
     res = True
     for pdp in tqdm(pdps, total=pdps.count(),
                     desc="Partes a consumir (bigbags)", unit="pdp"):
         for bb in pdp.bigbags:
-            # Ignoro los ya tratados y los que no se completaron en ginn.
+            # Ignoro los ya tratados y los que no se completaron en ginn (el
+            # parte está sin verificar).
             if not bb.api:
-                res = consumir_bigbag(report, bb, simulate) and res
+                if murano.ops.esta_en_almacen(bb.articulo) == "GTX":
+                    res = consumir_bigbag(report, bb, simulate) and res
+                else:
+                    # El bigbag está en otro almacén o no está. Me da igual.
+                    # No lo puedo consumir ni se podrá consumir jamás. Hay que
+                    # corregirlo a mano.
+                    report.write("El bigbag está en otro almacén o no está.")
+                    res = False
     report.close()
     return res
 
