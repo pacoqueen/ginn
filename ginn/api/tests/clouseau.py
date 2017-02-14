@@ -120,11 +120,12 @@ def investigar(producto_ginn, fini, ffin, report,
             articulo = pclases.Articulo.get_articulo(codigo)
             if articulo.es_bala():
                 parte_o_partidacarga = articulo.bala.partidaCarga.codigo
-                fecha_consumo = articulo.bala.partidaCarga.fecha
+                fecha_consumo = articulo.bala.partidaCarga.fecha.strftime("%d/%m/%Y %H:%M")
             elif articulo.es_bigbag():
                 bigbag = articulo.bigbag
                 parte_o_partidacarga = bigbag.parteDeProduccion.id
-                fecha_consumo = bigbag.parteDeProduccion.fechahorainicio
+                fecha_consumo = bigbag.parteDeProduccion.fechahorainicio.strftime(
+                    "%d/%m/%Y %H:%M")
             else:
                 parte_o_partidacarga = "¿?"
                 fecha_consumo = "¿?"
@@ -137,7 +138,7 @@ def investigar(producto_ginn, fini, ffin, report,
                              producto_ginn.descripcion,
                              articulo.codigo,
                              calidad,
-                             fecha_consumo.strftime("%d/%m/%Y"),
+                             fecha_consumo,
                              "",
                              "",
                              "",
@@ -155,6 +156,9 @@ def investigar(producto_ginn, fini, ffin, report,
             #  'Prod. ginn', 'Prod. Murano', 'Bultos', 'm²', 'kg']
             articulo = pclases.Articulo.get_articulo(codigo)
             fecha_consumo = murano.ops.esta_consumido(articulo)
+            if fecha_consumo:
+                # pylint: disable=no-member
+                fecha_consumo = fecha_consumo.strftime("%d/%m/%Y %H:%M")
             report.write(" * {} (Volcado como consumo el {})\n".format(codigo,
                                                                        fecha_consumo))
             # pylint: disable=protected-access
@@ -196,7 +200,7 @@ def investigar(producto_ginn, fini, ffin, report,
                                  calidad,
                                  "",
                                  "",
-                                 fecha_produccion,
+                                 fecha_produccion.strftime("%d/%m/%Y %H:%M"),
                                  "",
                                  1,
                                  superficie,
@@ -204,7 +208,7 @@ def investigar(producto_ginn, fini, ffin, report,
                                 ])
             else:
                 index = data_res['Serie'].index(codigo)
-                data_res[index][6] = fecha_produccion
+                data_res[index][6] = fecha_produccion.strftime("%d/%m/%Y %H:%M")
                 data_res[index][9] = superficie
                 data_res[index][10] = peso_neto
     # 3.4.- Producciones en Murano pero no en ginn.
@@ -230,14 +234,14 @@ def investigar(producto_ginn, fini, ffin, report,
                                  "",
                                  "",
                                  "",
-                                 fecha_produccion,
+                                 fecha_produccion.strftime("%d/%m/%Y %H:%M"),
                                  1,
                                  superficie,
                                  peso_neto
                                 ])
             else:
                 index = data_res['Serie'].index(codigo)
-                data_res[index][7] = fecha_produccion
+                data_res[index][7] = fecha_produccion.strftime("%d/%m/%Y %H:%M")
                 data_res[index][9] = superficie
                 data_res[index][10] = peso_neto
     # 3.5.- Fin del report para el producto.
