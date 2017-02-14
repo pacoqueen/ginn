@@ -448,8 +448,8 @@ def get_registros_movimientoarticuloserie(fini, ffin, codigo, almacen,
     """
     Devuelve los registros de Murano correspondientes a los movimientos de
     series del producto, fechas y tipos recibidos.
-    OrigenDocumento puede ser
-    Comentario
+    OrigenDocumento puede ser 11 (salida) o 2 (entrada).
+    Comentario puede ser "Consumo %" o nada.
     Serie puede ser MAN/FAB/API/CONSFIB/CONSBB y admite «!» como primer
     carácter para indicar la condición contraria (NOT).
     """

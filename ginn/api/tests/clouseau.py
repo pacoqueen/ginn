@@ -401,7 +401,7 @@ def main():
             productos.append(pv)
     fich_inventario = find_fich_inventario(args.fich_inventario)
     fini = parse_fecha_xls(fich_inventario)
-    today = datetime.datetime.today()
+    today = datetime.date.today()
     # Para evitar problemas con las fechas que incluyen horas, y para que
     # éstas entren en el intervalo, agrego un día a la fecha final y hago
     # el filtro con menor estricto: una producción del 02/01/17 23:00
