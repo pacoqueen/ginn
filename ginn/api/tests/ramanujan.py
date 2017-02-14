@@ -459,8 +459,8 @@ def get_registros_movimientostock(fini, ffin, codigo, almacen, tipo_movimiento,
 
 
 def get_registros_movimientoarticuloserie(fini, ffin, codigo, almacen,
-                                          origen_documento, comentario = None,
-                                          serie = None):
+                                          origen_documento, comentario=None,
+                                          serie=None):
     """
     Devuelve los registros de Murano correspondientes a los movimientos de
     series del producto, fechas y tipos recibidos.
