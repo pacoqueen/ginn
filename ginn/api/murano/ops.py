@@ -1187,6 +1187,34 @@ def esta_consumido(articulo):
     return res
 
 
+def get_fecha_entrada(articulo):
+    """
+    Devuelve la fecha en que el artículo se dio de alta en Murano.
+    Acepta también un código de artículo directamente en lugar de un artículo
+    de ginn.
+    Si el artículo no se encuentra, devuelve None.
+    """
+    if isinstance(articulo, pclases.Articulo):
+        codigo = articulo.codigo
+    else:
+        codigo = articulo
+    conn = Connection()
+    sql = """SELECT Fecha, FechaRegistro
+               FROM {}.dbo.MovimientoArticuloSerie
+              WHERE NumeroSerieLc = '{}'
+                AND CodigoEmpresa = {}
+                AND OrigenDocumento = 2
+                AND (SerieDocumento = 'FAB' OR SerieDocumento = 'API')
+                AND CodigoAlmacen = 'GTX';""".format(conn.get_database(),
+                                                     codigo,
+                                                     CODEMPRESA)
+    try:
+        res = conn.run_sql(sql)[0][0]
+    except IndexError:
+        res = None
+    return res
+
+
 # pylint: disable=too-many-arguments,too-many-statements
 def consume_bala(bala, cantidad=-1, producto=None, guid_proceso=None,
                  simulate=False, procesar=True):

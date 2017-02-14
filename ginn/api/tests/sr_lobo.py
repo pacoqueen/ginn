@@ -509,13 +509,13 @@ def make_consumos_balas(fsalida, simulate=True, fini=None, ffin=None):
                               if not pdp.bloqueado]
         if pdps_sin_verificar:
             report.write("Partida de carga {} con {}/{} partes sin verificar"
-                         ". Se ignora.".format(pcarga.codigo,
-                                               len(pdps_sin_verificar),
-                                               len(pcarga.partes_partidas)))
+                         ". Se ignora.\n".format(pcarga.codigo,
+                                                 len(pdps_sin_verificar),
+                                                 len(pcarga.partes_partidas)))
             continue
         if not pcarga.partes_partidas:
             report.write("Partida de carga {} sin partes de producción."
-                         "Se ignora.".format(pcarga.codigo))
+                         "Se ignora.\n".format(pcarga.codigo))
             continue
         for bala in pcarga.balas:
             report.write("Consumiendo bala {} [id {} ({})] de {}:\n".format(

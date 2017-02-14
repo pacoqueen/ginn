@@ -46,6 +46,8 @@ sys.argv = _argv
 
 # TODO: Hacer un parámetro para demonio o algo que saque la consulta de
 # inventario a lo cron y lo vuelque a un Excel.
+# TODO: Hacer un chequeo por A, B y C antes de los totales para detectar
+# errores al importar un bulto como A siendo B y cosas así.
 
 
 # pylint: disable=too-many-arguments
@@ -405,6 +407,77 @@ def get_ventas(producto_murano, fini, ffin):
     return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
+def get_registros_movimientostock(fini, ffin, codigo, almacen, tipo_movimiento,
+                                  origen_movimiento, codigo_canal, serie):
+    """
+    Devuelve los registros de la tabla MovimientoStock de Murano
+    correspondientes al tipo de movimiento y origen de movimiento recibidos.
+    Serán 1/2 (entrada/salida) o F/S/A (fabricación/salida/albarán)
+    respectivamente para determinar si es un consumo, una venta, un borrado o
+    un alta.
+    """
+    sql = """USE GEOTEXAN;
+             SELECT *
+               FROM MovimientoStock
+              WHERE CodigoEmpresa = '10200'
+                AND Fecha >= '{}'
+                AND Fecha < '{}'
+                AND CodigoArticulo = '{}'
+                AND CodigoAlmacen = '{}'
+                AND TipoMovimiento = {}
+                AND OrigenMovimiento = '{}' """.format(fini, ffin, codigo,
+                                                       almacen,
+                                                       tipo_movimiento,
+                                                       origen_movimiento)
+    if codigo_canal is not None:
+        sql += "AND CodigoCanal = '{}' ".format(codigo_canal)
+    if serie is not None:
+        if serie[0] == '!':
+            sql += " AND Serie <> '{}' ".format(serie[1:])
+        else:
+            sql += " AND Serie = '{}' ".format(serie)
+    sql += "ORDER BY FechaRegistro;"
+    conn = connection.Connection()
+    res = conn.run_sql(sql)
+    return res
+
+
+def get_registros_movimientoarticuloserie(fini, ffin, codigo, almacen,
+                                          origen_documento, comentario = None,
+                                          serie = None):
+    """
+    Devuelve los registros de Murano correspondientes a los movimientos de
+    series del producto, fechas y tipos recibidos.
+    OrigenDocumento puede ser
+    Comentario
+    Serie puede ser MAN/FAB/API/CONSFIB/CONSBB y admite «!» como primer
+    carácter para indicar la condición contraria (NOT).
+    """
+    sql = """USE GEOTEXAN;
+             SELECT *
+               FROM MovimientoArticuloSerie
+              WHERE CodigoEmpresa = '10200'
+                AND Fecha >= '{}'
+                AND Fecha < '{}'
+                AND CodigoArticulo = '{}'
+                AND CodigoAlmacen = '{}'
+                AND OrigenDocumento = {}
+              """.format(fini, ffin, codigo, almacen, origen_documento)
+    if comentario is not None:
+        if comentario[0] == '!':
+            sql += "AND Comentario NOT LIKE '{}' ".format(comentario[1:])
+        else:
+            sql += "AND Comentario LIKE '{}' ".format(comentario)
+    if serie is not None:
+        if serie[0] == '!':
+            sql += "AND SerieDocumento <> '{}' ".format(serie[1:])
+        else:
+            sql += "AND SerieDocumento = '{}' ".format(serie)
+    sql += "ORDER BY FechaRegistro;"
+    conn = connection.Connection()
+    res = conn.run_sql(sql)
+    return res
+
 # pylint: disable=too-many-arguments, too-many-branches
 def get_volcados(producto_murano, fini, ffin, tipo_movimiento,
                  origen_movimiento, codigo_canal,
@@ -431,29 +504,9 @@ def get_volcados(producto_murano, fini, ffin, tipo_movimiento,
     metros = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
     kilos = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
     # Primero se obtiene la dimensión principal de una tabla (MovimientoStock):
-    sql = """USE GEOTEXAN;
-             SELECT *
-               FROM MovimientoStock
-              WHERE CodigoEmpresa = '10200'
-                AND Fecha >= '{}'
-                AND Fecha < '{}'
-                AND CodigoArticulo = '{}'
-                AND CodigoAlmacen = '{}'
-                AND TipoMovimiento = {}
-                AND OrigenMovimiento = '{}' """.format(fini, ffin, codigo,
-                                                       almacen,
-                                                       tipo_movimiento,
-                                                       origen_movimiento)
-    if codigo_canal is not None:
-        sql += "AND CodigoCanal = '{}' ".format(codigo_canal)
-    if serie is not None:
-        if serie[0] == '!':
-            sql += " AND Serie <> '{}' ".format(serie[1:])
-        else:
-            sql += " AND Serie = '{}' ".format(serie)
-    sql += "ORDER BY FechaRegistro;"
-    conn = connection.Connection()
-    totales = conn.run_sql(sql)
+    totales = get_registros_movimientostock(fini, ffin, codigo, almacen,
+                                            tipo_movimiento, origen_movimiento,
+                                            codigo_canal, serie)
     for total in totales:
         calidad = total['CodigoTalla01_']
         unidad = total['UnidadMedida1_']
@@ -466,29 +519,9 @@ def get_volcados(producto_murano, fini, ffin, tipo_movimiento,
     # Bultos y la dimensión adicional (metros cuadrados o kilos) de otra:
     # (Aunque también se podría haber obtenido todo de aquí, pero así me
     # aseguro --double-check-- de que es coherente entre las 2 tablas)
-    sql = """USE GEOTEXAN;
-             SELECT *
-               FROM MovimientoArticuloSerie
-              WHERE CodigoEmpresa = '10200'
-                AND Fecha >= '{}'
-                AND Fecha < '{}'
-                AND CodigoArticulo = '{}'
-                AND CodigoAlmacen = '{}'
-                AND OrigenDocumento = {}
-              """.format(fini, ffin, codigo, almacen, origen_documento)
-    if comentario is not None:
-        if comentario[0] == '!':
-            sql += "AND Comentario NOT LIKE '{}' ".format(comentario[1:])
-        else:
-            sql += "AND Comentario LIKE '{}' ".format(comentario)
-    if serie is not None:
-        if serie[0] == '!':
-            sql += "AND SerieDocumento <> '{}' ".format(serie[1:])
-        else:
-            sql += "AND SerieDocumento = '{}' ".format(serie)
-    sql += "ORDER BY FechaRegistro;"
-    conn = connection.Connection()
-    totales = conn.run_sql(sql)
+    totales = get_registros_movimientoarticuloserie(fini, ffin, codigo,
+                                                    almacen, origen_documento,
+                                                    comentario, serie)
     for total in totales:
         calidad = total['CodigoTalla01_']
         unidad = total['UnidadMedida1_']
@@ -643,7 +676,7 @@ def get_produccion(producto_ginn, fini, ffin, strict=False):
     """
     Devuelve todos la producción del producto entre las fechas. Se obtiene de
     ginn.
-    En función del parámetro strict, si es True solo tiene en cuenta la hora
+    En función del parámetro strict, si es False solo tiene en cuenta la hora
     de finalización del parte. Da igual si está verificado o no.
     Un rollo fabricado a las 22:15 del 12 de enero no se contará como
     producción del día 12, sino del 13.
@@ -651,7 +684,7 @@ def get_produccion(producto_ginn, fini, ffin, strict=False):
     consulta_producido.py de ginn.** (En ginn la "unidad de búsqueda" son los
     partes de producción porque se calculan rendimientos en base a turnos
     de producción de ocho horas o partes completos)
-    Si es False cuenta como fecha para la comparación con fini y ffin la
+    Si es True cuenta como fecha para la comparación con fini y ffin la
     fecha **real** de alta del artículo en la base de datos. Da igual si un
     rollo se dio de alta el día 15 del mes con fecha del parte 10 para
     corregir un error del día 10. Ese rollo contará como producido el 15.
@@ -670,56 +703,56 @@ def get_produccion(producto_ginn, fini, ffin, strict=False):
     bultos = {'A': 0, 'B': 0, 'C': 0}
     metros = {'A': 0.0, 'B': 0.0, 'C': 0.0}
     kilos = {'A': 0.0, 'B': 0.0, 'C': 0.0}
-    # pylint: disable=no-member
     if producto_ginn.es_clase_c():  # Los productos C se pesan. No van en parte
         strict = True
     if not strict:
-        PDP = pclases.ParteDeProduccion
-        A = pclases.Articulo
-        pdps = PDP.select(pclases.AND(PDP.q.fechahorafin >= fini,
-                                      PDP.q.fechahorafin < ffin,
-                                      A.q.parteDeProduccionID == PDP.q.id,
-                                      A.q.productoVentaID == producto_ginn.id))
-        # Porque el groupBy necesitaría un poco de low-level en el SQLObject:
-        tratados = []
-        for pdp in tqdm(pdps, desc="Producción {}".format(producto_ginn.puid),
-                        leave=False):
-            if pdp in tratados:
-                continue    # Ya contado, me lo salto.
-            tratados.append(pdp)
-            for a in tqdm(pdp.articulos, desc=pdp.puid, leave=False):
-                if a.es_clase_a():
-                    bultos['A'] += 1
-                    metros['A'] += get_superficie(a) or 0
-                    kilos['A'] += get_peso_neto(a)
-                elif a.es_clase_b():
-                    bultos['B'] += 1
-                    metros['B'] += get_superficie(a) or 0
-                    kilos['B'] += get_peso_neto(a)
-                elif a.es_clase_c():
-                    bultos['C'] += 1
-                    metros['C'] += get_superficie(a) or 0
-                    kilos['C'] += get_peso_neto(a)
+        articulos = query_articulos_from_partes(producto_ginn, fini, ffin)
     else:   # En vez de por partes, filtro por fecha de registro **real** en
             # la base de datos de cada artículo.
         articulos = query_articulos(producto_ginn, fini, ffin)
-        for a in articulos:
-            if a.es_clase_a():
-                bultos['A'] += 1
-                metros['A'] += get_superficie(a) or 0
-                kilos['A'] += get_peso_neto(a)
-            elif a.es_clase_b():
-                bultos['B'] += 1
-                metros['B'] += get_superficie(a) or 0
-                kilos['B'] += get_peso_neto(a)
-            elif a.es_clase_c():
-                bultos['C'] += 1
-                metros['C'] += get_superficie(a) or 0
-                kilos['C'] += get_peso_neto(a)
+    for a in articulos:
+        if a.es_clase_a():
+            bultos['A'] += 1
+            metros['A'] += get_superficie(a) or 0
+            kilos['A'] += get_peso_neto(a)
+        elif a.es_clase_b():
+            bultos['B'] += 1
+            metros['B'] += get_superficie(a) or 0
+            kilos['B'] += get_peso_neto(a)
+        elif a.es_clase_c():
+            bultos['C'] += 1
+            metros['C'] += get_superficie(a) or 0
+            kilos['C'] += get_peso_neto(a)
     sumbultos = sum([bultos[i] for i in bultos])
     summetros = sum([metros[i] for i in metros])
     sumkilos = sum([kilos[i] for i in kilos])
     return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
+
+
+def query_articulos_from_partes(producto, fini, ffin):
+    """
+    Devuelve los artículos de ginn comprendidos en los partes de producción
+    del producto recibido entre las fechas recibidas. Intervalo abierto en la
+    fecha de fin.
+    """
+    PDP = pclases.ParteDeProduccion
+    A = pclases.Articulo
+    # pylint: disable=no-member
+    pdps = PDP.select(pclases.AND(PDP.q.fechahorafin >= fini,
+                                  PDP.q.fechahorafin < ffin,
+                                  A.q.parteDeProduccionID == PDP.q.id,
+                                  A.q.productoVentaID == producto.id))
+    # Porque el groupBy necesitaría un poco de low-level en el SQLObject:
+    tratados = []
+    res = []
+    for pdp in tqdm(pdps, desc="Producción {}".format(producto.puid),
+                    leave=False):
+        if pdp in tratados:
+            continue    # Ya contado, me lo salto.
+        tratados.append(pdp)
+        for a in tqdm(pdp.articulos, desc=pdp.puid, leave=False):
+            res.append(a)
+    return res
 
 
 def query_articulos(producto, fini, ffin):
@@ -767,35 +800,51 @@ def get_consumos_ginn(producto_ginn, fini, ffin):
     bultos = {'A': 0, 'B': 0, 'C': 0}
     metros = {'A': 0.0, 'B': 0.0, 'C': 0.0}
     kilos = {'A': 0.0, 'B': 0.0, 'C': 0.0}
+    articulos_consumidos = get_articulos_consumidos_ginn(producto_ginn, fini,
+                                                         ffin)
+    for articulo in articulos_consumidos:
+        if articulo.es_clase_a():
+            bultos['A'] += 1
+            metros['A'] += get_superficie(articulo) or 0
+            kilos['A'] += get_peso_neto(articulo)
+        elif articulo.es_clase_b():
+            bultos['B'] += 1
+            metros['B'] += get_superficie(articulo) or 0
+            kilos['B'] += get_peso_neto(articulo)
+        elif articulo.es_clase_c():
+            bultos['C'] += 1
+            metros['C'] += get_superficie(articulo) or 0
+            kilos['C'] += get_peso_neto(articulo)
+    sumbultos = sum([bultos[i] for i in bultos])
+    summetros = sum([metros[i] for i in metros])
+    sumkilos = sum([kilos[i] for i in kilos])
+    return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
+
+
+def get_articulos_consumidos_ginn(producto, fini, ffin):
+    """
+    Devuelve una lista de artículos del producto de ginn recibido consumido en
+    los partes de producción entre las fechas fini (incluida) y ffin (no incl.).
+    """
+    res = []
     PDP = pclases.ParteDeProduccion
     # pylint: disable=no-member
     pdps = PDP.select(pclases.AND(PDP.q.fecha >= fini,
                                   PDP.q.fecha < ffin))
     # pylint: disable=too-many-nested-blocks
     pcs_tratadas = []
-    for pdp in tqdm(pdps, desc="Consumos {}".format(producto_ginn.descripcion)):
+    for pdp in tqdm(pdps, desc="Consumos {}".format(producto.descripcion)):
         # Si estamos buscando consumos de bigbags miro directamente en los
         # partes los bigbags asociados.
-        if producto_ginn.es_bigbag():
+        if producto.es_bigbag():
             for bb in pdp.bigbags:
                 articulo = bb.articulo
-                if articulo.productoVenta == producto_ginn:
-                    if articulo.es_clase_a():
-                        bultos['A'] += 1
-                        metros['A'] += get_superficie(articulo) or 0
-                        kilos['A'] += get_peso_neto(articulo)
-                    elif articulo.es_clase_b():
-                        bultos['B'] += 1
-                        metros['B'] += get_superficie(articulo) or 0
-                        kilos['B'] += get_peso_neto(articulo)
-                    elif articulo.es_clase_c():
-                        bultos['C'] += 1
-                        metros['C'] += get_superficie(articulo) or 0
-                        kilos['C'] += get_peso_neto(articulo)
+                if articulo.productoVenta == producto:
+                    res.append(articulo)
         # Pero si lo que estamos buscando son consumos de fibra, miro las
         # partidas de carga. Como dos partes pueden estar asociados a la
         # misma partida de carga, llevo el control de los ya tratados.
-        elif producto_ginn.es_bala():
+        elif producto.es_bala():
             try:
                 pc = pdp.partidaCarga
                 if not pc:  # El parte no ha consumido nada.
@@ -809,23 +858,9 @@ def get_consumos_ginn(producto_ginn, fini, ffin):
                 pcs_tratadas.append(pc)
                 for bala in pc.balas:
                     articulo = bala.articulo
-                    if articulo.productoVenta == producto_ginn:
-                        if articulo.es_clase_a():
-                            bultos['A'] += 1
-                            metros['A'] += get_superficie(articulo) or 0
-                            kilos['A'] += get_peso_neto(articulo)
-                        elif articulo.es_clase_b():
-                            bultos['B'] += 1
-                            metros['B'] += get_superficie(articulo) or 0
-                            kilos['B'] += get_peso_neto(articulo)
-                        elif articulo.es_clase_c():
-                            bultos['C'] += 1
-                            metros['C'] += get_superficie(articulo) or 0
-                            kilos['C'] += get_peso_neto(articulo)
-    sumbultos = sum([bultos[i] for i in bultos])
-    summetros = sum([metros[i] for i in metros])
-    sumkilos = sum([kilos[i] for i in kilos])
-    return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
+                    if articulo.productoVenta == producto:
+                        res.append(articulo)
+    return res
 
 
 def parse_fecha(cadfecha):
