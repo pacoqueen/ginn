@@ -116,7 +116,8 @@ def investigar(producto_ginn, fini, ffin, report,
     report.write("## Artículos consumidos en ginn pero no en Murano\n")
     for calidad in ginn_no_murano["consumos"]:
         report.write("### Calidad {}:\n".format(calidad))
-        for articulo in ginn_no_murano["consumos"][calidad]:
+        for codigo in ginn_no_murano["consumos"][calidad]:
+            articulo = pclases.Articulo.get_articulo(codigo)
             if articulo.es_bala():
                 parte_o_partidacarga = articulo.bala.partidaCarga.codigo
                 fecha_consumo = articulo.bala.partidaCarga.fecha
