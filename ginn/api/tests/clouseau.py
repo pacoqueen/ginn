@@ -143,7 +143,7 @@ def investigar(producto_ginn, fini, ffin, report,
                              "",
                              1,
                              articulo.get_superficie(),
-                             articulo.get_peso_neto()
+                             articulo.peso_neto
                             ])
     # 3.2.- Consumos en Murano pero no en ginn.
     report.write("## Artículos consumidos en Murano pero no en ginn\n")
@@ -185,7 +185,7 @@ def investigar(producto_ginn, fini, ffin, report,
         for articulo in ginn_no_murano["producción"][calidad]:
             fecha_produccion = articulo.parteDeProduccion.fechahorainicio
             superficie = articulo.get_superficie()
-            peso_neto = articulo.get_peso_neto()
+            peso_neto = articulo.peso_neto
             report.write(" * {} (Fabricada el {} en el parte del {})\n".format(
                 articulo.codigo, articulo.fechahora, fecha_produccion))
             if codigo not in data_res['Serie']:
