@@ -73,8 +73,8 @@ def investigar(producto_ginn, fini, ffin, report,
     producciones_murano = buscar_bultos_producidos_murano(producto_ginn, fini,
                                                           ffin)
     # 1,- La investigasió
-    ginn_no_murano = {"consumos": [], "producción": []}
-    murano_no_ginn = {"consumos": [], "producción": []}
+    ginn_no_murano = {"consumos": {}, "producción": {}}
+    murano_no_ginn = {"consumos": {}, "producción": {}}
     # 1.1.- Los que están consumidos/fabricados en ginn pero no en Murano
     for dic_ginn, dic_murano, category in (
             (consumos_ginn, consumos_murano, "consumos"),
@@ -83,13 +83,19 @@ def investigar(producto_ginn, fini, ffin, report,
             for articulo in dic_ginn[calidad]:
                 if (calidad not in dic_murano
                         or articulo.codigo not in dic_murano[calidad]):
-                    ginn_no_murano[category].append(articulo.codigo)
+                    try:
+                        ginn_no_murano[category][calidad].append(articulo.codigo)
+                    except KeyError:
+                        ginn_no_murano[category][calidad] = [articulo.codigo]
     # 1.2.- Los que se han consumido/fabricado en Murano pero no en ginn
         for calidad in dic_murano:
             for codigo in dic_murano[calidad]:
                 if (calidad not in dic_ginn[calidad]
                         or codigo not in [a.codigo for a in dic_ginn[calidad]]):
-                    murano_no_ginn[category].append(codigo)
+                    try:
+                        murano_no_ginn[category][calidad].append(codigo)
+                    except KeyError:
+                        murano_no_ginn[category][calidad] = [codigo]
     # 2.- Cabecera del informe de resultados:
     if not dev:
         # pylint: disable=no-member
