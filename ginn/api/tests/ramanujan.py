@@ -38,6 +38,7 @@ sys.path.append(ruta_ginn)
 # pylint: disable=import-error,wrong-import-position
 from framework import pclases
 from api import murano
+from api.murano.connection import CODEMPRESA
 from api.murano import connection
 from api.murano.extra import get_peso_neto, get_superficie
 from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
@@ -378,12 +379,13 @@ def get_ventas(producto_murano, fini, ffin):
                     Unidades, Unidades2_, Bultos, MetrosCuadrados,
                     PesoNeto_, PesoBruto_
                FROM LineasAlbaranCliente
-              WHERE CodigoEmpresa = '10200'
+              WHERE CodigoEmpresa = {}
                 AND FechaAlbaran >= '{}'
                 AND FechaAlbaran < '{}'
                 AND CodigoArticulo = '{}'
                 AND CodigoAlmacen = '{}'
-              ORDER BY FechaRegistro;""".format(fini, ffin, codigo, almacen)
+              ORDER BY FechaRegistro;""".format(CODEMPRESA, fini, ffin, codigo,
+                                                almacen)
     conn = connection.Connection()
     totales = conn.run_sql(sql)
     for total in totales:
@@ -456,13 +458,14 @@ def get_registros_movimientoarticuloserie(fini, ffin, codigo, almacen,
     sql = """USE GEOTEXAN;
              SELECT *
                FROM MovimientoArticuloSerie
-              WHERE CodigoEmpresa = '10200'
+              WHERE CodigoEmpresa = {}
                 AND Fecha >= '{}'
                 AND Fecha < '{}'
                 AND CodigoArticulo = '{}'
                 AND CodigoAlmacen = '{}'
                 AND OrigenDocumento = {}
-              """.format(fini, ffin, codigo, almacen, origen_documento)
+              """.format(CODEMPRESA, fini, ffin, codigo, almacen,
+                         origen_documento)
     if comentario is not None:
         if comentario[0] == '!':
             sql += "AND Comentario NOT LIKE '{}' ".format(comentario[1:])
