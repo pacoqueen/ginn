@@ -138,9 +138,9 @@ def investigar(producto_ginn, fini, ffin, report,
                              producto_ginn.descripcion,
                              articulo.codigo,
                              calidad,
+                             "",
+                             "",
                              fecha_consumo,
-                             "",
-                             "",
                              "",
                              1,
                              articulo.get_superficie(),
@@ -170,9 +170,9 @@ def investigar(producto_ginn, fini, ffin, report,
                                  codigo,
                                  calidad,
                                  "",
+                                 "",
+                                 "",
                                  fecha_consumo,
-                                 "",
-                                 "",
                                  1,
                                  superficie,
                                  peso_neto
@@ -180,7 +180,7 @@ def investigar(producto_ginn, fini, ffin, report,
             else:
                 index = data_res['Serie'].index(codigo)
                 row = list(data_res[index])
-                row[5] = fecha_consumo
+                row[7] = fecha_consumo
                 row[9] = superficie
                 row[10] = peso_neto
                 data_res[index] = row
@@ -200,9 +200,9 @@ def investigar(producto_ginn, fini, ffin, report,
                                  producto_ginn.descripcion,
                                  codigo,
                                  calidad,
-                                 "",
-                                 "",
                                  fecha_produccion.strftime("%d/%m/%Y %H:%M"),
+                                 "",
+                                 "",
                                  "",
                                  1,
                                  superficie,
@@ -211,7 +211,7 @@ def investigar(producto_ginn, fini, ffin, report,
             else:
                 index = data_res['Serie'].index(codigo)
                 row = list(data_res[index])
-                row[6] = fecha_produccion.strftime("%d/%m/%Y %H:%M")
+                row[4] = fecha_produccion.strftime("%d/%m/%Y %H:%M")
                 row[9] = superficie
                 row[10] = peso_neto
                 data_res[index] = row
@@ -236,9 +236,9 @@ def investigar(producto_ginn, fini, ffin, report,
                                  codigo,
                                  calidad,
                                  "",
-                                 "",
-                                 "",
                                  fecha_produccion.strftime("%d/%m/%Y %H:%M"),
+                                 "",
+                                 "",
                                  1,
                                  superficie,
                                  peso_neto
@@ -246,7 +246,7 @@ def investigar(producto_ginn, fini, ffin, report,
             else:
                 index = data_res['Serie'].index(codigo)
                 row = list(data_res[index])
-                row[7] = fecha_produccion.strftime("%d/%m/%Y %H:%M")
+                row[5] = fecha_produccion.strftime("%d/%m/%Y %H:%M")
                 row[9] = superficie
                 row[10] = peso_neto
                 data_res[index] = row
