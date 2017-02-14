@@ -1209,7 +1209,7 @@ def get_fecha_entrada(articulo):
                                                      codigo,
                                                      CODEMPRESA)
     try:
-        res = conn.run_sql(sql)[0]['FechaEntrada']
+        res = conn.run_sql(sql)[0]['FechaRegistro']
     except IndexError:
         res = None
     return res
