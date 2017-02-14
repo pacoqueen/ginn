@@ -134,7 +134,7 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
         if nres:
             res = nres
             desviacion = ndesviacion
-            ventas = nventas
+            ajustes = najustes
     # 2.- Cabecera del informe de resultados:
     if not dev:
         # pylint: disable=no-member
