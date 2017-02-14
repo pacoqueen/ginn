@@ -680,9 +680,10 @@ def get_produccion(producto_ginn, fini, ffin, strict=False):
     Devuelve todos la producción del producto entre las fechas. Se obtiene de
     ginn.
     En función del parámetro strict, si es False solo tiene en cuenta la hora
-    de finalización del parte. Da igual si está verificado o no.
-    Un rollo fabricado a las 22:15 del 12 de enero no se contará como
-    producción del día 12, sino del 13.
+    de comienzo del parte. Da igual si está verificado o no.
+    Un rollo fabricado a las 00:15 del 14 de enero no se contará como
+    producción del día 14, sino del 13 siempre que el parte haya comenzado
+    antes de las 12 de la noche.
     **Es la opción recomendada si se va a comparar con las cifras de
     consulta_producido.py de ginn.** (En ginn la "unidad de búsqueda" son los
     partes de producción porque se calculan rendimientos en base a turnos
@@ -741,8 +742,8 @@ def query_articulos_from_partes(producto, fini, ffin):
     PDP = pclases.ParteDeProduccion
     A = pclases.Articulo
     # pylint: disable=no-member
-    pdps = PDP.select(pclases.AND(PDP.q.fechahorafin >= fini,
-                                  PDP.q.fechahorafin < ffin,
+    pdps = PDP.select(pclases.AND(PDP.q.fechahorainicio >= fini,
+                                  PDP.q.fechahorainicio < ffin,
                                   A.q.parteDeProduccionID == PDP.q.id,
                                   A.q.productoVentaID == producto.id))
     # Porque el groupBy necesitaría un poco de low-level en el SQLObject:
