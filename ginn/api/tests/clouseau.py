@@ -128,7 +128,7 @@ def investigar(producto_ginn, fini, ffin, report,
             else:
                 parte_o_partidacarga = "¿?"
                 fecha_consumo = "¿?"
-            report.write(" * {} (Consumida el {} en {})\n".format(
+            report.write(" * {} (Consumido el {} en {})\n".format(
                 articulo.codigo, fecha_consumo, parte_o_partidacarga))
             # 5.- Guardo los resultados en el Dataset para exportarlos después.
             # ['Código', 'Producto', 'Serie', 'Calidad', 'Cons. ginn', 'Cons. Murano',
@@ -137,7 +137,7 @@ def investigar(producto_ginn, fini, ffin, report,
                              producto_ginn.descripcion,
                              articulo.codigo,
                              calidad,
-                             fecha_consumo,
+                             fecha_consumo.strftime("%d/%m/%Y"),
                              "",
                              "",
                              "",
@@ -150,12 +150,13 @@ def investigar(producto_ginn, fini, ffin, report,
     for calidad in murano_no_ginn["consumos"]:
         report.write("### Calidad {}:\n".format(calidad))
         for codigo in murano_no_ginn["consumos"][calidad]:
-            report.write(" * {}\n".format(codigo))
             # 5.- Guardo los resultados en el Dataset para exportarlos después.
             # ['Código', 'Producto', 'Serie', 'Calidad', 'Cons. ginn', 'Cons. Murano',
             #  'Prod. ginn', 'Prod. Murano', 'Bultos', 'm²', 'kg']
             articulo = pclases.Articulo.get_articulo(codigo)
             fecha_consumo = murano.ops.esta_consumido(articulo)
+            report.write(" * {} (Volcado como consumo el {})\n".format(codigo,
+                                                                       fecha_consumo))
             # pylint: disable=protected-access
             superficie = murano.ops._get_superficie_murano(articulo)
             peso_neto = murano.ops._get_peso_neto_murano(articulo)
@@ -211,12 +212,13 @@ def investigar(producto_ginn, fini, ffin, report,
     for calidad in murano_no_ginn["producción"]:
         report.write("### Calidad {}:\n".format(calidad))
         for codigo in murano_no_ginn["producción"][calidad]:
-            report.write(" * {}\n".format(codigo))
+            articulo = pclases.Articulo.get_articulo(codigo)
+            fecha_produccion = murano.ops.get_fecha_entrada(articulo)
+            report.write(" * {} (Volcada como producción en Murano el {})"
+                         "\n".format(codigo, fecha_produccion))
             # 5.- Guardo los resultados en el Dataset para exportarlos después.
             # ['Código', 'Producto', 'Serie', 'Calidad', 'Cons. ginn', 'Cons. Murano',
             #  'Prod. ginn', 'Prod. Murano', 'Bultos', 'm²', 'kg']
-            articulo = pclases.Articulo.get_articulo(codigo)
-            fecha_produccion = murano.ops.get_fecha_entrada(articulo)
             # pylint: disable=protected-access
             superficie = murano.ops._get_superficie_murano(articulo)
             peso_neto = murano.ops._get_peso_neto_murano(articulo)
@@ -239,7 +241,7 @@ def investigar(producto_ginn, fini, ffin, report,
                 data_res[index][9] = superficie
                 data_res[index][10] = peso_neto
     # 3.5.- Fin del report para el producto.
-    res = ginn_no_murano or murano_no_ginn
+    res = not ginn_no_murano and not murano_no_ginn
     report.write("-"*70)
     if res:
         report.write(" _[OK]_ \n")
@@ -424,7 +426,7 @@ def main():
                  "\n")
     report.write("## Todas las cantidades son en (bultos, m², kg).\n")
     # data_inventario = load_inventario(fich_inventario)
-    data_res = tablib.Dataset(title="Desviaciones")
+    data_res = tablib.Dataset(title="Incoherencias")
     data_res.headers = ['Código', 'Producto', 'Serie', 'Calidad',
                         'Cons. ginn', 'Cons. Murano',
                         'Prod. ginn', 'Prod. Murano',
@@ -433,7 +435,7 @@ def main():
         res = investigar(producto, fini, ffin, report, data_res, args.debug)
         results.append((producto, res))
     fallos = [p for p in results if not p[1]]
-    report.write("Encontradas {} desviaciones: {}".format(
+    report.write("Encontrados {} productos con incoherencias: {}".format(
         len(fallos), "; ".join(['PV{}'.format(p[0].id) for p in fallos])))
     report.write("\n\nFecha y hora de generación del informe: {}\n".format(
         datetime.datetime.now().strftime("%d/%m/%Y %H:%M")))
