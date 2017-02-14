@@ -395,6 +395,8 @@ def main():
                         default=False, action='store_true')
     parser.add_argument("-d", "--debug", dest="debug", help="Modo depuración.",
                         default=False, action="store_true")
+    parser.add_argument("--ffin", dest='ffin', help="Fecha fin (no incluida)",
+                        default=None)
     args = parser.parse_args()
     if args.debug:
         connection.DEBUG = True
@@ -422,7 +424,13 @@ def main():
     # el filtro con menor estricto: una producción del 02/01/17 23:00
     # la consideramos como que entra en el día 2, y entraría en el filtro
     # [01/01/17..02/01/17] porque en realidad sería [01/01/17..03/01/17).
-    ffin = today + datetime.timedelta(days=1)
+    if not ffin:
+        ffin = today + datetime.timedelta(days=1)
+    else:
+        if "/" in ffin:
+            ffin = datetime.date(*ffin.split("/")[::-1])
+        else:
+            ffin = datetime.date(day=ffin[:2], month=ffin[2:4], year=ffin[4:])
     report = open(args.fsalida, "a", 0)
     report.write("Analizando desde {} a {}, fin no incluido.\n".format(
         fini.strftime("%d/%m/%Y"), ffin.strftime("%d/%m/%Y")))
