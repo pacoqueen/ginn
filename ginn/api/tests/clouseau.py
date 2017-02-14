@@ -91,7 +91,7 @@ def investigar(producto_ginn, fini, ffin, report,
         for calidad in dic_murano:
             for codigo in dic_murano[calidad]:
                 if (calidad not in dic_ginn[calidad]
-                        or codigo not in [a.codigo for a in dic_ginn[calidad]]):
+                        or codigo not in dic_ginn[calidad]):
                     try:
                         murano_no_ginn[category][calidad].append(codigo)
                     except KeyError:
