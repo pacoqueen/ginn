@@ -245,7 +245,7 @@ def investigar(producto_ginn, fini, ffin, report,
                                 ])
             else:
                 index = data_res['Serie'].index(codigo)
-                row = data_res[index]
+                row = list(data_res[index])
                 row[7] = fecha_produccion.strftime("%d/%m/%Y %H:%M")
                 row[9] = superficie
                 row[10] = peso_neto
