@@ -90,7 +90,7 @@ def investigar(producto_ginn, fini, ffin, report,
     # 1.2.- Los que se han consumido/fabricado en Murano pero no en ginn
         for calidad in dic_murano:
             for codigo in dic_murano[calidad]:
-                if (calidad not in dic_ginn[calidad]
+                if (calidad not in dic_ginn
                         or codigo not in [a.codigo for a in dic_ginn[calidad]]):
                     try:
                         murano_no_ginn[category][calidad].append(codigo)
