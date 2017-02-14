@@ -135,7 +135,7 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
             res = nres
             desviacion = ndesviacion
             ajustes = najustes
-            vocados_murano = [sum(t) for t in zip(produccion_ginn, ajustes)]
+            volcados_murano = [sum(t) for t in zip(produccion_ginn, ajustes)]
     # 2.- Cabecera del informe de resultados:
     if not dev:
         # pylint: disable=no-member
