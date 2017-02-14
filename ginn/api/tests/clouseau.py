@@ -430,7 +430,7 @@ def main():
         if "/" in args.ffin:
             ffin = datetime.date(*[int(a) for a in args.ffin.split("/")[::-1]])
         else:
-            if args.ffin[:4] == "2017":
+            if int(args.ffin[:4]) >= 2017:
                 args.ffin = args.ffin[4:] + args.ffin[:4]
             ffin = datetime.date(day=int(args.ffin[:2]),
                                  month=int(args.ffin[2:4]),
