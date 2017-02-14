@@ -123,6 +123,18 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
             res = nres
             desviacion = ndesviacion
             ventas = nventas
+        # ¿Quizás con un ajuste positivo que ya se ha contado como parte de
+        # la producción de ginn? (Cambio de producto con update_producto en
+        # Murano a través de la API pero también cambiado en el parte en ginn)
+        najustes = [.0, .0, .0]
+        ndesviacion = calcular_desviacion(existencias_ini, produccion_ginn,
+                                          ventas, consumos_ginn, najustes,
+                                          existencias_fin)
+        nres = ndesviacion == [.0, .0, .0]
+        if nres:
+            res = nres
+            desviacion = ndesviacion
+            ventas = nventas
     # 2.- Cabecera del informe de resultados:
     if not dev:
         # pylint: disable=no-member
