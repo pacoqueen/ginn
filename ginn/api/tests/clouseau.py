@@ -424,13 +424,17 @@ def main():
     # el filtro con menor estricto: una producción del 02/01/17 23:00
     # la consideramos como que entra en el día 2, y entraría en el filtro
     # [01/01/17..02/01/17] porque en realidad sería [01/01/17..03/01/17).
-    if not ffin:
+    if not args.ffin:
         ffin = today + datetime.timedelta(days=1)
     else:
-        if "/" in ffin:
-            ffin = datetime.date(*ffin.split("/")[::-1])
+        if "/" in args.ffin:
+            ffin = datetime.date(*[int(a) for a in args.ffin.split("/")[::-1]])
         else:
-            ffin = datetime.date(day=ffin[:2], month=ffin[2:4], year=ffin[4:])
+            if args.ffin[:4] == "2017":
+                args.ffin = args.ffin[4:] + args.ffin[:4]
+            ffin = datetime.date(day=int(args.ffin[:2]),
+                                 month=int(args.ffin[2:4]),
+                                 year=int(args.ffin[4:]))
     report = open(args.fsalida, "a", 0)
     report.write("Analizando desde {} a {}, fin no incluido.\n".format(
         fini.strftime("%d/%m/%Y"), ffin.strftime("%d/%m/%Y")))
