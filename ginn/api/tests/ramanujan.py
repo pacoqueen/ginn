@@ -247,7 +247,8 @@ def calcular_movimientos(producto_ginn, data_inventario, fini, ffin, dev=False):
     # las musmas funciones de ops.py. Es decir, que si lo calculo así,
     # entrarían dos veces en el cálculo de la desviación: como parte del total
     # de producción, y como supuestos ajustes manuales con signo contrario.
-    ajustes = [sum(t) for t in zip(ajustes_ginn, ajustes_murano)]
+    # Los ajustes de ginn van sumando mientras que los MAN de Murano, restan.
+    ajustes = [sum(t) for t in zip(ajustes_ginn, [-a for a in ajustes_murano])]
     #  Los volcados los devuelvo para chequear los volcados de la API.
     return (producto_murano, existencias_ini, existencias_fin,
             produccion_ginn, ventas, consumos_ginn,
