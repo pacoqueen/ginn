@@ -189,7 +189,8 @@ def investigar(producto_ginn, fini, ffin, report,
                  "en el mismo periodo\n")
     for calidad in ginn_no_murano["producción"]:
         report.write("### Calidad {}:\n".format(calidad))
-        for articulo in ginn_no_murano["producción"][calidad]:
+        for codigo in ginn_no_murano["producción"][calidad]:
+            articulo = pclases.Articulo.get_articulo(codigo)
             fecha_produccion = articulo.parteDeProduccion.fechahorainicio
             superficie = articulo.get_superficie()
             peso_neto = articulo.peso_neto
