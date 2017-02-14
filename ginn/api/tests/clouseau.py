@@ -81,12 +81,14 @@ def investigar(producto_ginn, fini, ffin, report,
             (producciones_ginn, producciones_murano, "producción")):
         for calidad in dic_ginn:
             for articulo in dic_ginn[calidad]:
-                if articulo.codigo not in dic_murano[calidad]:
+                if (calidad not in dic_murano
+                        or articulo.codigo not in dic_murano[calidad]):
                     ginn_no_murano[category].append(articulo.codigo)
     # 1.2.- Los que se han consumido/fabricado en Murano pero no en ginn
         for calidad in dic_murano:
             for codigo in dic_murano[calidad]:
-                if codigo not in [a.codigo for a in dic_ginn[calidad]]:
+                if (calidad not in dic_ginn[calidad]
+                        or codigo not in [a.codigo for a in dic_ginn[calidad]]):
                     murano_no_ginn[category].append(codigo)
     # 2.- Cabecera del informe de resultados:
     if not dev:
