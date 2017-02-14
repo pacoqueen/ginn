@@ -450,8 +450,8 @@ def main():
     # data_inventario = load_inventario(fich_inventario)
     data_res = tablib.Dataset(title="Incoherencias")
     data_res.headers = ['Código', 'Producto', 'Serie', 'Calidad',
-                        'Cons. ginn', 'Cons. Murano',
                         'Prod. ginn', 'Prod. Murano',
+                        'Cons. ginn', 'Cons. Murano',
                         'Bultos', 'm²', 'kg']
     for producto in tqdm(productos, desc="Productos"):
         res = investigar(producto, fini, ffin, report, data_res, args.debug)
