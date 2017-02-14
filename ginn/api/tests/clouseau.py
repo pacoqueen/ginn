@@ -179,9 +179,11 @@ def investigar(producto_ginn, fini, ffin, report,
                                 ])
             else:
                 index = data_res['Serie'].index(codigo)
-                data_res[index][5] = fecha_consumo
-                data_res[index][9] = superficie
-                data_res[index][10] = peso_neto
+                row = list(data_res[index])
+                row[5] = fecha_consumo
+                row[9] = superficie
+                row[10] = peso_neto
+                data_res[index] = row
     # 3.3.- Producciones en ginn pero no en Murano.
     report.write("## Artículos fabricados en ginn pero sin alta en Murano "
                  "en el mismo periodo\n")
@@ -208,9 +210,11 @@ def investigar(producto_ginn, fini, ffin, report,
                                 ])
             else:
                 index = data_res['Serie'].index(codigo)
-                data_res[index][6] = fecha_produccion.strftime("%d/%m/%Y %H:%M")
-                data_res[index][9] = superficie
-                data_res[index][10] = peso_neto
+                row = list(data_res[index])
+                row[6] = fecha_produccion.strftime("%d/%m/%Y %H:%M")
+                row[9] = superficie
+                row[10] = peso_neto
+                data_res[index] = row
     # 3.4.- Producciones en Murano pero no en ginn.
     report.write("## Artículos con alta en Murano pero no fabricados en ginn\n")
     for calidad in murano_no_ginn["producción"]:
@@ -241,9 +245,11 @@ def investigar(producto_ginn, fini, ffin, report,
                                 ])
             else:
                 index = data_res['Serie'].index(codigo)
-                data_res[index][7] = fecha_produccion.strftime("%d/%m/%Y %H:%M")
-                data_res[index][9] = superficie
-                data_res[index][10] = peso_neto
+                row = data_res[index]
+                row[7] = fecha_produccion.strftime("%d/%m/%Y %H:%M")
+                row[9] = superficie
+                row[10] = peso_neto
+                data_res[index] = row
     # 3.5.- Fin del report para el producto.
     res = not ginn_no_murano and not murano_no_ginn
     report.write("-"*70)
