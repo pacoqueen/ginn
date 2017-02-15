@@ -55,9 +55,62 @@ from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
 sys.argv = _argv
 
 
+def add_to_datafull(articulo, data_full):
+    """
+    Agrega el artículo al dataset de desglose obteniendo todos sus datos tanto
+    de ginn como de Murano. Si el artículo o código ya estaba, se ignora.
+    """
+    if not isinstance(articulo, pclases.Articulo):  # He recibido un código.
+        # Obtengo los datos de ginn. Si está en Murano, debe estar en ginn.
+        articulo = pclases.Articulo.get_articulo(articulo)
+    producto_ginn = articulo.productoVenta
+    calidad = articulo.get_str_calidad()
+    if articulo.codigo not in data_full['Serie']:
+        inicio_parte_produccion = (
+            articulo.parteDeProduccion
+            and articulo.ParteDeProduccion.fechahorainicio.strftime("%d/%m/%Y %H:%M")
+            or "")
+        if articulo.es_bigbag():
+            pdp = articulo.bigbag.parteDeProduccion
+            if pdp:
+                codigo_partida_carga = pdp.fechahorainicio.strftime("%d/%m/%Y %H:%M")
+                fecha_consumo_ginn = pdp.fechahorainicio.strftime("%d/%m/%Y %H:%M")
+            else:
+                codigo_partida_carga = ""
+                fecha_consumo_ginn = ""
+        else:
+            pcarga = articulo.bala.partidaCarga
+            if pcarga:
+                codigo_partida_carga = pcarga.codigo
+                fecha_consumo_ginn = pcarga.fecha
+            else:
+                codigo_partida_carga = ""
+                fecha_consumo_ginn = ""
+        fecha_fabricacion_ginn = articulo.fechahora  # La fecha **real** de alta
+        fecha_entrada_murano = murano.ops.get_fecha_entrada(articulo)
+        fecha_salida_murano = murano.ops.esta_consumido(articulo)
+        if fecha_salida_murano:
+            fecha_salida_murano = fecha_salida_murano.strftime("%d/%m/%Y %H:%M")
+        fila = ['PV{}'.format(producto_ginn.id),
+                producto_ginn.descripcion,
+                articulo.codigo,
+                calidad,
+                fecha_fabricacion_ginn,
+                fecha_entrada_murano,
+                fecha_consumo_ginn,
+                fecha_salida_murano,
+                1,
+                articulo.get_superficie(),
+                articulo.peso_neto,
+                codigo_partida_carga,
+                inicio_parte_produccion
+               ]
+        data_full.append(fila)
+
+
 # pylint: disable=too-many-arguments,too-many-locals,too-many-branches,too-many-statements
 def investigar(producto_ginn, fini, ffin, report,
-               data_res, dev=False):
+               data_res, data_full, dev=False):
     """
     Para ver qué series están provocado la desviación, coge los bultos
     iniciales y los producidos durante el periodo, y analiza uno por uno
@@ -81,6 +134,7 @@ def investigar(producto_ginn, fini, ffin, report,
             (producciones_ginn, producciones_murano, "producción")):
         for calidad in dic_ginn:
             for articulo in dic_ginn[calidad]:
+                add_to_datafull(articulo, data_full)
                 if (calidad not in dic_murano
                         or articulo.codigo not in dic_murano[calidad]):
                     try:
@@ -90,6 +144,7 @@ def investigar(producto_ginn, fini, ffin, report,
     # 1.2.- Los que se han consumido/fabricado en Murano pero no en ginn
         for calidad in dic_murano:
             for codigo in dic_murano[calidad]:
+                add_to_datafull(codigo, data_full)
                 if (calidad not in dic_ginn
                         or codigo not in [a.codigo for a in dic_ginn[calidad]]):
                     try:
@@ -450,12 +505,19 @@ def main():
     report.write("## Todas las cantidades son en (bultos, m², kg).\n")
     # data_inventario = load_inventario(fich_inventario)
     data_res = tablib.Dataset(title="Incoherencias")
+    data_full = tablib.Dataset(title="Detalle")
     data_res.headers = ['Código', 'Producto', 'Serie', 'Calidad',
                         'Prod. ginn', 'Prod. Murano',
                         'Cons. ginn', 'Cons. Murano',
                         'Bultos', 'm²', 'kg']
+    data_full.headers = ['Código', 'Producto', 'Serie', 'Calidad',
+                         'Prod. ginn', 'Prod. Murano',
+                         'Cons. ginn', 'Cons. Murano',
+                         'Bultos', 'm²', 'kg',
+                         'Fabricado en', 'Consumido en']
     for producto in tqdm(productos, desc="Productos"):
-        res = investigar(producto, fini, ffin, report, data_res, args.debug)
+        res = investigar(producto, fini, ffin, report, data_res, data_full,
+                         args.debug)
         results.append((producto, res))
     fallos = [p for p in results if not p[1]]
     report.write("Encontrados {} productos con incoherencias: {}".format(
@@ -470,7 +532,7 @@ def main():
     report.write("\n\n___\n\n")
     report.close()
     fout = args.fsalida.replace(".md", ".xls")
-    book = tablib.Databook((data_res, ))
+    book = tablib.Databook((data_res, data_full))
     with open(fout, 'wb') as f:
         # pylint: disable=no-member
         f.write(book.xls)
