@@ -514,7 +514,7 @@ def main():
     report.write("=========================================================="
                  "\n")
     report.write("## Todas las cantidades son en (bultos, m², kg).\n")
-    # TODO: Rescatar los artículos que había en el inventario para agregar la traza en el data_full.
+    # TODO: Rescatar los artículos que había en el inventario para agregar la traza en el data_full. Rescatar también los datos de ventas de Murano para ver si esos rollos o los fabricados posteriormente han salido o no.
     # data_inventario = load_inventario(fich_inventario)
     data_res = tablib.Dataset(title="Incoherencias")
     data_full = tablib.Dataset(title="Detalle")
