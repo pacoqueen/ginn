@@ -66,10 +66,12 @@ def add_to_datafull(articulo, data_full):
     producto_ginn = articulo.productoVenta
     calidad = articulo.get_str_calidad()
     if articulo.codigo not in data_full['Serie']:
+        # ¿Cuándo se fabricó?
         inicio_parte_produccion = (
             articulo.parteDeProduccion
             and articulo.parteDeProduccion.fechahorainicio.strftime("%d/%m/%Y %H:%M")
             or "")
+        # ¿Cuándo se consumió, si es que se consumió?
         if articulo.es_bigbag():
             pdp = articulo.bigbag.parteDeProduccion
             if pdp:
@@ -78,7 +80,7 @@ def add_to_datafull(articulo, data_full):
             else:
                 codigo_partida_carga = ""
                 fecha_consumo_ginn = ""
-        else:
+        elif articulo.es_bala():
             pcarga = articulo.bala.partidaCarga
             if pcarga:
                 codigo_partida_carga = pcarga.codigo
@@ -86,6 +88,9 @@ def add_to_datafull(articulo, data_full):
             else:
                 codigo_partida_carga = ""
                 fecha_consumo_ginn = ""
+        else:   # Rollos, RollosC y BalasCable no se consumen.
+            codigo_partida_carga = ""
+            fecha_consumo_ginn = ""
         # La fecha **real** de alta en ginn, no la del parte de producción:
         fecha_fabricacion_ginn = articulo.fechahora.strftime("%d/%m/%Y %H:%M")
         fecha_entrada_murano = murano.ops.get_fecha_entrada(articulo)
