@@ -86,8 +86,11 @@ def add_to_datafull(articulo, data_full):
             else:
                 codigo_partida_carga = ""
                 fecha_consumo_ginn = ""
-        fecha_fabricacion_ginn = articulo.fechahora  # La fecha **real** de alta
+        # La fecha **real** de alta en ginn, no la del parte de producción:
+        fecha_fabricacion_ginn = articulo.fechahora.strftime("%d/%m/%Y %H:%M")
         fecha_entrada_murano = murano.ops.get_fecha_entrada(articulo)
+        if fecha_entrada_murano:
+            fecha_entrada_murano = fecha_entrada_murano.strftime("%d/%m/%Y %H:%M")
         fecha_salida_murano = murano.ops.esta_consumido(articulo)
         if fecha_salida_murano:
             fecha_salida_murano = fecha_salida_murano.strftime("%d/%m/%Y %H:%M")
