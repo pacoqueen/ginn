@@ -89,8 +89,10 @@ def add_to_datafull(articulo, data_full):
         # La fecha **real** de alta en ginn, no la del parte de producción:
         fecha_fabricacion_ginn = articulo.fechahora.strftime("%d/%m/%Y %H:%M")
         fecha_entrada_murano = murano.ops.get_fecha_entrada(articulo)
+        origen = ""
         if fecha_entrada_murano:
             fecha_entrada_murano = fecha_entrada_murano.strftime("%d/%m/%Y %H:%M")
+            origen = murano.ops.get_fecha_entrada(articulo, "SerieDocumento")
         fecha_salida_murano = murano.ops.esta_consumido(articulo)
         if fecha_salida_murano:
             fecha_salida_murano = fecha_salida_murano.strftime("%d/%m/%Y %H:%M")
@@ -100,6 +102,7 @@ def add_to_datafull(articulo, data_full):
                 calidad,
                 fecha_fabricacion_ginn,
                 fecha_entrada_murano,
+                origen,
                 fecha_consumo_ginn,
                 fecha_salida_murano,
                 1,
@@ -514,7 +517,7 @@ def main():
                         'Cons. ginn', 'Cons. Murano',
                         'Bultos', 'm²', 'kg']
     data_full.headers = ['Código', 'Producto', 'Serie', 'Calidad',
-                         'Prod. ginn', 'Prod. Murano',
+                         'Prod. ginn', 'Prod. Murano', 'Origen',
                          'Cons. ginn', 'Cons. Murano',
                          'Bultos', 'm²', 'kg',
                          'Fabricado en', 'Consumido en']

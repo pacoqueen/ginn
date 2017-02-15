@@ -1187,19 +1187,25 @@ def esta_consumido(articulo):
     return res
 
 
-def get_fecha_entrada(articulo):
+def get_fecha_entrada(articulo, campo="FechaRegistro"):
     """
     Devuelve la fecha en que el artículo se dio de alta en Murano.
     Acepta también un código de artículo directamente en lugar de un artículo
     de ginn.
     Si el artículo no se encuentra, devuelve None.
+    Permite obtener la fecha, fecha de registro o serie del alta especificando
+    el campo en la llamada a la función. Por defecto devuelve la fecha de
+    registro, que no tiene por qué coincidir con la fecha indicada para el alta.
     """
+    assert campo in ("Fecha", "FechaRegistro", "SerieDocumento"), "Solo se"\
+            " admiten Fecha, FechaRegistro o SerieDocumento como campo a "\
+            "obtener."
     if isinstance(articulo, pclases.Articulo):
         codigo = articulo.codigo
     else:
         codigo = articulo
     conn = Connection()
-    sql = """SELECT Fecha, FechaRegistro
+    sql = """SELECT Fecha, FechaRegistro, SerieDocumento
                FROM {}.dbo.MovimientoArticuloSerie
               WHERE NumeroSerieLc = '{}'
                 AND CodigoEmpresa = {}
@@ -1209,7 +1215,7 @@ def get_fecha_entrada(articulo):
                                                      codigo,
                                                      CODEMPRESA)
     try:
-        res = conn.run_sql(sql)[0]['FechaRegistro']
+        res = conn.run_sql(sql)[0][campo]
     except IndexError:
         res = None
     return res
