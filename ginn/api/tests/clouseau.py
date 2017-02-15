@@ -113,8 +113,8 @@ def add_to_datafull(articulo, data_full):
                 1,
                 articulo.get_superficie(),
                 articulo.peso_neto,
+                inicio_parte_produccion,
                 codigo_partida_carga,
-                inicio_parte_produccion
                ]
         data_full.append(fila)
 
@@ -514,6 +514,7 @@ def main():
     report.write("=========================================================="
                  "\n")
     report.write("## Todas las cantidades son en (bultos, m², kg).\n")
+    # TODO: Rescatar los artículos que había en el inventario para agregar la traza en el data_full.
     # data_inventario = load_inventario(fich_inventario)
     data_res = tablib.Dataset(title="Incoherencias")
     data_full = tablib.Dataset(title="Detalle")
