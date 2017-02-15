@@ -68,7 +68,7 @@ def add_to_datafull(articulo, data_full):
     if articulo.codigo not in data_full['Serie']:
         inicio_parte_produccion = (
             articulo.parteDeProduccion
-            and articulo.ParteDeProduccion.fechahorainicio.strftime("%d/%m/%Y %H:%M")
+            and articulo.parteDeProduccion.fechahorainicio.strftime("%d/%m/%Y %H:%M")
             or "")
         if articulo.es_bigbag():
             pdp = articulo.bigbag.parteDeProduccion
