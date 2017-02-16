@@ -149,7 +149,8 @@ def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
     ginn_no_murano = {"consumos": {}, "producción": {}}
     murano_no_ginn = {"consumos": {}, "producción": {}}
     # 1.0.0- Todos los artículos del inventario anterior.
-    for codigo in data_inventario["Código trazabilidad"]:
+    for codigo in tqdm(data_inventario["Código trazabilidad"],
+                       desc="Artículos inventario anterior"):
         articulo = pclases.Articulo.get_articulo(codigo)
         add_to_datafull(articulo, data_full)
     # 1.1.- Los que están consumidos/fabricados en ginn pero no en Murano
@@ -157,7 +158,8 @@ def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
             (consumos_ginn, consumos_murano, "consumos"),
             (producciones_ginn, producciones_murano, "producción")):
         for calidad in dic_ginn:
-            for articulo in dic_ginn[calidad]:
+            for articulo in tqdm(dic_ginn[calidad],
+                                 desc="Artículos solo en ginn"):
                 add_to_datafull(articulo, data_full)
                 if (calidad not in dic_murano
                         or articulo.codigo not in dic_murano[calidad]):
@@ -167,7 +169,8 @@ def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
                         ginn_no_murano[category][calidad] = [articulo.codigo]
     # 1.2.- Los que se han consumido/fabricado en Murano pero no en ginn
         for calidad in dic_murano:
-            for codigo in dic_murano[calidad]:
+            for codigo in tqdm(dic_murano[calidad],
+                               desc="Artículos solo en Murano"):
                 add_to_datafull(codigo, data_full)
                 if (calidad not in dic_ginn
                         or codigo not in [a.codigo for a in dic_ginn[calidad]]):
