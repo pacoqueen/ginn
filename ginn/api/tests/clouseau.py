@@ -88,7 +88,7 @@ def add_to_datafull(articulo, data_full):
             pcarga = articulo.bala.partidaCarga
             if pcarga:
                 codigo_partida_carga = pcarga.codigo
-                fecha_consumo_ginn = pcarga.fecha
+                fecha_consumo_ginn = pcarga.fecha.strftime("%d/%m/%Y %H:%M")
             else:
                 codigo_partida_carga = ""
                 fecha_consumo_ginn = ""
@@ -111,6 +111,7 @@ def add_to_datafull(articulo, data_full):
                 murano.connection.Connection(), articulo)
             albaran = "{}{}".format(ultimo_movarticulo['SerieDocumento'],
                                     ultimo_movarticulo['Documento'])
+            fecha_venta = fecha_venta.strftime("%d/%m/%Y %H:%M")
         else:
             albaran = None
         # ['Código', 'Producto', 'Serie', 'Calidad', 'Bultos', 'm²', 'kg',
@@ -149,9 +150,10 @@ def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
     ginn_no_murano = {"consumos": {}, "producción": {}}
     murano_no_ginn = {"consumos": {}, "producción": {}}
     # 1.0.0- Todos los artículos del inventario anterior.
+    codigo_producto_murano = "PV{}".format(producto_ginn.id)
     for row_inventario in tqdm(data_inventario.dict,
                                desc="Artículos inventario anterior"):
-        if row_inventario[u'Código producto'] == "PV{}".format(producto_ginn.id):
+        if row_inventario[u'Código producto'] == codigo_producto_murano:
             codigo = row_inventario[u'Código trazabilidad']
             articulo = pclases.Articulo.get_articulo(codigo)
             add_to_datafull(articulo, data_full)
