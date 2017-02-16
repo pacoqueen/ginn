@@ -151,8 +151,8 @@ def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
     # 1.0.0- Todos los artículos del inventario anterior.
     for row_inventario in tqdm(data_inventario.dict,
                                desc="Artículos inventario anterior"):
-        if row_inventario['Código producto'] == "PV{}".format(producto_ginn.id):
-            codigo = row_inventario['Código trazabilidad']
+        if row_inventario[u'Código producto'] == "PV{}".format(producto_ginn.id):
+            codigo = row_inventario[u'Código trazabilidad']
             articulo = pclases.Articulo.get_articulo(codigo)
             add_to_datafull(articulo, data_full)
     # 1.1.- Los que están consumidos/fabricados en ginn pero no en Murano
