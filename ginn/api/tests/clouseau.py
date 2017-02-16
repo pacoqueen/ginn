@@ -55,6 +55,7 @@ from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
 sys.argv = _argv
 
 
+# pylint: disable=too-many-locals
 def add_to_datafull(articulo, data_full):
     """
     Agrega el artículo al dataset de desglose obteniendo todos sus datos tanto
@@ -105,12 +106,11 @@ def add_to_datafull(articulo, data_full):
         if fecha_salida_murano:
             fecha_salida_murano = fecha_salida_murano.strftime("%d/%m/%Y %H:%M")
         fecha_venta = murano.ops.esta_vendido(articulo)
-        if fecha_albaran:
+        if fecha_venta:
             ultimo_movarticulo = murano.ops.get_ultimo_movimiento_articulo_serie(
-                    murano.connection.Connection(), articulo)
-            albaran = "{}{}".format(
-                    ultimo_movarticulo['SerieDocumento'],
-                    ultimo_movarticulo['Documento'])
+                murano.connection.Connection(), articulo)
+            albaran = "{}{}".format(ultimo_movarticulo['SerieDocumento'],
+                                    ultimo_movarticulo['Documento'])
         # ['Código', 'Producto', 'Serie', 'Calidad', 'Bultos', 'm²', 'kg',
         #  'Prod. ginn', 'Prod. Murano', 'Origen', 'Fabricado en',
         # 'Cons. ginn', 'Cons. Murano', 'Consumido en',
@@ -525,7 +525,6 @@ def main():
     report.write("=========================================================="
                  "\n")
     report.write("## Todas las cantidades son en (bultos, m², kg).\n")
-    # TODO: Rescatar los artículos que había en el inventario para agregar la traza en el data_full. Rescatar también los datos de ventas de Murano para ver si esos rollos o los fabricados posteriormente han salido o no.
     data_inventario = load_inventario(fich_inventario, "Desglose")
     data_res = tablib.Dataset(title="Incoherencias")
     data_full = tablib.Dataset(title="Detalle")
