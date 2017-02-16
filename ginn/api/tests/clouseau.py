@@ -55,7 +55,7 @@ from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
 sys.argv = _argv
 
 
-# pylint: disable=too-many-locals
+# pylint: disable=too-many-locals,too-many-branches
 def add_to_datafull(articulo, data_full):
     """
     Agrega el artículo al dataset de desglose obteniendo todos sus datos tanto
@@ -111,6 +111,8 @@ def add_to_datafull(articulo, data_full):
                 murano.connection.Connection(), articulo)
             albaran = "{}{}".format(ultimo_movarticulo['SerieDocumento'],
                                     ultimo_movarticulo['Documento'])
+        else:
+            albaran = None
         # ['Código', 'Producto', 'Serie', 'Calidad', 'Bultos', 'm²', 'kg',
         #  'Prod. ginn', 'Prod. Murano', 'Origen', 'Fabricado en',
         # 'Cons. ginn', 'Cons. Murano', 'Consumido en',
