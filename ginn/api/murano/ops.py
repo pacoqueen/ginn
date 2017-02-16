@@ -1187,6 +1187,24 @@ def esta_consumido(articulo):
     return res
 
 
+def esta_vendido(articulo):
+    """
+    Devuelve la fecha de venta si el artículo se ha vendido. None en
+    otro caso.
+    Los valores a mirar si se ha vendido son la serie, origen documento y
+    comentario del último registro de MovimientoArticuloSerie y deberían
+    ser, si es un consumo: FAB, 11 y "Consumo (bala|bigbag) ginn.*".
+    """
+    conn = Connection()
+    movserie = get_ultimo_movimiento_articulo_serie(conn, articulo)
+    # HARDCODED
+    if movserie['OrigenDocumento'] == 1:
+        res = movserie['Fecha']
+    else:
+        res = None
+    return res
+
+
 def get_fecha_entrada(articulo, campo="FechaRegistro"):
     """
     Devuelve la fecha en que el artículo se dio de alta en Murano.

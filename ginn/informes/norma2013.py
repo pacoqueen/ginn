@@ -11,13 +11,14 @@ import textwrap
 from collections import defaultdict
 from tempfile import gettempdir
 from reportlab.pdfgen import canvas
-from reportlab.lib.units import cm
+from reportlab.lib.units import cm, inch
 from formularios.utils import float2str
 from formularios import utils
 from informes.geninformes import give_me_the_name_baby, rectangulo
 from informes.geninformes import el_encogedor_de_fuentes_de_doraemon
 from framework import pclases
 from informes.barcode.code39 import Extended39
+from informes.barcode.code128 import Code128
 
 
 # pylint: disable=too-many-locals,too-many-branches,too-many-statements
@@ -219,8 +220,8 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
         y -= 2*offset_y
         y -= 0.2*cm
         codigo_rollo = barcode39
-        codigobarras = Extended39(codigo_rollo, xdim=.060*cm)
-        codigobarras.drawOn(c, margen-0.2*cm, y)
+        codigobarras = Extended39(codigo_rollo, xdim=.065*cm)
+        codigobarras.drawOn(c, margen-0.5*cm, y)
         xcode = ancho / 2.0
         ycode = 0.15*cm
         c.setFont("Courier-Bold", 9)
@@ -230,25 +231,80 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
             c.drawCentredString(xcode, ycode, codigo_rollo)
         c.restoreState()
         # Y el QR de regalo
-        try:
-            from lib.pyqrcode import pyqrcode
-            bidicode = pyqrcode.create(codigo_rollo)
-            nomfichbidi = os.path.join(gettempdir(),
-                                       "bidi_%s.svg" % give_me_the_name_baby())
-            bidicode.svg(nomfichbidi, scale=3)
-            from lib.svglib.svglib import svglib
-            drawing = svglib.svg2rlg(nomfichbidi)
-            drawing.drawOn(c, margen - 0.25*cm, alto - margen - 3.0*cm + 0.25*cm)
-        except ImportError:
-            pass    # No hay bidi porque no hay lxml instalado. Probablemente.
-            print("No se generará código QR. Puede intentar lo siguiente:")
-            print("C:\Python27\Scripts\easy_install.exe pip")
-            print('pip install "D:\Informatica\Software\softwin python 2.7'
-                  '\lxml-3.7.2-cp27-cp27m-win32.whl"')
+        # # De momento lo desactivo porque nuestras pistolas no lo reconocen.
+        #try:
+        #    from lib.pyqrcode import pyqrcode
+        #    bidicode = pyqrcode.create(codigo_rollo)
+        #    nomfichbidi = os.path.join(gettempdir(),
+        #                               "bidi_%s.svg" % give_me_the_name_baby())
+        #    bidicode.svg(nomfichbidi, scale=3)
+        #    from lib.svglib.svglib import svglib
+        #    drawing = svglib.svg2rlg(nomfichbidi)
+        #    drawing.drawOn(c, margen - 0.25*cm, alto - margen - 3.0*cm + 0.25*cm)
+        #except ImportError:
+        #    pass    # No hay bidi porque no hay lxml instalado. Probablemente.
+        #    print("No se generará código QR. Puede intentar lo siguiente:")
+        #    print("C:\Python27\Scripts\easy_install.exe pip")
+        #    print('pip install "D:\Informatica\Software\softwin python 2.7'
+        #          '\lxml-3.7.2-cp27-cp27m-win32.whl"')
         #######################################################################
+        c.showPage()
+        # Y ahora la etiqueta adicional por si se pierde la otra y para cargar.
+        create_etiqueta_backup(c, rollo)
         c.showPage()
     c.save()
     return nomarchivo
+
+
+def create_etiqueta_backup(c, rollo):
+    """
+    Genera en el canvas (pero hace el showPage) una etiqueta adicional
+    principalmente con un código de barras enorme para poder leerla desde
+    lejos a la hora de cargar el rollo.
+    """
+    alto = 12.55 * cm
+    ancho = 8.4 * cm
+    margen = 0.1 * cm
+    try:
+        try:
+            producto = rollo['productoVenta'].descripcion
+        except KeyError:
+            # Si no me lo mandan en el diccionario, tiene que traer
+            # el objeto rollo. Los partes mandan producto en dicccionario
+            # porque a veces se genera etiqueta antes de crear el objeto
+            # en la BD. Si viene de la consulta del listado de rollos,
+            # como el rollo ya existe, me viene en el objeto toda la info.
+            producto = rollo['objeto'].productoVenta.descripcion
+        codigo_rollo = rollo['codigo39']
+    except TypeError:  # He recibido un objeto directamente.
+        producto = rollo.productoVenta.descripcion
+        codigo_rollo = rollo.codigo
+    c.saveState()
+    xcode = ancho / 2.0
+    ycode = 0.15*cm
+    xprod = xcode
+    yprod = alto - margen - 7
+    c.setFont("Courier-Bold", 9)
+    try:
+        c.drawCentredString(xcode, ycode, codigo_rollo, charSpace=0.25*cm)
+    except TypeError:   # Versión antigua de ReportLab.
+        c.drawCentredString(xcode, ycode, codigo_rollo)
+    c.setFont("Helvetica", 8)
+    c.drawCentredString(xprod, yprod, producto)
+    c.rotate(90)
+    c.rect(margen, -(ancho-margen), alto - 2*margen, ancho - 2*margen, stroke=1)
+    x = -8.0*margen
+    y = -(ancho - 2*margen)
+    mil = 0.001*inch
+    # Con 40 debería llegar hasta a 9.7 metros de distancia la lectura o
+    # 37.5 m la versión Auto Range.
+    mils = 50*mil
+    altobarcode = (ancho-4*margen)
+    codigobarras = Code128(codigo_rollo, xdim=mils, height=altobarcode)
+    codigobarras.drawOn(c, x, y)
+    c.rotate(-90)
+    c.restoreState()
+
 
 def helene_laanest(texto):
     # En honor a la profe de inglés,
@@ -259,8 +315,12 @@ def helene_laanest(texto):
     translate_table = defaultdict(lambda: texto)
     translate_table["Drenaje, filtración, refuerzo y separación"] \
             = "Drainage, filtration, reinforcement and separation"
+    translate_table["Drenaje, filtración, refuerzo, separación"] \
+            = "Drainage, filtration, reinforcement, separation"
     translate_table["Drenaje, filtración, refuerzo, separación y protección"]\
             = "Drainage, filtration, reinforcement, separation and protection"
+    translate_table["Drenaje, filtración, refuerzo, separación, protección"]\
+            = "Drainage, filtration, reinforcement, separation, protection"
     translate_table["Fibra de polipropileno virgen embolsada en papel hidrosoluble para su uso como aditivo del hormigón"] \
             = "100% polypropylene fibers in water-soluble paper bags used like an additive for concrete"
     translate_table["Fabricado por: %s"] = "Manufactured by: %s"
@@ -452,14 +512,10 @@ def crear_etiquetas_pales(pales, mostrar_marcado = True, lang = "es"):
 
 def test_rollos():
     from formularios.reports import abrir_pdf
-    prods = [p for p in pclases.ProductoVenta.select()]
-    prods.sort(key = lambda p: len(p.nombre), reverse = True)
-    #for p in pclases.ProductoVenta.select():
-    #    if "EkoTex" in p.nombre and " 06 " in p.descripcion and p.articulos:
-    #        rollos = [a.rollo for a in p.articulos[:2]]
-    #        break
-    p = prods[0]
-    rollos = [a.rollo for a in p.articulos[:2]]
+    todos = pclases.Rollo.select(orderBy="-id")
+    from random import randrange
+    rollos = (todos[randrange(todos.count())],
+              todos[randrange(todos.count())])
     abrir_pdf(etiqueta_rollos_norma13(rollos, False))
     abrir_pdf(etiqueta_rollos_norma13_en(rollos))
 

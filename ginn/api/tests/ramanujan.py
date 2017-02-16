@@ -973,9 +973,11 @@ def find_fich_inventario(ruta):
     return res
 
 
-def load_inventario(fich_inventario):
+def load_inventario(fich_inventario, hoja="Totales"):
     """
     Devuelve los datos del excel/ods del inventario como un Dataset de tablib.
+    Por defecto devuelve los datos de la hoja "Totales", pero puede devolver
+    también los de "Desglose" o "Desviaciones".
     """
     book = tablib.Databook().load(None, open(fich_inventario, "r+b").read())
     sheets = book.sheets()
@@ -984,7 +986,7 @@ def load_inventario(fich_inventario):
     found = False
     data = None
     for data in sheets:
-        if "totales" in data.__repr__().lower():
+        if hoja.lower() in data.__repr__().lower():
             found = True
             break
     if not found:

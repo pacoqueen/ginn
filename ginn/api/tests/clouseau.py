@@ -47,7 +47,7 @@ from api import murano
 from api.murano import connection
 # from api.murano.extra import get_peso_neto, get_superficie
 from api.tests.ramanujan import find_fich_inventario, parse_fecha_xls
-# from api.tests.ramanujan import load_inventario
+from api.tests.ramanujan import load_inventario
 from api.tests.ramanujan import get_articulos_consumidos_ginn
 from api.tests.ramanujan import get_registros_movimientoarticuloserie
 from api.tests.ramanujan import query_articulos_from_partes
@@ -65,6 +65,9 @@ def add_to_datafull(articulo, data_full):
         articulo = pclases.Articulo.get_articulo(articulo)
     producto_ginn = articulo.productoVenta
     calidad = articulo.get_str_calidad()
+    # De una sentada me saco todos los datos de un artículo. De modo que si
+    # vuelven a pedirme que lo agregue al data_full, lo ignoro. Ya está metido
+    # y no hay información nueva que actualizar.
     if articulo.codigo not in data_full['Serie']:
         # ¿Cuándo se fabricó?
         inicio_parte_produccion = (
@@ -101,27 +104,31 @@ def add_to_datafull(articulo, data_full):
         fecha_salida_murano = murano.ops.esta_consumido(articulo)
         if fecha_salida_murano:
             fecha_salida_murano = fecha_salida_murano.strftime("%d/%m/%Y %H:%M")
+        fecha_venta = murano.ops.esta_vendido(articulo)
+        if fecha_albaran:
+            ultimo_movarticulo = murano.ops.get_ultimo_movimiento_articulo_serie(
+                    murano.connection.Connection(), articulo)
+            albaran = "{}{}".format(
+                    ultimo_movarticulo['SerieDocumento'],
+                    ultimo_movarticulo['Documento'])
+        # ['Código', 'Producto', 'Serie', 'Calidad', 'Bultos', 'm²', 'kg',
+        #  'Prod. ginn', 'Prod. Murano', 'Origen', 'Fabricado en',
+        # 'Cons. ginn', 'Cons. Murano', 'Consumido en',
+        # 'Venta', 'Vendido en']
         fila = ['PV{}'.format(producto_ginn.id),
-                producto_ginn.descripcion,
-                articulo.codigo,
-                calidad,
-                fecha_fabricacion_ginn,
-                fecha_entrada_murano,
-                origen,
-                fecha_consumo_ginn,
-                fecha_salida_murano,
-                1,
-                articulo.get_superficie(),
-                articulo.peso_neto,
+                producto_ginn.descripcion, articulo.codigo, calidad,
+                1, articulo.get_superficie(), articulo.peso_neto,
+                fecha_fabricacion_ginn, fecha_entrada_murano, origen,
                 inicio_parte_produccion,
-                codigo_partida_carga,
+                fecha_consumo_ginn, fecha_salida_murano, codigo_partida_carga,
+                fecha_venta, albaran
                ]
         data_full.append(fila)
 
 
 # pylint: disable=too-many-arguments,too-many-locals,too-many-branches,too-many-statements
-def investigar(producto_ginn, fini, ffin, report,
-               data_res, data_full, dev=False):
+def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
+               data_inventario, dev=False):
     """
     Para ver qué series están provocado la desviación, coge los bultos
     iniciales y los producidos durante el periodo, y analiza uno por uno
@@ -139,6 +146,10 @@ def investigar(producto_ginn, fini, ffin, report,
     # 1,- La investigasió
     ginn_no_murano = {"consumos": {}, "producción": {}}
     murano_no_ginn = {"consumos": {}, "producción": {}}
+    # 1.0.0- Todos los artículos del inventario anterior.
+    for codigo in data_inventario["Código trazabilidad"]:
+        articulo = pclases.Articulo.get_articulo(codigo)
+        add_to_datafull(articulo, data_full)
     # 1.1.- Los que están consumidos/fabricados en ginn pero no en Murano
     for dic_ginn, dic_murano, category in (
             (consumos_ginn, consumos_murano, "consumos"),
@@ -515,7 +526,7 @@ def main():
                  "\n")
     report.write("## Todas las cantidades son en (bultos, m², kg).\n")
     # TODO: Rescatar los artículos que había en el inventario para agregar la traza en el data_full. Rescatar también los datos de ventas de Murano para ver si esos rollos o los fabricados posteriormente han salido o no.
-    # data_inventario = load_inventario(fich_inventario)
+    data_inventario = load_inventario(fich_inventario, "Desglose")
     data_res = tablib.Dataset(title="Incoherencias")
     data_full = tablib.Dataset(title="Detalle")
     data_res.headers = ['Código', 'Producto', 'Serie', 'Calidad',
@@ -523,13 +534,13 @@ def main():
                         'Cons. ginn', 'Cons. Murano',
                         'Bultos', 'm²', 'kg']
     data_full.headers = ['Código', 'Producto', 'Serie', 'Calidad',
-                         'Prod. ginn', 'Prod. Murano', 'Origen',
-                         'Cons. ginn', 'Cons. Murano',
                          'Bultos', 'm²', 'kg',
-                         'Fabricado en', 'Consumido en']
+                         'Prod. ginn', 'Prod. Murano', 'Origen', 'Fabricado en',
+                         'Cons. ginn', 'Cons. Murano', 'Consumido en',
+                         'Venta', 'Vendido en']
     for producto in tqdm(productos, desc="Productos"):
         res = investigar(producto, fini, ffin, report, data_res, data_full,
-                         args.debug)
+                         data_inventario, args.debug)
         results.append((producto, res))
     fallos = [p for p in results if not p[1]]
     report.write("Encontrados {} productos con incoherencias: {}".format(
