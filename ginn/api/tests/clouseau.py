@@ -55,6 +55,13 @@ from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
 sys.argv = _argv
 
 
+def exceldate2datetime(serial):
+    """ Convierte una fecha "serial" de Excel (un float) a datetime. """
+    seconds = (serial - 25569) * 86400.0
+    res = datetime.datetime.utcfromtimestamp(seconds)
+    return res
+
+
 # pylint: disable=too-many-locals,too-many-branches, too-many-statements
 def add_to_datafull(articulo, data_full, fallbackdata=None):
     """
@@ -78,8 +85,9 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
         codigo_partida_carga = "N/D"
         fecha_consumo_ginn = "N/D"
         fecha_fabricacion_ginn = "N/D"
-        fecha_entrada_murano = fallbackdata[u'Fecha importación a Murano'].strftime(
-            "%d/%m/%Y %H:%M")
+        fecha_entrada_murano = exceldate2datetime(
+            fallbackdata[u'Fecha importación a Murano']).strftime(
+                "%d/%m/%Y %H:%M")
         origen = "INV"  # de "INVentario". No es una serie real de Murano.
         codigo_producto_murano = fallbackdata[u'Código producto']
         ultimo_movarticulo = murano.ops.get_ultimo_movimiento_articulo_serie(
