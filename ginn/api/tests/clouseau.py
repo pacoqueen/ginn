@@ -55,21 +55,51 @@ from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
 sys.argv = _argv
 
 
-# pylint: disable=too-many-locals,too-many-branches
-def add_to_datafull(articulo, data_full):
+# pylint: disable=too-many-locals,too-many-branches, too-many-statements
+def add_to_datafull(articulo, data_full, fallbackdata=None):
     """
     Agrega el artículo al dataset de desglose obteniendo todos sus datos tanto
     de ginn como de Murano. Si el artículo o código ya estaba, se ignora.
+    «fallbackdata» es la fila con los datos del pasado inventario sobre el
+    artículo y se recibe únicamente cuando se está recorriendo el fichero con
+    las existencias iniciales. Con el resto no es necesario porque es seguro
+    que están en ginn y puedo acceder a su artículo. Solo se usa cuando el
+    artículo del inventario ha sido eliminado de ginn.
     """
-    if not isinstance(articulo, pclases.Articulo):  # He recibido un código.
-        # Obtengo los datos de ginn. Si está en Murano, debe estar en ginn.
-        articulo = pclases.Articulo.get_articulo(articulo)
-    producto_ginn = articulo.productoVenta
-    calidad = articulo.get_str_calidad()
-    # De una sentada me saco todos los datos de un artículo. De modo que si
-    # vuelven a pedirme que lo agregue al data_full, lo ignoro. Ya está metido
-    # y no hay información nueva que actualizar.
-    if articulo.codigo not in data_full['Serie']:
+    if not articulo:
+        # El artículo se ha borrado del ERP. He debido recibir la fila completa
+        # de la hoja de cálculo
+        calidad = fallbackdata['Calidad']
+        codigo_articulo = fallbackdata[u'Código trazabilidad']
+        inicio_parte_produccion = "N/D"
+        codigo_partida_carga = "N/D"
+        fecha_consumo_ginn = "N/D"
+        fecha_fabricacion_ginn = "N/D"
+        fecha_entrada_murano = fallbackdata[u'Fecha importación a Murano']
+        origen = "INV"  # de "INVentario". No es una serie real de Murano.
+        ultimo_movarticulo = murano.ops.get_ultimo_movimiento_articulo_serie(
+            murano.connection.Connection(), codigo_articulo)
+        if ultimo_movarticulo:
+            if ultimo_movarticulo['OrigenDocumento'] == 11:     # Salida
+                fecha_salida_murano = ultimo_movarticulo['FechaRegistro']
+                if murano.ops.es_movimiento_salida_albaran(ultimo_movarticulo):
+                    fecha_venta = ultimo_movarticulo['Fecha']
+                    albaran = "{}{}".format(ultimo_movarticulo['SerieDocumento'],
+                                            ultimo_movarticulo['Documento'])
+                else:
+                    fecha_venta = ""
+                    albaran = ""
+        else:
+            fecha_salida_murano = "N/D"
+            fecha_venta = "N/D"
+            albaran = "N/D"
+    else:
+        if not isinstance(articulo, pclases.Articulo):  # He recibido un código.
+            # Obtengo los datos de ginn. Si está en Murano, debe estar en ginn.
+            articulo = pclases.Articulo.get_articulo(articulo)
+        producto_ginn = articulo.productoVenta
+        calidad = articulo.get_str_calidad()
+        codigo_articulo = articulo.codigo
         # ¿Cuándo se fabricó?
         inicio_parte_produccion = (
             articulo.parteDeProduccion
@@ -114,6 +144,10 @@ def add_to_datafull(articulo, data_full):
             fecha_venta = fecha_venta.strftime("%d/%m/%Y %H:%M")
         else:
             albaran = None
+    # De una sentada me saco todos los datos de un artículo. De modo que si
+    # vuelven a pedirme que lo agregue al data_full, lo ignoro. Ya está metido
+    # y no hay información nueva que actualizar.
+    if codigo_articulo not in data_full['Serie']:
         # ['Código', 'Producto', 'Serie', 'Calidad', 'Bultos', 'm²', 'kg',
         #  'Prod. ginn', 'Prod. Murano', 'Origen', 'Fabricado en',
         # 'Cons. ginn', 'Cons. Murano', 'Consumido en',
@@ -156,7 +190,7 @@ def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
         if row_inventario[u'Código producto'] == codigo_producto_murano:
             codigo = row_inventario[u'Código trazabilidad']
             articulo = pclases.Articulo.get_articulo(codigo)
-            add_to_datafull(articulo, data_full)
+            add_to_datafull(articulo, data_full, row_inventario)
     # 1.1.- Los que están consumidos/fabricados en ginn pero no en Murano
     for dic_ginn, dic_murano, category in (
             (consumos_ginn, consumos_murano, "consumos"),
@@ -338,7 +372,7 @@ def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
                 row[10] = peso_neto
                 data_res[index] = row
     # 3.5.- Fin del report para el producto.
-    res = not ginn_no_murano and not murano_no_ginn
+    res = _is_empty(ginn_no_murano) and _is_empty(murano_no_ginn)
     report.write("-"*70)
     if res:
         report.write(" _[OK]_ \n")
@@ -346,6 +380,16 @@ def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
         report.write(" **[KO]**\n")
     report.write("\n")
     # 6.- Y devuelvo si todo cuadra (True) o hay alguna desviación (False)
+    return res
+
+
+def _is_empty(dic):
+    """ Devuelve True si todas las listas del diccionario están vacías. """
+    res = True
+    for k in dic:
+        if dic[k]:
+            res = False
+            break
     return res
 
 

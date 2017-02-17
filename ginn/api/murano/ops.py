@@ -867,7 +867,11 @@ def get_ultimo_movimiento_articulo_serie(conexion, articulo):
     fabricación, de salida por albarán o None si no existe el artículo en
     Murano.
     """
-    codigo_articulo = articulo.codigo
+    try:
+        codigo_articulo = articulo.codigo
+    except AttributeError:
+        # Por si recibo directamente un código.
+        codigo_articulo = articulo
     SQL = r"""SELECT TOP 1 *
               FROM [%s].[dbo].[MovimientoArticuloSerie]
               WHERE NumeroSerieLc = '%s' AND CodigoEmpresa = '%d'
