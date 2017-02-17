@@ -69,14 +69,18 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
     if not articulo:
         # El artículo se ha borrado del ERP. He debido recibir la fila completa
         # de la hoja de cálculo
-        calidad = fallbackdata['Calidad']
+        calidad = fallbackdata[u'Calidad']
         codigo_articulo = fallbackdata[u'Código trazabilidad']
+        descripcion_producto = fallbackdata[u'Descripción']
+        superficie = fallbackdata[u'Metros cuadrados']
+        peso_neto = fallbackdata[u'Peso neto']
         inicio_parte_produccion = "N/D"
         codigo_partida_carga = "N/D"
         fecha_consumo_ginn = "N/D"
         fecha_fabricacion_ginn = "N/D"
         fecha_entrada_murano = fallbackdata[u'Fecha importación a Murano']
         origen = "INV"  # de "INVentario". No es una serie real de Murano.
+        codigo_producto_murano = fallbackdata[u'Código producto']
         ultimo_movarticulo = murano.ops.get_ultimo_movimiento_articulo_serie(
             murano.connection.Connection(), codigo_articulo)
         if ultimo_movarticulo:
@@ -98,8 +102,11 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
             # Obtengo los datos de ginn. Si está en Murano, debe estar en ginn.
             articulo = pclases.Articulo.get_articulo(articulo)
         producto_ginn = articulo.productoVenta
+        descripcion_producto = producto_ginn.descripcion
+        codigo_producto_murano = 'PV{}'.format(producto_ginn.id)
         calidad = articulo.get_str_calidad()
         codigo_articulo = articulo.codigo
+        superficie, peso_neto = articulo.get_superficie(), articulo.peso_neto
         # ¿Cuándo se fabricó?
         inicio_parte_produccion = (
             articulo.parteDeProduccion
@@ -152,9 +159,9 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
         #  'Prod. ginn', 'Prod. Murano', 'Origen', 'Fabricado en',
         # 'Cons. ginn', 'Cons. Murano', 'Consumido en',
         # 'Venta', 'Vendido en']
-        fila = ['PV{}'.format(producto_ginn.id),
-                producto_ginn.descripcion, articulo.codigo, calidad,
-                1, articulo.get_superficie(), articulo.peso_neto,
+        fila = [codigo_producto_murano,
+                descripcion_producto, codigo_articulo, calidad,
+                1, superficie, peso_neto,
                 fecha_fabricacion_ginn, fecha_entrada_murano, origen,
                 inicio_parte_produccion,
                 fecha_consumo_ginn, fecha_salida_murano, codigo_partida_carga,
