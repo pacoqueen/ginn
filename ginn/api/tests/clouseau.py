@@ -78,16 +78,18 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
         codigo_partida_carga = "N/D"
         fecha_consumo_ginn = "N/D"
         fecha_fabricacion_ginn = "N/D"
-        fecha_entrada_murano = fallbackdata[u'Fecha importación a Murano']
+        fecha_entrada_murano = fallbackdata[u'Fecha importación a Murano'].strftime(
+            "%d/%m/%Y %H:%M")
         origen = "INV"  # de "INVentario". No es una serie real de Murano.
         codigo_producto_murano = fallbackdata[u'Código producto']
         ultimo_movarticulo = murano.ops.get_ultimo_movimiento_articulo_serie(
             murano.connection.Connection(), codigo_articulo)
         if ultimo_movarticulo:
             if ultimo_movarticulo['OrigenDocumento'] == 11:     # Salida
-                fecha_salida_murano = ultimo_movarticulo['FechaRegistro']
+                fecha_salida_murano = ultimo_movarticulo['FechaRegistro'].strftime(
+                    "%d/%m/%Y %H:%M")
                 if murano.ops.es_movimiento_salida_albaran(ultimo_movarticulo):
-                    fecha_venta = ultimo_movarticulo['Fecha']
+                    fecha_venta = ultimo_movarticulo['Fecha'].strftime("%d/%m/%Y")
                     albaran = "{}{}".format(ultimo_movarticulo['SerieDocumento'],
                                             ultimo_movarticulo['Documento'])
                 else:
