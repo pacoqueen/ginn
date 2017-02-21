@@ -262,9 +262,11 @@ def create_etiqueta_backup(c, rollo):
     principalmente con un código de barras enorme para poder leerla desde
     lejos a la hora de cargar el rollo.
     """
+    # Dimensiones estándar de la etiqueta.
     alto = 12.55 * cm
     ancho = 8.4 * cm
     margen = 0.1 * cm
+    # Parámetros a pintar que obtener del objeto recibido.
     try:
         try:
             producto = rollo['productoVenta'].descripcion
@@ -279,20 +281,25 @@ def create_etiqueta_backup(c, rollo):
     except TypeError:  # He recibido un objeto directamente.
         producto = rollo.productoVenta.descripcion
         codigo_rollo = rollo.codigo
+    # Dimensiones para pintar la información.
     c.saveState()
     xcode = ancho / 2.0
     ycode = 0.15*cm
     xprod = xcode
     yprod = alto - margen - 7
+    # ## El código de rollo:
     c.setFont("Courier-Bold", 9)
     try:
         c.drawCentredString(xcode, ycode, codigo_rollo, charSpace=0.25*cm)
     except TypeError:   # Versión antigua de ReportLab.
         c.drawCentredString(xcode, ycode, codigo_rollo)
+    # ## El producto:
     c.setFont("Helvetica", 8)
     c.drawCentredString(xprod, yprod, producto)
+    # ## El rectángulo exterior
     c.rotate(90)
     c.rect(margen, -(ancho-margen), alto - 2*margen, ancho - 2*margen, stroke=1)
+    # ## El código de barras. Rotado para ganar anchura:
     x = -8.0*margen
     y = -(ancho - 2*margen)
     mil = 0.001*inch
@@ -303,6 +310,9 @@ def create_etiqueta_backup(c, rollo):
     codigobarras = Code128(codigo_rollo, xdim=mils, height=altobarcode)
     codigobarras.drawOn(c, x, y)
     c.rotate(-90)
+    # ## Línea auxiliar por donde está el pin roto de la impresora:
+    xlineablanca = 5.9*cm
+    c.line(xlineablanca, margen, xlineablanca, alto - margen - 9)
     c.restoreState()
 
 
@@ -516,7 +526,7 @@ def test_rollos():
     from random import randrange
     rollos = (todos[randrange(todos.count())],
               todos[randrange(todos.count())])
-    abrir_pdf(etiqueta_rollos_norma13(rollos, False))
+    #abrir_pdf(etiqueta_rollos_norma13(rollos, False))
     abrir_pdf(etiqueta_rollos_norma13_en(rollos))
 
 def test_pales():
