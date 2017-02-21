@@ -952,9 +952,10 @@ def buscar_ultimo_fichero_inventario(ruta="."):
     """
     try:
         res = max([os.path.join(ruta, f) for f in os.listdir(ruta)
-                   if f.endswith('.xls')], key=os.path.getctime)
+                   if f.endswith('ramanujan.xls')], key=os.path.getctime)
     except ValueError:
-        print("Fichero .xls no encontrado en `{}`.".format(ruta))
+        print("Fichero YYYYMMDD_HH_ramanujan.xls no encontrado en `{}`.".format(
+            ruta))
         sys.exit(2)
     return res
 
