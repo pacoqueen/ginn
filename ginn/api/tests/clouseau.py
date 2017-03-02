@@ -126,7 +126,9 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
         if articulo.es_bigbag():
             pdp = articulo.bigbag.parteDeProduccion
             if pdp:
-                codigo_partida_carga = pdp.fechahorainicio.strftime("%d/%m/%Y %H:%M")
+                codigo_partida_carga = "{} {}".format(
+                    pdp.fechahorainicio.strftime("%d/%m/%Y %H:%M"),
+                    pdp.bloqueado and '✔' or '✘')
                 fecha_consumo_ginn = pdp.fechahorainicio.strftime("%d/%m/%Y %H:%M")
             else:
                 codigo_partida_carga = ""
@@ -134,7 +136,8 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
         elif articulo.es_bala():
             pcarga = articulo.bala.partidaCarga
             if pcarga:
-                codigo_partida_carga = pcarga.codigo
+                codigo_partida_carga = "{} {}".format(pcarga.codigo,
+                                                      pcarga.api and '✔' or '✘')
                 fecha_consumo_ginn = pcarga.fecha.strftime("%d/%m/%Y %H:%M")
             else:
                 codigo_partida_carga = ""

@@ -575,6 +575,7 @@ def get_volcados_fab(producto_murano, fini, ffin):
             CodigoCanal = ''
         MovimientoArticuloSerie:
             OrigenDocumento = 2 (Fabricación)
+            Comentario NOT LIKE 'Consumo%'
             SerieDocumento = 'FAB'
     Bajas:
         MovimientoStock:
