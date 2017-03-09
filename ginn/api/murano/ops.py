@@ -2706,6 +2706,29 @@ def _get_dimensiones_murano(articulo):
     return peso_bruto, peso_neto, superficie
 
 
+def _get_calidad_murano(articulo):
+    """
+    Devuelve un caracter con la calidad del artículo (A, B ó C) en Murano para
+    el artículo de ginn recibido.
+    Devuelve None si el artículo no existe, cadena vacía si no tiene calidad y
+    la letra que tenga en Murano si la tiene.
+    """
+    conn = Connection()
+    SQL = r"""SELECT CodigoTalla01_
+              FROM %s.dbo.ArticulosSeries
+              WHERE NumeroSerieLc = '%s'
+                AND CodigoEmpresa = '%s';""" % (conn.get_database(),
+                                                articulo.codigo,
+                                                CODEMPRESA)
+    try:
+        result = conn.run_sql(SQL)[0]
+    except IndexError:
+        calidad = None
+    else:
+        calidad = result['CodigoTalla01_']
+    return calidad
+
+
 def _get_codigo_pale(articulo):
     """
     Devuelve el código de palé que tiene el artículo de ginn en Murano.

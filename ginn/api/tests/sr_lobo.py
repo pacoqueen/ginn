@@ -53,6 +53,7 @@ def sync_articulo(codigo, fsalida, simulate=True):
     - Valor campo api
     - Código palé
     - Producto de venta
+    - Calidad (siempre que sea posible)
     """
     report = open(fsalida, "a", 0)
     if simulate:
@@ -60,6 +61,7 @@ def sync_articulo(codigo, fsalida, simulate=True):
     else:
         report.write("Sincronizando artículo %s... " % codigo)
     articulo = pclases.Articulo.get_articulo(codigo)
+    res = True
     if articulo:
         if not murano.ops.existe_articulo(articulo):
             if murano.ops.esta_en_almacen(articulo) == 'GTX':
@@ -69,17 +71,19 @@ def sync_articulo(codigo, fsalida, simulate=True):
                 report.write("Cambiando producto en Murano...")
                 if not simulate:
                     obs = "[sr_lobo] Producto dif. ginn y Murano."
-                    res = murano.ops.update_producto(articulo,
-                                                     articulo.productoVenta,
-                                                     observaciones=obs)
+                    _res = murano.ops.update_producto(articulo,
+                                                      articulo.productoVenta,
+                                                      observaciones=obs)
                 else:
-                    res = True
+                    _res = True
+                res = res and _res
             elif murano.ops.esta_en_almacen(articulo):
                 # Está en otro almacén que no es el principal.
                 report.write("Artículo como otro producto en almacén {}"
                              ".".format(murano.ops.esta_en_almacen(articulo)))
                 # Corregir a mano cambiando el producto en ginn o lo que sea.
-                res = False
+                _res = False
+                res = res and _res
             else:
                 # No existe con el producto de ginn, pero puede que con algún
                 # otro y ya no está en almacén o que no exista en absoluto.
@@ -89,15 +93,16 @@ def sync_articulo(codigo, fsalida, simulate=True):
                     report.write("Creando... ")
                     if not simulate:
                         obs = "[sr_lobo] Art. en ginn pero no en Murano"
-                        res = murano.ops.create_articulo(articulo,
-                                                         observaciones=obs)
+                        _res = murano.ops.create_articulo(articulo,
+                                                          observaciones=obs)
                     else:
-                        res = True
+                        _res = True
                 else:   # Hay un movserie, seguramente de salida de albarán.
                     pvmurano = movserie['CodigoArticulo']
                     report.write("Arículo ya vendido como {}. ".format(
                         pvmurano))
-                    res = True
+                    _res = True
+                res = res and _res
         else:   # Si el artículo ya existe:
             altered = False
             peso_bruto = articulo.peso_bruto
@@ -129,12 +134,13 @@ def sync_articulo(codigo, fsalida, simulate=True):
                                                      superficie))
                 altered = True
                 if not simulate:
-                    res = murano.ops.corregir_dimensiones_articulo(articulo,
-                                                                   peso_bruto,
-                                                                   peso_neto,
-                                                                   superficie)
+                    _res = murano.ops.corregir_dimensiones_articulo(articulo,
+                                                                    peso_bruto,
+                                                                    peso_neto,
+                                                                    superficie)
                 else:
-                    res = True
+                    _res = True
+                res = res and _res
             # Si además es de tipo fibra de cemento, compruebo el palé:
             if articulo.caja and articulo.caja.pale:
                 pale_murano = murano.ops._get_codigo_pale(articulo)
@@ -145,9 +151,38 @@ def sync_articulo(codigo, fsalida, simulate=True):
                                                         codigo_pale_ginn))
                     altered = True
                     if not simulate:
-                        res = murano.ops.corregir_pale(articulo)
+                        _res = murano.ops.corregir_pale(articulo)
                     else:
-                        res = True
+                        _res = True
+                    res = res and _res
+            # Compruebo calidad:
+            try:
+                calidad_ginn = articulo.get_str_calidad()
+            except ValueError:
+                calidad_ginn = None
+            calidad_murano = murano.ops._get_calidad_murano(articulo)
+            misma_calidad = (calidad_ginn and calidad_murano and
+                             calidad_ginn.upper() == calidad_murano.upper())
+            if not misma_calidad:
+                if calidad_ginn:
+                    report.write("Corrigiendo calidad en Murano "
+                                 "({} -> {})...".format(calidad_murano,
+                                                        calidad_ginn))
+                    if not simulate:
+                        _res = murano.ops.update_calidad(articulo, calidad_ginn)
+                    else:
+                        _res = True
+                    altered = True
+                else:
+                    report.write(":warning: Sin calidad en ginn. "
+                                 "Calidad en Murano: '{}' (!)".format(
+                                     calidad_murano))
+                    altered = False
+                    _res = False
+                res = res and _res
+            else:
+                _res = True
+                res = res and _res
             # Y por último compruebo el producto:
             prod_en_murano = murano.ops.get_producto_articulo_murano(articulo)
             prod_en_ginn = articulo.productoVenta
@@ -159,21 +194,24 @@ def sync_articulo(codigo, fsalida, simulate=True):
                 altered = True
                 if not simulate:
                     obs = "[sr_lobo] Prod. corregido acorde a ginn"
-                    res = murano.ops.update_producto(articulo, prod_en_ginn,
-                                                     obs)
+                    _res = murano.ops.update_producto(articulo, prod_en_ginn,
+                                                      obs)
                 else:
-                    res = True
+                    _res = True
+                res = res and _res
             if not altered:
                 report.write("Nada que hacer.")
-                res = True
+                _res = True
+                res = res and _res
         if not articulo.api:
             report.write("Actualizando valor api... ")
             if not simulate:
                 articulo.api = murano.ops.existe_articulo(articulo)
                 articulo.syncUpdate()
-                res = articulo.api
+                _res = articulo.api
             else:
-                res = True
+                _res = True
+            res = res and _res
     else:
         report.write("Artículo no encontrado en ginn.")
         res = False
