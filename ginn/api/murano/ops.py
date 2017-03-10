@@ -2918,6 +2918,8 @@ def _get_tipo_de_material(codigo):
                 descripcion='Mantenimiento')[0],
                 'MAP': pclases.TipoDeMaterial.selectBy(
                 descripcion='Materia Prima')[0],
+                'GRANZA': pclases.TipoDeMaterial.selectBy(
+                descripcion='Materia Prima')[0],
                 'MAT': pclases.TipoDeMaterial.selectBy(
                 descripcion='Material adicional')[0],
                 'MIV': pclases.TipoDeMaterial.selectBy(
