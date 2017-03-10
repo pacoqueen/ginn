@@ -368,7 +368,8 @@ class ConsultaProducido(Ventana):
     def buscar(self,boton):
         """
         Dadas fecha de inicio y de fin, busca los productos A y B
-        fabricados y cantidad en los partes de producción.
+        fabricados y cantidad en los partes de producción iniciados entre
+        las 6:00 de la fecha de inicio y las 6:00 AM de la fecha de fin.
         Para la producción C, que no lleva parte de producción, se filtra
         directamente por la fecha y hora de los artículos. OJO: Y no
         cuentan para los cómputos de tiempo.
@@ -384,16 +385,24 @@ class ConsultaProducido(Ventana):
         except ValueError:
             self.wids['e_fechafin'].set_text(utils.str_fecha(
                 mx.DateTime.today()))
-            self.fin = utils.parse_fecha(
-                    self.wids['e_fechafin'].get_text())
+            self.fin = utils.parse_fecha(self.wids['e_fechafin'].get_text())
+        fechahorafin = datetime.datetime(year=self.fin.year,
+                                         month=self.fin.month,
+                                         day=self.fin.day,
+                                         hour=6)
         if not self.inicio:
-            pdps = PDP.select(PDP.q.fecha < self.fin,
-                              orderBy = 'fechahorainicio')
+            pdps = PDP.select(PDP.q.fechahorainicio < fechahorafin,
+                              orderBy='fechahorainicio')
         else:
-            pdps = PDP.select(pclases.AND(PDP.q.fecha >= self.inicio,
-                                          PDP.q.fecha < self.fin),
-                              orderBy = 'fechahorainicio')
-        vpro = ventana_progreso.VentanaProgreso(padre = self.wids['ventana'])
+            fechahorainicio = datetime.datetime(year=self.inicio.year,
+                                                month=self.inicio.month,
+                                                day=self.inicio.day,
+                                                hour=6)
+            pdps = PDP.select(
+                pclases.AND(PDP.q.fechahorainicio >= fechahorainicio,
+                            PDP.q.fechahorainicio < fechahorafin),
+                orderBy='fechahorainicio')
+        vpro = ventana_progreso.VentanaProgreso(padre=self.wids['ventana'])
         tot = pdps.count()
         i = 0.0
         vpro.mostrar()
