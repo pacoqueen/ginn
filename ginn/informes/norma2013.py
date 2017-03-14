@@ -304,17 +304,17 @@ def create_etiqueta_backup(canvas, rollo):
     # ## El rectángulo exterior mejor lo quito para que la pistola no se confunda.
     # canvas.rect(margen, -(ancho-margen), alto - 2*margen, ancho - 2*margen, stroke=1)
     # ## El código de barras. Rotado para ganar anchura:
-    crd_x = -5.75*margen
+    crd_x = (-5.75*margen)-(0.2*cm)
     crd_y = -(ancho - 2*margen)
     xlineablanca = 5.9*cm
     mil = 0.001*inch    # Por definición.
     # Con 40 debería llegar hasta a 9.7 metros de distancia la lectura o
     # 37.5 m la versión Auto Range.
     # altobarcodetotal = (ancho-4*margen)  # Ancho, en realidad. Está rotado.
-    mils = 38*mil
+    mils = 50*mil
     altobarcode = ancho - xlineablanca - 2*margen
-    codigobarras1 = Extended39(codigo_rollo, xdim=mils, height=altobarcode)
-    # codigobarras1 = Code128(codigo_rollo, xdim=mils, height=altobarcode)
+    # codigobarras1 = Extended39(codigo_rollo, xdim=mils, height=altobarcode)
+    codigobarras1 = Code128(codigo_rollo, xdim=mils, height=altobarcode)
     codigobarras1.drawOn(canvas, crd_x, crd_y)
     canvas.rotate(-90)
     # ## El otro código de barras.
@@ -561,4 +561,4 @@ def test_pales():
 
 if __name__ == "__main__":
     test_rollos()
-    test_pales()
+    # test_pales()
