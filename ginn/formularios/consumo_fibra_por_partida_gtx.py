@@ -524,7 +524,7 @@ class ConsumoFibraPorPartidaGtx(Ventana):
             datos.append(("", "", "", "", "", "", ""))
             datos.append(("", "", "", "", "", "", ""))
 
-            if (self.inicio) == None:
+            if self.inicio is None:
                 fechaInforme = 'Hasta '+utils.str_fecha(self.fin)
             else:
                 fechaInforme = "%s - %s" % (utils.str_fecha(self.inicio),
