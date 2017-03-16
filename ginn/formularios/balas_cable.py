@@ -136,7 +136,7 @@ class BalasCable(Ventana):
             a = b.articulo
             murano_deleted = False
             try:
-                murano_deleted = murano.ops.delete_articulo(a)
+                murano_deleted = murano.ops.delete_articulo(a, observaciones="")
                 #a.balaCable = None
                 a.destroy(ventana = __file__)
             except Exception, msg:

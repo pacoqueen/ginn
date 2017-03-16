@@ -2198,7 +2198,7 @@ class PartesDeFabricacionRollos(Ventana):
                     # Porque si no, esto
                     # IntegrityError: el nuevo registro para la relación
                     # «articulo» viola la restricción check «articulo_check»
-                    retcode_murano = murano.ops.delete_articulo(articulo)
+                    retcode_murano = murano.ops.delete_articulo(articulo, observaciones="")
                     # WTF? articulo.rolloDefectuoso = rolloDefectuoso
                     articulo.parteDeProduccion = None
                     articulo.destroy(ventana = __file__)

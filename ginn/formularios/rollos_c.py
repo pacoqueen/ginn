@@ -167,7 +167,7 @@ class RollosC(Ventana):
             #a.rolloC = None
             murano_deleted = False
             try:
-                murano_deleted = murano.ops.delete_articulo(a)
+                murano_deleted = murano.ops.delete_articulo(a, observaciones="")
                 a.destroy(ventana = __file__)
             except Exception, msg:
                 self.logger.error("%srollos_c::borrar_rollos -> Artículo ID %d de rollo ID %d (%s) no se pudo eliminar. Excepción: %s"

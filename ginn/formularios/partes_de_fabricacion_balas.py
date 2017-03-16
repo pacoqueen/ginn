@@ -2736,7 +2736,7 @@ class PartesDeFabricacionBalas(Ventana):
                                 es_bigbag = False
                                 es_bala = False
                             self.descontar_material_adicional(articulo, restar = False)
-                            ret_murano = murano.ops.delete_articulo(articulo)
+                            ret_murano = murano.ops.delete_articulo(articulo, observaciones="")
                             # TODO: Falta aumentar la granza al igual que se hace cuando se cambia el peso de una bala.
                             #articulo.bala = None
                             #articulo.bigbag = None
