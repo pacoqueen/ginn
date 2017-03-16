@@ -165,6 +165,7 @@ class RollosC(Ventana):
             self.anular_consumo(b)
             a = b.articulo
             #a.rolloC = None
+            murano_deleted = False
             try:
                 murano_deleted = murano.ops.delete_articulo(a)
                 a.destroy(ventana = __file__)

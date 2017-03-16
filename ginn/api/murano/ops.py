@@ -5,6 +5,9 @@
 Operaciones.
 
 """
+
+# TODO: No sincroniza el campo que indica que el geotextil es C en los productos de venta de tipo Geotextil.
+
 # pylint: disable=too-many-lines, wrong-import-position, relative-import
 
 from __future__ import print_function

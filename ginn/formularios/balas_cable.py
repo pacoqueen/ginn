@@ -134,6 +134,7 @@ class BalasCable(Ventana):
         """
         for b in balas:
             a = b.articulo
+            murano_deleted = False
             try:
                 murano_deleted = murano.ops.delete_articulo(a)
                 #a.balaCable = None
