@@ -27,7 +27,7 @@
 ## consulta_pagos.py - Pagos y vencimientos de pago (pendientes o no).
 ###################################################################
 ## NOTAS:
-##  
+##
 ###################################################################
 ## Changelog:
 ## 4 de abril de 2006 -> Inicio
@@ -47,7 +47,7 @@ class ConsultaPagos(Ventana):
     inicio = None
     fin = None
     resultado = []
-        
+
     def __init__(self, objeto = None, usuario = None):
         """
         Constructor. objeto puede ser un objeto de pclases con el que
@@ -60,7 +60,7 @@ class ConsultaPagos(Ventana):
                        'b_buscar/clicked': self.buscar,
                        'b_imprimir/clicked': self.imprimir,
                        'b_fecha_inicio/clicked': self.set_inicio,
-                       'b_fecha_fin/clicked': self.set_fin, 
+                       'b_fecha_fin/clicked': self.set_fin,
                        'b_exportar/clicked': self.exportar}
         self.add_connections(connections)
         cols = (('Fecha','gobject.TYPE_STRING',False,True, True, None),
@@ -90,16 +90,16 @@ class ConsultaPagos(Ventana):
         from informes.treeview2csv import treeview2csv
         from formularios.reports import abrir_csv
         tv = self.wids['tv_datos']
-        abrir_csv(treeview2csv(tv))
+        abrir_csv(treeview2csv(tv, desglosar=True))
 
     def chequear_cambios(self):
         pass
 
     def corregir_nombres_fecha(self, s):
         """
-        Porque todo hombre debe enfrentarse al menos una 
-        vez en su vida a dos tipos de sistemas operativos: 
-        los que se no se pasan por el forro las locales, 
+        Porque todo hombre debe enfrentarse al menos una
+        vez en su vida a dos tipos de sistemas operativos:
+        los que se no se pasan por el forro las locales,
         y MS-Windows.
         """
         trans = {'Monday': 'lunes',
@@ -128,32 +128,32 @@ class ConsultaPagos(Ventana):
     def rellenar_tabla(self, elementos):
         """
         Rellena el model con los items de la consulta.
-        Elementos es un diccionario con objetos fecha como claves y 
+        Elementos es un diccionario con objetos fecha como claves y
         un diccionaro de dos elementos como valor. El segundo diccionario
         debe tener tres claves: 'pagos', 'vencimientos' y 'logic'. En cada
         una de ellas se guarda una lista de objetos de la clase correspondiente.
-        """        
+        """
         model = self.wids['tv_datos'].get_model()
         model.clear()
         pagos = 0
         vencimientos = 0
         for fecha in elementos:
-            sumvtos = 0 
+            sumvtos = 0
             frasvtos = []
             pagosvencimientos = elementos[fecha]
             for p in pagosvencimientos['vencimientos']:
                 if p.facturaCompra != None:
-                    frasvtos.append("%s(%s)" % (p.facturaCompra.numfactura, 
+                    frasvtos.append("%s(%s)" % (p.facturaCompra.numfactura,
                         p.facturaCompra.proveedor and p.facturaCompra.proveedor.nombre or ""))
                 sumvtos += p.importe
             for p in pagosvencimientos['logic']:
                 sumvtos += p['importe']
                 frasvtos.append(p['codigo'])
-            sumpagos = 0 
+            sumpagos = 0
             fraspagos = []
             for p in pagosvencimientos['pagos']:
                 if p.facturaCompra != None:
-                    fraspagos.append("%s(%s)" % (p.facturaCompra.numfactura, 
+                    fraspagos.append("%s(%s)" % (p.facturaCompra.numfactura,
                         p.facturaCompra.proveedor and p.facturaCompra.proveedor.nombre or ""))
                 if p.logicMovimientos != None:   # Es posible que venga de Logic.
                     if p.facturaCompra != None:
@@ -166,19 +166,19 @@ class ConsultaPagos(Ventana):
             fras = ", ".join(frasvtos)
             vtos = ", ".join(fraspagos)  # @UnusedVariable
             MAX_LINEA = 20
-            # padre = model.append(None, (self.corregir_nombres_fecha(fecha.strftime('%A, %d de %B de %Y')), 
-            padre = model.append(None, (utils.str_fecha(fecha), 
-                                        utils.float2str(sumvtos), 
+            # padre = model.append(None, (self.corregir_nombres_fecha(fecha.strftime('%A, %d de %B de %Y')),
+            padre = model.append(None, (utils.str_fecha(fecha),
+                                        utils.float2str(sumvtos),
                                         len(fras) > MAX_LINEA and "%s..." % fras[:MAX_LINEA-3] or fras,
                                         utils.float2str(sumpagos),
                                         len(fras) > MAX_LINEA and "%s..." % fras[:MAX_LINEA-3] or fras,
                                         ""))
-            for i in xrange(max(len(pagosvencimientos['pagos']), 
+            for i in xrange(max(len(pagosvencimientos['pagos']),
                                 len(pagosvencimientos['vencimientos'])+len(pagosvencimientos['logic']))):
                 if i < len(pagosvencimientos['pagos']):
                     p = pagosvencimientos['pagos'][i]
                     if p.facturaCompra != None:
-                        frapago = "%s(%s)" % (p.facturaCompra.numfactura, 
+                        frapago = "%s(%s)" % (p.facturaCompra.numfactura,
                             p.facturaCompra.proveedor and p.facturaCompra.proveedor.nombre or "")
                     else:
                         frapago = ""
@@ -194,7 +194,7 @@ class ConsultaPagos(Ventana):
                 if i < len(pagosvencimientos['vencimientos']):
                     p = pagosvencimientos['vencimientos'][i]
                     if p.facturaCompra != None:
-                        fravto = "%s(%s)" % (p.facturaCompra.numfactura, 
+                        fravto = "%s(%s)" % (p.facturaCompra.numfactura,
                             p.facturaCompra.proveedor and p.facturaCompra.proveedor.nombre or "")
                     importevto = p.importe
                 else:
@@ -206,7 +206,7 @@ class ConsultaPagos(Ventana):
                     else:
                         importevto = ""
                         fravto = ""
-                model.append(padre, ("", 
+                model.append(padre, ("",
                                      importevto != "" and utils.float2str(importevto) or "",
                                      fravto,
                                      importepago != "" and utils.float2str(importepago) or "",
@@ -216,7 +216,7 @@ class ConsultaPagos(Ventana):
         self.wids['e_total'].set_text("%s €" % utils.float2str(total))
         self.wids['e_pagos'].set_text("%s €" % utils.float2str(pagos))
         self.wids['e_vencimientos'].set_text("%s €" % utils.float2str(vencimientos))
-        
+
     def set_inicio(self,boton):
         temp = utils.mostrar_calendario(padre = self.wids['ventana'])
         self.wids['e_fechainicio'].set_text(utils.str_fecha(temp))
@@ -242,7 +242,7 @@ class ConsultaPagos(Ventana):
         else:
             return 0
 
-        
+
     def buscar(self,boton):
         if not self.inicio:
             pagos = pclases.Pago.select(pclases.Pago.q.fecha <= self.fin, orderBy = 'fecha')
@@ -250,7 +250,7 @@ class ConsultaPagos(Ventana):
             pagos = pclases.Pago.select(pclases.AND(pclases.Pago.q.fecha >= self.inicio,
                                                       pclases.Pago.q.fecha <= self.fin), orderBy = 'fecha')
         if not self.inicio:
-            vencimientos = pclases.VencimientoPago.select(pclases.VencimientoPago.q.fecha <= self.fin, 
+            vencimientos = pclases.VencimientoPago.select(pclases.VencimientoPago.q.fecha <= self.fin,
                                                           orderBy = 'fecha')
         else:
             vencimientos = pclases.VencimientoPago.select(
@@ -270,13 +270,13 @@ class ConsultaPagos(Ventana):
                 elementos[item['fecha']] = {'pagos': [], 'vencimientos': [], 'logic': []}
             elementos[item['fecha']]['logic'].append(item)
         self.rellenar_tabla(elementos)
-        
+
     def buscar_vencimientos_logic(self, fechaini, fechafin):
         """
         Devuelve una lista de diccionarios que contiene posibles vencimientos
         obtenidos de la tabla de movimientos de Logic.
         En la tabla se buscarán los apuntes que contengan "Vto" y una fecha a
-        continuación y que en el propio Logic no se haya saldado ya (porque 
+        continuación y que en el propio Logic no se haya saldado ya (porque
         si se han saldado antes de importarlas por primera vez, significa que
         son apuntes antiguos que no se van a pagar por el programa).
         Cada uno de las tuplas encontradas se devuelve como un diccionario
@@ -303,7 +303,7 @@ class ConsultaPagos(Ventana):
     def convertir_a_dicc(self, tuplalogic):
         res = {'fecha': self.get_fecha_vto_logic(tuplalogic),
                'importe': tuplalogic.importe,
-               'comentario': tuplalogic.comentario, 
+               'comentario': tuplalogic.comentario,
                'cuenta': tuplalogic.cuenta,
                'codigo': tuplalogic.get_codigo(),
                'id': tuplalogic.id}
@@ -311,15 +311,15 @@ class ConsultaPagos(Ventana):
 
     def cumple_requisitos(self, tuplalogic, fechaini, fechafin):
         """
-        Devuelve True si la tupla tiene una fecha válida interpretable 
+        Devuelve True si la tupla tiene una fecha válida interpretable
         como vencimiento y ésta está dentro de los criterios.
         """
-        fechavto = self.get_fecha_vto_logic(tuplalogic) 
+        fechavto = self.get_fecha_vto_logic(tuplalogic)
         return fechavto and fechavto >= fechaini and fechavto <= fechafin
 
     def get_fecha_vto_logic(self, l):
         """
-        Devuelve una fecha con el vencimiento de la tupla Logic l o 
+        Devuelve una fecha con el vencimiento de la tupla Logic l o
         None si no se pudo.
         """
         res = None
@@ -339,7 +339,7 @@ class ConsultaPagos(Ventana):
                 # Tengo que buscarle el año de la fecha de la factura.
                 fechafra = refdate.findall(s[:pivote])  # Solo busco la fecha con año. Sin año no me vale.
                 if fechafra != []:  # Si la encuentro:
-                    # TEMP: --------- Hay una fecha que me está jodiendo la vida: 
+                    # TEMP: --------- Hay una fecha que me está jodiendo la vida:
                     # ValueError: time data did not match format:  data=07/003/06  fmt=%d/%m/%Y
                     fechafra[0] = '/'.join([i[-2:] for i in fechafra[0].split('/')])
                     # END OF TEMP ---
@@ -359,10 +359,10 @@ class ConsultaPagos(Ventana):
         """
         Prepara la vista preliminar para la impresión del informe
         """
-        # TODO: ¿pass? ¿A una semana vista y... PASS? 
+        # TODO: ¿pass? ¿A una semana vista y... PASS?
         pass
 
 
 if __name__ == '__main__':
-    t = ConsultaPagos()    
+    t = ConsultaPagos()
 

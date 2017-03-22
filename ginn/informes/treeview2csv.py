@@ -34,12 +34,12 @@ import csv
 
 def to_float(t, sensibilidad = 2):
     """
-    Si t es una cadena de texto con el símbolo del euro o de metros cuadrados, 
+    Si t es una cadena de texto con el símbolo del euro o de metros cuadrados,
     convierte todo lo que puede a flotante con técnica "greedy".
-    En otro caso lanza una excepción ValueError al igual que hace el _float 
+    En otro caso lanza una excepción ValueError al igual que hace el _float
     de utils.
-    sensibilidad es un parámetro para evitar falsos positivos. Si en la cadena 
-    hay un cierto número de palabras (2 por defecto) entonces no convierte a 
+    sensibilidad es un parámetro para evitar falsos positivos. Si en la cadena
+    hay un cierto número de palabras (2 por defecto) entonces no convierte a
     número flotante.
     """
     if isinstance(t, (int, float)):
@@ -63,10 +63,10 @@ def treeview2csv(tv, filtro_ceros = [], desglosar = False, extra_data = []):
     A partir de un TreeView crea un csv con su contenido.
     1.- Asigna un nombre de archivo en función del nombre del TreeView.
     2.- El título del campo será el título (get_title) de la columna.
-    Si «filtro_ceros» contiene números de columna, sustituye los valores 
+    Si «filtro_ceros» contiene números de columna, sustituye los valores
     numéricos "0" y derivados por la cadena vacía en esas columnas del TV.
-    Si «desglosar» es True vuelca también los nodos hijos del treeview. No 
-    tiene efecto en los listview (porque son "planos"). Si es False, trata 
+    Si «desglosar» es True vuelca también los nodos hijos del treeview. No
+    tiene efecto en los listview (porque son "planos"). Si es False, trata
     los treeview igual que los listview y no manda desgloses al CSV.
     «extra_data» serán filas adicionales que se agregarán al fichero final.
     """
@@ -78,12 +78,12 @@ def treeview2csv(tv, filtro_ceros = [], desglosar = False, extra_data = []):
 
 def generar_csv(nomarchivo, campos, datos, extra_data = []):
     """
-    Genera un fichero de texto plano en formato "comma separated values" con 
-    los títulos de los campos en la primera línea y los datos del treeview 
+    Genera un fichero de texto plano en formato "comma separated values" con
+    los títulos de los campos en la primera línea y los datos del treeview
     recibidos a continuación.
     """
     archivo = open(nomarchivo, "w")
-    escritor = csv.writer(archivo, delimiter = ";", lineterminator = "\n")  
+    escritor = csv.writer(archivo, delimiter = ";", lineterminator = "\n")
         # Por defecto formato "excel".
     escritor.writerow(campos)
     escritor.writerows(datos)
@@ -95,7 +95,7 @@ def generar_csv(nomarchivo, campos, datos, extra_data = []):
 
 def ajustar_extra_data(d, numcols):
     """
-    Si las filas de d son más largas que el número de columnas, las 
+    Si las filas de d son más largas que el número de columnas, las
     redistribuye para ajustaras.
     Si son más cortas, añade "casillas" en blanco.
     """
@@ -105,17 +105,17 @@ def ajustar_extra_data(d, numcols):
         if not fila or not isinstance(fila, list):
             continue
         if len(fila) > numcols:
-            # Lo normal es que vengan valores a pares: label + dato. Corto 
+            # Lo normal es que vengan valores a pares: label + dato. Corto
             # de dos en dos para no descuajaringarlo mucho.
             if numcols % 2 != 0 and numcols > 1:
-                corte = numcols - 1 
+                corte = numcols - 1
             else:
                 corte = numcols
             fila = fila[:corte]
             d.append(fila[corte:])
         while len(fila) < numcols:
             fila.append("")
-        if [i for i in fila if i]:  # Si tiene algún valor no nulo (elimino 
+        if [i for i in fila if i]:  # Si tiene algún valor no nulo (elimino
             res.append(fila)        # filas en blanco)
     return  res
 
@@ -125,22 +125,22 @@ def get_nombre_archivo_from_tv(tv):
     del nombre del widget TreeView.
     """
     nomtreeview = tv.get_name().replace(" ", "_").replace(":", "_")
-    nomarchivo = os.path.join(gettempdir(), 
+    nomarchivo = os.path.join(gettempdir(),
             "%s_%s.csv" % (nomtreeview, geninformes.give_me_the_name_baby()))
     return nomarchivo
 
 def get_datos_from_tv(tv, filtro_ceros, desglosar):
     """
-    Devuelve una lista de tuplas. Cada tupla contiene los datos de las cells 
+    Devuelve una lista de tuplas. Cada tupla contiene los datos de las cells
     del TreeView para cada fila.
-    Si la fila es padre de otra fila, añade debajo de la misma las filas hijas 
+    Si la fila es padre de otra fila, añade debajo de la misma las filas hijas
     con espacios a su izquierda y un separador horizontal al final.
     """
     # PLAN: Se pueden volcar también fórmulas simplemente como texto en el csv.
-    # P. ej.: "=A1+B1". El problema es que en los datos extraídos tal cual del 
-    # TreeView no sé qué columnas corresponden a sumatorios. Necesitaría un 
-    # marcado especial o un cell invisible dentro de la columna o algo así; y 
-    # llevar además el control de la columna [A..n] y fila [1..m] para poder 
+    # P. ej.: "=A1+B1". El problema es que en los datos extraídos tal cual del
+    # TreeView no sé qué columnas corresponden a sumatorios. Necesitaría un
+    # marcado especial o un cell invisible dentro de la columna o algo así; y
+    # llevar además el control de la columna [A..n] y fila [1..m] para poder
     # escribir correctamente la expresión.
     datos = []
     model = tv.get_model()
@@ -162,14 +162,19 @@ def get_datos_from_tv(tv, filtro_ceros, desglosar):
                     pass    # No es flotante ni se puede convertir a él.
                 finally:
                     try:
-                        dato = ("%s" % 
+                        dato = ("%s" %
                          (valor)).replace(";", ",").encode("iso-8859-15")
                     except UnicodeEncodeError:
-                        dato = ("%s" % 
-                         (valor)).replace(";", ",").encode("iso-8859-15", 
+                        dato = ("%s" %
+                         (valor)).replace(";", ",").encode("iso-8859-15",
+                                                           "replace")
+                    except UnicodeDecodeError:
+                        valor = "".join([c for c in valor if c.isalnum() or c == " "])
+                        dato = ("%s" %
+                         (valor)).replace(";", ",").encode("iso-8859-15",
                                                            "replace")
                 if i in filtro_ceros:
-                    if dato in ("0", "0,0", "0,00", "0,000", 
+                    if dato in ("0", "0,0", "0,00", "0,000",
                                  0,  "0.0", "0.00", "0.000"):
                         dato = ""   # Más rápido que una regexp.
             filadato.append(dato)
@@ -186,9 +191,9 @@ def get_datos_from_tv(tv, filtro_ceros, desglosar):
 
 def agregar_hijos(fila, numcols, numespacios, tv):
     """
-    Devuelve una lista con los hijos de "fila", y éstos a 
+    Devuelve una lista con los hijos de "fila", y éstos a
     su vez con sus hijos, etc... en diferentes niveles.
-    numespacios normalmente será el nivel de profundidad de 
+    numespacios normalmente será el nivel de profundidad de
     la recursión * 2.
     """
     iterator_hijos = fila.iterchildren()
@@ -212,14 +217,14 @@ def agregar_hijos(fila, numcols, numespacios, tv):
                     except ValueError:
                         pass    # No es flotante ni se puede convertir a él.
                     finally:
-                        dato = ("%s" % 
-                            valor).replace(";", ",").encode("iso-8859-15", 
+                        dato = ("%s" %
+                            valor).replace(";", ",").encode("iso-8859-15",
                                                             "replace")
                         # Por si acaso trae un entero, un float o algo asina.
                 if index_columna == 0:
                     filahijo.append("%s%s" % ("> " * numespacios, dato))
                 else:
-                    filahijo.append(dato)     
+                    filahijo.append(dato)
             filas += [filahijo] + agregar_hijos(hijo, numcols, numespacios + 1, tv)
         return filas
 
