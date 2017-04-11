@@ -167,6 +167,8 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
     # De una sentada me saco todos los datos de un artículo. De modo que si
     # vuelven a pedirme que lo agregue al data_full, lo ignoro. Ya está metido
     # y no hay información nueva que actualizar.
+    # TODO: ¡A no ser que venga con otros datos! Si hay cambio de producto, por
+    # ejemplo, deberían aparecer 2 filas, una por cada PV al que ha pertenecido.
     if codigo_articulo not in data_full['Serie']:
         # ['Código', 'Producto', 'Serie', 'Calidad', 'Bultos', 'm²', 'kg',
         #  'Prod. ginn', 'Prod. Murano', 'Origen', 'Fabricado en',
