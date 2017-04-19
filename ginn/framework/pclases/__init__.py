@@ -3696,6 +3696,25 @@ class Bigbag(SQLObject, PRPCTOO):
     articulo = property(get_articulo)
     articuloID = property(get_articuloID)
 
+    def set_productoVenta(self, producto):
+        """
+        Instancia el producto del artículo relacionado con el rollo.
+        """
+        if not isinstance(producto, ProductoVenta):
+            raise ValueError
+        self.articulos[0].productoVenta = producto
+
+    def get_productoVenta(self):
+        """
+        Devuelve el producto relacionado con el rollo a través del artículo.
+        """
+        try:
+            return self.articulos[0].productoVenta
+        except IndexError:
+            return None
+
+    productoVenta = property(get_productoVenta, set_productoVenta)
+
     def get_albaranSalida(self):
         """
         Devuelve el albarán de salida del artículo relacionado con el bigbag.
@@ -4746,6 +4765,25 @@ class Bala(SQLObject, PRPCTOO):
         return balas
 
     _buscar_en_almacen_actualmente = staticmethod(_buscar_en_almacen_actualmente)
+
+    def set_productoVenta(self, producto):
+        """
+        Instancia el producto del artículo relacionado con el rollo.
+        """
+        if not isinstance(producto, ProductoVenta):
+            raise ValueError
+        self.articulos[0].productoVenta = producto
+
+    def get_productoVenta(self):
+        """
+        Devuelve el producto relacionado con el rollo a través del artículo.
+        """
+        try:
+            return self.articulos[0].productoVenta
+        except IndexError:
+            return None
+
+    productoVenta = property(get_productoVenta, set_productoVenta)
 
     def get_articulo(self):
         """
@@ -9327,6 +9365,7 @@ class CamposEspecificosBala(SQLObject, PRPCTOO):
         fromDatabase = True
     productosVenta = MultipleJoin('ProductoVenta')
     #----------------------- tipoMaterialBalaID = ForeignKey('TipoMaterialBala')
+    #--------------------------- modeloEtiquetaID = ForeignKey("ModeloEtiqueta")
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -11439,6 +11478,7 @@ class ModeloEtiqueta(SQLObject, PRPCTOO):
     class sqlmeta:
         fromDatabase = True
     camposEspecificosRollo = MultipleJoin("CamposEspecificosRollo")
+    camposEspecificosBala = MultipleJoin("CamposEspecificosBala")
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)

@@ -458,10 +458,11 @@ CREATE TABLE campos_especificos_bala(
     bolsas_caja INT DEFAULT NULL,     -- Solo aplicable a bolsas de Geocem.
     -- NEW! 20/02/2010
     cajas_pale INT DEFAULT NULL,      -- Solo aplicable a Geocem embolsado.
-    cliente_id INT REFERENCES cliente DEFAULT NULL  -- Este producto se
+    cliente_id INT REFERENCES cliente DEFAULT NULL, -- Este producto se
         -- distribuye a través de un cliente y debe llevar sus datos en
         -- la etiqueta de las cajas de fibra embolsada. No se suele usar en
         -- fibra normal.
+    modelo_etiqueta_id INT REFERENCES modelo_etiqueta DEFAULT NULL
 );
 
 ------------------------------------------------

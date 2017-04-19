@@ -761,6 +761,8 @@ def query_articulos_from_partes(producto, fini, ffin):
                                   PDP.q.fechahorainicio < ffin,
                                   A.q.parteDeProduccionID == PDP.q.id,
                                   A.q.productoVentaID == producto.id))
+    # Versión one-liner:
+    # articulos = sorted([y for x in [[a for a in pdp.articulos] for pdp in PDP.select(pclases.AND(PDP.q.fecha >= fini, PDP.q.fecha < ffin)) if pdp.productoVenta == pv] for y in x], key = lambda a: a.codigo)     # pylint:disable=line-too-long
     # Porque el groupBy necesitaría un poco de low-level en el SQLObject:
     tratados = []
     res = []

@@ -7123,73 +7123,76 @@ def etiquetasBalas(balas):
     c.save()
     return nomarchivo
 
-def etiquetasBigbags(bigbags):
+def etiquetasBigbags(bigbags, hook=None):
     """
     Crea etiquetas en cuartillas (A5) para los
     bigbags recibidos.
     """
-    datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
+    if hook:
+        nomarchivo = hook(bigbags)
+    else:
+        datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
 
-    from reportlab.lib.pagesizes import A5
-    from barcode import code39
-    from barcode.EANBarCode import EanBarCode
+        from reportlab.lib.pagesizes import A5
+        from barcode import code39
+        from barcode.EANBarCode import EanBarCode
 
-    # Creo la hoja
-    nomarchivo = os.path.join(gettempdir(),
-                              "etiqBigbags_%s.pdf" % give_me_the_name_baby())
-    c = canvas.Canvas(nomarchivo, pagesize = landscape(A5))
-    # El 0 vertical es el borde de abajo
-    # El 0 horizontal es el margen derecho
-    height, width = A5
+        # Creo la hoja
+        nomarchivo = os.path.join(gettempdir(),
+                                  "etiqBigbags_%s.pdf" % give_me_the_name_baby())
+        c = canvas.Canvas(nomarchivo, pagesize = landscape(A5))
+        # El 0 vertical es el borde de abajo
+        # El 0 horizontal es el margen derecho
+        height, width = A5
 
-    derecha = width - 1 * cm
-    izquierda = 1 * cm
-    arriba = height - 1 * cm
-    abajo = 1 * cm
-    xgeotexan, ygeotexan = (height / 2, 1.7 * cm)
-    xproducto, yproducto = (width * 5 / 9.0, arriba - 2.5 * cm)
-    xnumbb, ynumbb = (izquierda + 5 * cm, arriba - 4.35 * cm)
-    xpeso, ypeso = (izquierda + 5 * cm, arriba - 5.70 * cm)
-    xcorte, ycorte = (izquierda + 5 * cm, arriba - 7.05 * cm)
-    xlote, ylote = (izquierda + 5 * cm , arriba - 8.40 * cm)
-    xean, yean = (derecha - 2.5 * cm, abajo + 1 * cm)
-    x39, y39 = (izquierda , abajo + 1 * cm)
-    xbbcode, ybbcode = (izquierda + 5 * cm, abajo + 0.5 * cm)
-    ximage, yimage = (izquierda + 0.5 * cm, arriba - 3.2 * cm)
+        derecha = width - 1 * cm
+        izquierda = 1 * cm
+        arriba = height - 1 * cm
+        abajo = 1 * cm
+        xgeotexan, ygeotexan = (height / 2, 1.7 * cm)
+        xproducto, yproducto = (width * 5 / 9.0, arriba - 2.5 * cm)
+        xnumbb, ynumbb = (izquierda + 5 * cm, arriba - 4.35 * cm)
+        xpeso, ypeso = (izquierda + 5 * cm, arriba - 5.70 * cm)
+        xcorte, ycorte = (izquierda + 5 * cm, arriba - 7.05 * cm)
+        xlote, ylote = (izquierda + 5 * cm , arriba - 8.40 * cm)
+        xean, yean = (derecha - 2.5 * cm, abajo + 1 * cm)
+        x39, y39 = (izquierda , abajo + 1 * cm)
+        xbbcode, ybbcode = (izquierda + 5 * cm, abajo + 0.5 * cm)
+        ximage, yimage = (izquierda + 0.5 * cm, arriba - 3.2 * cm)
 
-    for bigbag in bigbags:
-        rectangulo(c, (izquierda, arriba), (derecha, abajo), doble = True)
+        for bigbag in bigbags:
+            rectangulo(c, (izquierda, arriba), (derecha, abajo), doble = True)
 
-        c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
-                    ximage, yimage, 3 * cm, 3 * cm)
-        c.setFont("Times-Roman", 20)
-        c.rotate(90)
-        c.drawCentredString(xgeotexan, -ygeotexan, datos_empresa.nombre)
-        c.rotate(-90)
-        c.setFont("Helvetica-Bold", 42)
-        c.drawCentredString(xproducto, yproducto,
-                            escribe(bigbag.articulo.productoVenta.descripcion))
-        c.setFont("Helvetica", 28)
-        c.drawString(xcorte, ycorte,
-            escribe("CORTE: %d mm" % (
-                bigbag.articulo.productoVenta.camposEspecificosBala.corte)))
-        c.drawString(xpeso, ypeso, escribe("PESO: %s Kg" % bigbag.pesobigbag))
-        c.drawString(xlote, ylote, escribe("LOTE %s" % bigbag.loteCem.codigo))
-        c.drawString(xnumbb, ynumbb, escribe("BIGBAG %s" % bigbag.codigo))
-        bar = EanBarCode()
-        nombreficheroean13 = bar.getImage(bigbag.articulo.productoVenta.codigo)
-        ean13rotado = Image.open(nombreficheroean13)
-        ean13rotado = ean13rotado.rotate(90)
-        ean13rotado.save(nombreficheroean13)
-        c.drawImage(nombreficheroean13, xean, yean)
-        codigotrazabilidad = code39.Extended39(bigbag.codigo, xdim = .045*inch)
-        codigotrazabilidad.drawOn(c, x39, y39)
-        c.setFont("Helvetica", 12)
-        c.drawString(xbbcode, ybbcode, escribe(bigbag.codigo))
+            c.drawImage(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'imagenes', datos_empresa.logo),
+                        ximage, yimage, 3 * cm, 3 * cm)
+            c.setFont("Times-Roman", 20)
+            c.rotate(90)
+            c.drawCentredString(xgeotexan, -ygeotexan, datos_empresa.nombre)
+            c.rotate(-90)
+            c.setFont("Helvetica-Bold", 42)
+            c.drawCentredString(xproducto, yproducto,
+                                escribe(bigbag.articulo.productoVenta.descripcion))
+            c.setFont("Helvetica", 28)
+            c.drawString(xcorte, ycorte,
+                escribe("CORTE: %d mm" % (
+                    bigbag.articulo.productoVenta.camposEspecificosBala.corte)))
+            c.drawString(xpeso, ypeso, escribe("PESO: %s Kg" % bigbag.pesobigbag))
+            c.drawString(xlote, ylote, escribe("LOTE %s" % bigbag.loteCem.codigo))
+            c.drawString(xnumbb, ynumbb, escribe("BIGBAG %s" % bigbag.codigo))
+            bar = EanBarCode()
+            nombreficheroean13 = bar.getImage(bigbag.articulo.productoVenta.codigo)
+            ean13rotado = Image.open(nombreficheroean13)
+            ean13rotado = ean13rotado.rotate(90)
+            ean13rotado.save(nombreficheroean13)
+            c.drawImage(nombreficheroean13, xean, yean)
+            codigotrazabilidad = code39.Extended39(bigbag.codigo, xdim = .045*inch)
+            codigotrazabilidad.drawOn(c, x39, y39)
+            c.setFont("Helvetica", 12)
+            c.drawString(xbbcode, ybbcode, escribe(bigbag.codigo))
 
-        c.showPage()
+            c.showPage()
 
-    c.save()
+        c.save()
     return nomarchivo
 
 
@@ -8204,9 +8207,14 @@ def generar_data_caja(caja, tipo = 0):
                 res['empresa'] = ""
     return res
 
-def etiquetasBalasEtiquetadora(*args, **kw):
+def etiquetasBalasEtiquetadora(balas, hook=None, *args, **kw):
     #return domenech_v_etiquetasBalasEtiquetadora(*args, **kw)
-    return domenech_h_etiquetasBalasEtiquetadora(*args, **kw)
+    # Si tiene función especial para modelo de etiqueta personalizado:
+    if not hook:
+        nomarchivo = domenech_h_etiquetasBalasEtiquetadora(balas, *args, **kw)
+    else:
+        nomarchivo = hook(balas)
+    return nomarchivo
     #return _DEPRECATED_etiquetasBalasEtiquetadora(*args, **kw)
 
 def _DEPRECATED_etiquetasBalasEtiquetadora(balas):

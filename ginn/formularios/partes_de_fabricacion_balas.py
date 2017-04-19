@@ -453,7 +453,10 @@ class PartesDeFabricacionBalas(Ventana):
             l_silo.modify_font(font_desc)
             mostrar_carga_silo(l_silo, silo)
             try:
-                carga_mas_antigua = murano.ops.get_carga_mas_antigua_silo(silo)
+                if pclases.DEBUG:
+                    carga_mas_antigua = None
+                else:
+                    carga_mas_antigua = murano.ops.get_carga_mas_antigua_silo(silo)
             except:
                 self.logger.error(
                     "Error al leer silos de Murano. Fallback a ginn.")
@@ -3708,28 +3711,53 @@ class PartesDeFabricacionBalas(Ventana):
                                 'acabado':acabado,
                                 'codigoBarra':producto.codigo}
                     balas.append(elemento)
-                try:
+                # NEW! 19/04/2017: Si el bigbag tiene un modelo de etiqueta
+                # específico, lo uso. Si no, uso el código antiguo para el
+                # modelo por defecto.
+                _balas = []
+                balas_con_otro_modelo = {}
+                for bala in balas:
+                    pbala = pclases.Bala.selectBy(codigo=bala['codigo'])[0]
+                    fetiqueta = pbala.articulo.productoVenta.camposEspecificosBala.modeloEtiqueta
+                    if fetiqueta:
+                        # Cada modelo de etiqueta con su lista de artículos
+                        try:
+                            balas_con_otro_modelo[fetiqueta].append(bala)
+                        except KeyError:
+                            balas_con_otro_modelo[fetiqueta] = [bala]
+                    else:
+                        _balas.append(bala)
+                balas = _balas
+                # Si hay artículos con etiqueta personalizada:
+                for fetiqueta in balas_con_otro_modelo:
+                    balas = balas_con_otro_modelo[fetiqueta]
                     reports.abrir_pdf(
-                        geninformes.etiquetasBalasEtiquetadora(balas))
-                except (IOError, OSError), msg:
-                    txt = "%spartes_de_fabricacion_balas::etiquetasPeq -> "\
-                          "IOError: %s" % (
-                            self.usuario
-                                and self.usuario.usuario + ": "
-                                or "",
-                            msg)
-                    self.logger.error(txt)
-                    txt = """
-                    Se produjo un error al imprimir la etiqueta.
-                    Compruebe que queda espacio en la unidad y elimine los
-                    archivos temporales si fuera necesario.
+                            geninformes.etiquetasBalasEtiquetadora(balas,
+                                                                   hook=fetiqueta.get_func()))
+                # Si han quedado artículos con la etiqueta por defecto:
+                if balas:
+                    try:
+                        reports.abrir_pdf(
+                            geninformes.etiquetasBalasEtiquetadora(balas))
+                    except (IOError, OSError), msg:
+                        txt = "%spartes_de_fabricacion_balas::etiquetasPeq -> "\
+                              "IOError: %s" % (
+                                self.usuario
+                                    and self.usuario.usuario + ": "
+                                    or "",
+                                msg)
+                        self.logger.error(txt)
+                        txt = """
+                        Se produjo un error al imprimir la etiqueta.
+                        Compruebe que queda espacio en la unidad y elimine los
+                        archivos temporales si fuera necesario.
 
-                    Información de depuración:
-                    %s
-                    """ % txt
-                    utils.dialogo_info(titulo = "ERROR DE IMPRESIÓN",
-                                       texto = txt,
-                                       padre = self.wids['ventana'])
+                        Información de depuración:
+                        %s
+                        """ % txt
+                        utils.dialogo_info(titulo = "ERROR DE IMPRESIÓN",
+                                           texto = txt,
+                                           padre = self.wids['ventana'])
 
     def _salir(self, w, event = None):
         if ("w" in self.__permisos
@@ -4346,8 +4374,12 @@ def imprimir_etiquetas_bigbags(lista_bbs_defecto = [], ventana_parte = None):
     if codigos is not None:     # Es None si cancela.
         bigbags = []
         no_encontrados = []
+        bigbags_con_otro_modelo = {}
+        # NEW! 19/04/2017: Si el bigbag tiene un modelo de etiqueta
+        # específico, lo uso. Si no, uso el código antiguo para el
+        # modelo por defecto.
         for codigo in codigos:
-            if "C" in codigo.upper():       # OJO: Si cambia el tema de que
+            if "C" in codigo.upper(): # OJO: HARDCODED: Si cambia el tema de que
                 # los códigos de geocem empiecen por "C", cambiar aquí también.
                 try:
                     bb = pclases.Bigbag.select(
@@ -4356,7 +4388,15 @@ def imprimir_etiquetas_bigbags(lista_bbs_defecto = [], ventana_parte = None):
                     no_encontrados.append(codigo)
                     continue
                 else:
-                    bigbags.append(bb)
+                    fetiqueta = bb.articulo.productoVenta.camposEspecificosBala.modeloEtiqueta
+                    if not fetiqueta:
+                        bigbags.append(bb)
+                    else:
+                        # Cada modelo de etiqueta con su lista de artículos
+                        try:
+                            bigbags_con_otro_modelo[fetiqueta].append(bb)
+                        except KeyError:
+                            bigbags_con_otro_modelo[fetiqueta] = [bb]
             else:
                 try:
                     bb = pclases.Bigbag.select(
@@ -4365,8 +4405,23 @@ def imprimir_etiquetas_bigbags(lista_bbs_defecto = [], ventana_parte = None):
                     no_encontrados.append(codigo)
                     continue
                 else:
-                    bigbags.append(bb)
-        reports.abrir_pdf(geninformes.etiquetasBigbags(bigbags))
+                    fetiqueta = bb.articulo.productoVenta.camposEspecificosBala.modeloEtiqueta
+                    if not fetiqueta:
+                        bigbags.append(bb)
+                    else:
+                        # Cada modelo de etiqueta con su lista de artículos
+                        try:
+                            bigbags_con_otro_modelo[fetiqueta].append(bb)
+                        except KeyError:
+                            bigbags_con_otro_modelo[fetiqueta] = [bb]
+        # Si hay artículos con etiqueta personalizada:
+        for fetiqueta in bigbags_con_otro_modelo:
+            bbs = bigbags_con_otro_modelo[fetiqueta]
+            reports.abrir_pdf(geninformes.etiquetasBigbags(bbs,
+                                                           hook=fetiqueta.get_func()))
+        # Si han quedado artículos con la etiqueta por defecto:
+        if bigbags:
+            reports.abrir_pdf(geninformes.etiquetasBigbags(bigbags))
         for bb in bigbags:
             pclases.Auditoria.modificado(bb.articulo, None, __file__,
                 "Impresión de etiqueta para bigbag %s." % (
@@ -4378,7 +4433,10 @@ def mostrar_carga_silo(label, silo):
     Muestra la carga del silo «silo» en el label recibido.
     """
     try:
-        ocupado = murano.ops.get_ocupado_silo(silo)
+        if not pclases.DEBUG:
+            ocupado = murano.ops.get_ocupado_silo(silo)
+        else:
+            ocupado = 0.0
     except:
         #print "No se pudo leer carga de silo %s en Murano. Fallback a ginn."%(
         #        silo.nombre)

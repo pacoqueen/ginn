@@ -540,6 +540,185 @@ def crear_etiquetas_pales(pales, mostrar_marcado=True, lang="es"):
     canvas.save()
     return nomarchivo
 
+def crear_etiquetas_bigbags(bigbags, mostrar_marcado=True, lang="es"):
+    """
+    Construye una etiqueta por cada objeto bigbag recibido y las devuelve
+    en un solo PDF.
+    Si lang = "en", etiqueta en inglés. Si "es", en castellano.
+    """
+    # Voy a tratar de reescribir esto regla en mano a ver si consigo
+    # cuadrarlo bien en la etiquetadora GEMINI.
+    alto = 12.55 * cm
+    ancho = 8.4 * cm
+
+    # Creo la hoja
+    nomarchivo = os.path.join(
+        gettempdir(), "etiq_bigbag13_%s_%s.pdf" % (lang, give_me_the_name_baby()))
+    canvas = reportlabcanvas.Canvas(nomarchivo, pagesize=(ancho, alto))
+
+    # Medidas:
+    logo = (3.8 * cm * 0.75, 2.8 * cm * 0.75)
+    margen = 0.1 * cm
+    marcado = (((ancho - logo[0]) / 2) - margen, (alto - margen - logo[1] - 2))
+
+    # Imágenes:
+    logo_marcado = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "imagenes", "CE.png"))
+
+    # Datos fijos:
+    # pylint: disable=bad-continuation
+    _data = {# "00 logo_marcado": None,
+             "01 texto_marcado": "1035",    # Fijo
+             "02 fabricado_por": "Fabricado por: %s",
+             "03 direccion1": None,
+             "04 direccion2": None,
+             "05 telefono": "Tfno: %s, %s",
+             "06 año_certif": None,
+             "07 blanco1": "",      # Separador
+             "08 dni": None,
+             "09 iso1": "EN 14889-2:2008",  # Fijo
+             "11 blanco2": "",      # Separador
+             "12 producto": None,
+             "13 descripcion": "",
+             "14 uso": None,
+             "15 blanco3": "",      # Separador
+             # "16 1 separador": "",     # Fijo
+             "16 codigo": "Bigbag {} · Lote {}",  # Código bigbag y código lote.
+             "17 caracteristicas": "Corte: {} mm · Peso: {} kg/br"  # Corte y peso.
+            }
+    if lang == "en":
+        for k in _data:
+            _data[k] = helene_laanest(_data[k])
+    estilos = defaultdict(lambda: ("Helvetica-Bold", 11)) # Helvética a 11 por defecto
+    estilos["01 texto_marcado"] = ("Times-Bold", 9)
+    estilos["02 fabricado_por"] = ("Helvetica-Bold", 13)
+    estilos["12 producto"] = ("Courier-Bold", 17)
+    estilos["14 uso"] = ("Helvetica-Bold", 10)
+    estilos["15 blanco3"] = ("Helvetica-Bold", 10)
+    estilos["16 codigo"] = ("Courier-Bold", 13)
+    estilos["17 caracteristicas"] = ("Helvetica-Bold", 14)
+    data = {}
+    # Datos de la BD dependientes del bigbag
+    for bigbag in bigbags:
+        # 0.- ¿En qué formato viene? Si es el antiguo (datos en diccionario)
+        #     me quedo con el objeto de pclases en sí.
+        producto_venta = bigbag.articulo.productoVenta
+        numpartida = bigbag.articulo.loteCem.codigo
+        numbigbag = bigbag.codigo
+        #   1.- Empresa
+        try:
+            # Si hay distribuidor, este texto cambia.
+            distribuidor = bigbag.articulo.productoVenta.camposEspecificosBala.cliente
+            if distribuidor:
+                if lang == "en":
+                    data["02 fabricado_por"] = helene_laanest(
+                            "Distribuido por: %s") % (distribuidor.nombre)
+                else:
+                    data["02 fabricado_por"] = "Distribuido por: %s" % (
+                                                        distribuidor.nombre)
+                dird = distribuidor.get_direccion_completa()
+                dircompleta = textwrap.wrap(dird,
+                        (len(dird) + max([len(w) for w in dird.split()])) / 2)
+                data["03 direccion1"] = dircompleta[0]
+                data["04 direccion2"] = dircompleta[1]
+                data["05 telefono"] = _data["05 telefono"] % (
+                        distribuidor.telefono, distribuidor.email)
+            else:   # Sigo con los datos de "propia empresa". Distribuyo yo.
+                empresa = pclases.DatosDeLaEmpresa.select()[0]
+                data["02 fabricado_por"] = _data["02 fabricado_por"] % (
+                                                                empresa.nombre)
+                data["03 direccion1"] = empresa.direccion + ", " + empresa.cp
+                data["04 direccion2"] = ", ".join((empresa.ciudad,
+                                                   empresa.provincia,
+                                                   empresa.pais))
+                data["05 telefono"] = _data["05 telefono"] % (empresa.telefono,
+                                                              empresa.email)
+            # Para los clientes sin teléfono o sin email:
+            data["05 telefono"] = data["05 telefono"].strip()
+            if data["05 telefono"].startswith(","):
+                data["05 telefono"] = data["05 telefono"][1:]
+            if data["05 telefono"].endswith(","):
+                data["05 telefono"] = data["05 telefono"][:-1]
+            if len(data["05 telefono"]) <= 7:
+                data["05 telefono"] = ""
+        except IndexError:
+            data["02 fabricado_por"] = ""
+            data["03 direccion1"] = ""
+            data["04 direccion2"] = ""
+            data["05 telefono"] = ""
+    #   2.- Producto
+        producto = producto_venta
+        if producto.annoCertificacion != None:
+            data["06 año_certif"] = "%02d" % producto.annoCertificacion
+        else:
+            data["06 año_certif"] = ""
+        data["08 dni"] = producto.dni
+        data["12 producto"] = producto.nombre
+        if producto.uso:
+            if lang == "en":
+                produso = helene_laanest(producto.uso)
+            else:
+                produso = producto.uso
+            if len(produso) > 30:   # Wrap si el texto es largo.
+                produso = textwrap.wrap(produso,
+                    (len(produso) + max([len(w) for w in produso.split()])) / 2)
+                data["14 uso"] = produso[0]
+                data["15 blanco3"] = produso[1]     # Era un separador, pero
+                                                    # necesito el espacio.
+            else:
+                data["14 uso"] = produso
+        else:
+            data["14 uso"] = ""
+    #   3.- Bigbag
+        data["16 codigo"] = _data["16 codigo"].format(numpartida,
+                                                      numbigbag)
+        corte = producto.camposEspecificosBala.corte
+        peso = float2str(bigbag.articulo.peso_bruto)
+        corte_peso = _data["17 caracteristicas"].format(corte, peso)
+        data["17 caracteristicas"] = corte_peso
+
+        rectangulo(canvas, (margen, margen),
+                      (ancho - margen, alto - margen))
+        if mostrar_marcado:
+            canvas.drawImage(logo_marcado,
+                        marcado[0],
+                        marcado[1],
+                        width=logo[0], height=logo[1])
+        else:
+            data["01 texto_marcado"] = ""
+        lineas = _data.keys()
+        lineas.sort()
+        # Posición y estilo de la primera línea.
+        tamfuente = estilos[lineas[0]][1]
+        crd_y = alto - logo[1] - 0.1 * cm - tamfuente
+        # ¿Cuánto me desplazaré de línea a línea?
+        offset_y = (crd_y - margen) / len(lineas)
+        for linea in lineas:
+            try:
+                dato = data[linea]
+            except KeyError:    # Si no está en los valores asignados, busco
+                                # en los originales. Deben ser datos fijos.
+                dato = _data[linea]
+            if dato is None:
+                dato = ""
+            canvas.setFont(*estilos[linea])
+            #canvas.drawCentredString((ancho / 2),
+            #                    crd_y,
+            #                    escribe(dato))
+            el_encogedor_de_fuentes_de_doraemon(canvas,
+                                                fuente=estilos[linea][0],
+                                                tamannoini=estilos[linea][1],
+                                                xini=margen,
+                                                xfin=ancho - margen,
+                                                y=crd_y,
+                                                texto=dato,
+                                                alineacion=0)
+            crd_y -= offset_y
+        canvas.showPage()
+    canvas.save()
+    return nomarchivo
+
+
 def test_rollos():
     """ Pruebas de impresión de rollos. """
     from formularios.reports import abrir_pdf
@@ -559,6 +738,16 @@ def test_pales():
     time.sleep(1)
     abrir_pdf(crear_etiquetas_pales(pales, lang="en"))
 
+def test_bigbags():
+    """ Pruebas de impresión de etiquetas de bigbag. """
+    from formularios.reports import abrir_pdf
+    bigbags = pclases.Bigbag.select(orderBy="-id")[:2]
+    abrir_pdf(crear_etiquetas_bigbags(bigbags))
+    import time
+    time.sleep(1)
+    abrir_pdf(crear_etiquetas_bigbags(bigbags, lang="en"))
+
 if __name__ == "__main__":
-    test_rollos()
+    # test_rollos()
     # test_pales()
+    test_bigbags()
