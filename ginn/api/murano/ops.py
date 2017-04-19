@@ -486,6 +486,8 @@ def _get_modelo_etiqueta_ginn(id_etiqueta_murano):
     de Murano para ese mismo modelo recibido.
     Si no lo encuentra o no está establecido en Murano (0), devuelve None.
     """
+    # TODO: Debería mirar los campos módulo y función de Murano y dejar todo
+    # este lío de mantener las tablas con ID idéntico entre ambos programas.
     if id_etiqueta_murano == 4:
         # Normativa julio 2013
         res = 4

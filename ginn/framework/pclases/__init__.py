@@ -12245,7 +12245,12 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         # NOTA: Desgraciadamente, por el momento sólo es posible discernir el
         # tipo de producto "fibra de cemento" si la descripción contiene GEOCEM.
         # TODO: Esto no es así. La fibra embolsada también contiene "GEOCEM".
-        return "GEOCEM" in self.descripcion and not self.es_caja()
+        # Hay que buscar una forma mejor de determinarlo. Esto es una chapuza.
+        res = "GEOCEM" in self.descripcion and not self.es_caja()
+        # HARCODED: Casos especiales (SIKACIM)
+        if not res:
+            res = "SIKACIM" in self.descripcion
+        return res
 
     def es_bala_cable(self):
         """
@@ -18180,8 +18185,13 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         para que coincidan con los campos fecha, horainicio y horafin.
         """
         fechahorainicio, fechahorafin = self.__calcular_campos_fechahora()
-        self.fechahorainicio = fechahorainicio
-        self.fechahorafin = fechahorafin
+        try:
+            self.fechahorainicio = fechahorainicio
+            self.fechahorafin = fechahorafin
+        except Exception, e:
+            # Jaleo de versiones entre SQLObject, mx y datetime
+            self.fechahorainicio = datetime.datetime(*fechahorainicio.timetuple()[:7])
+            self.fechahorafin = datetime.datetime(*fechahorafin.timetuple()[:7])
         self.syncUpdate()
 
     def __calcular_campos_fechahora(self):
