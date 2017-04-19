@@ -489,7 +489,7 @@ def _get_modelo_etiqueta_ginn(id_etiqueta_murano):
     if id_etiqueta_murano == 4:
         # Normativa julio 2013
         res = 4
-    elif id_etiqueta_murano in range(1, 6):
+    elif id_etiqueta_murano in range(1, 7):
         # Resulta que el ID coincide en ambas bases de datos.
         res = id_etiqueta_murano
     else:   # Incluido el 0, que es el equivalente al None en Murano
@@ -509,6 +509,7 @@ def _get_uso_ginn(codigo_uso):
     - DS: Drenaje, filtración, refuerzo, separación
     - FP: Fibra de polipropileno virgen embolsada en papel hidrosoluble para
           su uso como aditivo del hormigón
+    - FV: Fibra de polipropileno virgen
     - '': ''
     Resto: None
     """
@@ -519,6 +520,8 @@ def _get_uso_ginn(codigo_uso):
     elif codigo_uso == 'FP':
         res = "Fibra de polipropileno virgen embolsada en papel hidrosoluble"\
               " para su uso como aditivo del hormigón"
+    elif codigo_uso == 'FV':
+        res = "Fibra de polipropileno virgen"
     elif codigo_uso == '':
         res = ""
     else:
