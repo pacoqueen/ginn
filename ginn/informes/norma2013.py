@@ -583,7 +583,7 @@ def crear_etiquetas_bigbags(bigbags, mostrar_marcado=True, lang="es"):
              "14 uso": None,
              "15 blanco3": "",      # Separador
              # "16 1 separador": "",     # Fijo
-             "16 codigo": "Bigbag {} · Lote {}",  # Código bigbag y código lote.
+             "16 codigo": "Lote {} · Bigbag {}",  # Código bigbag y código lote.
              "17 caracteristicas": "Corte: {} mm · Peso: {} kg/br"  # Corte y peso.
             }
     if lang == "en":
