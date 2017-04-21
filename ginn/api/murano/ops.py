@@ -1190,7 +1190,8 @@ def esta_consumido(articulo):
     conn = Connection()
     movserie = get_ultimo_movimiento_articulo_serie(conn, articulo)
     # HARDCODED
-    if (movserie['SerieDocumento'] == 'FAB'
+    if (movserie
+            and movserie['SerieDocumento'] == 'FAB'
             and movserie['OrigenDocumento'] == 11
             and movserie['Comentario'].startswith('Consumo')):
         res = movserie['Fecha']
@@ -1210,7 +1211,7 @@ def esta_vendido(articulo):
     conn = Connection()
     movserie = get_ultimo_movimiento_articulo_serie(conn, articulo)
     # HARDCODED
-    if movserie['OrigenDocumento'] == 1:
+    if movserie and movserie['OrigenDocumento'] == 1:
         res = movserie['Fecha']
     else:
         res = None
@@ -2035,8 +2036,11 @@ def get_producto_articulo_murano(articulo):
     """
     conn = Connection()
     movserie = get_ultimo_movimiento_articulo_serie(conn, articulo)
-    murano_id = movserie['CodigoArticulo']
-    pv = get_producto_ginn(murano_id)
+    if movserie:
+        murano_id = movserie['CodigoArticulo']
+        pv = get_producto_ginn(murano_id)
+    else:   # Nunca ha entrado en Murano.
+        pv = None
     return pv
 
 
