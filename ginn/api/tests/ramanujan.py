@@ -1179,7 +1179,8 @@ def main():
     desglose.headers = ['Almacén', 'Familia', 'Código producto',
                         'Descripción', 'Código trazabilidad', 'Partida',
                         'Calidad', 'Bultos', 'Peso neto', 'Peso bruto',
-                        'Metros cuadrados', 'Fecha importación a Murano']
+                        'Metros cuadrados', 'Fecha importación a Murano',
+                        'Palé']
     for producto in tqdm(productos, desc="Productos"):
         res = cuentalavieja(producto, data_inventario, fini, ffin, report,
                             data_res, args.debug)
