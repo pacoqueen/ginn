@@ -1052,7 +1052,8 @@ def do_inventario(producto, totales, desglose):
            CAST(ArticulosSeries.PesoBruto_ AS NUMERIC(36,2)) AS peso_bruto,
            CAST(ArticulosSeries.MetrosCuadrados AS NUMERIC(36,2))
                                                         AS metros_cuadrados,
-           ArticulosSeries.FechaInicial AS fecha_fabricacion
+           ArticulosSeries.FechaInicial AS fecha_fabricacion,
+           ArticulosSeries.CodigoPale
     FROM ArticulosSeries LEFT OUTER JOIN Articulos
         ON ArticulosSeries.CodigoArticulo = Articulos.CodigoArticulo
             AND Articulos.CodigoEmpresa = '10200'
@@ -1063,7 +1064,8 @@ def do_inventario(producto, totales, desglose):
     ORDER BY Articulos.CodigoFamilia,
              Articulos.DescripcionArticulo,
              ArticulosSeries.Partida,
-             ArticulosSeries.CodigoTalla01_;
+             ArticulosSeries.CodigoTalla01_,
+             ArticulosSeries.CodigoPale;
     """.format(codarticulo, codalmacen)
     conn = connection.Connection()
     rs_totales = conn.run_sql(sql_totales)
@@ -1092,7 +1094,8 @@ def do_inventario(producto, totales, desglose):
                          rs_desglose['peso_neto'],
                          rs_desglose['peso_bruto'],
                          rs_desglose['metros_cuadrados'],
-                         rs_desglose['fecha_fabricacion']]
+                         rs_desglose['fecha_fabricacion'],
+                         rs_desglose['CodigoPale']]
         desglose.append(fila_desglose)
 
 
