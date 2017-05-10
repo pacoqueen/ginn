@@ -1905,12 +1905,11 @@ def update_calidad(articulo, calidad):
         raise NotImplementedError("Función no disponible por el momento.")
     else:
         res = delete_articulo(articulo,
-                              observaciones="Cambio a calidad {}".format(
-                                  calidad))
+                observaciones="Baja por cambio a calidad {}".format(calidad))
+        # FIXME: Ahora **siempre** devuelve False y nunca se llega a ejecutar la nueva creación. ¿Por qué?
         if res:
             res = create_articulo(articulo, calidad=calidad,
-                                  observaciones="Cambio a calidad {}.".format(
-                                      calidad))
+                    observaciones="Alta por cambio a calidad {}.".format(calidad))
     return res
 
 
@@ -2072,6 +2071,17 @@ def es_movimiento_salida_manual(movserie):
     OJO: Esos movimientos los debe marcar el usuario como "MAN" en la Serie.
     """
     res = (movserie['OrigenDocumento'] == 11 and
+           movserie['SerieDocumento'] == 'MAN')
+    return res
+
+
+def es_movimiento_entrada_manual(movserie):
+    """
+    True si el registro MovimientoArticuloSerie es de entrada por un ajuste
+    manual por entrada/salida de movimientos de Murano.
+    OJO: Esos movimientos los debe marcar el usuario como "MAN" en la Serie.
+    """
+    res = (movserie['OrigenDocumento'] == 10 and
            movserie['SerieDocumento'] == 'MAN')
     return res
 

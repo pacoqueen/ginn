@@ -72,3 +72,6 @@ ginn/api/tests/*.log
 ginn/api/tests/*ramanujan.md
 ginn/api/*.log
 ginn/*.log
+
+# API de servicios en la nube
+API*.json

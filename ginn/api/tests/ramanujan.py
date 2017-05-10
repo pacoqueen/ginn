@@ -370,10 +370,12 @@ def get_ventas(producto_murano, fini, ffin):
     las fechas de inicio y de fin. Ojo, **no las ventas facturadas** sino las
     salidas de albarán. Y solo desde GTX.
     Obtiene los datos de las tablas:
-    - LineasAlbaranCliente
+    - LineasAlbaranCliente (Se saca todo de aquí. Ojo con el _bug_ de Murano
+      donde la suma de los bultos del packing list no coincide con las
+      cantidades de la línea)
     - MovimientoStock (candidata para cotejar, pero al final no se usa)
         OrigenMovimiento = A
-    - MovimientoArticuloSerie
+    - MovimientoArticuloSerie (tampoco se usa)
         OrigenDocumento = 1
     """
     almacen = "GTX"
@@ -629,21 +631,34 @@ def get_bajas_consumo(producto_murano, fini, ffin):
 def get_ajustes_murano(producto_murano, fini, ffin):
     """
     Ajustes manuales:
-        MovimientoStock:
-            TipoMovimiento = 2 (salida)
-            OrigenMovimiento = 'S' (Movimiento de salida)
-            Serie = 'MAN'
-        MovimientoArticuloSerie:
-            OrigenDocumento = 11 (Salida de stock)
-            SerieDocumento = 'MAN'
+        Altas:
+            MovimientoStock:
+                TipoMovimiento = 1 (entrada)
+                OrigenMovimiento = 'E' (Movimiento de entrada)
+                Serie = 'MAN'
+            MovimientoArticuloSerie:
+                OrigenDocumento = 10 (Entrada de stock)
+                SerieDocumento = 'MAN'
+        Bajas:
+            MovimientoStock:
+                TipoMovimiento = 2 (salida)
+                OrigenMovimiento = 'S' (Movimiento de salida)
+                Serie = 'MAN'
+            MovimientoArticuloSerie:
+                OrigenDocumento = 11 (Salida de stock)
+                SerieDocumento = 'MAN'
     Los ajustes son movimientos de salida, así que los devuelvo en negativo.
     """
     # Eliminaciones manuales, movimientos manuales de salida por ajustes...
     # El código canal a None hará que no se use ese parámetro en el SQL
-    ajustes = get_volcados(producto_murano, fini, ffin, 2, 'S', None,
-                           11, serie='MAN')
-    sumbultos, summetros, sumkilos = ajustes
-    res = (-round(sumbultos, 2), -round(summetros, 2), -round(sumkilos, 2))
+    ajustes_positivos = get_volcados(producto_murano, fini, ffin, 1, 'E', None,
+                                     10, serie='MAN')
+    ajustes_negativos = get_volcados(producto_murano, fini, ffin, 2, 'S', None,
+                                     11, serie='MAN')
+    sumbultos = ajustes_positivos[0] - ajustes_negativos[0]
+    summetros = ajustes_positivos[1] - ajustes_negativos[1]
+    sumkilos = ajustes_positivos[2] - ajustes_negativos[2]
+    res = round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2)
     return res
 
 
@@ -757,6 +772,7 @@ def query_articulos_from_partes(producto, fini, ffin):
     PDP = pclases.ParteDeProduccion
     A = pclases.Articulo
     # pylint: disable=no-member
+    # TODO: fini y ffin deberían ser a las 6:00 horas, que es como filtra la consulta_producido.
     pdps = PDP.select(pclases.AND(PDP.q.fechahorainicio >= fini,
                                   PDP.q.fechahorainicio < ffin,
                                   A.q.parteDeProduccionID == PDP.q.id,
