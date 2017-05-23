@@ -4648,7 +4648,7 @@ if __name__=="__main__":
     print dialogo_radio(titulo='Seleccione una opción',
                 texto='Selecciona una opción del radiobutton y tal y cual.',
                 ops=[(0, 'Sin opciones'), (1, "Una opción"), (2, "Y otra"),
-                     (3, "La misoginia no es una opción, es una OBLIGACIÓN")],
+                     (3, "La misoginia no es una opción")],
                 padre = None,
                 valor_por_defecto = 3)
     sys.exit(0)

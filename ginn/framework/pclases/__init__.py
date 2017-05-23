@@ -5485,15 +5485,28 @@ class PartidaCarga(SQLObject, PRPCTOO):
         """
         Crea una LDV en el albarán "interno" con los datos recibidos.
         """
-        ldv = LineaDeVenta(productoCompra = None,
-                           pedidoVenta = pedido,
-                           facturaVenta = None,
-                           productoVenta = productoVenta,
-                           albaranSalida = albaran,
-                           fechahora = mx.DateTime.localtime(),
-                           cantidad = 0.0,
-                           precio = precio,
-                           descuento = 0.0)
+        ahora = mx.DateTime.localtime()
+        try:
+            ldv = LineaDeVenta(productoCompra = None,
+                               pedidoVenta = pedido,
+                               facturaVenta = None,
+                               productoVenta = productoVenta,
+                               albaranSalida = albaran,
+                               fechahora = ahora,
+                               cantidad = 0.0,
+                               precio = precio,
+                               descuento = 0.0)
+        except Exception as e:  # Invalid
+            ahora = datetime.datetime(*ahora.timetuple()[:7])
+            ldv = LineaDeVenta(productoCompra = None,
+                               pedidoVenta = pedido,
+                               facturaVenta = None,
+                               productoVenta = productoVenta,
+                               albaranSalida = albaran,
+                               fechahora = ahora,
+                               cantidad = 0.0,
+                               precio = precio,
+                               descuento = 0.0)
         return ldv
 
     def crear_albaran_interno(self):
