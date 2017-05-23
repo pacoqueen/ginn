@@ -742,9 +742,10 @@ class ConsumoBalasPartida(Ventana):
             len(self.objeto.get_balas_sin_albaran_interno()) > 0)
             # OJO: Esto puede dar una condición de carrera si el usuario no
             # tiene permisos y aún no se ha actualizado la ventana.
-        from formularios import albaranes_de_salida
-        albaranes_de_salida.AlbaranesDeSalida(usuario=self.usuario,
-                                              objeto=albaran)
+        # Ya no me interesa mostrar el albarán en pantalla.
+        #from formularios import albaranes_de_salida
+        #albaranes_de_salida.AlbaranesDeSalida(usuario=self.usuario,
+        #                                      objeto=albaran)
 
     def descargar_de_terminal(self, boton):
         """
