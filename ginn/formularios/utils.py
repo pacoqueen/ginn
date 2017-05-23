@@ -70,7 +70,7 @@ except ImportError, msg:
 from fixedpoint import FixedPoint as Ffloat
 from collections import defaultdict
 import re
-from lib.fuzzywuzzy.fuzzywuzzy import process as fuzzyprocess
+from lib.fuzzywuzzy.fuzzywuzzy import process as fuzzyprocess # fuzzyprocess
 from formularios.custom_widgets import CellRendererAutoComplete
 
 def str_fechahoralarga(fechahora):
