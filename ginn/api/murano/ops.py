@@ -2514,8 +2514,21 @@ def fire(guid_proceso, ignore_errors=False):
     # parámetro esté a 0.
     # 0 = Ejecutar en todos los módulos.
     # 4 = Procesar solo para el módulo de gestión. [20160704] Cambiamos 0 por 4
+### XXX
+#    retCode = SELECT ......
+#    timeout=10
+#    while retCode is None:
+#        sleep(timeout)
+#        timeout += 1
+### XXX
     strverbose = "Importación `%s` concluida con código de retorno: %s" % (
         guid_proceso, retCode)
+    # TODO: En lugar de usar el código de retorno, como resulta que al final
+    # las llamadas a la dll son asíncronas, haremos un SELECT contra LsysTraceIME buscando
+    # el GUID en cuestión y en sysTraceDescription el texto 'Fin proceso de importación".
+    # Si sysStatus es 0, ha acabado bien. Si es 2 (u otro valor), ha habido fallos.
+    # **Si el registro no existe, es que no ha terminado todavía.** Hacer espera activa hasta
+    # que aparezca el registro.
     logging.info(strverbose)
     if VERBOSE and DEBUG:
         print(strverbose)
