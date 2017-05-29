@@ -2894,7 +2894,7 @@ class PartesDeFabricacionRollos(Ventana):
                 else:
                     if mostrar_alerta:
                         utils.dialogo_info(titulo = "USUARIO SIN PRIVILEGIOS",
-                                           texto = "No tiene permisos suficientes para bloquear y verificar partes de producción.",
+                                           texto = "No tiene permisos suficientes para bloquear y verificar partes de producción. Pruebe a hacerlo desde la ventana de partes pendientes de verificar.",
                                            padre = self.wids['ventana'])
         self.objeto.sync()
         self.objeto.make_swap()
