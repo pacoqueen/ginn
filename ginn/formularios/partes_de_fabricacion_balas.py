@@ -1706,7 +1706,9 @@ class PartesDeFabricacionBalas(Ventana):
                                  texto = 'Esta fibra está marcada actualmente como clase A.\n¿Marcar como clase B?',
                                  padre = self.wids['ventana']):
                     bala_o_bb.claseb = True
-                    murano.ops.update_calidad(bala_o_bb.articulo, 'B')
+                    murano.ops.update_calidad(bala_o_bb.articulo, 'B',
+                                              comentario="PDP: Cambio a calidad B.",
+                                              serie="FAB")
             bala_o_bb.motivo = newtext
         else:
             incidencia = pclases.Incidencia.get(ide)
@@ -1727,7 +1729,9 @@ class PartesDeFabricacionBalas(Ventana):
             bala_o_bb = None
         bala_o_bb.claseb = not bala_o_bb.claseb
         murano.ops.update_calidad(bala_o_bb.articulo,
-                                  bala_o_bb.claseb and "B" or "A")
+                                  bala_o_bb.claseb and "B" or "A",
+                                  comentario="Cambio a calidad {}".format(bala_o_bb.claseb and "B" or "A"),
+                                  serie="FAB")
         self.rellenar_tabla_balas()
 
     def cambiar_motivo_incidencia(self, cell, path, newtext):

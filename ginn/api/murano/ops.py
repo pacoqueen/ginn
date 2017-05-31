@@ -1081,7 +1081,7 @@ def estimar_precio_coste(articulo, precio_kg):
 # pylint: disable=too-many-arguments
 def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
                 simulate=False, procesar=True, codigo_almacen=None,
-                calidad=None, comentario=None):
+                calidad=None, comentario=None, serie='API'):
     """
     Crea una bala en las tablas temporales de Murano.
     Recibe un objeto bala de ginn.
@@ -1103,7 +1103,7 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
         except AttributeError:
             partida = ""  # Balas C no tienen lote. No pasa nada. Murano traga.
         unidad_medida = "KG"
-        serie = 'API'   # Si comentario es "", viene de fabricación. Serie FAB.
+        # Si comentario es "", viene de fabricación. Serie FAB.
         if not comentario:
             comentario = "[ginn] {}".format(bala.get_info())
             serie = 'FAB'
@@ -1477,7 +1477,7 @@ def consume_bigbag(bigbag, cantidad=-1, producto=None, guid_proceso=None,
 
 def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
                   simulate=False, procesar=True, codigo_almacen=None,
-                  calidad=None, comentario=None):
+                  calidad=None, comentario=None, serie='API'):
     """
     Crea un bigbag en Murano a partir de la información del bigbag en ginn.
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
@@ -1489,7 +1489,7 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
                         articulo.codigo)
     else:
         partida = bigbag.loteCem.codigo
-        serie = 'API'   # Si comentario es "", viene de fabricación. Serie FAB.
+        # Si comentario es "", viene de fabricación. Serie FAB.
         if not comentario:
             comentario = "[ginn] {}".format(bigbag.get_info())
             serie = 'FAB'
@@ -1566,7 +1566,7 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
 
 def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
                  simulate=False, procesar=True, codigo_almacen=None,
-                 calidad=None, comentario=None):
+                 calidad=None, comentario=None, serie='API'):
     """
     Crea un rollo en Murano a partir de la información del rollo en ginn.
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
@@ -1581,7 +1581,7 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
             partida = rollo.partida.codigo
         except AttributeError:
             partida = ""   # DONE: Los rollos C no tienen partida. No pasa nada
-        serie = 'API'   # Si comentario es "", viene de fabricación. Serie FAB.
+        # Si comentario es "", viene de fabricación. Serie FAB.
         if not comentario:
             comentario = "[ginn] {}".format(rollo.get_info())
             serie = 'FAB'
@@ -1659,7 +1659,7 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
 
 def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
                 simulate=False, procesar=True, codigo_almacen=None,
-                calidad=None, comentario=None):
+                calidad=None, comentario=None, serie='API'):
     """
     Crea una caja en Murano a partir de la información del objeto caja en ginn.
     Si cantidad es 1, realiza un decremento.
@@ -1672,7 +1672,7 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
     else:
         partida = caja.partidaCem.codigo
         unidad_medida = "KG"
-        serie = 'API'   # Si comentario es "", viene de fabricación. Serie FAB.
+        # Si comentario es "", viene de fabricación. Serie FAB.
         if not comentario:
             comentario = "[ginn] {}".format(caja.get_info())
             serie = 'FAB'
@@ -1749,7 +1749,8 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
 
 # pylint: disable=too-many-arguments
 def create_pale(pale, cantidad=1, producto=None, guid_proceso=None,
-                simulate=False, procesar=True, observaciones=None):
+                simulate=False, procesar=True, observaciones=None,
+                serie="API"):
     """
     Crea un palé con todas sus cajas en Murano a partir del palé de ginn.
     Si cantidad es -1 saca el palé del almacén.
@@ -1783,7 +1784,8 @@ def create_pale(pale, cantidad=1, producto=None, guid_proceso=None,
                                    guid_proceso=guid_proceso,
                                    simulate=simulate,
                                    procesar=False,
-                                   comentario=observaciones)
+                                   comentario=observaciones,
+                                   serie=serie)
     # No es necesario. Cada caja lanza su proceso y el palé no crea
     # registros en la base de datos. No hay que lanzar ninún proceso adicional.
     if procesar:
@@ -1890,7 +1892,7 @@ def consultar_producto(producto=None, nombre=None, ean=None):
 
 
 # pylint: disable=unused-argument
-def update_calidad(articulo, calidad):
+def update_calidad(articulo, calidad, comentario=None, serie="API"):
     """
     Cambia la calidad del artículo en Murano a la recibida. Debe ser A, B o C.
     """
@@ -1904,12 +1906,18 @@ def update_calidad(articulo, calidad):
         # cambio de producto.
         raise NotImplementedError("Función no disponible por el momento.")
     else:
+        if not comentario:
+            observaciones_baja="Baja por cambio a calidad {}".format(calidad)
         res = delete_articulo(articulo,
-                observaciones="Baja por cambio a calidad {}".format(calidad))
+                observaciones=comentario,
+                serie=serie)
         # FIXME: Ahora **siempre** devuelve False y nunca se llega a ejecutar la nueva creación. ¿Por qué?
         if res:
+            if not comentario:
+                observaciones_alta="Alta por cambio a calidad {}.".format(calidad)
             res = create_articulo(articulo, calidad=calidad,
-                    observaciones="Alta por cambio a calidad {}.".format(calidad))
+                    observaciones=observaciones_alta,
+                    serie=serie)
     return res
 
 
@@ -2102,7 +2110,7 @@ def es_movimiento_salida_albaran(movserie):
 
 def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
                     simulate=False, codigo_almacen=None, calidad=None,
-                    observaciones=None):
+                    observaciones=None,serie="API"):
     """
     Crea un artículo nuevo en Murano con el producto recibido. Si no se
     recibe ninguno, se usa el que tenga asociado en ginn. Si se recibe un
@@ -2114,6 +2122,8 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
     Si las observaciones son "", se usa el comentario por defecto del
     create_bala, *_rollo, etc. Pero se fuerza al usuario (más bien al código
     de partes_de_fabricacion_*) a que especifiquen la cadena vacía.
+    Si se `observaciones` es "" se usa la serie 'FAB' independientemente de
+    lo que se haya indicado en `serie`.
     """
     assert observaciones is not None, "murano.ops.create_articulo::"\
             "Debe indicar el motivo en el parámetro «observaciones»."
@@ -2134,49 +2144,56 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
                                   simulate=simulate,
                                   codigo_almacen=codigo_almacen,
                                   calidad=calidad,
-                                  comentario=observaciones)
+                                  comentario=observaciones,
+                                  serie=serie)
             elif articulo.es_balaCable():
                 res = create_bala(articulo.balaCable, delta, producto,
                                   guid_proceso=guid_proceso,
                                   simulate=simulate,
                                   codigo_almacen=codigo_almacen,
                                   calidad=calidad,
-                                  comentario=observaciones)
+                                  comentario=observaciones,
+                                  serie=serie)
             elif articulo.es_bigbag():
                 res = create_bigbag(articulo.bigbag, delta, producto,
                                     guid_proceso=guid_proceso,
                                     simulate=simulate,
                                     codigo_almacen=codigo_almacen,
                                     calidad=calidad,
-                                    comentario=observaciones)
+                                    comentario=observaciones,
+                                    serie=serie)
             elif articulo.es_caja():
                 res = create_caja(articulo.caja, delta, producto,
                                   guid_proceso=guid_proceso,
                                   simulate=simulate,
                                   codigo_almacen=codigo_almacen,
                                   calidad=calidad,
-                                  comentario=observaciones)
+                                  comentario=observaciones,
+                                  serie=serie)
             elif articulo.es_rollo():
                 res = create_rollo(articulo.rollo, delta, producto,
                                    guid_proceso=guid_proceso,
                                    simulate=simulate,
                                    codigo_almacen=codigo_almacen,
                                    calidad=calidad,
-                                   comentario=observaciones)
+                                   comentario=observaciones,
+                                   serie=serie)
             elif articulo.es_rollo_defectuoso():
                 res = create_rollo(articulo.rolloDefectuoso, delta, producto,
                                    guid_proceso=guid_proceso,
                                    simulate=simulate,
                                    codigo_almacen=codigo_almacen,
                                    calidad=calidad,
-                                   comentario=observaciones)
+                                   comentario=observaciones,
+                                   serie=serie)
             elif articulo.es_rolloC():
                 res = create_rollo(articulo.rolloC, delta, producto,
                                    guid_proceso=guid_proceso,
                                    simulate=simulate,
                                    codigo_almacen=codigo_almacen,
                                    calidad=calidad,
-                                   comentario=observaciones)
+                                   comentario=observaciones,
+                                   serie=serie)
             else:
                 raise ValueError("El artículo %s no es bala, bala de cable, "
                                  "bigbag, caja, rollo ni rollo C."
