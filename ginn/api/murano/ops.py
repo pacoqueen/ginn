@@ -2543,7 +2543,7 @@ def espera_activa(funcion, parametros, res=None, timeout=30, tick=5):
     Devuelve lo que devuelva la función `funcion`.
     """
     logging.warning("Iniciando espera activa...")
-    tries = 1
+    tries = 0
     max_tries = timeout/tick
     while timeout > 0:
         retCode = funcion(*parametros)
