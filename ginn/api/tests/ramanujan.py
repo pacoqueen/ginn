@@ -734,16 +734,18 @@ def get_produccion(producto_ginn, fini, ffin, strict=False):
     original. Eso puede provocar descuadres si ha pasado mucho tiempo entre
     que se fabricó y se corrigió el producto.
     """
+    # A todos los efectos el día comienza en el turno de las 6:
+    fhoraini = datetime.datetime(fini.year, fini.month, fini.day, 6)
     bultos = {'A': 0, 'B': 0, 'C': 0}
     metros = {'A': 0.0, 'B': 0.0, 'C': 0.0}
     kilos = {'A': 0.0, 'B': 0.0, 'C': 0.0}
     if producto_ginn.es_clase_c():  # Los productos C se pesan. No van en parte
         strict = True
     if not strict:
-        articulos = query_articulos_from_partes(producto_ginn, fini, ffin)
+        articulos = query_articulos_from_partes(producto_ginn, fhoraini, ffin)
     else:   # En vez de por partes, filtro por fecha de registro **real** en
             # la base de datos de cada artículo.
-        articulos = query_articulos(producto_ginn, fini, ffin)
+        articulos = query_articulos(producto_ginn, fhoraini, ffin)
     for a in articulos:
         if a.es_clase_a():
             bultos['A'] += 1
@@ -769,12 +771,15 @@ def query_articulos_from_partes(producto, fini, ffin):
     del producto recibido entre las fechas recibidas. Intervalo abierto en la
     fecha de fin.
     """
+    # A todos los efectos el día comienza en el turno de las 6:
+    fhoraini = datetime.datetime(fini.year, fini.month, fini.day, 6)
+    fhorafin = datetime.datetime(ffin.year, ffin.month, ffin.day, 6)
     PDP = pclases.ParteDeProduccion
     A = pclases.Articulo
     # pylint: disable=no-member
     # TODO: fini y ffin deberían ser a las 6:00 horas, que es como filtra la consulta_producido.
-    pdps = PDP.select(pclases.AND(PDP.q.fechahorainicio >= fini,
-                                  PDP.q.fechahorainicio < ffin,
+    pdps = PDP.select(pclases.AND(PDP.q.fechahorainicio >= fhoraini,
+                                  PDP.q.fechahorainicio < fhorafin,
                                   A.q.parteDeProduccionID == PDP.q.id,
                                   A.q.productoVentaID == producto.id))
     # Versión one-liner:
@@ -798,6 +803,9 @@ def query_articulos(producto, fini, ffin):
     recibidas. Los artículos en sí no guardan la fecha y hora de fabricación.
     Son los rollo/bala/bala_cable/rollo_c/etc. los que lo hacen.
     """
+    # A todos los efectos el día comienza en el turno de las 6:
+    fhoraini = datetime.datetime(fini.year, fini.month, fini.day, 6)
+    fhorafin = datetime.datetime(ffin.year, ffin.month, ffin.day, 6)
     articulos = []
     tablas = (pclases.Bala, pclases.BalaCable, pclases.Caja, pclases.Bigbag,
               pclases.Rollo, pclases.RolloC)
@@ -806,8 +814,8 @@ def query_articulos(producto, fini, ffin):
     # cuando después se va a filtrar para quedarnos con los que coincidan.
     for tabla in tablas:
         # pylint: disable=no-member
-        rs = tabla.select(pclases.AND(tabla.q.fechahora >= fini,
-                                      tabla.q.fechahora < ffin))
+        rs = tabla.select(pclases.AND(tabla.q.fechahora >= fhoraini,
+                                      tabla.q.fechahora < fhorafin))
         for item in tqdm(rs, desc="Artículos (strict)", total=rs.count()):
             if item.articulo.productoVenta == producto:
                 articulos.append(item.articulo)
@@ -863,11 +871,14 @@ def get_articulos_consumidos_ginn(producto, fini, ffin):
     Devuelve una lista de artículos del producto de ginn recibido consumido en
     los partes de producción entre las fechas fini (incluida) y ffin (no incl.).
     """
+    # A todos los efectos el día comienza en el turno de las 6:
+    fhoraini = datetime.datetime(fini.year, fini.month, fini.day, 6)
+    fhorafin = datetime.datetime(ffin.year, ffin.month, ffin.day, 6)
     res = []
     PDP = pclases.ParteDeProduccion
     # pylint: disable=no-member
-    pdps = PDP.select(pclases.AND(PDP.q.fecha >= fini,
-                                  PDP.q.fecha < ffin))
+    pdps = PDP.select(pclases.AND(PDP.q.fechahoraini >= fhoraini,
+                                  PDP.q.fechahorafin < fhorafin))
     # pylint: disable=too-many-nested-blocks
     pcs_tratadas = []
     for pdp in tqdm(pdps, desc="Consumos {}".format(producto.descripcion)):
