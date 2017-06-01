@@ -877,7 +877,7 @@ def get_articulos_consumidos_ginn(producto, fini, ffin):
     res = []
     PDP = pclases.ParteDeProduccion
     # pylint: disable=no-member
-    pdps = PDP.select(pclases.AND(PDP.q.fechahoraini >= fhoraini,
+    pdps = PDP.select(pclases.AND(PDP.q.fechahorainicio >= fhoraini,
                                   PDP.q.fechahorafin < fhorafin))
     # pylint: disable=too-many-nested-blocks
     pcs_tratadas = []
