@@ -251,17 +251,9 @@ def calcular_movimientos(producto_ginn, data_inventario, fini, ffin, dev=False):
     consumos_ginn = get_consumos_ginn(producto_ginn, fini, ffin)
     # Si hay procesos de importación pendientes de pasar a Murano, contarán
     # como ajustes negativos. Hay que asegurarse de ejecutar el Sr. Lobo antes.
-    ## ajustes_ginn = [x-y for x, y in zip(volcados_murano, produccion_ginn)]
-    # Si calculo así los ajuste desde ginn, siempre balanceará la diferencia
-    # entre la producción y las entradas efectivas en Murano. ¿Por qué? Porque
-    # esos ajustes hechos a través de la API se hacen como borrado+creación
-    # del artículo en el nuevo producto desde un terminal; y, por tanto, son
-    # indistinguibles de las creaciones y borrados hechos desde el parte. Usan
-    # las musmas funciones de ops.py. Es decir, que si lo calculo así,
-    # entrarían dos veces en el cálculo de la desviación: como parte del total
-    # de producción, y como supuestos ajustes manuales con signo contrario.
-    # Los ajustes de ginn van sumando mientras que los MAN de Murano, restan.
-    ajustes = [sum(t) for t in zip(ajustes_ginn, [-a for a in ajustes_murano])]
+    # Los ajustes de ginn y los de Murano siguen la misma norma: positivos para
+    # alta en Murano y negativo para bajas. Da igual si son API o MAN.
+    ajustes = [sum(t) for t in zip(ajustes_ginn, ajustes_murano)]
     #  Los volcados los devuelvo para chequear los volcados de la API.
     return (producto_murano, existencias_ini, existencias_fin,
             produccion_ginn, ventas, consumos_ginn,
@@ -676,6 +668,7 @@ def get_volcados_api(producto_murano, fini, ffin):
             tipoMovimiento = 1 (entrada)
             OrigenMovimiento = 'F' (Fabricación)
             CodigoCanal = ''
+            Serie = 'API'
         MovimientoArticuloSerie:
             OrigenDocumento = 2 (Fabricación)
             SerieDocumento = 'API'
