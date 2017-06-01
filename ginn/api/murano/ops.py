@@ -2492,6 +2492,65 @@ def _str_time(t):
     return res
 
 
+def _get_fin_proceso_importacion_retcode(guid):
+    """
+    Busca un registro concreto en la tabla de Murano encargada de procesar
+    las importaciones. Si ese registro existe, la importación ha finalizado.
+    Si en ese registro el valor del campo sysStatus es 0, el proceso ha
+    terminado bien. Si es 2 (u otro valor, en general) ha habido algún error.
+    """
+    conn = Connection()
+    sql = """SELECT sysStatus
+     FROM {}.dbo.LsysTraceIME
+    WHERE IdProcesoIME='{}'
+      AND sysTraceDescription LIKE 'Fin proceso de importaci%n';""".format(
+          conn.get_database(), guid)
+    try:
+        res = conn.run_sql(sql)[0]['sysStatus']
+    except IndexError:
+        res = None
+    return res
+
+
+def _get_fin_proceso_acumulacion_retcode(guid):
+    """
+    Busca un registro concreto en la tabla de Murano encargado de acumular los
+    campos personalizados en las importaciones.
+    Si ese registro existe, la importación ha finalizado.
+    Si en ese registro el valor del campo sysStatus es 0, el proceso ha
+    acumulado bien. Si es 2 (u otro valor, en general) ha habido algún error.
+    """
+    conn = Connection()
+    sql = """SELECT sysStatus
+     FROM {}.dbo.LsysTraceIME
+    WHERE IdProcesoIME='{}'
+      AND sysTraceDescription LIKE 'Fin proceso de acumulaci%n';""".format(
+          conn.get_database(), guid)
+    try:
+        res = conn.run_sql(sql)[0]['sysStatus']
+    except IndexError:
+        res = None
+    return res
+
+
+def espera_activa(funcion, parametros, res=None, timeout=30, tick=5):
+    """
+    Ejecuta la función recibida aplicando la **lista** de parámetros en
+    intervalos de `tick`segundos hasta llegar al tiempo indicado en `timeout`
+    o hasta que el valor devuelto por la función sea diferente al recibido
+    en `res`.
+    Devuelve lo que devuelva la función `funcion`.
+    """
+    while timeout > 0:
+        retCode = funcion(*parametros)
+        if retCode != res:
+            res = retCode
+            timeout = 0
+        else:
+            time.sleep(tick)
+    return res
+
+
 # pylint: disable=too-many-statements
 def fire(guid_proceso, ignore_errors=False):
     """
@@ -2531,21 +2590,19 @@ def fire(guid_proceso, ignore_errors=False):
     # parámetro esté a 0.
     # 0 = Ejecutar en todos los módulos.
     # 4 = Procesar solo para el módulo de gestión. [20160704] Cambiamos 0 por 4
-### XXX
-#    retCode = SELECT ......
-#    timeout=10
-#    while retCode is None:
-#        sleep(timeout)
-#        timeout += 1
-### XXX
-    strverbose = "Importación `%s` concluida con código de retorno: %s" % (
-        guid_proceso, retCode)
-    # TODO: En lugar de usar el código de retorno, como resulta que al final
+    ### [20170601] Espera activa.
+    # DONE: En lugar de usar el código de retorno, como resulta que al final
     # las llamadas a la dll son asíncronas, haremos un SELECT contra LsysTraceIME buscando
     # el GUID en cuestión y en sysTraceDescription el texto 'Fin proceso de importación".
     # Si sysStatus es 0, ha acabado bien. Si es 2 (u otro valor), ha habido fallos.
     # **Si el registro no existe, es que no ha terminado todavía.** Hacer espera activa hasta
     # que aparezca el registro.
+    if retCode is None:
+        retCode = espera_activa(_get_fin_proceso_importacion_retcode,
+                                [guid_proceso], retCode, 50, 10)
+    ### EOEspera_activa
+    strverbose = "Importación `%s` concluida con código de retorno: %s" % (
+        guid_proceso, retCode)
     logging.info(strverbose)
     if VERBOSE and DEBUG:
         print(strverbose)
@@ -2563,7 +2620,7 @@ def fire(guid_proceso, ignore_errors=False):
     # O bien tirar del Sr. Lobo y que haga el fire de todos los pendientes.
     # [2016/08/30] UPDATE: En la versión 2016.70.000 se corrige el bug de
     # Murano. Ya no es necesario usar el canal DIV.
-    if retCode is None:
+    if retCode is None:    # Solo ocurre si se alcanza timeout en espera_activa
         logging.warning("Se cambia el valor None por 1 (FAIL).")
         retCode = 1
     if retCode and not ignore_errors:
@@ -2590,12 +2647,18 @@ def fire(guid_proceso, ignore_errors=False):
         retCode = burano.EjecutaScript(nombrescript, paramsscript)
         # retCode devuelve (True, ...) si se hace con éxito. El problema es
         # que no sé si retCode[0] será False cuando falla.
+        ### Espera activa para obtener el resultado **real**
+        #   (la llamada dentro de la dll es asíncrona)
+        if retCode is None:
+            retCode = espera_activa(_get_fin_proceso_acumulacion_retcode,
+                                    [guid_proceso], retCode, 10, 1)
         strverbose = "Ejecución `%s` (GUID `%s`) "\
                      "concluida con código de retorno: %s" % (
                          nombrescript, guid_proceso, retCode)
         logging.info(strverbose)
         if VERBOSE and DEBUG:
             print(strverbose)
+        ## Ya no es necesario el script del canal DIV. Sage solucionó el bug.
         # nombrescript = "GEO_DividirStock"
         # paramsscript = "Label:=Inicio"
         # strverbose = "Lanzando script `%s`..." % (
@@ -2609,8 +2672,8 @@ def fire(guid_proceso, ignore_errors=False):
         # logging.info(strverbose)
         # if VERBOSE and DEBUG:
         #     print(strverbose)
-    # El código de retorno es 1 para error y 0 para éxito o bien una tupla con
-    # True/False en la primera posición. Cambio a boolean.
+    # El código de retorno es 1 ó 2 para error y 0 para éxito o bien una tupla
+    # con True/False en la primera posición. Cambio a boolean.
     if VERBOSE:
         strres = "murano:ops:fire -> Código de retorno: {} ({})".format(
             retCode, type(retCode))
