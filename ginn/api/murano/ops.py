@@ -2506,6 +2506,7 @@ def _get_fin_proceso_importacion_retcode(guid):
       AND sysTraceDescription LIKE 'Fin proceso de importaci%n';""".format(
           conn.get_database(), guid)
     try:
+        # FIXME: Ojo porque puede crear 2 registros con el mismo texto y guid. ¿Mismo sysStatus también? Espero que sí... Preguntar a Sage.
         res = conn.run_sql(sql)[0]['sysStatus']
     except IndexError:
         res = None
@@ -2658,8 +2659,11 @@ def fire(guid_proceso, ignore_errors=False):
         retCode = burano.EjecutaScript(nombrescript, paramsscript)
         # retCode devuelve (True, ...) si se hace con éxito. El problema es
         # que no sé si retCode[0] será False cuando falla.
-        ### Espera activa para obtener el resultado **real**
-        #   (la llamada dentro de la dll es asíncrona)
+        ### Fuerzo espera activa para obtener el resultado **real**
+        #   (la llamada dentro de la dll parece ser asíncrona y el valor de
+        #   retorno, si lo hay, no es de fiar. Puede que siempre sea True
+        #   pase lo que pase por dentro de Murano)
+        retCode = None
         if retCode is None:
             retCode = espera_activa(_get_fin_proceso_acumulacion_retcode,
                                     [guid_proceso], retCode, 10, 1)
