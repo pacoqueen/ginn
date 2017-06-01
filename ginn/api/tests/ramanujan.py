@@ -676,7 +676,7 @@ def get_volcados_api(producto_murano, fini, ffin):
         MovimientoStock:
             TipoMovimiento = 2 (salida)
             OrigenMovimiento = 'F' (Fabricación)
-            CodigoCcanal = ''
+            CodigoCanal = ''
         MovimientoArticuloSerie:
             OrigenDocumento = 11 (Salida de stock)
             Comentario NOT LIKE 'Consumo%'

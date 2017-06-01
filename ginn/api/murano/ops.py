@@ -2603,6 +2603,11 @@ def fire(guid_proceso, ignore_errors=False):
     # Si sysStatus es 0, ha acabado bien. Si es 2 (u otro valor), ha habido fallos.
     # **Si el registro no existe, es que no ha terminado todavía.** Hacer espera activa hasta
     # que aparezca el registro.
+    retCode = None  # XXX: [20170601] Por algún motivo que ni Félix ni yo
+    # adivinamos, la lcOEM ha empezado a devolver 1 aunque importe
+    # correctamente los registros. Por tanto, el valor de retorno ya no es
+    # útil para detectar nada. Usaremos ya siempre la espera activa, que es lo
+    # único fible.
     if retCode is None:
         retCode = espera_activa(_get_fin_proceso_importacion_retcode,
                                 [guid_proceso], retCode, 50, 10)
