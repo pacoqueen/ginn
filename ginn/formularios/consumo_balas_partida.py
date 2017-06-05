@@ -106,6 +106,8 @@ class ConsumoBalasPartida(Ventana):
         utils.preparar_listview(self.wids['tv_resumen'], cols)
         cols = (("Nª Partida", "gobject.TYPE_STRING", False, True, True, None),
                 ("Producto", "gobject.TYPE_STRING", False, True, False, None),
+                ("Partes de producción",
+                 "gobject.TYPE_STRING", False, True, False, None),
                 ("ID", "gobject.TYPE_STRING", False, False, False, None))
         utils.preparar_listview(self.wids['tv_gtx'], cols)
         self.wids['ch_api'] = gtk.CheckButton("Partida volcada a Murano")
@@ -291,9 +293,20 @@ class ConsumoBalasPartida(Ventana):
         for partida in self.objeto.partidas:
             if partida.rollos != []:
                 producto = partida.rollos[0].productoVenta.descripcion
+                fechas_partes = set()
+                for rollo in partida.rollos:
+                    parte = rollo.articulo.parteDeProduccion
+                    if parte:
+                        fechas_partes.add((parte.fechahorainicio,
+                                           parte.bloqueado))
+                partes = "; ".join(["{}{}".format(utils.str_fechahora(f),
+                                                  v and "✔" or "✘")
+                                    for f,v in sorted(fechas_partes,
+                                                      key=lambda t: t[0])])
             else:
                 producto = "SIN PRODUCCIÓN"
-            model.append((partida.codigo, producto, partida.id))
+                partes = ""
+            model.append((partida.codigo, producto, partes, partida.id))
 
     def cambiar_peso_bala(self, cell, path, newtext):
         """
