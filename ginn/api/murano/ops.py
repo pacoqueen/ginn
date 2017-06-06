@@ -2659,12 +2659,18 @@ def fire(guid_proceso, ignore_errors=False,
         # FIXED: No ejecuta el cálculo. Era por las '' alrededor del guid.
         # Según el .chm de ayuda los parámetros van sin encerrar en nada
         # aunque sean cadena.
+        nombrescript = "AcumularCamposNuevosSeries"
+        paramsscript = "Label:=Inicio, idProcesoIME:=%s" % guid_proceso
         if acumular_campos_personalizados:
             # Si la importación es de movimiento de productos sin campos
             # personalizados, no tiene sentido perder 30 segundos en intentar
             # acumular nada.
-            nombrescript = "AcumularCamposNuevosSeries"
-            paramsscript = "Label:=Inicio, idProcesoIME:=%s" % guid_proceso
+            strverbose = "Se ignora script `%s` con GUID `%s`..." % (
+                nombrescript, guid_proceso)
+            logging.info(strverbose)
+            if VERBOSE and DEBUG:
+                print(strverbose)
+        else:
             strverbose = "Lanzando script `%s` con GUID `%s`..." % (
                 nombrescript, guid_proceso)
             logging.info(strverbose)
