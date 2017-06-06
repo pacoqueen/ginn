@@ -2553,6 +2553,7 @@ def espera_activa(funcion, parametros, res=None, timeout=30, tick=5):
             timeout = 0
         else:
             time.sleep(tick)
+            timeout -= tick
     logging.warning("Espera activa finalizada en {}/{} intentos.".format(
         tries, max_tries))
     return res
