@@ -1907,14 +1907,18 @@ def update_calidad(articulo, calidad, comentario=None, serie="API"):
         raise NotImplementedError("Función no disponible por el momento.")
     else:
         if not comentario:
-            observaciones_baja="Baja por cambio a calidad {}".format(calidad)
+            observaciones_baja = "Baja por cambio a calidad {}".format(calidad)
+        else:
+            observaciones_baja=comentario
         res = delete_articulo(articulo,
-                observaciones=comentario,
+                observaciones=observaciones_baja,
                 serie=serie)
         # FIXME: Ahora **siempre** devuelve False y nunca se llega a ejecutar la nueva creación. ¿Por qué?
         if res:
             if not comentario:
-                observaciones_alta="Alta por cambio a calidad {}.".format(calidad)
+                observaciones_alta = "Alta por cambio a calidad {}.".format(calidad)
+            else:
+                observaciones_alta = comentario
             res = create_articulo(articulo, calidad=calidad,
                     observaciones=observaciones_alta,
                     serie=serie)
