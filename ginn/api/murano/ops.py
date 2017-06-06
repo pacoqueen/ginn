@@ -2322,7 +2322,8 @@ def delete_articulo(articulo, codigo_almacen=None, observaciones=None,
         res = create_articulo(articulo, cantidad=-1,
                               producto=producto_anterior,
                               codigo_almacen=codigo_almacen,
-                              observaciones=observaciones)
+                              observaciones=observaciones,
+                              serie=serie)
     else:
         logging.warning("El artículo %s no existe en Murano.", articulo.codigo)
     return res
