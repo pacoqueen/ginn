@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2016  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2017  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -1955,7 +1955,8 @@ class PartesDeFabricacionRollos(Ventana):
                 a.productoVenta = self.producto
                 a.rollo.densidad = a.rollo.calcular_densidad()
                 a.rollo.syncUpdate()
-                murano.ops.update_producto(a, a.productoVenta, observaciones="")
+                murano.ops.update_producto(a, a.productoVenta, observaciones="",
+                                           serie="FAB")
             self.actualizar_ventana()
         else:
             self.producto = None

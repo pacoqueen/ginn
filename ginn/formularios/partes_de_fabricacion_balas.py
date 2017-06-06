@@ -2239,7 +2239,8 @@ class PartesDeFabricacionBalas(Ventana):
                 self.logger.debug("Cambiando producto de %s en Murano a %s "
                                   "[%s]." % (
                     a.codigo, producto.descripcion, producto.puid))
-                murano.ops.update_producto(a, producto, observaciones="")
+                murano.ops.update_producto(a, producto, observaciones="",
+                                           serie="FAB")
 
     def comprobar_silos_marcados(self):
         """

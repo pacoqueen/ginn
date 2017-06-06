@@ -2209,14 +2209,15 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
     return res
 
 
-def update_producto(articulo, producto, observaciones=None):
+def update_producto(articulo, producto, observaciones=None, serie="API"):
     """
     Cambia el artículo recibido al producto indicado.
     """
-    res = delete_articulo(articulo, observaciones=observaciones)
+    res = delete_articulo(articulo, observaciones=observaciones, serie=serie)
     if res:
         res = create_articulo(articulo, producto=producto,
-                              observaciones=observaciones)
+                              observaciones=observaciones,
+                              serie=serie)
     return res
 
 
@@ -2298,7 +2299,8 @@ def update_stock(producto, delta, almacen, guid_proceso=None,
     return res
 
 
-def delete_articulo(articulo, codigo_almacen=None, observaciones=None):
+def delete_articulo(articulo, codigo_almacen=None, observaciones=None,
+                    serie='API'):
     """
     Elimina el artículo en Murano mediante la creación de un movimiento de
     stock negativo de ese código de producto.
