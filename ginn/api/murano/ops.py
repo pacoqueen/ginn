@@ -2564,7 +2564,13 @@ def fire(guid_proceso, ignore_errors=False):
     """
     Lanza el proceso de importación de Murano de todos los movimientos de
     stock de la tabla temporal.
-    Devuelve 0 si el proceso se completó con éxito o 1 en caso contrario.
+
+    ~~Devuelve 0 si el proceso se completó con éxito o 1 en caso contrario.~~
+
+    Devuelve True si se completó con éxito o False en caso contrario.
+    Ya no devuelve None si Murano lanzó asíncronamente los procesos de
+    importación y acumulación. Ahora se hace espera activa hasta que acabe
+    el proceso o el tiempo máximo de espera (único caso en que devolvería None).
     """
     antes = time.time()
     strerror = "No puede ejecutar código nativo de Murano. Necesita instalar"\
@@ -2702,6 +2708,8 @@ def fire(guid_proceso, ignore_errors=False):
             res = retCode[0]
         except IndexError:  # ¿Qué demonios es?
             res = bool(retCode)
+        except TypeError:   # Es None
+            res = None
     if VERBOSE:
         strres = "murano:ops:fire -> Valor devuelto: {} ({})".format(
             res, type(res))
