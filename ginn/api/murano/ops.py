@@ -2661,7 +2661,7 @@ def fire(guid_proceso, ignore_errors=False,
         # aunque sean cadena.
         nombrescript = "AcumularCamposNuevosSeries"
         paramsscript = "Label:=Inicio, idProcesoIME:=%s" % guid_proceso
-        if acumular_campos_personalizados:
+        if not acumular_campos_personalizados:
             # Si la importación es de movimiento de productos sin campos
             # personalizados, no tiene sentido perder 30 segundos en intentar
             # acumular nada.
