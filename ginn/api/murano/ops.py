@@ -2291,7 +2291,7 @@ def update_stock(producto, delta, almacen, guid_proceso=None,
         c.run_sql(sql_movstock)
         # pylint: disable=redefined-variable-type
         if procesar:
-            res = fire(id_proceso_IME)
+            res = fire(id_proceso_IME, acumular_campos_personalizados=False)
         else:   # No proceso la importación. Todo ha ido bien hasta ahora.
                 # Devuelvo el guid, que me vale como True también.
             res = id_proceso_IME
@@ -2562,7 +2562,8 @@ def espera_activa(funcion, parametros, res=None, timeout=30, tick=5):
 
 
 # pylint: disable=too-many-statements
-def fire(guid_proceso, ignore_errors=False):
+def fire(guid_proceso, ignore_errors=False,
+         acumular_campos_personalizados=True):
     """
     Lanza el proceso de importación de Murano de todos los movimientos de
     stock de la tabla temporal.
@@ -2658,30 +2659,34 @@ def fire(guid_proceso, ignore_errors=False):
         # FIXED: No ejecuta el cálculo. Era por las '' alrededor del guid.
         # Según el .chm de ayuda los parámetros van sin encerrar en nada
         # aunque sean cadena.
-        nombrescript = "AcumularCamposNuevosSeries"
-        paramsscript = "Label:=Inicio, idProcesoIME:=%s" % guid_proceso
-        strverbose = "Lanzando script `%s` con GUID `%s`..." % (
-            nombrescript, guid_proceso)
-        logging.info(strverbose)
-        if VERBOSE and DEBUG:
-            print(strverbose)
-        retCode = burano.EjecutaScript(nombrescript, paramsscript)
-        # retCode devuelve (True, ...) si se hace con éxito. El problema es
-        # que no sé si retCode[0] será False cuando falla.
-        ### Fuerzo espera activa para obtener el resultado **real**
-        #   (la llamada dentro de la dll parece ser asíncrona y el valor de
-        #   retorno, si lo hay, no es de fiar. Puede que siempre sea True
-        #   pase lo que pase por dentro de Murano)
-        retCode = None
-        if retCode is None:
-            retCode = espera_activa(_get_fin_proceso_acumulacion_retcode,
-                                    [guid_proceso], retCode, 10, 1)
-        strverbose = "Ejecución `%s` (GUID `%s`) "\
-                     "concluida con código de retorno: %s" % (
-                         nombrescript, guid_proceso, retCode)
-        logging.info(strverbose)
-        if VERBOSE and DEBUG:
-            print(strverbose)
+        if acumular_campos_personalizados:
+            # Si la importación es de movimiento de productos sin campos
+            # personalizados, no tiene sentido perder 30 segundos en intentar
+            # acumular nada.
+            nombrescript = "AcumularCamposNuevosSeries"
+            paramsscript = "Label:=Inicio, idProcesoIME:=%s" % guid_proceso
+            strverbose = "Lanzando script `%s` con GUID `%s`..." % (
+                nombrescript, guid_proceso)
+            logging.info(strverbose)
+            if VERBOSE and DEBUG:
+                print(strverbose)
+            retCode = burano.EjecutaScript(nombrescript, paramsscript)
+            # retCode devuelve (True, ...) si se hace con éxito. El problema es
+            # que no sé si retCode[0] será False cuando falla.
+            ### Fuerzo espera activa para obtener el resultado **real**
+            #   (la llamada dentro de la dll parece ser asíncrona y el valor de
+            #   retorno, si lo hay, no es de fiar. Puede que siempre sea True
+            #   pase lo que pase por dentro de Murano)
+            retCode = None
+            if retCode is None:
+                retCode = espera_activa(_get_fin_proceso_acumulacion_retcode,
+                                        [guid_proceso], retCode, 10, 1)
+            strverbose = "Ejecución `%s` (GUID `%s`) "\
+                         "concluida con código de retorno: %s" % (
+                             nombrescript, guid_proceso, retCode)
+            logging.info(strverbose)
+            if VERBOSE and DEBUG:
+                print(strverbose)
         ## Ya no es necesario el script del canal DIV. Sage solucionó el bug.
         # nombrescript = "GEO_DividirStock"
         # paramsscript = "Label:=Inicio"
@@ -2710,7 +2715,7 @@ def fire(guid_proceso, ignore_errors=False):
             res = retCode[0]
         except IndexError:  # ¿Qué demonios es?
             res = bool(retCode)
-        except TypeError:   # Es None
+        except TypeError:   # Es None. Lo interpretará como False la invocadora
             res = None
     if VERBOSE:
         strres = "murano:ops:fire -> Valor devuelto: {} ({})".format(
