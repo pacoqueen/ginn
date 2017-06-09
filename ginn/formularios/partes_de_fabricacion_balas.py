@@ -1646,6 +1646,19 @@ class PartesDeFabricacionBalas(Ventana):
                                padre = self.wids['ventana'])
 
     def cambiar_peso_bala(self, cell, path, newtext):
+        # TODO: No pueden cambiar el peso si la bala ya está en Murano. No hay método en la API para cambiar el peso de una serie.
+        if not self.usuario or self.usuario.nivel > 0:
+            utils.dialogo_info(titulo="OPERACIÓN NO PERMITIDA",
+                           texto="No está permitido cambiar el peso de una "
+                                 "bala.\nTrate de eliminarla y pesarla de "
+                                 "nuevo.",
+                   padre=self.wids['ventana'])
+            return
+        if not MURANO:
+            utils.dialogo_info(titulo="ERROR DE CONEXIÓN CON MURANO",
+                           texto="No puede crear balas. Solo consultas.",
+                   padre=self.wids['ventana'])
+            return
         model = self.wids['tv_balas'].get_model()
         if model[path][1] == 0 or model[path][1] == '': # Nº bala, no tiene, no es una bala.
             return
@@ -1717,6 +1730,11 @@ class PartesDeFabricacionBalas(Ventana):
         self.rellenar_tabla_balas()
 
     def cambiar_claseb(self, cell, path):
+        if not MURANO:
+            utils.dialogo_info(titulo="ERROR DE CONEXIÓN CON MURANO",
+                           texto="No puede crear balas. Solo consultas.",
+                   padre=self.wids['ventana'])
+            return
         model = self.wids['tv_balas'].get_model()
         if model[path][1] == '':    # Nº bala, no tiene, por tanto es una incidencia.
             return
