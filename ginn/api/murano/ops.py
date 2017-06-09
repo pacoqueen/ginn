@@ -2013,7 +2013,7 @@ def esta_en_almacen(articulo):
     sql = """SELECT CodigoAlmacen
                FROM {}.dbo.ArticulosSeries
               WHERE CodigoEmpresa = {}
-                AND UnidadesSerie <> 0
+                AND UnidadesSerie > 0
                 AND NumeroSerieLc = '{}'
            ORDER BY FechaInicial;""".format(c.get_database(), CODEMPRESA,
                                             articulo.codigo)

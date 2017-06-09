@@ -1706,6 +1706,7 @@ class PartesDeFabricacionBalas(Ventana):
                                  texto = 'Esta fibra está marcada actualmente como clase A.\n¿Marcar como clase B?',
                                  padre = self.wids['ventana']):
                     bala_o_bb.claseb = True
+                    # TODO: Con lo que tarda ahora el update_calidad, tendré que poner una barra de progreso o algo...
                     murano.ops.update_calidad(bala_o_bb.articulo, 'B',
                                               comentario="PDP: Cambio a calidad B.",
                                               serie="FAB")
@@ -1728,6 +1729,7 @@ class PartesDeFabricacionBalas(Ventana):
         else:
             bala_o_bb = None
         bala_o_bb.claseb = not bala_o_bb.claseb
+        # TODO: Con lo que tarda ahora el update_calidad, tendré que poner una barra de progreso o algo...
         murano.ops.update_calidad(bala_o_bb.articulo,
                                   bala_o_bb.claseb and "B" or "A",
                                   comentario="Cambio a calidad {}".format(bala_o_bb.claseb and "B" or "A"),
