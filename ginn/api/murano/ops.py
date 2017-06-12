@@ -1911,9 +1911,8 @@ def update_calidad(articulo, calidad, comentario=None, serie="API"):
         else:
             observaciones_baja=comentario
         res = delete_articulo(articulo,
-                observaciones=observaciones_baja,
-                serie=serie)
-        # FIXME: Ahora **siempre** devuelve False y nunca se llega a ejecutar la nueva creación. ¿Por qué?
+                              observaciones=observaciones_baja,
+                              serie=serie)
         if res:
             if not comentario:
                 observaciones_alta = "Alta por cambio a calidad {}.".format(calidad)
