@@ -4360,7 +4360,8 @@ def recv_serial(com, ventana, l_peso, ventana_parte, e_numbala, l_estable, l_pes
 
             try:
                 peso = float(peso_str)
-                if peso >= 100000:   # Error de lectura. Ninguna bala pesa más de 1.000 kg
+                if peso >= 100000:   # Error de lectura. Ninguna bala pesa más de 600 kg,
+                    # pero a veces lee pesos de más de 28.000.000 kg.
                     peso /= 100000
                 #if peso % 1 != 0:   # Le quito un kilo
                 #    peso_sin = peso - 1.0
