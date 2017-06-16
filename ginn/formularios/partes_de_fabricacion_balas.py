@@ -3552,11 +3552,16 @@ class PartesDeFabricacionBalas(Ventana):
         else:
         # XXX
             producto = articulo.productoVenta
-            aditivos = self.consumir_segun_formulacion(producto, articulo,
-                                                       restar)
-            self.consumir_granza_silos(articulo, aditivos, restar)
-            self.consumir_granza_reciclada(articulo, aditivos, restar)
-            self.objeto.unificar_consumos()
+            # aditivos = self.consumir_segun_formulacion(producto, articulo,
+            #                                            restar)
+            # self.consumir_granza_silos(articulo, aditivos, restar)
+            # self.consumir_granza_reciclada(articulo, aditivos, restar)
+            # FIXME: TODO: Creo que el unificar_consumos tiene un _bug_ que
+            # multiplica los consumos de silos en bucle infinito y cuelga el
+            # parte. El 16/07/2017 desactivo los consumos para intentar aislar
+            # el problema de otro que se está dando a la vez con el PC nuevo: el
+            # peso que manda la báscula viene con "ruido". +abahamonde
+            # self.objeto.unificar_consumos()
 
     def etiquetas(self, boton):
         """
