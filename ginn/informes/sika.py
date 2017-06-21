@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-A partir del 1 de julio de 2013 entra una normativa nueva que obliga a
-este formato de etiqueta para geotextiles y geocem.
+Modelo basado en el de la norma 2013 pero sin el texto «Distribuido por» a
+petición de un cliente.
 """
 
 import os
@@ -17,7 +17,6 @@ from formularios import utils
 from informes.geninformes import give_me_the_name_baby, rectangulo
 from informes.geninformes import el_encogedor_de_fuentes_de_doraemon
 from framework import pclases
-from informes.norma2013 import create_etiqueta_backup, helene_laanest
 # pylint:disable=ungrouped-imports
 from informes.barcode.code39 import Extended39
 from informes.barcode.code128 import Code128
@@ -54,7 +53,7 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
     # pylint: disable=bad-continuation
     _data = {# "00 logo_marcado": None,
              "01 texto_marcado": "1035",    # Fijo
-             #"02 fabricado_por": "Fabricado por: %s",
+             "02 fabricado_por": "Fabricado por: %s",
              "03 direccion1": None,
              "04 direccion2": None,
              "05 telefono": "Tfno: %s, %s",
@@ -79,7 +78,7 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
         for k in _data:
             _data[k] = helene_laanest(_data[k])
     estilos = defaultdict(lambda: ("Helvetica", 9)) # Helvética a 9 por defecto
-    #estilos["02 fabricado_por"] = ("Helvetica-Bold", 11)
+    estilos["02 fabricado_por"] = ("Helvetica-Bold", 11)
     estilos["12 producto"] = ("Helvetica-Bold", 17)
     estilos["16 codigo"] = ("Helvetica-Bold", 17)
     estilos["17 caracteristicas"] = ("Helvetica-Bold", 13)
@@ -111,12 +110,12 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
             # Si hay distribuidor, este texto cambia.
             distribuidor = producto_venta.camposEspecificosRollo.cliente
             if distribuidor:
-                #if lang == "en":
-                #    data["02 fabricado_por"] = helene_laanest(
-                #            "Distribuido por: %s") % (distribuidor.nombre)
-                #else:
-                #    data["02 fabricado_por"] = "Distribuido por: %s" % (
-                #                                        distribuidor.nombre)
+                if lang == "en":
+                    data["02 fabricado_por"] = helene_laanest(
+                            "%s") % (distribuidor.nombre)
+                else:
+                    data["02 fabricado_por"] = "%s" % (
+                                                        distribuidor.nombre)
                 dird = distribuidor.get_direccion_completa()
                 dircompleta = textwrap.wrap(dird,
                         (len(dird) + max([len(w) for w in dird.split()])) / 2)
@@ -126,8 +125,8 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
                         distribuidor.telefono, distribuidor.email)
             else:   # Sigo con los datos de "propia empresa". Distribuyo yo.
                 empresa = pclases.DatosDeLaEmpresa.select()[0]
-                #data["02 fabricado_por"] = _data["02 fabricado_por"] % (
-                #                                                empresa.nombre)
+                data["02 fabricado_por"] = _data["02 fabricado_por"] % (
+                                                                empresa.nombre)
                 data["03 direccion1"] = empresa.direccion + ", " + empresa.cp
                 data["04 direccion2"] = ", ".join((empresa.ciudad,
                                                    empresa.provincia,
@@ -143,7 +142,7 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
             if len(data["05 telefono"]) <= 7:
                 data["05 telefono"] = ""
         except IndexError:
-            #data["02 fabricado_por"] = ""
+            data["02 fabricado_por"] = ""
             data["03 direccion1"] = ""
             data["04 direccion2"] = ""
             data["05 telefono"] = ""
@@ -259,6 +258,111 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
     canvas.save()
     return nomarchivo
 
+
+def create_etiqueta_backup(canvas, rollo):
+    """
+    Genera en el canvas (pero hace el showPage) una etiqueta adicional
+    principalmente con un código de barras enorme para poder leerla desde
+    lejos a la hora de cargar el rollo.
+    """
+    # Dimensiones estándar de la etiqueta.
+    alto = 12.55 * cm
+    ancho = 8.4 * cm
+    margen = 0.1 * cm
+    # Parámetros a pintar que obtener del objeto recibido.
+    try:
+        try:
+            producto = rollo['productoVenta'].descripcion
+        except KeyError:
+            # Si no me lo mandan en el diccionario, tiene que traer
+            # el objeto rollo. Los partes mandan producto en dicccionario
+            # porque a veces se genera etiqueta antes de crear el objeto
+            # en la BD. Si viene de la consulta del listado de rollos,
+            # como el rollo ya existe, me viene en el objeto toda la info.
+            producto = rollo['objeto'].productoVenta.descripcion
+        codigo_rollo = rollo['codigo39']
+    except TypeError:  # He recibido un objeto directamente.
+        producto = rollo.productoVenta.descripcion
+        codigo_rollo = rollo.codigo
+    # Dimensiones para pintar la información.
+    canvas.saveState()
+    xcode = ancho / 2.0
+    ycode = 0.15*cm
+    xprod = xcode
+    yprod = alto - margen - 7
+    # ## El código de rollo:
+    canvas.setFont("Courier-Bold", 9)
+    try:
+        canvas.drawCentredString(xcode, ycode, codigo_rollo, charSpace=0.25*cm)
+    except TypeError:   # Versión antigua de ReportLab.
+        canvas.drawCentredString(xcode, ycode, codigo_rollo)
+    # ## El producto:
+    canvas.setFont("Helvetica", 8)
+    canvas.drawCentredString(xprod, yprod, producto)
+    # ## El rectángulo exterior
+    canvas.rotate(90)
+    # ## El rectángulo exterior mejor lo quito para que la pistola no se confunda.
+    # canvas.rect(margen, -(ancho-margen), alto - 2*margen, ancho - 2*margen, stroke=1)
+    # ## El código de barras. Rotado para ganar anchura:
+    crd_x = (-5.75*margen)-(0.2*cm)
+    crd_y = -(ancho - 2*margen)
+    xlineablanca = 5.9*cm
+    mil = 0.001*inch    # Por definición.
+    # Con 40 debería llegar hasta a 9.7 metros de distancia la lectura o
+    # 37.5 m la versión Auto Range.
+    # altobarcodetotal = (ancho-4*margen)  # Ancho, en realidad. Está rotado.
+    mils = 50*mil
+    altobarcode = ancho - xlineablanca - 2*margen
+    # codigobarras1 = Extended39(codigo_rollo, xdim=mils, height=altobarcode)
+    codigobarras1 = Code128(codigo_rollo, xdim=mils, height=altobarcode)
+    codigobarras1.drawOn(canvas, crd_x, crd_y)
+    canvas.rotate(-90)
+    # ## El otro código de barras.
+    mils = 24*mil
+    altobarcode = alto - 2*margen - 2*9
+    codigobarras2 = Code128(codigo_rollo, xdim=mils, height=altobarcode)
+    crd_x = -4.0 * margen
+    crd_y = margen + 9
+    codigobarras2.drawOn(canvas, crd_x, crd_y)
+    # ## Línea auxiliar por donde está el pin roto de la impresora:
+    # ## Mejor la quito para que la pistola no la cofunda con otra barra.
+    # canvas.line(xlineablanca, margen, xlineablanca, alto - margen - 9)
+    canvas.restoreState()
+
+
+def helene_laanest(texto):
+    # En honor a la profe de inglés,
+    """recibe el texto (solo hay dos o tres
+    posibles) y lo devuelve en inglés."""
+    # Es una cutrada, pero los requisitos
+    # han llegado tarde. Muy tarde.
+    translate_table = defaultdict(lambda: texto)
+    translate_table["Drenaje, filtración, refuerzo y separación"] \
+            = "Drainage, filtration, reinforcement and separation"
+    translate_table["Drenaje, filtración, refuerzo, separación"] \
+            = "Drainage, filtration, reinforcement, separation"
+    translate_table["Drenaje, filtración, refuerzo, separación y protección"]\
+            = "Drainage, filtration, reinforcement, separation and protection"
+    translate_table["Drenaje, filtración, refuerzo, separación, protección"]\
+            = "Drainage, filtration, reinforcement, separation, protection"
+    translate_table["Fibra de polipropileno virgen embolsada en papel "
+                    "hidrosoluble para su uso como aditivo del hormigón"] \
+            = "100% polypropylene fibers in water-soluble paper bags used "\
+              "like an additive for concrete"
+    translate_table["Fabricado por: %s"] = "Manufactured by: %s"
+    translate_table["%s"] = "%s"
+    translate_table["Tfno: %s, %s"] = "Phone: %s, %s"
+    translate_table["De EN13249:2014 a EN13257:2014"] = "From EN13249:2014 "\
+                    "to EN13257:2014"
+    translate_table["Geotextil no tejido de polipropileno 100% virgen"
+                   ] = "Nonwoven geotextile of 100% polypropylene fibres."
+    translate_table["Uso: %s"] = "Use: %s"
+    translate_table["Partida: %d Rollo: %s"] = "Batch: %d Roll: %s"
+    translate_table["Gramaje: %d g/m² Ancho: %s m Largo: %d m"
+                   ] = "Mass per area: %d g/m² Width: %s m Length: %d m"
+    return translate_table[texto]
+
+
 def etiqueta_rollos_norma13_en(rollos, mostrar_marcado=True):
     """
     Construye una etiqueta por cada objeto rollo recibido y las devuelve
@@ -295,7 +399,7 @@ def crear_etiquetas_pales(pales, mostrar_marcado=True, lang="es"):
     # pylint: disable=bad-continuation
     _data = {# "00 logo_marcado": None,
              "01 texto_marcado": "1035",    # Fijo
-             #"02 fabricado_por": "Fabricado por: %s",
+             "02 fabricado_por": "Fabricado por: %s",
              "03 direccion1": None,
              "04 direccion2": None,
              "05 telefono": "Tfno: %s, %s",
@@ -317,7 +421,7 @@ def crear_etiquetas_pales(pales, mostrar_marcado=True, lang="es"):
             _data[k] = helene_laanest(_data[k])
     estilos = defaultdict(lambda: ("Helvetica-Bold", 11)) # Helvética a 11 por defecto
     estilos["01 texto_marcado"] = ("Times-Bold", 9)
-    #estilos["02 fabricado_por"] = ("Helvetica-Bold", 13)
+    estilos["02 fabricado_por"] = ("Helvetica-Bold", 13)
     estilos["12 producto"] = ("Courier-Bold", 17)
     estilos["16 codigo"] = ("Courier-Bold", 17)
     estilos["17 caracteristicas"] = ("Helvetica-Bold", 15)
@@ -334,12 +438,12 @@ def crear_etiquetas_pales(pales, mostrar_marcado=True, lang="es"):
             # Si hay distribuidor, este texto cambia.
             distribuidor = pale.productoVenta.camposEspecificosBala.cliente
             if distribuidor:
-                #if lang == "en":
-                #    data["02 fabricado_por"] = helene_laanest(
-                #            "Distribuido por: %s") % (distribuidor.nombre)
-                #else:
-                #    data["02 fabricado_por"] = "Distribuido por: %s" % (
-                #                                        distribuidor.nombre)
+                if lang == "en":
+                    data["02 fabricado_por"] = helene_laanest(
+                            "%s") % (distribuidor.nombre)
+                else:
+                    data["02 fabricado_por"] = "%s" % (
+                                                        distribuidor.nombre)
                 dird = distribuidor.get_direccion_completa()
                 dircompleta = textwrap.wrap(dird,
                         (len(dird) + max([len(w) for w in dird.split()])) / 2)
@@ -349,8 +453,8 @@ def crear_etiquetas_pales(pales, mostrar_marcado=True, lang="es"):
                         distribuidor.telefono, distribuidor.email)
             else:   # Sigo con los datos de "propia empresa". Distribuyo yo.
                 empresa = pclases.DatosDeLaEmpresa.select()[0]
-                #data["02 fabricado_por"] = _data["02 fabricado_por"] % (
-                #                                                empresa.nombre)
+                data["02 fabricado_por"] = _data["02 fabricado_por"] % (
+                                                                empresa.nombre)
                 data["03 direccion1"] = empresa.direccion + ", " + empresa.cp
                 data["04 direccion2"] = ", ".join((empresa.ciudad,
                                                    empresa.provincia,
@@ -366,7 +470,7 @@ def crear_etiquetas_pales(pales, mostrar_marcado=True, lang="es"):
             if len(data["05 telefono"]) <= 7:
                 data["05 telefono"] = ""
         except IndexError:
-            #data["02 fabricado_por"] = ""
+            data["02 fabricado_por"] = ""
             data["03 direccion1"] = ""
             data["04 direccion2"] = ""
             data["05 telefono"] = ""
@@ -465,7 +569,7 @@ def crear_etiquetas_bigbags(bigbags, mostrar_marcado=True, lang="es"):
     # pylint: disable=bad-continuation
     _data = {# "00 logo_marcado": None,
              "01 texto_marcado": "1035",    # Fijo
-             #"02 fabricado_por": "Fabricado por: %s",
+             "02 fabricado_por": "Fabricado por: %s",
              "03 direccion1": None,
              "04 direccion2": None,
              "05 telefono": "Tfno: %s, %s",
@@ -487,7 +591,7 @@ def crear_etiquetas_bigbags(bigbags, mostrar_marcado=True, lang="es"):
             _data[k] = helene_laanest(_data[k])
     estilos = defaultdict(lambda: ("Helvetica-Bold", 11)) # Helvética a 11 por defecto
     estilos["01 texto_marcado"] = ("Times-Bold", 9)
-    #estilos["02 fabricado_por"] = ("Helvetica-Bold", 13)
+    estilos["02 fabricado_por"] = ("Helvetica-Bold", 13)
     estilos["12 producto"] = ("Courier-Bold", 17)
     estilos["14 uso"] = ("Helvetica-Bold", 10)
     estilos["15 blanco3"] = ("Helvetica-Bold", 10)
@@ -506,12 +610,12 @@ def crear_etiquetas_bigbags(bigbags, mostrar_marcado=True, lang="es"):
             # Si hay distribuidor, este texto cambia.
             distribuidor = bigbag.articulo.productoVenta.camposEspecificosBala.cliente
             if distribuidor:
-                #if lang == "en":
-                #    data["02 fabricado_por"] = helene_laanest(
-                #            "Distribuido por: %s") % (distribuidor.nombre)
-                #else:
-                #    data["02 fabricado_por"] = "Distribuido por: %s" % (
-                #                                        distribuidor.nombre)
+                if lang == "en":
+                    data["02 fabricado_por"] = helene_laanest(
+                            "%s") % (distribuidor.nombre)
+                else:
+                    data["02 fabricado_por"] = "%s" % (
+                                                        distribuidor.nombre)
                 dird = distribuidor.get_direccion_completa()
                 dircompleta = textwrap.wrap(dird,
                         (len(dird) + max([len(w) for w in dird.split()])) / 2)
@@ -521,8 +625,8 @@ def crear_etiquetas_bigbags(bigbags, mostrar_marcado=True, lang="es"):
                         distribuidor.telefono, distribuidor.email)
             else:   # Sigo con los datos de "propia empresa". Distribuyo yo.
                 empresa = pclases.DatosDeLaEmpresa.select()[0]
-                #data["02 fabricado_por"] = _data["02 fabricado_por"] % (
-                #                                                empresa.nombre)
+                data["02 fabricado_por"] = _data["02 fabricado_por"] % (
+                                                                empresa.nombre)
                 data["03 direccion1"] = empresa.direccion + ", " + empresa.cp
                 data["04 direccion2"] = ", ".join((empresa.ciudad,
                                                    empresa.provincia,
@@ -538,7 +642,7 @@ def crear_etiquetas_bigbags(bigbags, mostrar_marcado=True, lang="es"):
             if len(data["05 telefono"]) <= 7:
                 data["05 telefono"] = ""
         except IndexError:
-            #data["02 fabricado_por"] = ""
+            data["02 fabricado_por"] = ""
             data["03 direccion1"] = ""
             data["04 direccion2"] = ""
             data["05 telefono"] = ""
@@ -615,10 +719,20 @@ def crear_etiquetas_bigbags(bigbags, mostrar_marcado=True, lang="es"):
     return nomarchivo
 
 
+def test_rollos():
+    """ Pruebas de impresión de rollos. """
+    from formularios.reports import abrir_pdf
+    todos = pclases.Rollo.select(orderBy="-id")
+    from random import randrange
+    rollos = (todos[randrange(todos.count())],
+              todos[randrange(todos.count())])
+    #abrir_pdf(etiqueta_rollos_norma13(rollos, False))
+    abrir_pdf(etiqueta_rollos_norma13_en(rollos))
+
 def test_pales():
     """ Pruebas de impresión de etiquetas de palé. """
     from formularios.reports import abrir_pdf
-    pales = pclases.Pale.select(orderBy="-id")[:2]
+    pales = [pclases.Pale.selectBy(codigo="H7880/20")[0]]
     abrir_pdf(crear_etiquetas_pales(pales))
     import time
     time.sleep(1)
@@ -634,5 +748,6 @@ def test_bigbags():
     abrir_pdf(crear_etiquetas_bigbags(bigbags, lang="en"))
 
 if __name__ == "__main__":
+    #test_rollos()
     test_pales()
-    test_bigbags()
+    #test_bigbags()
