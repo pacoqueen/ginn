@@ -491,7 +491,7 @@ def _get_modelo_etiqueta_ginn(id_etiqueta_murano):
     if id_etiqueta_murano == 4:
         # Normativa julio 2013
         res = 4
-    elif id_etiqueta_murano in range(1, 7):
+    elif id_etiqueta_murano in range(1, 9):
         # Resulta que el ID coincide en ambas bases de datos.
         res = id_etiqueta_murano
     else:   # Incluido el 0, que es el equivalente al None en Murano
@@ -3244,6 +3244,8 @@ def _sync_campos_especificos_bala(prod_ginn, prod_murano):
     ceb.gramosBolsa = prod_murano.GEO_gramos_bolsa
     ceb.bolsasCaja = prod_murano.GEO_bolsas_Caja
     ceb.cajasPale = prod_murano.GEO_Cajas_pale
+    ceb.modeloEtiqueta = _get_modelo_etiqueta_ginn(
+            prod_murano.GEO_Modelo_etiqueta_id)
     if prod_murano.GEO_Cliente_id:
         ceb.clienteID = prod_murano.GEO_Cliente_id
     else:
