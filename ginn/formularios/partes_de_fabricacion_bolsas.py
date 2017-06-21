@@ -2009,9 +2009,9 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
                 return
             # EOBACKTRACK: Descomentar el rotate = True cuando volvamos a usar las etiquetas nuevas.
             try:
-                func_etiqueta = self.objeto.productoVenta.camposEspecificosBala.modeloEtiqueta.get_func()
+                func_etiqueta = pales[0].productoVenta.camposEspecificosBala.modeloEtiqueta.get_func()
                 filetiqpale = func_etiqueta(pales)
-            except AttributeError:   # Fallback a la etiqueta por defecto.
+            except AttributeError, IndexError:   # Fallback a la etiqueta por defecto.
                 filetiqpale = geninformes.generar_etiqueta_pale(pales, tipo)
             for pale in pales:
                 pclases.Auditoria.modificado(pale,
