@@ -61,31 +61,31 @@ class ListadoBalas(Ventana):
         connections = {'b_salir/clicked': self.salir,
                        'b_fecha_inicio/clicked': self.set_inicio,
                        'b_fecha_fin/clicked': self.set_fin,
-                       'b_buscar/clicked': self.buscar_balas, 
-                       'b_imprimir/clicked': self.imprimir, 
-                       'b_etiquetas/clicked': self.etiquetar, 
+                       'b_buscar/clicked': self.buscar_balas,
+                       'b_imprimir/clicked': self.imprimir,
+                       'b_etiquetas/clicked': self.etiquetar,
                        'b_exportar/clicked': self.exportar}
         self.add_connections(connections)
-        cols = (('Código', 'gobject.TYPE_STRING', False, True, False, None), 
+        cols = (('Código', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Fecha Fab.','gobject.TYPE_STRING',False,True,False,None),
-                ('Peso', 'gobject.TYPE_STRING', False, True, False, None),  
+                ('Peso', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Lote','gobject.TYPE_STRING',False,True,False,None),
                 ('Albarán','gobject.TYPE_STRING',False,True,False,None),
                 ('Partida','gobject.TYPE_STRING',False,True,False,None),
                 ('Analizada', 'gobject.TYPE_BOOLEAN',False,True,False,None),
-                ('Clase B', 'gobject.TYPE_BOOLEAN', False, True, False, None), 
+                ('Clase B', 'gobject.TYPE_BOOLEAN', False, True, False, None),
                 ('Almacén', 'gobject.TYPE_STRING', False, True, False, None),
                 ('PUID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_treeview(self.wids['tv_balas'], cols)
         self.wids['tv_balas'].get_selection().set_mode(gtk.SELECTION_MULTIPLE)
-        self.wids['tv_balas'].connect("row-activated", abrir_trazabilidad, 
+        self.wids['tv_balas'].connect("row-activated", abrir_trazabilidad,
                                                        self.usuario)
         temp = time.localtime()
         self.fin = mx.DateTime.localtime()
         self.inicio = None
         self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
         gtk.main()
-    
+
     def exportar(self, boton):
         """
         Exporta el contenido del TreeView a un fichero csv.
@@ -98,23 +98,23 @@ class ListadoBalas(Ventana):
     def etiquetar(self, boton):
         """
         Genera el PDF de las etiquetas seleccionadas en el TreeView.
-        Para poder imprimir es necesario que el usuario tenga el permiso 
+        Para poder imprimir es necesario que el usuario tenga el permiso
         "escritura" sobre la ventana.
         """
-        # TODO: Falta adaptar esto a cajas. Para palés ya está. 
+        # TODO: Falta adaptar esto a cajas. Para palés ya está.
         ventana = pclases.Ventana.select(               # OJO: HARCODED
                     pclases.Ventana.q.fichero == "listado_balas.py")[0]
-        if (self.usuario == None 
-            or self.usuario.get_permiso(ventana).escritura): 
+        if (self.usuario == None
+            or self.usuario.get_permiso(ventana).escritura):
             sel = self.wids['tv_balas'].get_selection()
             model, paths = sel.get_selected_rows()
             balas_defecto = []
-            for path in paths: 
+            for path in paths:
                 balas_defecto.append(model[path][0])
                 balas_defecto.sort()
             balas_defecto = ', '.join(balas_defecto)
             from formularios import reports
-            entrada = utils.dialogo_entrada(titulo='ETIQUETAS', 
+            entrada = utils.dialogo_entrada(titulo='ETIQUETAS',
                         texto="Introduzca los números de bala o bigbags que "
                               "desea etiquetar separados por coma o espacio."
                               "\nUse guiones para especificar rangos.)",
@@ -129,17 +129,21 @@ class ListadoBalas(Ventana):
                 if etiqsbalas:
                     etpdf = geninformes.etiquetasBalasEtiquetadora(etiqsbalas)
                     for bala in balas:
-                        pclases.Auditoria.modificado(bala.articulo, 
-                                self.usuario, 
+                        pclases.Auditoria.modificado(bala.articulo,
+                                self.usuario,
                                 __file__,
                                 "Impresión de etiqueta para bala %s" % (
                                     bala.articulo.get_info()))
                     reports.abrir_pdf(etpdf)
                 if bigbags:
-                    etpdf = geninformes.etiquetasBigbags(bigbags)
+                    try:
+                        fetiqueta = bigbags[0].productoVenta.camposEspecificosBala.modeloEtiqueta.get_func()
+                        etpdf = geninformes.etiquetasBigbags(bigbags, hook=fetiqueta)
+                    except:
+                        etpdf = geninformes.etiquetasBigbags(bigbags)
                     for bigbag in bigbags:
-                        pclases.Auditoria.modificado(bigbag.articulo, 
-                                self.usuario, 
+                        pclases.Auditoria.modificado(bigbag.articulo,
+                                self.usuario,
                                 __file__,
                                 "Impresión de etiqueta para bigbag %s" % (
                                     bigbag.articulo.get_info()))
@@ -148,8 +152,8 @@ class ListadoBalas(Ventana):
                     etpdf = geninformes.etiquetasBalasCableEtiquetadora(
                                 etiqsbalascable)
                     for bala_cable in balas_cable:
-                        pclases.Auditoria.modificado(bala_cable.articulo, 
-                                self.usuario, 
+                        pclases.Auditoria.modificado(bala_cable.articulo,
+                                self.usuario,
                                 __file__,
                                 "Impresión de etiqueta para bala de cable %s"%(
                                     bala_cable.articulo.get_info()))
@@ -158,10 +162,10 @@ class ListadoBalas(Ventana):
                     from partes_de_fabricacion_bolsas import imprimir_etiquetas_pales
                     imprimir_etiquetas_pales(pales, self.wids['ventana'], mostrar_dialogo = True)
         else:
-            utils.dialogo_info(titulo = "USUARIO SIN PRIVILEGIOS", 
+            utils.dialogo_info(titulo = "USUARIO SIN PRIVILEGIOS",
                 texto = "Para poder crear etiquetas de balas existentes es ne"\
                         "cesario\nque tenga permiso de escritura sobre la ven"\
-                        "tana actual.", 
+                        "tana actual.",
                 padre = self.wids['ventana'])
 
     def imprimir(self, boton):
@@ -186,23 +190,23 @@ class ListadoBalas(Ventana):
                         texto_baja_calidad = "Bolsas insuficientes"
                 except (NameError, AttributeError):
                     pass    # Dejo el texto como estaba
-                datos.append((i[0], i[1], i[2], i[3], i[4], i[5], en_almacen, 
-                              i[6] and "Sí" or "No", 
+                datos.append((i[0], i[1], i[2], i[3], i[4], i[5], en_almacen,
+                              i[6] and "Sí" or "No",
                               i[7] and texto_baja_calidad or ""))
         datos.append(("---", ) * 9)
-        datos.append(("", "Total almacén:", 
-                      self.wids['e_total_almacen'].get_text(), 
-                      "Total fabricado:", 
-                      self.wids['e_total_fabricado'].get_text(), "", "", "", 
-                      "")) 
+        datos.append(("", "Total almacén:",
+                      self.wids['e_total_almacen'].get_text(),
+                      "Total fabricado:",
+                      self.wids['e_total_fabricado'].get_text(), "", "", "",
+                      ""))
         if not self.inicio:
             fechaInforme = 'Hasta: %s' % (utils.str_fecha(self.fin))
         else:
-            fechaInforme = (utils.str_fecha(self.inicio) + ' - ' 
+            fechaInforme = (utils.str_fecha(self.inicio) + ' - '
                             + utils.str_fecha(self.fin))
         if datos != []:
             desc_producto = self.wids['e_descripcion'].get_text()
-            listado_pdf = geninformes.listado_balas(datos, desc_producto, 
+            listado_pdf = geninformes.listado_balas(datos, desc_producto,
                                                     fechaInforme)
             from formularios import reports
             reports.abrir_pdf(listado_pdf)
@@ -215,8 +219,8 @@ class ListadoBalas(Ventana):
         except:
             temp = utils.mostrar_calendario(padre = self.wids['ventana'])
         self.wids['e_fechainicio'].set_text(utils.str_fecha(temp))
-        self.inicio = mx.DateTime.DateTimeFrom(day = temp[0], 
-                                               month = temp[1], 
+        self.inicio = mx.DateTime.DateTimeFrom(day = temp[0],
+                                               month = temp[1],
                                                year = temp[2])
 
     def get_unambiguous_fecha(self, fecha):
@@ -273,15 +277,15 @@ class ListadoBalas(Ventana):
                 model[iterpadre][4] = numalbaran
             else:
                 model[iterpadre][4] += ", " + numalbaran
-        fila = (caja.codigo, 
-                utils.str_fecha(fechafab), 
-                caja.peso, 
+        fila = (caja.codigo,
+                utils.str_fecha(fechafab),
+                caja.peso,
                 caja.pale.partidaCem.codigo, # Columna "lote", pero es partida.
-                numalbaran, 
+                numalbaran,
                 "-", # No se consumen en partidas.
-                False, 
-                caja.claseb, 
-                nombrealmacen, 
+                False,
+                caja.claseb,
+                nombrealmacen,
                 caja.puid)
         return model.append(iterpadre, fila)
 
@@ -297,27 +301,27 @@ class ListadoBalas(Ventana):
                           " tiene parte de producción relacionado." % pale.id)
             fechafab = pale.fechahora
         claseB = pale.es_clase_b()
-        fila = (pale.codigo, 
-                utils.str_fecha(fechafab), 
-                pale.calcular_peso(), 
+        fila = (pale.codigo,
+                utils.str_fecha(fechafab),
+                pale.calcular_peso(),
                 pale.partidaCem.codigo, # Columna "lote", pero es partida.
-                "-", # El albarán lo irán actualizando las cajas conforme 
+                "-", # El albarán lo irán actualizando las cajas conforme
                      # se vayan insertando.
                 "-", # No se consumen en partidas.
-                False,  # ¿Analizada? Que yo sepa no se analizan los palés. Sí 
-                        # la fibra original de los bigbag, pero eso no 
+                False,  # ¿Analizada? Que yo sepa no se analizan los palés. Sí
+                        # la fibra original de los bigbag, pero eso no
                         # me afecta en absoluto.
-                claseB, 
+                claseB,
                 "", # Lo mismo con el almacén.
                 pale.puid)
         return model.append(None, fila)
 
     def rellenar_pales(self, rs_cajas):
         """
-        Rellena el model pero con los palés de los artículos en lugar de 
+        Rellena el model pero con los palés de los artículos en lugar de
         con los artículos (bolsas) en sí.
         """
-        # Vamos a ir montando un diccionario de iteradores de palés y de ellos 
+        # Vamos a ir montando un diccionario de iteradores de palés y de ellos
         # voy a colgar las cajas.
         from ventana_progreso import VentanaProgreso
         vpro = VentanaProgreso(padre = self.wids['ventana'])
@@ -336,7 +340,7 @@ class ListadoBalas(Ventana):
         self.wids['tv_balas'].set_model(None)
         vpro.mostrar()
         for caja in rs_cajas:
-            vpro.set_valor(i/tot, 'Añadiendo cajas por palé... (%s)' % 
+            vpro.set_valor(i/tot, 'Añadiendo cajas por palé... (%s)' %
                                     caja.codigo)
             i += 1
             if pclases.DEBUG:
@@ -354,21 +358,21 @@ class ListadoBalas(Ventana):
                 iterpale = self.insert_pale(model, pale)
                 pales[paleid] = iterpale
                 # Como los totales van por kilos y palés, aprovecho ahora.
-                # Lleva el el total de cajas en almacén de ese palé, el número 
+                # Lleva el el total de cajas en almacén de ese palé, el número
                 # de cajas en almacén del palé y los kilos de esas cajas.
-                cajas_por_pale[paleid] = {'Total cajas': pale.numcajas, 
-                                          'Cajas en almacén': 0, 
+                cajas_por_pale[paleid] = {'Total cajas': pale.numcajas,
+                                          'Cajas en almacén': 0,
                                           'Kilos en almacén': 0.0}
-                bultos_fabricados += 1 
+                bultos_fabricados += 1
                 kilos_fabricados += pale.calcular_peso()
             kilos_caja = caja.peso
             albaran = caja.albaranSalida
             if not albaran or albaran.fecha > self.fin:    # Cajas en almacén.
-                # FILTRO LOS ALBARANES FUERA DEL RANGO SUPERIOR DE FECHAS PARA 
+                # FILTRO LOS ALBARANES FUERA DEL RANGO SUPERIOR DE FECHAS PARA
                 # QUE APAREZCAN COMO QUE ESTABAN EN ALMACÉN ANTES DE ESE DÍA.
                 cajas_por_pale[paleid]['Cajas en almacén'] += 1
                 cajas_por_pale[paleid]['Kilos en almacén'] += kilos_caja
-            else:   # Ya no está en almacén. Tiene albarán o lo tiene anterior 
+            else:   # Ya no está en almacén. Tiene albarán o lo tiene anterior
                     # a la fecha superior de filtro.
                 if pclases.DEBUG:
                     print "Esta caja (%s) no está en almacén." % caja.codigo
@@ -377,7 +381,7 @@ class ListadoBalas(Ventana):
         tot = len(cajas_por_pale)
         i = 0
         for idpale in pales:
-            vpro.set_valor(i/tot, 
+            vpro.set_valor(i/tot,
                            'Analizando palés incompletos... (%d)' % idpale)
             iterpale = pales[idpale]
             total = cajas_por_pale[idpale]['Total cajas']
@@ -388,34 +392,34 @@ class ListadoBalas(Ventana):
         self.wids['tv_balas'].set_model(model)
         self.wids['tv_balas'].thaw_child_notify()
         vpro.ocultar()
-        kilos_almacen = sum([cajas_por_pale[idpale]['Kilos en almacén'] 
+        kilos_almacen = sum([cajas_por_pale[idpale]['Kilos en almacén']
                              for idpale in cajas_por_pale])
-        bultos_cajas = sum([cajas_por_pale[idpale]['Cajas en almacén'] 
+        bultos_cajas = sum([cajas_por_pale[idpale]['Cajas en almacén']
                             for idpale in cajas_por_pale])
-        bultos_cajas_totales = sum([cajas_por_pale[idpale]['Total cajas'] 
+        bultos_cajas_totales = sum([cajas_por_pale[idpale]['Total cajas']
                                     for idpale in cajas_por_pale])
         try:
-            bultos_almacen = ((bultos_fabricados * bultos_cajas) 
+            bultos_almacen = ((bultos_fabricados * bultos_cajas)
                                 / bultos_cajas_totales)
             # bultos_fabricados son los palés en total fabricados.
             # bultos_cajas son los palés que hay en almacén.
-            # Y bultos_cajas_totales son las cajas que hay en total en los 
+            # Y bultos_cajas_totales son las cajas que hay en total en los
             # palés fabricados. Es una simple regla de tres.
         except ZeroDivisionError:
             bultos_almacen = 0
         self.wids['e_total_almacen'].set_text("%s kg (%s palés)" % (
-            utils.float2str(kilos_almacen), 
+            utils.float2str(kilos_almacen),
             utils.float2str(bultos_almacen, autodec = True)))
         self.wids['e_total_fabricado'].set_text("%s kg (%d palés)" % (
             utils.float2str(kilos_fabricados), bultos_fabricados))
         self.colorear(self.wids['tv_balas'])
 
-    def rellenar_tabla(self, lista_balas = None, lista_bigbags = None, 
+    def rellenar_tabla(self, lista_balas = None, lista_bigbags = None,
                        lista_cajas = None):
         """
         Rellena el model con el listado de balas correspondiente
         """
-        self.wids['tv_balas'].get_column(5).set_property("visible", 
+        self.wids['tv_balas'].get_column(5).set_property("visible",
                                                          lista_cajas == None)
         if lista_cajas != None:   # Delego en otra función
             self.rellenar_pales(lista_cajas)
@@ -446,77 +450,77 @@ class ListadoBalas(Ventana):
             kilos = t.peso
             vpro.set_valor(i/tot, 'Añadiendo %s...' % t.codigo_interno)
             if t.albaranSalida != None and t.albaranSalida.fecha <= self.fin:
-                # FILTRO LOS ALBARANES FUERA DEL RANGO SUPERIOR DE FECHAS PARA 
+                # FILTRO LOS ALBARANES FUERA DEL RANGO SUPERIOR DE FECHAS PARA
                 # QUE APAREZCAN COMO QUE ESTABAN EN ALMACÉN ANTES DE ESE DÍA.
                 if t.balaID != None:
-                    model.append(None, 
+                    model.append(None,
                                  (t.bala.codigo,
                                   utils.str_fecha(t.bala.fechahora),
-                                  utils.float2str(t.bala.pesobala, 1), 
+                                  utils.float2str(t.bala.pesobala, 1),
                                   t.bala.lote.numlote,
                                   "%s (%s)" % (t.albaranSalida.numalbaran,
-                                    utils.str_fecha(t.albaranSalida.fecha)), 
-                                  t.bala.partidaCarga 
+                                    utils.str_fecha(t.albaranSalida.fecha)),
+                                  t.bala.partidaCarga
                                     and t.bala.partidaCarga.codigo or "-",
                                   t.bala.analizada(),
-                                  t.bala.claseb, 
-                                  t.almacen and t.almacen.nombre or "", 
+                                  t.bala.claseb,
+                                  t.almacen and t.almacen.nombre or "",
                                   t.puid))
                 elif t.bigbagID != None:
                     if t.bigbag.parteDeProduccionID:
                         info_consumo = " (consumido el %s. %s)" % (
-                            utils.str_fecha(t.bigbag.parteDeProduccion.fecha), 
+                            utils.str_fecha(t.bigbag.parteDeProduccion.fecha),
                             t.bigbag.parteDeProduccion.partidaCem.codigo)
                     else:
                         info_consumo = ""
-                    model.append(None, 
+                    model.append(None,
                                  (t.bigbag.codigo,
                                   utils.str_fecha(t.bigbag.fechahora),
-                                  utils.float2str(t.bigbag.pesobigbag, 1), 
+                                  utils.float2str(t.bigbag.pesobigbag, 1),
                                   t.bigbag.loteCem.codigo,
                                   t.albaranSalida.numalbaran + info_consumo,
                                   '-',
                                   False,
-                                  t.bigbag.claseb, 
-                                  t.almacen and t.almacen.nombre or "", 
+                                  t.bigbag.claseb,
+                                  t.almacen and t.almacen.nombre or "",
                                   t.puid))
                 elif t.balaCableID != None:
-                    model.append(None, 
+                    model.append(None,
                                  (t.balaCable.codigo,
                                   utils.str_fecha(t.balaCable.fechahora),
-                                  utils.float2str(t.balaCable.peso, 1), 
+                                  utils.float2str(t.balaCable.peso, 1),
                                   "N/A",
                                   t.albaranSalida.numalbaran,
                                   '-',
                                   False,
-                                  True, 
-                                  t.almacen and t.almacen.nombre or "", 
+                                  True,
+                                  t.almacen and t.almacen.nombre or "",
                                   t.puid))
                 kilos_fabricados += kilos
-                bultos_fabricados += 1 
-            elif (t.bala and t.bala.partidaID != None 
+                bultos_fabricados += 1
+            elif (t.bala and t.bala.partidaID != None
                   and (t.bala.partida.fecha <= self.fin + mx.DateTime.oneDay
                        or t.bala.partida.fecha <= datetime.datetime(
                         *(self.fin + datetime.timedelta(days = 1)).tuple()[:3])
                       )
-                 ): 
+                 ):
                     # La fecha de la partida lleva hora, hay que compararla con las 00:00:00 del día siguiente.
                 # FILTRO LAS BALAS CONSUMIDAS EN UNA PARTIDA PERO POSTERIORMENTE A LA FECHA DE FIN DE RANGO DE BÚSQUEDA.
                 if t.albaranSalida:
-                    numalbaran = t.albaranSalida.numalbaran 
+                    numalbaran = t.albaranSalida.numalbaran
                 else: # No tiene albarán de consumo, pero SÍ partida de carga.
                     numalbaran = "Consumida en partida carga %d" % (
                         t.bala.partidaCarga.numpartida)
-                model.append(None, 
+                model.append(None,
                              (t.bala.codigo,
-                              utils.str_fecha(t.bala.fechahora),                        
-                              utils.float2str(t.bala.pesobala, 1), 
+                              utils.str_fecha(t.bala.fechahora),
+                              utils.float2str(t.bala.pesobala, 1),
                               t.bala.lote.numlote,
                               numalbaran,
                               t.bala.partida.codigo,
                               t.bala.analizada(),
-                              t.bala.claseb, 
-                              t.almacen and t.almacen.nombre or "", 
+                              t.bala.claseb,
+                              t.almacen and t.almacen.nombre or "",
                               t.puid))
                 kilos_fabricados += kilos
                 bultos_fabricados += 1
@@ -526,45 +530,45 @@ class ListadoBalas(Ventana):
                 kilos_almacen += kilos
                 bultos_almacen += 1
                 if t.balaID != None:
-                    if t.bala.lote != None: 
+                    if t.bala.lote != None:
                         numlote = t.bala.lote.numlote
                     else:
                         numlote = "¡SIN LOTE!"
-                    model.append(None, 
+                    model.append(None,
                                  (t.bala.codigo,
                                   utils.str_fecha(t.bala.fechahora),
-                                  utils.float2str(t.bala.pesobala, 1), 
+                                  utils.float2str(t.bala.pesobala, 1),
                                   numlote,
                                   '-',
                                   '-',
                                   t.bala.analizada(),
-                                  t.bala.claseb, 
-                                  t.almacen and t.almacen.nombre or "", 
+                                  t.bala.claseb,
+                                  t.almacen and t.almacen.nombre or "",
                                   t.puid))
                 elif t.bigbagID != None:
-                    model.append(None, 
+                    model.append(None,
                                  (t.bigbag.codigo,
                                   utils.str_fecha(t.bigbag.fechahora),
-                                  utils.float2str(t.bigbag.pesobigbag, 1), 
+                                  utils.float2str(t.bigbag.pesobigbag, 1),
                                   t.bigbag.loteCem.codigo,
                                   '-',
                                   '-',
                                   False,
-                                  t.bigbag.claseb, 
-                                  t.almacen and t.almacen.nombre or "", 
+                                  t.bigbag.claseb,
+                                  t.almacen and t.almacen.nombre or "",
                                   t.puid))
                 elif t.balaCableID != None:
                     numlote = "N/A"
-                    model.append(None, 
+                    model.append(None,
                                  (t.balaCable.codigo,
                                   utils.str_fecha(t.balaCable.fechahora),
-                                  utils.float2str(t.balaCable.peso, 1), 
+                                  utils.float2str(t.balaCable.peso, 1),
                                   numlote,
                                   '-',
                                   '-',
                                   False,
-                                  True, 
-                                  t.almacen and t.almacen.nombre or "", 
+                                  True,
+                                  t.almacen and t.almacen.nombre or "",
                                   t.puid))
             i += 1
         # XXX Primer intento de acelerar los treeview
@@ -592,10 +596,10 @@ class ListadoBalas(Ventana):
             filas_res.append((r.id, r.codigo, r.nombre, r.descripcion))
         idproducto = utils.dialogo_resultado(filas_res,
                                              titulo = 'Seleccione producto',
-                                             cabeceras = ('ID Interno', 
-                                                          'Código', 
-                                                          'Nombre', 
-                                                          'Descripción'), 
+                                             cabeceras = ('ID Interno',
+                                                          'Código',
+                                                          'Nombre',
+                                                          'Descripción'),
                                              padre = self.wids['ventana'])
         if idproducto < 0:
             return None
@@ -604,19 +608,19 @@ class ListadoBalas(Ventana):
 
     def buscar_balas(self,wid):
         """
-        Pide el código de un producto y busca todos las unidades de ese 
+        Pide el código de un producto y busca todos las unidades de ese
         producto.
         """
-        a_buscar = utils.dialogo_entrada(titulo = 'INTRODUZCA DATOS', 
+        a_buscar = utils.dialogo_entrada(titulo = 'INTRODUZCA DATOS',
                     texto = 'Introduzca el código, nombre o descripción\n'
-                            'del producto que desea listar:', 
+                            'del producto que desea listar:',
                     padre = self.wids['ventana'])
         if a_buscar != None:
             criterio = pclases.OR(
                 pclases.ProductoVenta.q.codigo.contains(a_buscar),
                 pclases.ProductoVenta.q.nombre.contains(a_buscar),
                 pclases.ProductoVenta.q.descripcion.contains(a_buscar))
-            criterio = pclases.AND(criterio, 
+            criterio = pclases.AND(criterio,
                 pclases.ProductoVenta.q.camposEspecificosBalaID != None)
             resultados = pclases.ProductoVenta.select(criterio)
             if resultados.count() > 1:
@@ -627,8 +631,8 @@ class ListadoBalas(Ventana):
                     resultados = [pclases.ProductoVenta.get(idproducto)]
             elif resultados.count() < 1:
                     ## Sin resultados de búsqueda
-                    utils.dialogo_info(titulo = 'ERROR', 
-                        texto = 'No hay ningún producto con ese código', 
+                    utils.dialogo_info(titulo = 'ERROR',
+                        texto = 'No hay ningún producto con ese código',
                         padre = self.wids['ventana'])
                     return
             ## Un único resultado
@@ -641,80 +645,80 @@ class ListadoBalas(Ventana):
                 self.get_unambiguous_fecha(self.inicio))
             if producto.es_bala():
                 articulos_bala = pclases.Articulo.select("""
-                    bala_id IS NOT NULL AND producto_venta_id = %d 
+                    bala_id IS NOT NULL AND producto_venta_id = %d
                     AND bala_id IN (
-                        SELECT id 
-                        FROM bala 
-                        WHERE fechahora < '%s' %s ) """ 
-                    % (producto.id, 
+                        SELECT id
+                        FROM bala
+                        WHERE fechahora < '%s' %s ) """
+                    % (producto.id,
                        self.get_unambiguous_fecha(self.fin+mx.DateTime.oneDay),
                        self.inicio and and_fecha_inicio or ""))
                 articulos_bigbag = None
                 lista_cajas = None
             elif producto.es_bigbag():
                 articulos_bigbag = pclases.Articulo.select("""
-                    bigbag_id IS NOT NULL AND producto_venta_id = %d 
-                    AND bigbag_id IN (SELECT id 
-                                      FROM bigbag 
-                                      WHERE fechahora < '%s' %s ) 
-                    """ % (producto.id, 
-                           self.get_unambiguous_fecha(self.fin 
-                                                      + mx.DateTime.oneDay), 
+                    bigbag_id IS NOT NULL AND producto_venta_id = %d
+                    AND bigbag_id IN (SELECT id
+                                      FROM bigbag
+                                      WHERE fechahora < '%s' %s )
+                    """ % (producto.id,
+                           self.get_unambiguous_fecha(self.fin
+                                                      + mx.DateTime.oneDay),
                            self.inicio and and_fecha_inicio or ""))
                 articulos_bala = None
                 lista_cajas = None
             elif producto.es_bala_cable():
                 articulos_bala = pclases.Articulo.select("""
-                    bala_cable_id IS NOT NULL AND producto_venta_id = %d 
-                    AND bala_cable_id IN (SELECT id 
-                                          FROM bala_cable 
-                                          WHERE fechahora < '%s' %s ) 
-                    """ % (producto.id, 
+                    bala_cable_id IS NOT NULL AND producto_venta_id = %d
+                    AND bala_cable_id IN (SELECT id
+                                          FROM bala_cable
+                                          WHERE fechahora < '%s' %s )
+                    """ % (producto.id,
                            self.get_unambiguous_fecha(
-                                self.fin + mx.DateTime.oneDay), 
+                                self.fin + mx.DateTime.oneDay),
                            self.inicio and and_fecha_inicio or ""))
                 articulos_bigbag = None
                 lista_cajas = None
             elif producto.es_bolsa():
                 #articulos_bolsas = pclases.Articulo.select("""
-                #    bolsa_id IS NOT NULL AND producto_venta_id = %d 
+                #    bolsa_id IS NOT NULL AND producto_venta_id = %d
                 #    AND bolsa_id IN (
-                #        SELECT id 
-                #        FROM bolsa 
-                #        WHERE fechahora < '%s' %s ) """ 
-                #    %(producto.id, 
+                #        SELECT id
+                #        FROM bolsa
+                #        WHERE fechahora < '%s' %s ) """
+                #    %(producto.id,
                 #      self.get_unambiguous_fecha(self.fin+mx.DateTime.oneDay),
                 #      self.inicio != None and and_fecha_inicio or ""))
                 #consulta_cajas = """
-                #    id IN (SELECT caja_id 
+                #    id IN (SELECT caja_id
                 #             FROM articulo
-                #            WHERE caja_id IS NOT NULL 
-                #              AND fechahora < '%s' %s 
-                #              AND producto_venta_id = %d 
+                #            WHERE caja_id IS NOT NULL
+                #              AND fechahora < '%s' %s
+                #              AND producto_venta_id = %d
                 #          ) """ % (
                 #       self.get_unambiguous_fecha(self.fin+mx.DateTime.oneDay),
-                #       self.inicio != None and and_fecha_inicio or "", 
+                #       self.inicio != None and and_fecha_inicio or "",
                 #       producto.id)
                 ## Don't be stupid. OPTIMIZATION!!!
                 A = pclases.Articulo
                 C = pclases.Caja
                 if not self.inicio:
                     consulta_cajas = C.select(pclases.AND(
-                        A.q.cajaID == C.q.id, 
-                        C.q.fechahora < self.fin + mx.DateTime.oneDay, 
+                        A.q.cajaID == C.q.id,
+                        C.q.fechahora < self.fin + mx.DateTime.oneDay,
                         A.q.productoVentaID == producto.id))
                 else:
                     consulta_cajas = C.select(pclases.AND(
-                        A.q.cajaID == C.q.id, 
-                        C.q.fechahora < self.fin + mx.DateTime.oneDay, 
-                        C.q.fechahora >= self.inicio, 
+                        A.q.cajaID == C.q.id,
+                        C.q.fechahora < self.fin + mx.DateTime.oneDay,
+                        C.q.fechahora >= self.inicio,
                         A.q.productoVentaID == producto.id))
                 if pclases.DEBUG:
                     print >> sys.stderr, consulta_cajas
                 lista_cajas = consulta_cajas
                 articulos_bigbag = None
                 articulos_bala = None
-            self.rellenar_tabla(articulos_bala, articulos_bigbag, 
+            self.rellenar_tabla(articulos_bala, articulos_bigbag,
                                 lista_cajas)
 
     def colorear(self, tv):
@@ -726,7 +730,7 @@ class ListadoBalas(Ventana):
                 cajas_total = None    # No es palé
                 cajas_stock = None
             else:
-                cajas_stock,cajas_total = map(int, 
+                cajas_stock,cajas_total = map(int,
                                               cajas_total_and_stock.split("/"))
             numalbaran = model[itr][4]
             numpartida = model[itr][5]
@@ -737,9 +741,9 @@ class ListadoBalas(Ventana):
             elif cajas_stock and cajas_stock < cajas_total:
                 color = "orange"
             elif numalbaran != '-' and almacen == "":
-                # Los albaranes de transferencia de mercancía no sacan 
-                # artículos del almacén, deben aparecer en blanco porque los 
-                # productos siguen estando realmente en un almacén, aunque no 
+                # Los albaranes de transferencia de mercancía no sacan
+                # artículos del almacén, deben aparecer en blanco porque los
+                # productos siguen estando realmente en un almacén, aunque no
                 # sea el principal.
                 color = "red"
             elif "Z" in model[itr][0]:
@@ -747,7 +751,7 @@ class ListadoBalas(Ventana):
             elif "D" in model[itr][0]:
                 color = "LightGray"
             elif model[itr][7]:
-                color = "yellow"    # Sólo marca en amarillo las clase B que 
+                color = "yellow"    # Sólo marca en amarillo las clase B que
                                     # queden en almacén.
             else:
                 color = "white"
@@ -762,19 +766,19 @@ class ListadoBalas(Ventana):
 
 def separar_balas_y_bigbags_from_codigos(codigos):
     """
-    Recorre la lista de códigos y busca los objetos Bala [cable] o 
-    Bigbag correspondientes, los cuales almacena en dos listas 
+    Recorre la lista de códigos y busca los objetos Bala [cable] o
+    Bigbag correspondientes, los cuales almacena en dos listas
     que devuelve.
-    Si se encuentra un guión en un código genera un rango de 
+    Si se encuentra un guión en un código genera un rango de
     códigos a procesar entre los dos números, ambos incluidos.
     Si un código es incorrecto se ignora.
-    Si el código no comienza por ninguna letra, se intentará buscar 
-    como bala (anteponiendo una B), y si no se encuentra se buscará 
-    como bigbag (anteponiendo una C). Si aún así no se encuentra, se 
+    Si el código no comienza por ninguna letra, se intentará buscar
+    como bala (anteponiendo una B), y si no se encuentra se buscará
+    como bigbag (anteponiendo una C). Si aún así no se encuentra, se
     ignora.
-    OJO: No se controla que el rango (caso de haberlo) sea demasiado 
-    grande. Así que más le vale al usuario no equivocarse tecleando 
-    y pasar un rango de 10.000 códigos si no quiere tirarse media vida 
+    OJO: No se controla que el rango (caso de haberlo) sea demasiado
+    grande. Así que más le vale al usuario no equivocarse tecleando
+    y pasar un rango de 10.000 códigos si no quiere tirarse media vida
     esperando.
     """
     balas = []
@@ -792,9 +796,9 @@ def separar_balas_y_bigbags_from_codigos(codigos):
                 tipocodigo = codigo2[0]
             else:
                 tipocodigo = ""
-            codigo1 = int("".join([letra 
+            codigo1 = int("".join([letra
                                    for letra in codigo1 if letra.isdigit()]))
-            codigo2 = int("".join([letra 
+            codigo2 = int("".join([letra
                                    for letra in codigo2 if letra.isdigit()]))
             if codigo2 < codigo1:
                 codigo1, codigo2 = codigo2, codigo1
@@ -830,7 +834,7 @@ def buscar_bala(codigo):
     """
     Busca una bala en la BD según el código recibido.
     Devuelve None si no la encuentra.
-    Si existiesen varias balas con el mismo código, devuelve 
+    Si existiesen varias balas con el mismo código, devuelve
     la primera de ellas según el orden interno de la BD.
     """
     balas = pclases.Bala.select(pclases.Bala.q.codigo == codigo)
@@ -844,7 +848,7 @@ def buscar_bigbag(codigo):
     """
     Busca una bigbag en la BD según el código recibido.
     Devuelve None si no la encuentra.
-    Si existiesen varias bigbags con el mismo código, devuelve 
+    Si existiesen varias bigbags con el mismo código, devuelve
     la primera de ellas según el orden interno de la BD.
     """
     bigbags = pclases.Bigbag.select(pclases.Bigbag.q.codigo == codigo)
@@ -858,7 +862,7 @@ def buscar_bala_cable(codigo):
     """
     Busca una bala_cable en la BD según el código recibido.
     Devuelve None si no la encuentra.
-    Si existiesen varias bala_cable con el mismo código, devuelve 
+    Si existiesen varias bala_cable con el mismo código, devuelve
     la primera de ellas según el orden interno de la BD.
     """
     balas_cable = pclases.BalaCable.select(pclases.BalaCable.q.codigo == codigo)
@@ -872,7 +876,7 @@ def buscar_pale(codigo):
     """
     Busca una palé en la BD según el código recibido.
     Devuelve None si no la encuentra.
-    Si existiesen varias palés con el mismo código, devuelve 
+    Si existiesen varias palés con el mismo código, devuelve
     el primero de ellos según el orden interno de la BD.
     """
     pales = pclases.Pale.select(pclases.Pale.q.codigo == codigo)
@@ -884,7 +888,7 @@ def buscar_pale(codigo):
 
 def preparar_datos_etiquetas_balas(balas):
     """
-    Recibe una lista de objetos bala y devuelve una lista de 
+    Recibe una lista de objetos bala y devuelve una lista de
     diccionarios con los datos que lleva una etiqueta de balas.
     """
     etiqs = []
@@ -908,7 +912,7 @@ def preparar_datos_etiquetas_balas(balas):
 
 def preparar_datos_etiquetas_balas_cable(balas):
     """
-    Recibe una lista de objetos bala y devuelve una lista de 
+    Recibe una lista de objetos bala y devuelve una lista de
     diccionarios con los datos que lleva una etiqueta de balas.
     """
     data = []
@@ -920,9 +924,9 @@ def preparar_datos_etiquetas_balas_cable(balas):
             color = pv.descripcion + "; color: " + ceb.color + "."
         else:
             color = pv.descripcion
-        b = {'codigoBarra': pv.codigo, 
-             'codigo': bala.codigo, 
-             'color': color, 
+        b = {'codigoBarra': pv.codigo,
+             'codigo': bala.codigo,
+             'color': color,
              'peso': utils.float2str(bala.peso, 1)
             }
         data.append(b)

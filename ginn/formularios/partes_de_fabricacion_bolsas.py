@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2017  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -2008,7 +2008,11 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
             else:
                 return
             # EOBACKTRACK: Descomentar el rotate = True cuando volvamos a usar las etiquetas nuevas.
-            filetiqpale = geninformes.generar_etiqueta_pale(pales, tipo)
+            try:
+                func_etiqueta = self.objeto.productoVenta.camposEspecificosBala.modeloEtiqueta.get_func()
+                filetiqpale = func_etiqueta(pales)
+            except AttributeError:   # Fallback a la etiqueta por defecto.
+                filetiqpale = geninformes.generar_etiqueta_pale(pales, tipo)
             for pale in pales:
                 pclases.Auditoria.modificado(pale,
                     # self.usuario,
