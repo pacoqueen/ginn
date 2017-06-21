@@ -4119,7 +4119,7 @@ def crear_ventana_pesaje(ventana_parte, padre = None):
     com = utils.get_puerto_serie()
     if com != None:
         ventana, l_peso, e_numbala, b_cancelar, b_aceptar, l_estable, l_peso_sin = build_ventana(padre)
-        src_id = gobject.timeout_add(1500, recv_serial, com, ventana, l_peso, ventana_parte, e_numbala, l_estable, l_peso_sin)
+        src_id = gobject.timeout_add(1500, recv_serial, com, ventana, l_peso, ventana_parte, e_numbala, l_estable, l_peso_sin, b_aceptar)
         b_cancelar.connect("clicked", cerrar_ventana_bascula, ventana, com, src_id)
         ventana.connect("destroy", cerrar_ventana_bascula, ventana, com, src_id)
         b_aceptar.connect("clicked", leer_nueva_bala, l_peso, l_estable, e_numbala, ventana_parte, l_peso_sin)
@@ -4316,7 +4316,7 @@ def cerrar_ventana_bascula(boton, ventana, com, src_id):
     ventana.destroy()
     com.close()
 
-def recv_serial(com, ventana, l_peso, ventana_parte, e_numbala, l_estable, l_peso_sin):
+def recv_serial(com, ventana, l_peso, ventana_parte, e_numbala, l_estable, l_peso_sin, b_aceptar):
     """
     A diferencia del de rollos, este simplemente actualiza el peso mostrado en pantalla.
     La bala se creará con el peso mediante el botón correspondiente.
@@ -4359,6 +4359,9 @@ def recv_serial(com, ventana, l_peso, ventana_parte, e_numbala, l_estable, l_pes
                 l_estable.set_text('<span color="orange">Peso nulo</span>')
             else:
                 l_estable.set_text('<span color="black">Código desconocido</span>')
+            b_aceptable.set_sensitive(estable == '2')
+            if estable != '2': # Si el peso no es estable, le doy 1 segundo más.
+                time.sleep(1)
             l_estable.set_use_markup(True)
             l_estable.set_justify(gtk.JUSTIFY_CENTER)
             l_estable.set_property('xalign', 0.5)
