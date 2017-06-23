@@ -4363,7 +4363,7 @@ def recv_serial(com, ventana, l_peso, ventana_parte, e_numbala, l_estable, l_pes
                 l_estable.set_text('<span color="orange">Peso nulo</span>')
             else:
                 l_estable.set_text('<span color="black">Código desconocido</span>')
-            b_aceptable.set_sensitive(estable == '2')
+            b_aceptar.set_sensitive(estable == '2')
             if estable != '2': # Si el peso no es estable, le doy 1 segundo más.
                 time.sleep(1)
             l_estable.set_use_markup(True)
