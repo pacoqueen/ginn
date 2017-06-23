@@ -722,11 +722,8 @@ def crear_etiquetas_bigbags(bigbags, mostrar_marcado=True, lang="es"):
 def test_rollos():
     """ Pruebas de impresión de rollos. """
     from formularios.reports import abrir_pdf
-    todos = pclases.Rollo.select(orderBy="-id")
     from random import randrange
-    rollos = (todos[randrange(todos.count())],
-              todos[randrange(todos.count())])
-    #abrir_pdf(etiqueta_rollos_norma13(rollos, False))
+    rollos = [pclases.Rollo.selectBy(codigo="R324333")[0]]
     abrir_pdf(etiqueta_rollos_norma13_en(rollos))
 
 def test_pales():
@@ -748,6 +745,6 @@ def test_bigbags():
     abrir_pdf(crear_etiquetas_bigbags(bigbags, lang="en"))
 
 if __name__ == "__main__":
-    #test_rollos()
-    test_pales()
+    test_rollos()
+    #test_pales()
     #test_bigbags()

@@ -4330,15 +4330,19 @@ def recv_serial(com, ventana, l_peso, ventana_parte, e_numbala, l_estable, l_pes
             c = sio.readline()
         except ValueError:  # ¿Puerto cerrado?
             com = utils.get_puerto_serie()
-            sio = io.TextIOWrapper(io.BufferedRWPair(com, com))
             try:
+                sio = io.TextIOWrapper(io.BufferedRWPair(com, com))
                 c = sio.readline()
             except UnicodeDecodeError:
                 c = "" # Basurilla. La lectura no es perfecta. Vuelvo a iterar.
+            except AttributeError:
+                # No se ha podido abrir el puerto serie (NoneType not readable)
+                c = ""
         except UnicodeDecodeError:
             c = ""  # Ha leído mierda. Vuelvo a iterar.
-    com.flushInput()    # Evito que datos antiguos se queden en el
-    com.flush()         # buffer impidiendo nuevas lecturas.
+    if com:
+        com.flushInput()    # Evito que datos antiguos se queden en el
+        com.flush()         # buffer impidiendo nuevas lecturas.
     if c.strip() != '':
         # Tratar
         try:

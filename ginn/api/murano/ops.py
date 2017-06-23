@@ -491,7 +491,7 @@ def _get_modelo_etiqueta_ginn(id_etiqueta_murano):
     if id_etiqueta_murano == 4:
         # Normativa julio 2013
         res = 4
-    elif id_etiqueta_murano in range(1, 9):
+    elif id_etiqueta_murano in range(1, 99): # Hasta 99 modelos. Se puede cambiar.
         # Resulta que el ID coincide en ambas bases de datos.
         res = id_etiqueta_murano
     else:   # Incluido el 0, que es el equivalente al None en Murano
