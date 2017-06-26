@@ -1190,11 +1190,18 @@ class PartesDeFabricacionBalas(Ventana):
         except:
             return ''
 
-    def bala(self, a):
+    def bala(self, a, volcado=None):
+        if volcado is None:
+            volcado = ""
+        elif volcado:
+            volcado = " ✔"
+        else:
+            volcado = " ✘"
         try:
-            return a.codigo_interno
+            res = "{}{}".format(a.codigo_interno, volcado)
         except:
-            return ''
+            res = ''
+        return res
 
     def peso(self, a):
         try:
@@ -1372,6 +1379,15 @@ class PartesDeFabricacionBalas(Ventana):
                 # color = "white"
                 color = None    # Color por defecto del tema
             cell.set_property("cell-background", color)
+            numcol = i
+            if numcol == 1:     # Columna de número de bala.
+                if "✔" in model[itr][numcol]:
+                    cell.set_property("cell-background", "black")
+                    cell.set_property("foreground", "white")
+                elif "✘" in model[itr][numcol]:
+                    cell.set_property("cell-background", "black")
+                    cell.set_property("foreground", "red")
+                # Y si es None no se ha intentado volcar todavía. Colores por defecto
             utils.redondear_flotante_en_cell_cuando_sea_posible(column, cell, model, itr, i)
         cols = tv.get_columns()
         for i in xrange(len(cols)):
@@ -1393,8 +1409,12 @@ class PartesDeFabricacionBalas(Ventana):
         # Filas del TreeView
         last_iter_bala = None
         for detalle in detallesdeproduccion:
+            try:
+                volcado = detalle.api
+            except AttributeError:
+                volcado = None
             itr = model.append((self.lote(detalle),
-                                self.bala(detalle),
+                                self.bala(detalle, volcado),
                                 self.peso(detalle),
                                 self.claseb(detalle),
                                 self.motivo(detalle),
@@ -3380,7 +3400,11 @@ class PartesDeFabricacionBalas(Ventana):
             obs = self.observaciones(detalle)
             if len(obs) > 25:
                 obs = obs[:25]+'...'
-            lineas.append((self.bala(detalle),
+            try:
+                volcado = detalle.api
+            except AttributeError:
+                volcado = None
+            lineas.append((self.bala(detalle, volcado),
                            self.peso(detalle),
                            self.motivo(detalle),
                            self.horaini(detalle),
