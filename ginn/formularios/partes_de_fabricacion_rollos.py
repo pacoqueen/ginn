@@ -442,6 +442,10 @@ class PartesDeFabricacionRollos(Ventana):
                 if "✔" in model[itr][numcol]:
                     cell.set_property("cell-background", "black")
                     cell.set_property("foreground", "white")
+                elif "✘" in model[itr][numcol]:
+                    cell.set_property("cell-background", "black")
+                    cell.set_property("foreground", "red")
+                # Y si es None no se ha intentado volcar todavía. Colores por defecto
 
         cols = tv.get_columns()
         for i in xrange(len(cols)):
