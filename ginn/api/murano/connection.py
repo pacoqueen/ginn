@@ -121,7 +121,7 @@ class Connection(object):
             if not DEBUG:
                 raise exception
         for sentence_sql in sql:
-            logging.info("SQL a ejecutar:")
+            # logging.info("SQL a ejecutar:")
             logging.info(str_clean(sentence_sql))
             if DEBUG:
                 strlog = " ==> SQLServer --> %s" % (str_clean(sentence_sql))
@@ -131,13 +131,13 @@ class Connection(object):
                 try:
                     strlog = "Lanzando consulta %s..." % (
                         sentence_sql.split()[0])
-                    logging.info(strlog)
+                    # logging.info(strlog)
                     if VERBOSE and DEBUG:
                         print(strlog)
                     res = cursor.execute(sentence_sql)
                     if "SELECT" in sentence_sql:
                         strlog = "    · fetchall..."
-                        logging.info(strlog)
+                        # logging.info(strlog)
                         if VERBOSE and DEBUG:
                             print(strlog)
                         try:
@@ -150,7 +150,7 @@ class Connection(object):
                             print(strlog)
                     else:
                         strlog = "    · commit..."
-                        logging.info(strlog)
+                        # logging.info(strlog)
                         if VERBOSE and DEBUG:
                             print(strlog)
                         self.conn.commit()
