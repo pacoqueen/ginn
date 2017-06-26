@@ -2123,7 +2123,7 @@ class PartesDeFabricacionRollos(Ventana):
         aceptan/corrigen todos los pesos. Devuelve la lista con los pesos
         confirmados hasta que acaba el rango o se pulsa «Cancelar».
         """
-        pv = self.objeto.productoVenta
+        pv = self.producto
         peso_teorico = pv.get_peso_teorico()
         peso_embalaje = pv.camposEspecificosRollo.pesoEmbalaje
         peso_ideal_en_bascula = peso_teorico + peso_embalaje
