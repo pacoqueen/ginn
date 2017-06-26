@@ -2084,9 +2084,10 @@ class PartesDeFabricacionRollos(Ventana):
                                             "¿Está seguro?",
                                     padre = self.wids['ventana']):
                 return
+            pesos = self.confirmar_pesos(generador)
             vpro = VentanaProgreso(padre = self.wids['ventana'])
             vpro.mostrar()
-            for numrollo in generador:
+            for numrollo, peso_bascula in zip(generador, pesos):
                 if numrollo < 0:
                     numrollo *= -1
                     defectuoso = True
@@ -2097,7 +2098,8 @@ class PartesDeFabricacionRollos(Ventana):
                     articulo = crear_articulo(numrollo, partida,
                                               self.producto, self.objeto,
                                               objeto_ventana_parte = self,
-                                              defectuoso = defectuoso)
+                                              defectuoso = defectuoso,
+                                              peso=peso_bascula)
                     if articulo != None:
                         vpro.set_valor(i/tot, '(%s) Descontando material...' % articulo.codigo)
                         descontar_material_adicional(self, articulo)
@@ -2112,6 +2114,39 @@ class PartesDeFabricacionRollos(Ventana):
             vpro.ocultar()
             self.actualizar_ventana()
 
+    def confirmar_pesos(self, rango):
+        """
+        Pide confirmar los pesos uno a uno para cada rollo que se va a
+        insertar. Por defecto mostrará el peso ideal (teórico) que debería
+        tener.
+        Devuelve una lista de pesos con la misma longitud que "rango" si se
+        aceptan/corrigen todos los pesos. Devuelve la lista con los pesos
+        confirmados hasta que acaba el rango o se pulsa «Cancelar».
+        """
+        pv = self.objeto.productoVenta
+        peso_teorico = pv.get_peso_teorico()
+        peso_embalaje = pv.camposEspecificosRollo.pesoEmbalaje
+        peso_ideal_en_bascula = peso_teorico + peso_embalaje
+        pesos = []
+        for numrollo in rango:
+            peso = utils.dialogo_entrada(titulo="CONFIRME PESO DADO EN BÁSCULA",
+                texto="Confirme o corrija el peso del rollo {}:".format(numrollo),
+                valor_por_defecto=peso_ideal_en_bascula,
+                padre=self.wids['ventana'])
+            if peso is None:
+                break
+            else:
+                try:
+                    peso_bascula = utils.parse_float(peso)
+                except ValueError:
+                    utils.dialogo_info(titulo="PESO ERRÓNEO",
+                            texto="El peso «{}» no es correcto.".format(peso),
+                            padre=self.wids['ventana'])
+                    break
+                else:
+                    pesos.append(peso_bascula)
+        return pesos
+
     def pedir_rango(self):
         """
         Pide un rango de números de rollos.
@@ -2125,7 +2160,7 @@ class PartesDeFabricacionRollos(Ventana):
         """
         ultimo_mas_uno = pclases.Rollo._queryOne("""SELECT ultimo_codigo_rollo_mas_uno(); """)[0]
         rango = utils.dialogo_entrada(titulo = 'INTRODUZCA RANGO',
-                                      texto = 'Rango de números de rollos o el código individual.\nEscriba el rango de códigos de la forma "xxxx-yyyy", ambos inclusive.',
+                                      texto = 'Rango de números de rollos o el código individual (en negativo si es defectuoso).\nEscriba el rango de códigos de la forma "xxxx-yyyy", ambos inclusive.',
                                       padre = self.wids['ventana'],
                                       valor_por_defecto = ultimo_mas_uno)
         if rango == '' or rango == None:
