@@ -438,6 +438,10 @@ class PartesDeFabricacionRollos(Ventana):
             else:
                 cell.set_property("text", model[itr][numcol])
                 cell.set_property("foreground", None)
+            if numcol == 1:     # Columna de número de rollo.
+                if "✔" in model[itr][numcol]:
+                    cell.set_property("cell-background", "black")
+                    cell.set_property("foreground", "white")
 
         cols = tv.get_columns()
         for i in xrange(len(cols)):
@@ -1161,9 +1165,15 @@ class PartesDeFabricacionRollos(Ventana):
             res = ""
         return res
 
-    def rollo(self, d):
+    def rollo(self, d, volcado=None):
+        if volcado is None:
+            volcado = ""
+        elif volcado:
+            volcado = " ✔"
+        else:
+            volcado = " ✘"
         try:
-            res = d.codigo
+            res = "{}{}".format(d.codigo, volcado)
         except AttributeError:
             res = ''
         return res
@@ -1346,8 +1356,12 @@ class PartesDeFabricacionRollos(Ventana):
         for detalle in detallesdeproduccion:
             # densidades.append(self.densidad(detalle))
             if actualizar_tabla:
+                try:
+                    volcado = detalle.api
+                except AttributeError:
+                    volcado = None
                 model.append((self.partida(detalle),
-                              self.rollo(detalle),
+                              self.rollo(detalle, volcado),
                               self.peso(detalle),
                               self.densidad(detalle),
                               self.motivo(detalle),
@@ -2960,7 +2974,11 @@ class PartesDeFabricacionRollos(Ventana):
         # Filas del TreeView
         for detalle in detallesdeproduccion:
             obs = self.observaciones(detalle)
-            lineas.append((self.rollo(detalle),
+            try:
+                volcado = detalle.api
+            except AttributeError:
+                volcado = None
+            lineas.append((self.rollo(detalle, volcado),
                            utils.float2str(self.peso(detalle), 1),
                            utils.float2str(self.densidad(detalle), 1),
                            self.motivo(detalle),
