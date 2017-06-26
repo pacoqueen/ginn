@@ -707,7 +707,14 @@ class PartesDeFabricacionBolsas(Ventana):
             pale = articulo.caja.pale
             if pale not in pales:   # Inserto palé.
                 es_clase_b = pale.es_clase_b()
-                pales[pale] = model.append(None, ("Palé " + pale.codigo,
+                pale_api = pale.api
+                if pale_api is None:
+                    volcado = ""
+                elif pale_api:
+                    volcado = " ✔"
+                else:
+                    volcado = " ✘"
+                pales[pale] = model.append(None, ("Palé " + pale.codigo + volcado,
                                                   pale.numbolsas,
                                                   es_clase_b,
                                                   pale.observaciones,
@@ -716,7 +723,13 @@ class PartesDeFabricacionBolsas(Ventana):
                 continue
             caja = articulo.caja
             if caja not in cajas:
-                cajas[caja] = model.append(pales[pale], ("Caja " + caja.codigo,
+                if caja.articulo.api is None:
+                    volcado = ""
+                elif caja.articulo:
+                    volcado = " ✔"
+                else:
+                    volcado = " ✘"
+                cajas[caja] = model.append(pales[pale], ("Caja " + caja.codigo + volcado,
                                                          caja.numbolsas,
                                                          es_clase_b,
                                                          caja.observaciones,
