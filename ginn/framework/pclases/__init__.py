@@ -4758,6 +4758,30 @@ class Bala(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
+    def get_info(self):
+        puid = self.puid
+        codigo = self.codigo
+        articulo = self.articulo
+        if articulo:
+            pv = articulo.productoVenta
+            if pv:
+                producto = pv.descripcion
+            else:
+                producto = "S/P"
+            peso_real = articulo.peso_real
+            peso_neto = articulo.peso_neto
+            peso_embalaje = articulo.peso_embalaje
+            peso_bruto = articulo.peso_bruto
+        else:
+            producto = "Error"
+            peso_real = "N/D"
+            peso_neto = self.pesobala
+            peso_embalaje = "N/D"
+            peso_bruto = "N/D"
+        return "[{}] {} ({}): {}={}+{}={} kg".format(puid, codigo, producto,
+                                                  peso_real, peso_neto,
+                                                  peso_embalaje, peso_bruto)
+
     def _buscar_en_almacen_actualmente(productoVenta = None, almacen = None):
         """
         Devuelve una tupla de objetos bala en almacén (cualquiera) y en la
