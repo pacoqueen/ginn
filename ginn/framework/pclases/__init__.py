@@ -4014,6 +4014,25 @@ class Pale(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
+    def get_info(self):
+        puid = self.puid
+        pv = self.productoVenta
+        codigo = self.codigo
+        if pv:
+            producto = pv.descripcion
+            grbolsa = pv.camposEspecificosBala.gramosBolsa
+            bcaja = pv.camposEspecificosBala.bolsasCaja
+            cpale = pv.camposEspecificosBala.cajasPale
+        else:
+            producto = "Error"
+            grbolsa = "N/D"
+            bcaja = "N/D"
+            cpale = "N/D"
+        peso = self.calcular_peso()
+        info = "[{}] {} ({}): {}gr/b*{}b/c*{}c={}kg".format(puid, codigo,
+                producto, grbolsa, bcaja, cpale, peso)
+        return info
+
     def get_puid(self):
         """
         Identificador único en la BD para cada objeto de esta clase.
