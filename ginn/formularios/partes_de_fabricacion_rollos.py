@@ -3041,6 +3041,15 @@ class PartesDeFabricacionRollos(Ventana):
                     articulo.codigo, int(i), tot))
                 try:
                     volcado = murano.ops.create_articulo(articulo, observaciones="")
+                    if not volcado and murano.ops.existe_articulo(articulo):
+                        # Si no se ha volcado porque ya existía y con ese
+                        # producto y no está con existencias a cero (o lo está,
+                        # pero porque se ha vendido; todo eso lo comprueba el
+                        # create_articulo), corrijo el valor de api porque algo
+                        # debió ir mal y no se actualizó en su momento. No
+                        # espero al Sr. Lobo.
+                        articulo.api = True
+                        articulo.sync()
                     res = res and volcado
                 except:
                     res = False
