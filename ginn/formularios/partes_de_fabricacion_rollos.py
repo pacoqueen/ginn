@@ -1032,6 +1032,7 @@ class PartesDeFabricacionRollos(Ventana):
         self.check_permisos()
         self.wids['b_back'].set_sensitive(self.objeto and self.objeto.anterior() and 1 or 0)
         self.wids['b_next'].set_sensitive(self.objeto and self.objeto.siguiente() and 1 or 0)
+        self.wids['ch_bloqueado'].set_sensitive(MURANO)
 
     def rellenar_tabla_desechos(self):
         """
@@ -1973,8 +1974,8 @@ class PartesDeFabricacionRollos(Ventana):
                 a.productoVenta = self.producto
                 a.rollo.densidad = a.rollo.calcular_densidad()
                 a.rollo.syncUpdate()
-                murano.ops.update_producto(a, a.productoVenta, observaciones="",
-                                           serie="FAB")
+                # murano.ops.update_producto(a, a.productoVenta, observaciones="",
+                #                            serie="FAB")
             self.actualizar_ventana()
         else:
             self.producto = None
@@ -2216,11 +2217,11 @@ class PartesDeFabricacionRollos(Ventana):
                           "trazabilidad del artículo en cuestión.",
                     padre=self.wids['ventana'])
             return
-        if not MURANO:
-            utils.dialogo_info(titulo="ERROR DE CONEXIÓN CON MURANO",
-                               texto="No puede eliminar rollos. Solo consultas.",
-                               padre=self.wids['ventana'])
-            return
+        # if not MURANO:
+        #     utils.dialogo_info(titulo="ERROR DE CONEXIÓN CON MURANO",
+        #                        texto="No puede eliminar rollos. Solo consultas.",
+        #                        padre=self.wids['ventana'])
+        #     return
         selection = self.wids['tv_rollos'].get_selection()
         model, paths = selection.get_selected_rows()
         if  paths == None or paths == []:
@@ -2252,7 +2253,7 @@ class PartesDeFabricacionRollos(Ventana):
                     # Porque si no, esto
                     # IntegrityError: el nuevo registro para la relación
                     # «articulo» viola la restricción check «articulo_check»
-                    retcode_murano = murano.ops.delete_articulo(articulo, observaciones="")
+                    # retcode_murano = murano.ops.delete_articulo(articulo, observaciones="")
                     # WTF? articulo.rolloDefectuoso = rolloDefectuoso
                     articulo.parteDeProduccion = None
                     articulo.destroy(ventana = __file__)
@@ -2929,7 +2930,7 @@ class PartesDeFabricacionRollos(Ventana):
                     msj += "pendiente de analizar."
                     user.enviar_mensaje(msj)
 
-    def bloquear(self, ch, mostrar_alerta = True):
+    def _DEPRECATED_bloquear(self, ch, mostrar_alerta=True):
         # Si el parte tiene menos de un día y se encuentra bloqueado, dejo que lo pueda desbloquear cualquiera.
         try:
             es_de_hoy = mx.DateTime.localtime() - self.objeto.fecha <= UNDIA
@@ -2953,6 +2954,131 @@ class PartesDeFabricacionRollos(Ventana):
         self.objeto.sync()
         self.objeto.make_swap()
         ch.set_active(self.objeto.bloqueado)
+
+    def bloquear(self, ch, mostrar_alerta=True):
+        """
+        - Si el usuario no tiene permisos y mostrar_alerta, avisa de que no
+          puede modificar la verificación del parte.
+        - Si el usuario tiene permisos,
+            - Si el parte está verificado y mostrar_alerta, informa de que no
+              se puede desbloquear un parte ya volcado a Murano.
+            - Si el parte no está verificado, lo bloquea y vuelca tanto la
+              producción como los consumos. Si mostrar_alerta, avisa de que
+              es una operación que no se puede deshacer.
+        El usuario debe tener nivel 2 o inferior.
+        """
+        if self.objeto and ch.get_active() != self.objeto.bloqueado:
+            # No es la propia ventana la que está marcando la casilla al mostrar
+            # un parte bloqueado. El usuario el que ha hecho clic.
+            if self.usuario and self.usuario.nivel <= 3 and "w" in self.__permisos:
+                if self.objeto.bloqueado:
+                    # Ya está bloqueado. **No se puede desbloquear.** Los rollos
+                    # puede que incluso ya se hayan vendido en Murano.
+                    utils.dialogo_info(titulo="OPERACIÓN NO PERMITIDA",
+                            texto="No se pueden desbloquear partes ya volcados "
+                                  "a Murano.",
+                            padre=self.wids['ventana'])
+                else:
+                    if mostrar_alerta:
+                        seguro = utils.dialogo(titulo="¿VERIFICAR PARTE?",
+                                texto="Se verificará el parte y se bloqueará.\n"
+                                "Toda la producción y consumos se volcarán a "
+                                "Murano.\n\n"
+                                "¿Está completamente seguro?\n\n"
+                                "(Esta operación no se puede deshacer)",
+                                padre = self.wids['ventana'])
+                        if seguro:
+                            res = self.volcar_produccion()
+                            if res:
+                                self.objeto.bloqueado = True
+                                self.objeto.sync()
+                                self.objeto.make_swap()
+                            else:
+                                if mostrar_alerta:
+                                    str_error = "No se pudo volcar toda la "\
+                                    "producción a Murano.\n\n"\
+                                    "Los artículos no volcados se han marcado"\
+                                    " con el símbolo «✘».\n"\
+                                    "Inténtelo más tarde o contacte con el "\
+                                    "administrador.\nEl parte quedará "\
+                                    "pendiente de verificar mientras tanto."
+                                    utils.dialogo_info(titulo="ERROR VOLCADO",
+                                            texto=str_error,
+                                            padre=self.wids['ventana'])
+                            self.rellenar_widgets()
+            else:
+                if mostrar_alerta:
+                    utils.dialogo_info(titulo = "USUARIO SIN PRIVILEGIOS",
+                            texto = "No tiene permisos suficientes para "
+                                    "bloquear y verificar partes de "
+                                    "producción.\nPruebe a hacerlo desde "
+                                    "la ventana de partes pendientes de "
+                                    "verificar.",
+                            padre = self.wids['ventana'])
+            ch.set_active(self.objeto.bloqueado)
+
+    def volcar_produccion(self):
+        """
+        Vuelca todos los artículos del parte y consumos relacionados a Murano.
+        Devuelve True si todo ha ido bien o False si ocurrió algún error.
+        Vuelca también los consumos del parte.
+        """
+        res = True
+        if not MURANO:
+            utils.dialogo_info(titulo="ERROR CONEXIÓN MURANO",
+                    texto="No hay conexión con Murano. Se aborta operación.",
+                    padre=self.wids['ventana'])
+        else:
+            # Producción ===
+            vpro = VentanaProgreso(padre=self.wids['ventana'])
+            vpro.mostrar()
+            i = 0.0
+            no_volcados = [a for a in self.objeto.articulos if not a.api]
+            tot = len(no_volcados)
+            for articulo in no_volcados:
+                i += 1
+                vpro.set_valor(i/tot, 'Volcando artículo {} ({}/{})'.format(
+                    articulo.codigo, int(i), tot))
+                try:
+                    volcado = murano.ops.create_articulo(articulo, observaciones="")
+                    res = res and volcado
+                except:
+                    res = False
+            vpro.ocultar()
+            # Consumos ===
+            vpro = VentanaProgreso(padre=self.wids['ventana'])
+            vpro.mostrar()
+            pcarga = self.objeto.partidaCarga
+            consumos = [c for c in self.objeto.consumos
+                        if not c.api and c.actualizado]
+            i = 0.0
+            tot = len(consumos)
+            if pcarga:
+                tot += len(pcarga.balas)
+            for consumo in consumos:
+                i += 1
+                vpro.set_valor(i/tot, 'Consumiendo {} ({}/{})'.format(
+                    consumo.productoCompra.descripcion, int(i), tot))
+                try:
+                    consumido = murano.ops.consumir(consumo.productoCompra,
+                                                    consumo.cantidad,
+                                                    consumo)
+                    res = res and consumido
+                except:
+                    res = False
+            for bala in pcarga.balas:
+                i += 1
+                vpro.set_valor(i/tot, 'Consumiendo {} ({}/{})'.format(
+                    bala.codigo, int(i), tot))
+                try:
+                    consumido = murano.ops.consume_bala(bala)
+                    res = res and consumido
+                except:
+                    res = False
+                pcarga.api = res
+                pcarga.sync()
+            vpro.ocultar()
+        return res
 
     def imprimir(self, boton):
         self.guardar(None)
@@ -3184,12 +3310,15 @@ class PartesDeFabricacionRollos(Ventana):
            ):  # Tiene permiso para bloquear el parte
             res = utils.dialogo(titulo = "DEBE VERIFICAR EL PARTE",
                                 texto = "Antes de cerrar el parte debe verifi"
-                                        "carlo.\n¿Marcar como verificado?",
+                                        "carlo.\n¿Marcar como verificado?\n\n"
+                                        "(Esta operación no se puede deshacer)",
                                 padre = self.wids['ventana'],
                                 bloq_temp = ["Sí"])
-
-            self.objeto.bloqueado = res
-            self.wids['ch_bloqueado'].set_active(self.objeto.bloqueado)
+            if res:
+                self.objeto.bloqueado = self.volcar_produccion()
+                self.objeto.sync()
+                self.objeto.make_swap()
+                self.wids['ch_bloqueado'].set_active(self.objeto.bloqueado)
             # return True
         if not self.salir(w, mostrar_ventana = event == None):
             # Devuelve True cuando se cancela el cierre de la ventana (por
@@ -3603,11 +3732,11 @@ def crear_articulo(numrollo,
     OJO: AQUÍ NO SE DESCUENTA EL MATERIAL EMPLEADO EN LA FABRICACIÓN. Sólo se
     crea el artículo.
     """
-    if not MURANO:
-        utils.dialogo_info(titulo="ERROR DE CONEXIÓN CON MURANO",
-                           texto="No puede crear rollos. Solo consultas.",
-                           padre=self.wids['ventana'])
-        return
+    # if not MURANO:
+    #     utils.dialogo_info(titulo="ERROR DE CONEXIÓN CON MURANO",
+    #                        texto="No puede crear rollos. Solo consultas.",
+    #                        padre=self.wids['ventana'])
+    #     return
     peso, densidad = _calcular_peso_densidad(peso, producto)
     if not defectuoso:
         codigo = 'R%d' % (numrollo) # NOTA: Cambiar aquí si al final el
@@ -3687,10 +3816,10 @@ def crear_articulo(numrollo,
         pclases.Auditoria.nuevo(articulo,
                 objeto_ventana_parte and objeto_ventana_parte.usuario or None,
                 __file__)
-        try:
-            murano.ops.create_articulo(articulo, observaciones="")
-        except:
-            print("Error al conectar con Murano.")
+        # try:
+        #     murano.ops.create_articulo(articulo, observaciones="")
+        # except:
+        #     print("Error al conectar con Murano.")
     else:
         articulo = None
     return articulo

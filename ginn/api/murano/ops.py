@@ -1361,6 +1361,21 @@ def consume_bala(bala, cantidad=-1, producto=None, guid_proceso=None,
     return res
 
 
+def consume_partida_carga(partida_carga):
+    """
+    Consume la partida de carga completa y actualiza el valor `api`:
+    - Si no se ha producido ningún error, lo pone a True.
+    - Si se ha producido **algún** error, lo pone a False.
+    """
+    res = True
+    if partida_carga:
+        for bala in partida_carga.balas:
+            res = consume_bala(bala) and res
+        partida_carga.api = res
+        partida_carga.sync()
+    return res
+
+
 # pylint: disable=too-many-arguments,too-many-statements
 def consume_bigbag(bigbag, cantidad=-1, producto=None, guid_proceso=None,
                    simulate=False, procesar=True):
@@ -2332,8 +2347,8 @@ def consumir(productoCompra, cantidad, almacen=None, consumo=None):
     """
     Decrementa las existencias del producto recibido en la cantidad indicada
     mediante registros de movimientos de stock en Murano en el almacén
-    principal si no se indica otro como tercer parámetro o en el almacén del
-    silo correspondiente si almacen es None, el producto de compra no es de
+    principal si no se indica otro como tercer parámetro; o en el almacén del
+    silo correspondiente si almacen es None, el producto de compra es de
     granza y se especifica un consumo.
     """
     if not almacen:
@@ -2348,7 +2363,11 @@ def consumir(productoCompra, cantidad, almacen=None, consumo=None):
             except AttributeError:
                 raise ValueError("Si no especifica un almacén debe indicar "
                                  "el consumo origen de ginn como referencia.")
-    update_stock(productoCompra, -cantidad, almacen)
+    res = update_stock(productoCompra, -cantidad, almacen)
+    if consumo:     # Si he recibido el consumo, actualizo el valor `api`.
+        consumo.api = res
+        consumo.sync()
+    return res
 
 
 def get_existencias_silo(silo):
