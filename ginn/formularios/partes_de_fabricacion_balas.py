@@ -1739,10 +1739,9 @@ class PartesDeFabricacionBalas(Ventana):
                                  texto = 'Esta fibra está marcada actualmente como clase A.\n¿Marcar como clase B?',
                                  padre = self.wids['ventana']):
                     bala_o_bb.claseb = True
-                    # TODO: Con lo que tarda ahora el update_calidad, tendré que poner una barra de progreso o algo...
-                    murano.ops.update_calidad(bala_o_bb.articulo, 'B',
-                                              comentario="PDP: Cambio a calidad B.",
-                                              serie="FAB")
+                    # murano.ops.update_calidad(bala_o_bb.articulo, 'B',
+                    #                           comentario="PDP: Cambio a calidad B.",
+                    #                           serie="FAB")
             bala_o_bb.motivo = newtext
         else:
             incidencia = pclases.Incidencia.get(ide)
@@ -1767,11 +1766,10 @@ class PartesDeFabricacionBalas(Ventana):
         else:
             bala_o_bb = None
         bala_o_bb.claseb = not bala_o_bb.claseb
-        # TODO: Con lo que tarda ahora el update_calidad, tendré que poner una barra de progreso o algo...
-        murano.ops.update_calidad(bala_o_bb.articulo,
-                                  bala_o_bb.claseb and "B" or "A",
-                                  comentario="Cambio a calidad {}".format(bala_o_bb.claseb and "B" or "A"),
-                                  serie="FAB")
+        # murano.ops.update_calidad(bala_o_bb.articulo,
+        #                           bala_o_bb.claseb and "B" or "A",
+        #                           comentario="Cambio a calidad {}".format(bala_o_bb.claseb and "B" or "A"),
+        #                           serie="FAB")
         self.rellenar_tabla_balas()
 
     def cambiar_motivo_incidencia(self, cell, path, newtext):
@@ -2273,14 +2271,14 @@ class PartesDeFabricacionBalas(Ventana):
             self.guardar(None)
             self.producto = producto
             self.rellenar_datos_producto(self.producto)
-            # TODO: Meter una barra de progreso. Al conectar con Murano, tarda.
             for a in self.objeto.articulos:
                 a.productoVenta = self.producto
-                self.logger.debug("Cambiando producto de %s en Murano a %s "
-                                  "[%s]." % (
-                    a.codigo, producto.descripcion, producto.puid))
-                murano.ops.update_producto(a, producto, observaciones="",
-                                           serie="FAB")
+                a.syncUpdate()
+                # self.logger.debug("Cambiando producto de %s en Murano a %s "
+                #                   "[%s]." % (
+                #     a.codigo, producto.descripcion, producto.puid))
+                # murano.ops.update_producto(a, producto, observaciones="",
+                #                            serie="FAB")
 
     def comprobar_silos_marcados(self):
         """
@@ -2685,11 +2683,11 @@ class PartesDeFabricacionBalas(Ventana):
                             almacen=pclases.Almacen.get_almacen_principal(),
                             pesoReal=peso)
             pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
-            self.logger.debug("Volcando bala %s a Murano..." % articulo.codigo)
-            volcado_a_murano = murano.ops.create_articulo(articulo,
-                                                          observaciones="")
-            self.logger.debug("Resultado del volcado: %s -> %s" % (
-                articulo.codigo, volcado_a_murano))
+            # self.logger.debug("Volcando bala %s a Murano..." % articulo.codigo)
+            # volcado_a_murano = murano.ops.create_articulo(articulo,
+            #                                               observaciones="")
+            # self.logger.debug("Resultado del volcado: %s -> %s" % (
+            #     articulo.codigo, volcado_a_murano))
         if articulo != None:
             self.descontar_material_adicional(articulo)
             self.actualizar_ventana()
@@ -2728,7 +2726,7 @@ class PartesDeFabricacionBalas(Ventana):
                             almacen = pclases.Almacen.get_almacen_principal(),
                             pesoReal = peso)
         pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
-        murano.ops.create_articulo(articulo, observaciones="")
+        # murano.ops.create_articulo(articulo, observaciones="")
         return articulo
 
     def drop_bala(self, boton):
@@ -2784,7 +2782,7 @@ class PartesDeFabricacionBalas(Ventana):
                                 es_bigbag = False
                                 es_bala = False
                             self.descontar_material_adicional(articulo, restar = False)
-                            ret_murano = murano.ops.delete_articulo(articulo, observaciones="")
+                            # ret_murano = murano.ops.delete_articulo(articulo, observaciones="")
                             # TODO: Falta aumentar la granza al igual que se hace cuando se cambia el peso de una bala.
                             #articulo.bala = None
                             #articulo.bigbag = None
@@ -2804,9 +2802,9 @@ class PartesDeFabricacionBalas(Ventana):
                                 if es_bigbag:
                                     articulo.bigbag = bigbag
                                 self.descontar_material_adicional(articulo, restar = True)
-                                if ret_murano:
-                                    murano.ops.create_articulo(articulo,
-                                                               observaciones="")
+                                # if ret_murano:
+                                #     murano.ops.create_articulo(articulo,
+                                #                                observaciones="")
                             except pclases.SQLObjectNotFound:
                                 pass
                             except AttributeError:  # Existe el artículo pero ya no tiene bala
@@ -3356,7 +3354,7 @@ class PartesDeFabricacionBalas(Ventana):
                     user.enviar_mensaje(msj)
     # XXX ^^^
 
-    def bloquear(self, ch, mostrar_alerta = True):
+    def _DEPRECATED_bloquear(self, ch, mostrar_alerta = True):
         # Si el parte tiene menos de un día y se encuentra bloqueado, dejo que lo pueda desbloquear cualquiera.
         if mx.DateTime.localtime() - self.objeto.fecha <= mx.DateTime.oneDay and (self.objeto.bloqueado or ch.get_active()):
             self.objeto.bloqueado = False
@@ -3376,6 +3374,117 @@ class PartesDeFabricacionBalas(Ventana):
         self.objeto.sync()
         self.objeto.make_swap()
         ch.set_active(self.objeto.bloqueado)
+
+    def bloquear(self, ch, mostrar_alerta=True):
+        """
+        - Si el usuario no tiene permisos y mostrar_alerta, avisa de que no
+          puede modificar la verificación del parte.
+        - Si el usuario tiene permisos,
+            - Si el parte está verificado y mostrar_alerta, informa de que no
+              se puede desbloquear un parte ya volcado a Murano.
+            - Si el parte no está verificado, lo bloquea y vuelca tanto la
+              producción como los consumos. Si mostrar_alerta, avisa de que
+              es una operación que no se puede deshacer.
+        El usuario debe tener nivel 2 o inferior.
+        """
+        if self.objeto and ch.get_active() != self.objeto.bloqueado:
+            # No es la propia ventana la que está marcando la casilla al mostrar
+            # un parte bloqueado. El usuario el que ha hecho clic.
+            if self.usuario and self.usuario.nivel <= 3 and "w" in self.__permisos:
+                if self.objeto.bloqueado:
+                    # Ya está bloqueado. **No se puede desbloquear.** Los rollos
+                    # puede que incluso ya se hayan vendido en Murano.
+                    utils.dialogo_info(titulo="OPERACIÓN NO PERMITIDA",
+                            texto="No se pueden desbloquear partes ya volcados "
+                                  "a Murano.",
+                            padre=self.wids['ventana'])
+                else:
+                    if mostrar_alerta:
+                        seguro = utils.dialogo(titulo="¿VERIFICAR PARTE?",
+                                texto="Se verificará el parte y se bloqueará.\n"
+                                "Toda la producción y consumos se volcarán a "
+                                "Murano.\n\n"
+                                "¿Está completamente seguro?\n\n"
+                                "(Esta operación no se puede deshacer)",
+                                padre = self.wids['ventana'])
+                        if seguro:
+                            res = self.volcar_produccion()
+                            if res:
+                                self.objeto.bloqueado = True
+                                self.objeto.sync()
+                                self.objeto.make_swap()
+                            else:
+                                if mostrar_alerta:
+                                    str_error = "No se pudo volcar toda la "\
+                                    "producción a Murano.\n\n"\
+                                    "Los artículos no volcados se han marcado"\
+                                    " con el símbolo «✘».\n"\
+                                    "Inténtelo más tarde o contacte con el "\
+                                    "administrador.\nEl parte quedará "\
+                                    "pendiente de verificar mientras tanto."
+                                    utils.dialogo_info(titulo="ERROR VOLCADO",
+                                            texto=str_error,
+                                            padre=self.wids['ventana'])
+                            self.rellenar_widgets()
+            else:
+                if mostrar_alerta:
+                    utils.dialogo_info(titulo = "USUARIO SIN PRIVILEGIOS",
+                            texto = "No tiene permisos suficientes para "
+                                    "bloquear y verificar partes de "
+                                    "producción.\nPruebe a hacerlo desde "
+                                    "la ventana de partes pendientes de "
+                                    "verificar.",
+                            padre = self.wids['ventana'])
+            ch.set_active(self.objeto.bloqueado)
+
+    def volcar_produccion(self):
+        """
+        Vuelca todos los artículos del parte y consumos relacionados a Murano.
+        Devuelve True si todo ha ido bien o False si ocurrió algún error.
+        Vuelca también los consumos del parte.
+        """
+        res = True
+        if not MURANO:
+            utils.dialogo_info(titulo="ERROR CONEXIÓN MURANO",
+                    texto="No hay conexión con Murano. Se aborta operación.",
+                    padre=self.wids['ventana'])
+        else:
+            # Producción ===
+            vpro = VentanaProgreso(padre=self.wids['ventana'])
+            vpro.mostrar()
+            i = 0.0
+            no_volcados = [a for a in self.objeto.articulos if not a.api]
+            tot = len(no_volcados)
+            for articulo in no_volcados:
+                i += 1
+                vpro.set_valor(i/tot, 'Volcando artículo {} ({}/{})'.format(
+                    articulo.codigo, int(i), tot))
+                try:
+                    volcado = murano.ops.create_articulo(articulo, observaciones="")
+                    res = res and volcado
+                except:
+                    res = False
+            vpro.ocultar()
+            # Consumos ===
+            vpro = VentanaProgreso(padre=self.wids['ventana'])
+            vpro.mostrar()
+            consumos = [c for c in self.objeto.consumos
+                        if not c.api and c.actualizado]
+            i = 0.0
+            tot = len(consumos)
+            for consumo in consumos:
+                i += 1
+                vpro.set_valor(i/tot, 'Consumiendo {} ({}/{})'.format(
+                    consumo.productoCompra.descripcion, int(i), tot))
+                try:
+                    consumido = murano.ops.consumir(consumo.productoCompra,
+                                                    consumo.cantidad,
+                                                    consumo)
+                    res = res and consumido
+                except:
+                    res = False
+            vpro.ocultar()
+        return res
 
     def imprimir(self, boton):
         self.guardar(None)
@@ -4247,11 +4356,11 @@ def crear_nueva_bala(numbala, codigo_bala, peso_neto, peso_real, ventana_parte):
                 utils.dialogo_info(titulo = "ERROR DE IMPRESIÓN",
                                    texto = txt,
                                    padre = ventana_parte.wids['ventana'])
-            ventana_parte.logger.debug("Volcando bala %s a Murano..." % articulo.codigo)
-            volcado_a_murano = murano.ops.create_articulo(articulo,
-                                                          observaciones="")
-            ventana_parte.logger.debug("Resultado del volcado: %s -> %s" % (
-                articulo.codigo, volcado_a_murano))
+            # ventana_parte.logger.debug("Volcando bala %s a Murano..." % articulo.codigo)
+            # volcado_a_murano = murano.ops.create_articulo(articulo,
+            #                                               observaciones="")
+            # ventana_parte.logger.debug("Resultado del volcado: %s -> %s" % (
+            #     articulo.codigo, volcado_a_murano))
             ventana_parte.actualizar_ventana()
     return bala
 

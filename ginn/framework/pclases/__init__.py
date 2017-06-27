@@ -4255,9 +4255,8 @@ class Pale(SQLObject, PRPCTOO):
     def api(self):
         """
         Devuelve True si todas las cajas del palé se han volcado a Murano.
-        False si ninguna se ha volcado a Murano (o se ha volcado y ha fallado).
-        None si algunas se han volcado y otras no o no se han intentado volcar
-        (atributo api es None en alguna o todas las cajas).
+        False si hay alguna caja no volcada (no se ha intentado o ha fallado).
+        None si ninguna caja se ha intentado volcar (el palé es nuevo).
         """
         res = set()
         for caja in self.cajas:
@@ -4265,7 +4264,7 @@ class Pale(SQLObject, PRPCTOO):
         if len(res) == 1:
             api = res.pop()
         else:
-            api = None
+            api = False
         return api
 
 cont, tiempo = print_verbose(cont, total, tiempo)
