@@ -2567,6 +2567,7 @@ def espera_activa(funcion, parametros, res=None, timeout=30, tick=5):
     en `res`.
     Devuelve lo que devuelva la función `funcion`.
     """
+    antes = time.time()
     logging.warning("Iniciando espera activa...")
     tries = 0
     max_tries = timeout/tick
@@ -2581,8 +2582,10 @@ def espera_activa(funcion, parametros, res=None, timeout=30, tick=5):
             success = False
             time.sleep(tick)
             timeout -= tick
-    logging.warning("[{}] Espera activa finalizada en {}/{} intentos.".format(
-        success and '✔' or '✘', tries, max_tries))
+    tiempo = time.time() - antes
+    strlog = "[{}] Espera activa finalizada en {}/{} intentos ({:.2f} s).".format(
+        success and '✔' or '✘', tries, max_tries, tiempo)
+    logging.warning(strlog)
     return res
 
 
@@ -2646,7 +2649,7 @@ def fire(guid_proceso, ignore_errors=False,
     # único fible.
     if retCode is None:
         retCode = espera_activa(_get_fin_proceso_importacion_retcode,
-                                [guid_proceso], retCode, timeout=15, tick=5)
+                                [guid_proceso], retCode, timeout=40, tick=5)
     ### EOEspera_activa
     strverbose = "Importación `%s` concluida con código de retorno: %s" % (
         guid_proceso, retCode)
@@ -2711,8 +2714,8 @@ def fire(guid_proceso, ignore_errors=False,
             retCode = None
             if retCode is None:
                 retCode = espera_activa(_get_fin_proceso_acumulacion_retcode,
-                                        [guid_proceso], retCode, timeout=10,
-                                        tick=2)
+                                        [guid_proceso], retCode, timeout=20,
+                                        tick=5)
             strverbose = "Ejecución `%s` (GUID `%s`) "\
                          "concluida con código de retorno: %s" % (
                              nombrescript, guid_proceso, retCode)
