@@ -2711,7 +2711,7 @@ def fire(guid_proceso, ignore_errors=False,
             retCode = None
             if retCode is None:
                 retCode = espera_activa(_get_fin_proceso_acumulacion_retcode,
-                                        [guid_proceso], retCode, 10, 1)
+                                        [guid_proceso], retCode, 5, 1)
             strverbose = "Ejecución `%s` (GUID `%s`) "\
                          "concluida con código de retorno: %s" % (
                              nombrescript, guid_proceso, retCode)
