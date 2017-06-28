@@ -626,7 +626,7 @@ class Menu:
             #                  posible.
             if ((self.get_usuario().usuario == "geotextil" or
                  self.get_usuario().usuario == "fibra" or
-                 self.get_usuario().nivel >= 3)
+                 self.get_usuario().nivel >= 4)
                 and "partes_de_fabricacion" in archivo
                 and self.get_usuario().usuario != "cemento"):
                 exec "import %s" % archivo
