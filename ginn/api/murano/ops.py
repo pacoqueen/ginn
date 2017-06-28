@@ -2646,7 +2646,7 @@ def fire(guid_proceso, ignore_errors=False,
     # único fible.
     if retCode is None:
         retCode = espera_activa(_get_fin_proceso_importacion_retcode,
-                                [guid_proceso], retCode, 50, 10)
+                                [guid_proceso], retCode, timeout=15, tick=5)
     ### EOEspera_activa
     strverbose = "Importación `%s` concluida con código de retorno: %s" % (
         guid_proceso, retCode)
@@ -2711,7 +2711,8 @@ def fire(guid_proceso, ignore_errors=False,
             retCode = None
             if retCode is None:
                 retCode = espera_activa(_get_fin_proceso_acumulacion_retcode,
-                                        [guid_proceso], retCode, 5, 1)
+                                        [guid_proceso], retCode, timeout=10,
+                                        tick=5)
             strverbose = "Ejecución `%s` (GUID `%s`) "\
                          "concluida con código de retorno: %s" % (
                              nombrescript, guid_proceso, retCode)
