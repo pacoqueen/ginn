@@ -220,7 +220,7 @@ class ConsumoBalasPartida(Ventana):
             self.wids['e_partida'].set_text("%d (%s)" % (partida.numpartida,
                                                          partida.codigo))
             self.wids['e_fecha'].set_text(utils.str_fechahora(partida.fecha))
-            self.wids['ch_api'].set_active(partida.api)
+            self.wids['ch_api'].set_active(bool(partida.api))
         else:
             self.wids['e_partida'].set_text("")
             self.wids['e_fecha'].set_text("")
