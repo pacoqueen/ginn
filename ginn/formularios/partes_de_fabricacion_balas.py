@@ -2681,7 +2681,8 @@ class PartesDeFabricacionBalas(Ventana):
                             productoVenta=self.producto,
                             albaranSalida=None,
                             almacen=pclases.Almacen.get_almacen_principal(),
-                            pesoReal=peso)
+                            pesoReal=peso,
+                            api=None)
             pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
             # self.logger.debug("Volcando bala %s a Murano..." % articulo.codigo)
             # volcado_a_murano = murano.ops.create_articulo(articulo,
@@ -2724,7 +2725,8 @@ class PartesDeFabricacionBalas(Ventana):
                             productoVenta = self.producto,
                             albaranSalida = None,
                             almacen = pclases.Almacen.get_almacen_principal(),
-                            pesoReal = peso)
+                            pesoReal = peso,
+                            api=None)
         pclases.Auditoria.nuevo(articulo, self.usuario, __file__)
         # murano.ops.create_articulo(articulo, observaciones="")
         return articulo
@@ -4337,7 +4339,8 @@ def crear_nueva_bala(numbala, codigo_bala, peso_neto, peso_real, ventana_parte):
                             albaranSalida=None,
                             productoVenta=producto,
                             almacen=pclases.Almacen.get_almacen_principal(),
-                            pesoReal=peso_real)
+                            pesoReal=peso_real,
+                            api=None)
             pclases.Auditoria.nuevo(articulo, ventana_parte.usuario, __file__)
             ventana_parte.descontar_material_adicional(articulo)
             try:
