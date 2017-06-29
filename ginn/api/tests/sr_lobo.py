@@ -335,8 +335,9 @@ def check_everything(fsalida):
                    desc="Rollos C"):
         articulos.add(rc.articulo)
     report.write("{} encontrados. Ordenando...\n".format(len(articulos)))
-    articulos.sort(key=lambda a: a.id, reverse=True)
-    codigos_articulos = [a.codigo for a in articulos]
+    larticulos = list(articulos)
+    larticulos.sort(key=lambda a: a.id, reverse=True)
+    codigos_articulos = [a.codigo for a in larticulos]
     # Sync productos de compra y venta. ginn <= Murano
     report.write("Buscando todos los productos de venta... ")
     conn = murano.connection.Connection()
