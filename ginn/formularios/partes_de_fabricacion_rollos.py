@@ -3080,7 +3080,8 @@ class PartesDeFabricacionRollos(Ventana):
                 vpro.set_valor(i/tot, 'Consumiendo {} ({}/{})'.format(
                     bala.codigo, int(i), tot))
                 try:
-                    consumido = murano.ops.consume_bala(bala)
+                    consumido = (murano.ops.esta_consumido(bala.articulo)
+                                 or murano.ops.consume_bala(bala))
                     res = res and consumido
                 except:
                     res = False
