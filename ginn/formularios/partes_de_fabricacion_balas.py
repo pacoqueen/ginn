@@ -3486,7 +3486,7 @@ class PartesDeFabricacionBalas(Ventana):
                 try:
                     consumido = murano.ops.consumir(consumo.productoCompra,
                                                     consumo.cantidad,
-                                                    consumo)
+                                                    consumo=consumo)
                     res = res and consumido
                 except:
                     res = False
