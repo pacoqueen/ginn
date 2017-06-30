@@ -3822,7 +3822,8 @@ def crear_articulo(numrollo,
                             productoVenta = producto,
                             albaranSalida = None,
                             almacen = pclases.Almacen.get_almacen_principal(),
-                            pesoReal = peso)
+                            pesoReal = peso,
+                            api=None)
         pclases.Auditoria.nuevo(articulo,
                 objeto_ventana_parte and objeto_ventana_parte.usuario or None,
                 __file__)
