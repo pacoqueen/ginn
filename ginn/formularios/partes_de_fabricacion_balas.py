@@ -3463,6 +3463,11 @@ class PartesDeFabricacionBalas(Ventana):
                     articulo.codigo, int(i), tot))
                 try:
                     volcado = murano.ops.create_articulo(articulo, observaciones="")
+                    if not volcado and murano.ops.existe_articulo(articulo):
+                        # No se ha volcado, pero porque ya existía. Para no esperar
+                        # al Sr. Lobo, me encargo de actualizar `api` aquí:
+                        articulo.api = True
+                        articulo.sync()
                     res = res and volcado
                 except:
                     res = False
