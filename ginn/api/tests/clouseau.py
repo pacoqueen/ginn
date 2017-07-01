@@ -73,7 +73,7 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
     que están en ginn y puedo acceder a su artículo. Solo se usa cuando el
     artículo del inventario ha sido eliminado de ginn.
     """
-    if not articulo:
+    if not articulo or pclases.Articulo.get_articulo(articulo) is None:
         # El artículo se ha borrado del ERP. He debido recibir la fila completa
         # de la hoja de cálculo
         calidad = fallbackdata[u'Calidad']

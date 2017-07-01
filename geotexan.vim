@@ -1,6 +1,6 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim:
 " Vim session script.
-" Created by session.vim 2.13.1 on 30 junio 2017 at 21:02:31.
+" Created by session.vim 2.13.1 on 01 julio 2017 at 08:36:39.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -25,7 +25,7 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
 endif
 set shortmess=aoO
 badd +25 api/tests/clouseau.py
-badd +39 api/tests/ramanujan.py
+badd +662 api/tests/ramanujan.py
 badd +39 api/murano/ops.py
 badd +17 api/tests/sr_lobo.py
 badd +1 ~/Geotexan/src/Geotex-INN/geotexan.vim
@@ -40,7 +40,7 @@ badd +105 informes/norma2013.py
 argglobal
 silent! argdel *
 argadd ~/Geotexan/src/Geotex-INN/geotexan.vim
-edit api/tests/ramanujan.py
+edit api/tests/clouseau.py
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -54,7 +54,13 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-4wincmd k
+wincmd _ | wincmd |
+split
+wincmd _ | wincmd |
+split
+6wincmd k
+wincmd w
+wincmd w
 wincmd w
 wincmd w
 wincmd w
@@ -63,35 +69,39 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 24 + 57) / 115)
-exe '2resize ' . ((&lines * 18 + 32) / 65)
-exe 'vert 2resize ' . ((&columns * 90 + 57) / 115)
+exe 'vert 1resize ' . ((&columns * 26 + 58) / 117)
+exe '2resize ' . ((&lines * 45 + 32) / 65)
+exe 'vert 2resize ' . ((&columns * 90 + 58) / 117)
 exe '3resize ' . ((&lines * 4 + 32) / 65)
-exe 'vert 3resize ' . ((&columns * 90 + 57) / 115)
-exe '4resize ' . ((&lines * 15 + 32) / 65)
-exe 'vert 4resize ' . ((&columns * 90 + 57) / 115)
-exe '5resize ' . ((&lines * 18 + 32) / 65)
-exe 'vert 5resize ' . ((&columns * 90 + 57) / 115)
-exe '6resize ' . ((&lines * 4 + 32) / 65)
-exe 'vert 6resize ' . ((&columns * 90 + 57) / 115)
+exe 'vert 3resize ' . ((&columns * 90 + 58) / 117)
+exe '4resize ' . ((&lines * 1 + 32) / 65)
+exe 'vert 4resize ' . ((&columns * 90 + 58) / 117)
+exe '5resize ' . ((&lines * 1 + 32) / 65)
+exe 'vert 5resize ' . ((&columns * 90 + 58) / 117)
+exe '6resize ' . ((&lines * 1 + 32) / 65)
+exe 'vert 6resize ' . ((&columns * 90 + 58) / 117)
+exe '7resize ' . ((&lines * 1 + 32) / 65)
+exe 'vert 7resize ' . ((&columns * 90 + 58) / 117)
+exe '8resize ' . ((&lines * 4 + 32) / 65)
+exe 'vert 8resize ' . ((&columns * 90 + 58) / 117)
 argglobal
 enew
 file __Tagbar__.1
 wincmd w
 argglobal
-let s:l = 661 - ((11 * winheight(0) + 9) / 18)
+let s:l = 76 - ((5 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-661
-normal! 030|
+76
+normal! 070|
 wincmd w
 argglobal
 enew
 wincmd w
 argglobal
 edit api/tests/sr_lobo.py
-let s:l = 485 - ((2 * winheight(0) + 7) / 15)
+let s:l = 485 - ((1 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -100,7 +110,7 @@ normal! 022|
 wincmd w
 argglobal
 edit api/murano/ops.py
-let s:l = 2357 - ((4 * winheight(0) + 9) / 18)
+let s:l = 2357 - ((1 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -110,18 +120,34 @@ wincmd w
 argglobal
 enew
 wincmd w
-5wincmd w
-exe 'vert 1resize ' . ((&columns * 24 + 57) / 115)
-exe '2resize ' . ((&lines * 18 + 32) / 65)
-exe 'vert 2resize ' . ((&columns * 90 + 57) / 115)
+argglobal
+edit api/tests/ramanujan.py
+let s:l = 115 - ((2 * winheight(0) + 0) / 1)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+115
+normal! 027|
+wincmd w
+argglobal
+enew
+wincmd w
+2wincmd w
+exe 'vert 1resize ' . ((&columns * 26 + 58) / 117)
+exe '2resize ' . ((&lines * 45 + 32) / 65)
+exe 'vert 2resize ' . ((&columns * 90 + 58) / 117)
 exe '3resize ' . ((&lines * 4 + 32) / 65)
-exe 'vert 3resize ' . ((&columns * 90 + 57) / 115)
-exe '4resize ' . ((&lines * 15 + 32) / 65)
-exe 'vert 4resize ' . ((&columns * 90 + 57) / 115)
-exe '5resize ' . ((&lines * 18 + 32) / 65)
-exe 'vert 5resize ' . ((&columns * 90 + 57) / 115)
-exe '6resize ' . ((&lines * 4 + 32) / 65)
-exe 'vert 6resize ' . ((&columns * 90 + 57) / 115)
+exe 'vert 3resize ' . ((&columns * 90 + 58) / 117)
+exe '4resize ' . ((&lines * 1 + 32) / 65)
+exe 'vert 4resize ' . ((&columns * 90 + 58) / 117)
+exe '5resize ' . ((&lines * 1 + 32) / 65)
+exe 'vert 5resize ' . ((&columns * 90 + 58) / 117)
+exe '6resize ' . ((&lines * 1 + 32) / 65)
+exe 'vert 6resize ' . ((&columns * 90 + 58) / 117)
+exe '7resize ' . ((&lines * 1 + 32) / 65)
+exe 'vert 7resize ' . ((&columns * 90 + 58) / 117)
+exe '8resize ' . ((&lines * 4 + 32) / 65)
+exe 'vert 8resize ' . ((&columns * 90 + 58) / 117)
 tabnext 1
 if exists('s:wipebuf')
 "   silent exe 'bwipe ' . s:wipebuf
@@ -162,8 +188,20 @@ if !getbufvar(s:bufnr_save, '&modified')
   endif
 endif
 execute "cd" fnameescape(s:cwd_save)
-1resize 63|vert 1resize 24|2resize 18|vert 2resize 90|3resize 4|vert 3resize 90|4resize 15|vert 4resize 90|5resize 18|vert 5resize 90|6resize 4|vert 6resize 90|
-5wincmd w
+8wincmd w
+tabnext 1
+let s:bufnr_save = bufnr("%")
+let s:cwd_save = getcwd()
+cwindow
+if !getbufvar(s:bufnr_save, '&modified')
+  let s:wipebuflines = getbufline(s:bufnr_save, 1, '$')
+  if len(s:wipebuflines) <= 1 && empty(get(s:wipebuflines, 0, ''))
+    silent execute 'bwipeout' s:bufnr_save
+  endif
+endif
+execute "cd" fnameescape(s:cwd_save)
+1resize 63|vert 1resize 26|2resize 45|vert 2resize 90|3resize 4|vert 3resize 90|4resize 1|vert 4resize 90|5resize 1|vert 5resize 90|6resize 1|vert 6resize 90|7resize 1|vert 7resize 90|8resize 4|vert 8resize 90|
+2wincmd w
 tabnext 1
 if exists('s:wipebuf')
   if empty(bufname(s:wipebuf))
