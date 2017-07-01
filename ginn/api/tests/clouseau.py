@@ -385,8 +385,12 @@ def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
             # ['Código', 'Producto', 'Serie', 'Calidad', 'Cons. ginn', 'Cons. Murano',
             #  'Prod. ginn', 'Prod. Murano', 'Bultos', 'm²', 'kg']
             # pylint: disable=protected-access
-            superficie = murano.ops._get_superficie_murano(articulo)
-            peso_neto = murano.ops._get_peso_neto_murano(articulo)
+            if articulo:
+                superficie = murano.ops._get_superficie_murano(articulo)
+                peso_neto = murano.ops._get_peso_neto_murano(articulo)
+            else:
+                superficie = "N/D"
+                peso_neto = "N/D"
             if codigo not in data_res['Serie']:
                 data_res.append(['PV{}'.format(producto_ginn.id),
                                  producto_ginn.descripcion,
