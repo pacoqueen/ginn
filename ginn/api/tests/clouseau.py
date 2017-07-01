@@ -78,20 +78,29 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
              and pclases.Articulo.get_articulo(articulo) is None)):
         # El artículo se ha borrado del ERP. He debido recibir la fila completa
         # de la hoja de cálculo
-        calidad = fallbackdata[u'Calidad']
-        codigo_articulo = fallbackdata[u'Código trazabilidad']
-        descripcion_producto = fallbackdata[u'Descripción']
-        superficie = fallbackdata[u'Metros cuadrados']
-        peso_neto = fallbackdata[u'Peso neto']
+        if fallbackdata:
+            calidad = fallbackdata[u'Calidad']
+            codigo_articulo = fallbackdata[u'Código trazabilidad']
+            descripcion_producto = fallbackdata[u'Descripción']
+            superficie = fallbackdata[u'Metros cuadrados']
+            peso_neto = fallbackdata[u'Peso neto']
+            fecha_entrada_murano = exceldate2datetime(
+                fallbackdata[u'Fecha importación a Murano']).strftime(
+                    "%d/%m/%Y %H:%M")
+            codigo_producto_murano = fallbackdata[u'Código producto']
+        else:   # Es un artículo fabricado y borrado en ERP. No hay fallbackdata
+            calidad = "N/D"
+            codigo_articulo = articulo
+            descripcion_producto = "N/D"
+            superficie = "N/D"
+            peso_neto = "N/D"
+            fecha_entrada_murano = "N/D"
+            codigo_producto_murano = "N/D"
         inicio_parte_produccion = "N/D"
         codigo_partida_carga = "N/D"
         fecha_consumo_ginn = "N/D"
         fecha_fabricacion_ginn = "N/D"
-        fecha_entrada_murano = exceldate2datetime(
-            fallbackdata[u'Fecha importación a Murano']).strftime(
-                "%d/%m/%Y %H:%M")
         origen = "INV"  # de "INVentario". No es una serie real de Murano.
-        codigo_producto_murano = fallbackdata[u'Código producto']
         ultimo_movarticulo = murano.ops.get_ultimo_movimiento_articulo_serie(
             murano.connection.Connection(), codigo_articulo)
         if ultimo_movarticulo:
