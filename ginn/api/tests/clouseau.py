@@ -397,7 +397,9 @@ def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
                                  codigo,
                                  calidad,
                                  "",
-                                 fecha_produccion.strftime("%d/%m/%Y %H:%M"),
+                                 fecha_produccion
+                                    and fecha_produccion.strftime("%d/%m/%Y %H:%M")
+                                    or "N/D",
                                  "",
                                  "",
                                  1,
