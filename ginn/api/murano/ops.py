@@ -1370,7 +1370,8 @@ def consume_partida_carga(partida_carga):
     res = True
     if partida_carga:
         for bala in partida_carga.balas:
-            res = consume_bala(bala) and res
+            res = ((bool(esta_consumido(bala.articulo)) or consume_bala(bala))
+                   and res)
         partida_carga.api = res
         partida_carga.sync()
     return res
