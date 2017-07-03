@@ -480,9 +480,7 @@ def crear_etiquetas_pales(pales, mostrar_marcado=True, lang="es"):
             data["06 año_certif"] = "%02d" % producto.annoCertificacion
         else:
             data["06 año_certif"] = ""
-        # data["08 dni"] = producto.dni
-        # CWT: De momento el mismo código para todos los productos con esta etiqueta
-        data["08 dni"] = "0114080210000000091053"
+        data["08 dni"] = producto.dni
         data["12 producto"] = producto.nombre
         if producto.uso:
             if lang == "en":
