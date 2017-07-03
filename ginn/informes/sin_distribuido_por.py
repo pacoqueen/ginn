@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Modelo basado en el de la norma 2013 pero sin el texto «Distribuido por» a
-petición de un cliente.
+Modelo basado en el de la norma 2013 pero sin el texto «Distribuido por».
 """
 
 import os

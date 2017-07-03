@@ -3,7 +3,8 @@
 
 """
 Modelo basado en el de la norma 2013 pero sin el texto «Distribuido por» a
-petición de un cliente.
+petición de un cliente (SIKA). En su lugar aparecen unos códigos HARD-CODED
+que nos han pasado ellos mismos.
 """
 
 import os
