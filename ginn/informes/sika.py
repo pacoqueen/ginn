@@ -152,7 +152,9 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
             data["06 año_certif"] = "%02d" % producto.annoCertificacion
         else:
             data["06 año_certif"] = ""
-        data["08 dni"] = producto.dni
+        # data["08 dni"] = producto.dni
+        # CWT: De mmomento el mismo código para todos los geotextiles con esta etiqueta
+        data["08 dni"] = "0107049990000000011053"
         if len(producto.nombre) <= 50:
             data["12 producto"] = producto.nombre
         else:
@@ -481,7 +483,7 @@ def crear_etiquetas_pales(pales, mostrar_marcado=True, lang="es"):
         else:
             data["06 año_certif"] = ""
         # data["08 dni"] = producto.dni
-        # CWT: De momento el mismo código para todos los productos con esta etiqueta
+        # CWT: De momento el mismo código para todos los palés con esta etiqueta
         data["08 dni"] = "0114080210000000091053"
         data["12 producto"] = producto.nombre
         if producto.uso:
@@ -654,7 +656,9 @@ def crear_etiquetas_bigbags(bigbags, mostrar_marcado=True, lang="es"):
             data["06 año_certif"] = "%02d" % producto.annoCertificacion
         else:
             data["06 año_certif"] = ""
-        data["08 dni"] = producto.dni
+        # data["08 dni"] = producto.dni
+        # CWT: De momento el mismo código para todos los bigbags con esta etiqueta
+        data["08 dni"] = "0114080210100000051053"
         data["12 producto"] = producto.nombre
         if producto.uso:
             if lang == "en":
