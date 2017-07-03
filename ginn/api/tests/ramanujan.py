@@ -100,6 +100,10 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
 
     Devuelve True si todo cuadra.
     """
+    # TODO: Productos sin trazabilidad no deberían analizarse. O bien hacerlo de
+    # otra forma, porque las existencias finales son 0 si se consulta por serie.
+    # Habría que conectar a otra tabla para ver las existencias e incluso para
+    # contar los ajustes (que es como se agrega stock a estos productos).
     res = False
     # 0.- Localizo el producto y todos los datos que solo puedo sacar de Murano.
     (producto_murano, existencias_ini, existencias_fin,
