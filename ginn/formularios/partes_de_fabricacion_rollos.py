@@ -3075,19 +3075,29 @@ class PartesDeFabricacionRollos(Ventana):
                     res = res and consumido
                 except:
                     res = False
-            for bala in pcarga.balas:
-                i += 1
-                vpro.set_valor(i/tot, 'Consumiendo {} ({}/{})'.format(
-                    bala.codigo, int(i), tot))
-                try:
-                    consumido = (bool(murano.ops.esta_consumido(bala.articulo))
-                                 or murano.ops.consume_bala(bala))
-                    res = res and consumido
-                except:
-                    res = False
-                pcarga.api = res
-                pcarga.sync()
-            vpro.ocultar()
+            if pcarga:
+                for bala in pcarga.balas:
+                    i += 1
+                    vpro.set_valor(i/tot, 'Consumiendo {} ({}/{})'.format(
+                        bala.codigo, int(i), tot))
+                    try:
+                        consumido = (bool(murano.ops.esta_consumido(bala.articulo))
+                                     or murano.ops.consume_bala(bala))
+                        res = res and consumido
+                    except:
+                        res = False
+                    pcarga.api = res
+                    pcarga.sync()
+                vpro.ocultar()
+            else:
+                utils.dialogo_info(titulo="PARTE SIN CONSUMO DE FIBRA",
+                        texto="El parte actual no se ha asignado a ninguna\n"
+                        "partida de consumo de fibra.\n\n"
+                        "Vuelva a marcarlo como verificado cuando la partida\n"
+                        "de carga correspondiente esté correctamente introducida\n"
+                        "en el sistema."
+                        padre=self.wids['ventana'])
+                res = False
         return res
 
     def imprimir(self, boton):
