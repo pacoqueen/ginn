@@ -1682,7 +1682,10 @@ class PartesDeFabricacionBalas(Ventana):
         model = self.wids['tv_balas'].get_model()
         if model[path][1] == 0 or model[path][1] == '': # Nº bala, no tiene, no es una bala.
             return
-        codigo = model[path][1]
+        try:
+            codigo = model[path][1].split()[0]
+        except IndexError:
+            codigo = model[path][1]
         silo_marcado = False
         for silo in pclases.Silo.select():
             silo_marcado = silo_marcado or self.wids['ch_silo_ID%d' % (silo.id)].get_active()
