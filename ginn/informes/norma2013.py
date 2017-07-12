@@ -781,7 +781,11 @@ def crear_etiquetas_balas(balas, mostrar_marcado=True, lang="es"):
     """
     # TODO: De momento solo español. No hay inglés. Se ignora el parámetro.
     from reportlab.pdfgen import canvas
-    from informes.geninformes import escribe
+    from informes.geninformes import escribe, _build_codigo_domenech
+    try:
+        import Image
+    except ImportError:
+        from PIL import Image
     width = 12.55 * cm
     height = 8.4 * cm
     # Creo la hoja
@@ -857,6 +861,8 @@ def crear_etiquetas_balas(balas, mostrar_marcado=True, lang="es"):
         c.drawImage(nombreficheroean13, xCodigo, yCodigo)
         # XXX: DOMENECH:
         from barcode import code128
+        seriep = None   # Esto ya no se usa. Es la serie del pedido para el cliente
+        numped = None   # Esto ya no se usa. Es el núm. del pedido para el cliente
         codigodomenech = _build_codigo_domenech(bala, seriep, numped)
         if codigodomenech:
             barcodedomenech = code128.Code128(codigodomenech,
