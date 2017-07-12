@@ -718,6 +718,178 @@ def crear_etiquetas_bigbags(bigbags, mostrar_marcado=True, lang="es"):
     canvas.save()
     return nomarchivo
 
+def _build_dict_etiqueta_articulo_bala(articulo):
+    """
+    Construye y devuelve un diccionario con los campos que espera imprimir la
+    etiqueta para balas.
+    """
+    b = articulo.bala
+    producto = articulo.productoVenta
+    campos = producto.camposEspecificosBala
+    elemento = {'descripcion': producto.descripcion,
+                'codigo': b.codigo,
+                'color': str(campos.color),
+                'peso': str(b.pesobala),
+                'lote': str(b.lote.numlote),
+                'tipo': campos.tipoMaterialBala and str(campos.tipoMaterialBala.descripcion) or "",
+                'longitud': str(campos.corte),
+                'nbala': str(b.numbala),
+                'dtex': str(campos.dtex),
+                'dia': utils.str_fecha(b.fechahora),
+                'acabado': campos.antiuv and '1' or '0',
+                'codigoBarra': producto.codigo,
+                'objeto': articulo}
+    return elemento
+
+def crear_etiquetas_balas(balas, mostrar_marcado=True, lang="es"):
+    """
+    Construye una etiqueta por cada objeto bala recibido y las devuelve
+    en un solo PDF.
+    Si lang = "en", etiqueta en inglés. Si "es", en castellano.
+
+    Crea etiquetas para las balas de
+    un parte de la línea de fibra.
+    Una por etiqueta del tamaño estándar de la impresora CAB: 12.55 x 8.4.
+    Lleva el código especial para Domenech en horizontal.
+    «seriep» es la serie del pedido y si no es None, se muestra en los
+    3 primeros dígitos.
+    «numped» es el número de pedido procedente de Domenech y si no es None se
+    muestra en 6 dígitos tras la serie (si la hubiera).
+    Estos dos grupos de dígitos opcionales («seriep» y «numped») son comunes
+    a toda la serie de balas de las que se generarán las etiquetas.
+    El formato completo es:
+    * 3 dígitos: serie del pedido, completado con ceros por la izquierda.
+    * 6 dígitos: número de pedido, completado con ceros por la izquierda.
+    *-7-dígitos:-código-de-producto:--- YA NO (tercera vez que vuelven a ser 6)
+    * 6 dígitos: código de producto:
+         - 007336 FIBRA PP 6.7 Dtx NATURAL.
+         - 007337 FIBRA PP 6.7 Dtx NEGRO.
+         - 007674 FIBRA PP 4.5 Dtx NEGRO.
+         - 007852 FIBRA PP 4.5 Dtx NATURAL.
+    * 10 dígitos: número de lote, completado con ceros por la izquierda.
+    * 15 dígitos: número de bala, completado con ceros por la izquierda.
+    * 3 dígitos: parte entera del peso de la bala en kilogramos,
+                 completado con ceros por la izquierda.
+    * 2 dígitos: parte decimal del peso de la bala en kilogramos,
+                 completado con ceros por la derecha.
+
+    Por ejemplo, el código correspondiente a una bala de fibra negra de
+    polipropileno de 6.7 dtex, correspondiente al lote 660, de número
+    57394, con 286.50 kg de peso y solicitada en el pedido 4/2158; sería:
+    004002158007337000000066000000000005739428650
+    007337000000066000000000005739428650 Si no lleva serie ni pedido.
+    """
+    # TODO: De momento solo español. No hay inglés. Se ignora el parámetro.
+    from reportlab.pdfgen import canvas
+    from informes.geninformes import escribe
+    width = 12.55 * cm
+    height = 8.4 * cm
+    # Creo la hoja
+    nomarchivo = os.path.join(gettempdir(),
+                              "dh_etiqbala_%s.pdf"%give_me_the_name_baby())
+    c = canvas.Canvas(nomarchivo, pagesize = (width, height))
+    ancho, alto = width, height
+    # arribaArriba significa linea de "arriba" de los cuadros de "Arriba"
+    # El 0 vertical es el borde de abajo
+    # El 0 horizontal es el margen derecho
+    arriba = alto - 1.45*cm
+    #arriba = alto - 5
+    abajo = 5
+    #abajo = 1.45*cm
+    izq = width - 5
+    der = 5     # ¿Va a resultar al final que también soy disléxico?
+    xLogo = der + 0.5 * cm
+    yLogo = arriba - 1.3 * cm
+    xIzquierda = 20
+    xDerecha = ancho/2 + 0.25*inch
+    yPrimeraLinea = yLogo - 0.8*inch
+    ySegundaLinea = yPrimeraLinea - 0.31*inch
+    yTerceraLinea = ySegundaLinea - 0.31*inch
+    yCuartaLinea = yTerceraLinea - 0.31*inch
+    yQuintaLinea = yCuartaLinea - 0.31*inch
+    xCodigo = xDerecha + 3.50 * cm
+    yCodigo = arriba - 3.75 * cm
+    for bala in balas:  # @UnusedVariable
+        if not bala:    # Es None. Por lo que sea :o
+            continue
+        if isinstance(bala, pclases.Articulo):
+            bala = _build_dict_etiqueta_articulo_bala(bala)
+        rectangulo(c, (izq, arriba), (der, abajo))
+        c.setFont("Helvetica-Bold", 28)
+        c.drawString(xLogo, yLogo, "GEOTEXAN S.A.")
+        c.setFont("Helvetica", 14)
+        c.drawString(xIzquierda,
+                     yPrimeraLinea,
+                     escribe("CÓDIGO: " + bala['codigo']))
+        from barcode import code39
+        codigobarras = code39.Extended39(bala['codigo'], xdim = .020*inch)
+        codigobarras.drawOn(c, xIzquierda - 0.5 * cm, yPrimeraLinea + 15)
+        c.drawString(xIzquierda,
+                     yQuintaLinea,
+                     escribe("COLOR: %s" % (bala['color'])))
+        c.drawString(xIzquierda,
+                     ySegundaLinea,
+                     escribe("LOTE: %s" % (bala['lote'])))
+        c.drawString(xDerecha,
+                     ySegundaLinea,
+                     escribe("PESO KG: %s" % (bala['peso'])))
+        c.drawString(xIzquierda,
+                     yTerceraLinea,
+                     escribe("TIPO: %s" % (bala['tipo'])))
+        c.drawString(xDerecha,
+                     yTerceraLinea,
+                     escribe("LONGITUD: %s" % (bala['longitud'])))
+        c.drawString(xIzquierda,
+                     yCuartaLinea,
+                     escribe("BALA Nº: %s" % (bala['nbala'])))
+        c.drawString(xDerecha,
+                     yCuartaLinea,
+                     escribe("DTEX: %s" % (bala['dtex'])))
+        c.drawString(xDerecha,
+                     yQuintaLinea,
+                     escribe("ACABADO: %s" % (bala['acabado'])))
+        from barcode.EANBarCode import EanBarCode
+        bar = EanBarCode()
+        nombreficheroean13 = bar.getImage(bala['codigoBarra'])
+        ean13rotado = Image.open(nombreficheroean13)
+        ean13rotado = ean13rotado.rotate(90)
+        ean13rotado.save(nombreficheroean13)
+        c.drawImage(nombreficheroean13, xCodigo, yCodigo)
+        # XXX: DOMENECH:
+        from barcode import code128
+        codigodomenech = _build_codigo_domenech(bala, seriep, numped)
+        if codigodomenech:
+            barcodedomenech = code128.Code128(codigodomenech,
+                                              #xdim = 0.015 * inch,
+                                              #height = 0.5 * cm)
+                                              xdim = 0.0205 * inch,
+                                              height = 0.95 * cm)
+            #barcodedomenech = code39.Extended39(codigodomenech,
+            #                                  #xdim = 0.015 * inch,
+            #                                  #height = 0.5 * cm)
+            #                                  xdim = 0.0094 * inch,
+            #                                  height = 0.95 * cm)
+            ydom = alto - 1.2 * cm
+            #ydom = 0.4 * cm
+            xdom = (width - barcodedomenech.width) / 2.0
+            barcodedomenech.drawOn(c, xdom, ydom)
+            c.saveState()
+            c.setFont("Courier-Bold", 8)
+            c.drawCentredString(xdom + (barcodedomenech.width / 2.0),
+                                ydom - 0.20 * cm,
+                                codigodomenech)
+            c.restoreState()
+        # XXX: EODOMENECH
+        # XXX: Marca para identificar las nuevas.
+        c.saveState()
+        c.setFillColorRGB(0, 0, 0)
+        c.circle(izq - 0.3*cm, yQuintaLinea, 0.1*cm, fill=1)
+        c.restoreState()
+        # XXX: EOMarca
+        c.showPage()
+    c.save()
+    return nomarchivo
+
 
 def test_rollos():
     """ Pruebas de impresión de rollos. """
@@ -747,7 +919,18 @@ def test_bigbags():
     time.sleep(1)
     abrir_pdf(crear_etiquetas_bigbags(bigbags, lang="en"))
 
+def test_balas():
+    """ Pruebas de impresión de etiquetas de balas. """
+    from formularios.reports import abrir_pdf
+    balas = (pclases.Articulo.get_articulo("B215047"), )
+    abrir_pdf(crear_etiquetas_balas(balas))
+    import time
+    time.sleep(1)
+    abrir_pdf(crear_etiquetas_balas(balas, lang="en"))
+
+
 if __name__ == "__main__":
     # test_rollos()
     # test_pales()
-    test_bigbags()
+    # test_bigbags()
+    test_balas()

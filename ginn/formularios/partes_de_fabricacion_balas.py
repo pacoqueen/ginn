@@ -1697,11 +1697,15 @@ class PartesDeFabricacionBalas(Ventana):
             self.descontar_material_adicional(bala.articulos[0], restar = False)
             try:
                 bala.pesobala = float(newtext)
+                bala.pesobala -= pclases.PESO_EMBALAJE_BALAS
+                bala.syncUpdate()
             except ValueError:
                 utils.dialogo_info('NÚMERO INCORRECTO', 'El peso de la bala debe ser un número.', padre = self.wids['ventana'])
                 return
             self.descontar_material_adicional(bala.articulos[0], restar = True)
-            model[path][2] = bala.pesobala
+            bala.sync()
+            bala.articulo.sync()
+            model[path][2] = self.peso(bala.articulo) # = bala.articulo.peso_real
         except IndexError:
             bigbag = pclases.Bigbag.select(pclases.Bigbag.q.codigo == codigo)[0]
             self.descontar_material_adicional(bigbag.articulos[0], restar = False)
