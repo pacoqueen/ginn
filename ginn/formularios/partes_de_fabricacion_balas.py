@@ -1700,7 +1700,7 @@ class PartesDeFabricacionBalas(Ventana):
             self.descontar_material_adicional(bala.articulos[0], restar = False)
             try:
                 bala.pesobala = float(newtext)
-                bala.articulo.peso_real = bala.pesobala
+                bala.articulo.pesoReal = bala.pesobala
                 bala.pesobala -= pclases.PESO_EMBALAJE_BALAS
                 bala.syncUpdate()
             except ValueError:
