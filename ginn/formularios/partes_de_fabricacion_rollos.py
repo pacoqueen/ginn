@@ -3023,81 +3023,87 @@ class PartesDeFabricacionRollos(Ventana):
         Devuelve True si todo ha ido bien o False si ocurrió algún error.
         Vuelca también los consumos del parte.
         """
-        res = True
-        if not MURANO:
-            utils.dialogo_info(titulo="ERROR CONEXIÓN MURANO",
-                    texto="No hay conexión con Murano. Se aborta operación.",
-                    padre=self.wids['ventana'])
-        else:
-            # Producción ===
-            vpro = VentanaProgreso(padre=self.wids['ventana'])
-            vpro.mostrar()
-            i = 0.0
-            no_volcados = [a for a in self.objeto.articulos if not a.api]
-            tot = len(no_volcados)
-            for articulo in no_volcados:
-                i += 1
-                vpro.set_valor(i/tot, 'Volcando artículo {} ({}/{})'.format(
-                    articulo.codigo, int(i), tot))
-                try:
-                    volcado = murano.ops.create_articulo(articulo, observaciones="")
-                    if not volcado and murano.ops.existe_articulo(articulo):
-                        # Si no se ha volcado porque ya existía y con ese
-                        # producto y no está con existencias a cero (o lo está,
-                        # pero porque se ha vendido; todo eso lo comprueba el
-                        # create_articulo), corrijo el valor de api porque algo
-                        # debió ir mal y no se actualizó en su momento. No
-                        # espero al Sr. Lobo.
-                        articulo.api = True
-                        articulo.sync()
-                    res = res and volcado
-                except:
-                    res = False
-            vpro.ocultar()
-            # Consumos ===
-            vpro = VentanaProgreso(padre=self.wids['ventana'])
-            vpro.mostrar()
-            pcarga = self.objeto.partidaCarga
-            consumos = [c for c in self.objeto.consumos
-                        if not c.api and c.actualizado]
-            i = 0.0
-            tot = len(consumos)
-            if pcarga:
-                tot += len(pcarga.balas)
-            for consumo in consumos:
-                i += 1
-                vpro.set_valor(i/tot, 'Consumiendo {} ({}/{})'.format(
-                    consumo.productoCompra.descripcion, int(i), tot))
-                try:
-                    consumido = murano.ops.consumir(consumo.productoCompra,
-                                                    consumo.cantidad,
-                                                    consumo=consumo)
-                    res = res and consumido
-                except:
-                    res = False
-            if pcarga:
-                for bala in pcarga.balas:
+        if self.objeto.articulos:
+            res = True
+            if not MURANO:
+                utils.dialogo_info(titulo="ERROR CONEXIÓN MURANO",
+                        texto="No hay conexión con Murano. Se aborta operación.",
+                        padre=self.wids['ventana'])
+            else:
+                # Producción ===
+                vpro = VentanaProgreso(padre=self.wids['ventana'])
+                vpro.mostrar()
+                i = 0.0
+                no_volcados = [a for a in self.objeto.articulos if not a.api]
+                tot = len(no_volcados)
+                for articulo in no_volcados:
+                    i += 1
+                    vpro.set_valor(i/tot, 'Volcando artículo {} ({}/{})'.format(
+                        articulo.codigo, int(i), tot))
+                    try:
+                        volcado = murano.ops.create_articulo(articulo, observaciones="")
+                        if not volcado and murano.ops.existe_articulo(articulo):
+                            # Si no se ha volcado porque ya existía y con ese
+                            # producto y no está con existencias a cero (o lo está,
+                            # pero porque se ha vendido; todo eso lo comprueba el
+                            # create_articulo), corrijo el valor de api porque algo
+                            # debió ir mal y no se actualizó en su momento. No
+                            # espero al Sr. Lobo.
+                            articulo.api = True
+                            articulo.sync()
+                        res = res and volcado
+                    except:
+                        res = False
+                vpro.ocultar()
+                # Consumos ===
+                vpro = VentanaProgreso(padre=self.wids['ventana'])
+                vpro.mostrar()
+                pcarga = self.objeto.partidaCarga
+                consumos = [c for c in self.objeto.consumos
+                            if not c.api and c.actualizado]
+                i = 0.0
+                tot = len(consumos)
+                if pcarga:
+                    tot += len(pcarga.balas)
+                for consumo in consumos:
                     i += 1
                     vpro.set_valor(i/tot, 'Consumiendo {} ({}/{})'.format(
-                        bala.codigo, int(i), tot))
+                        consumo.productoCompra.descripcion, int(i), tot))
                     try:
-                        consumido = (bool(murano.ops.esta_consumido(bala.articulo))
-                                     or murano.ops.consume_bala(bala))
+                        consumido = murano.ops.consumir(consumo.productoCompra,
+                                                        consumo.cantidad,
+                                                        consumo=consumo)
                         res = res and consumido
                     except:
                         res = False
-                    pcarga.api = res
-                    pcarga.sync()
-                vpro.ocultar()
-            else:
-                utils.dialogo_info(titulo="PARTE SIN CONSUMO DE FIBRA",
-                        texto="El parte actual no se ha asignado a ninguna\n"
-                        "partida de consumo de fibra.\n\n"
-                        "Vuelva a marcarlo como verificado cuando la partida\n"
-                        "de carga correspondiente esté correctamente introducida\n"
-                        "en el sistema.",
-                        padre=self.wids['ventana'])
-                res = False
+                if pcarga:
+                    for bala in pcarga.balas:
+                        i += 1
+                        vpro.set_valor(i/tot, 'Consumiendo {} ({}/{})'.format(
+                            bala.codigo, int(i), tot))
+                        try:
+                            consumido = (bool(murano.ops.esta_consumido(bala.articulo))
+                                         or murano.ops.consume_bala(bala))
+                            res = res and consumido
+                        except:
+                            res = False
+                        pcarga.api = res
+                        pcarga.sync()
+                    vpro.ocultar()
+                else:
+                    vpro.ocultar()
+                    utils.dialogo_info(titulo="PARTE SIN CONSUMO DE FIBRA",
+                            texto="El parte actual no se ha asignado a ninguna\n"
+                            "partida de consumo de fibra.\n\n"
+                            "Vuelva a marcarlo como verificado cuando la partida\n"
+                            "de carga correspondiente esté correctamente introducida\n"
+                            "en el sistema.",
+                            padre=self.wids['ventana'])
+                    res = False
+        else:
+            res = True  # Parte sin producción. Espero que al menos tenga
+                    # incidencias regitradas. No es mi problema. El volcado
+                    # no ha fallado. Devuelve True
         return res
 
     def imprimir(self, boton):
