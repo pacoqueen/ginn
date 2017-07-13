@@ -2539,8 +2539,8 @@ def _get_fin_proceso_importacion_retcode(guid):
     """
     conn = Connection()
     sql = """SELECT sysStatus
-     FROM {}.dbo.LsysTraceIME
-    WHERE IdProcesoIME='{}'
+     FROM {}.dbo.lsysTraceIME
+    WHERE IdProcesoIME=CONVERT(uniqueidentifier, '{}')
       AND sysTraceDescription LIKE 'Fin proceso de importaci%n';""".format(
           conn.get_database(), guid)
     try:
