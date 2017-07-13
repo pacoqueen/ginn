@@ -3095,7 +3095,7 @@ class PartesDeFabricacionRollos(Ventana):
                         "partida de consumo de fibra.\n\n"
                         "Vuelva a marcarlo como verificado cuando la partida\n"
                         "de carga correspondiente esté correctamente introducida\n"
-                        "en el sistema."
+                        "en el sistema.",
                         padre=self.wids['ventana'])
                 res = False
         return res
