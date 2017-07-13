@@ -2562,7 +2562,7 @@ def _get_fin_proceso_acumulacion_retcode(guid):
     conn = Connection()
     sql = """SELECT sysStatus
      FROM {}.dbo.LsysTraceIME
-    WHERE IdProcesoIME='{}'
+    WHERE IdProcesoIME=CONVERT(uniqueidentifier, '{}')
       AND sysTraceDescription LIKE 'Fin proceso de acumulaci%n';""".format(
           conn.get_database(), guid)
     try:
