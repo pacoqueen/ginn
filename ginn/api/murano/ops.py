@@ -1811,7 +1811,10 @@ def create_pale(pale, cantidad=1, producto=None, guid_proceso=None,
     # No es necesario. Cada caja lanza su proceso y el palé no crea
     # registros en la base de datos. No hay que lanzar ninún proceso adicional.
     if procesar:
-        res = fire(guid_proceso)
+        if guid_proceso: # Si todas las cajas ya existían, guid_proceso es None.
+            res = fire(guid_proceso)
+        else:   # Nada que insertar. Nada insertado. Resultado, False.
+            res = False
     else:
         res = guid_proceso
     if not res:     # No se han insertado todas las cajas del palé.
@@ -1820,6 +1823,7 @@ def create_pale(pale, cantidad=1, producto=None, guid_proceso=None,
                 articulo = caja.articulo
                 articulo.api = existe_articulo(articulo)
                 articulo.syncUpdate()
+            res = pale.api
     return res
 
 
