@@ -1766,10 +1766,16 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
 # pylint: disable=too-many-arguments
 def create_pale(pale, cantidad=1, producto=None, guid_proceso=None,
                 simulate=False, procesar=True, observaciones=None,
-                serie="API"):
+                serie="API", check_api=True):
     """
     Crea un palé con todas sus cajas en Murano a partir del palé de ginn.
+
     Si cantidad es -1 saca el palé del almacén.
+
+    Si `check_api` es True comprueba que el valor del campo api es correcto: si
+    las cajas del palé ya existen en Murano con el mismo producto pero el valor
+    de api para el artículo es False (por algún fallo anterior, por ejemplo),
+    se cambia a True.
     """
     assert observaciones is not None, "murano.ops.create_pale::"\
             "Debe indicar el motivo en el parámetro «observaciones»."
@@ -1808,6 +1814,12 @@ def create_pale(pale, cantidad=1, producto=None, guid_proceso=None,
         res = fire(guid_proceso)
     else:
         res = guid_proceso
+    if not res:     # No se han insertado todas las cajas del palé.
+        if check_api:   # Puede que porque ya existan. Si es así, corrijo `api`
+            for caja in cajas:
+                articulo = caja.articulo
+                articulo.api = existe_articulo(articulo)
+                articulo.syncUpdate()
     return res
 
 
