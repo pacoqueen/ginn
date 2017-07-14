@@ -90,12 +90,22 @@ def sync_articulo(codigo, fsalida, simulate=True):
                 movserie = murano.ops.get_ultimo_movimiento_articulo_serie(
                     murano.connection.Connection(), articulo)
                 if not movserie:
-                    report.write("Creando... ")
-                    if not simulate:
-                        obs = "[sr_lobo] Art. en ginn pero no en Murano"
-                        _res = murano.ops.create_articulo(articulo,
-                                                          observaciones=obs)
-                    else:
+                    if (articulo.parteDeProduccion
+                            and articulo.parteDeProduccion.bloqueado):
+                        report.write("Creando... ")
+                        if not simulate:
+                            obs = "[sr_lobo] Art. en ginn pero no en Murano"
+                            _res = murano.ops.create_articulo(articulo,
+                                                              observaciones=obs)
+                        else:
+                            _res = True
+                    else:   # Si el parte no está verificado, no creo todavía
+                            # el artículo.
+                        report.write("Parte {} no verificado. No se crea {}.".format(
+                            articulo.parteDeProduccin
+                            and articulo.parteDeProduccion.fechahorainicio
+                            or "N/D",
+                            articulo.codigo))
                         _res = True
                 else:   # Hay un movserie, seguramente de salida de albarán.
                     pvmurano = movserie['CodigoArticulo']
