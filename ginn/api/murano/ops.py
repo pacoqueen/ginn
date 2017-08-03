@@ -2663,7 +2663,7 @@ def fire(guid_proceso, ignore_errors=False,
     # adivinamos, la lcOEM ha empezado a devolver 1 aunque importe
     # correctamente los registros. Por tanto, el valor de retorno ya no es
     # útil para detectar nada. Usaremos ya siempre la espera activa, que es lo
-    # único fible.
+    # único fiable.
     if retCode is None:
         retCode = espera_activa(_get_fin_proceso_importacion_retcode,
                                 [guid_proceso], retCode, timeout=40, tick=5)

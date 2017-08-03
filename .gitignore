@@ -75,3 +75,8 @@ ginn/*.log
 
 # API de servicios en la nube
 API*.json
+
+# Datos sensibles exportados
+extra/scripts/*.csv 
+extra/scripts/*.xls 
+extra/scripts/*.xlsx

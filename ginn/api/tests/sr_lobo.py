@@ -101,7 +101,7 @@ def sync_articulo(codigo, fsalida, simulate=True):
                             _res = True
                     else:   # Si el parte no está verificado, no creo todavía
                             # el artículo.
-                        report.write("Parte {} no verificado. No se crea {}.".format(
+                        report.write("Parte {} no verificado. No se crea {}. ".format(
                             articulo.parteDeProduccion
                             and articulo.parteDeProduccion.fechahorainicio
                             or "N/D",
@@ -210,7 +210,7 @@ def sync_articulo(codigo, fsalida, simulate=True):
                     _res = True
                 res = res and _res
             if not altered:
-                report.write("Nada que hacer.")
+                report.write("Nada que hacer. ")
                 _res = True
                 res = res and _res
         if not articulo.api:

@@ -556,7 +556,7 @@ def main():
         description="Soy el inspector Clouseau.\n"
                     "Le sigo la pista a cada uno de los bultos que se han "
                     "fabricado, vendido, consumido o ajustado para ver si hay"
-                    "alguna posible desviación.\n"
+                    " alguna posible desviación.\n"
                     "La pantera rosa no se ha movido del almacén pricipal. "
                     "Así que de momento solo investigo ahí.")
     def_fich_ini = '.'

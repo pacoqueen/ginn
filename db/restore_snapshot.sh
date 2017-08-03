@@ -57,7 +57,7 @@ function crear_fconf(){
     echo "host    $HOST" >> ../ginn/framework/ginn.conf.$FECHA 
 }
 
-if [ $# -eq 1 ]; then
+if [ $# -eq 1 ] && [ "$1" != "-h" ]; then
     check_nombre_fbak $1
     if [ ! -f /tmp/$DUMP ]; then
           get_remote_fbak $DUMP
