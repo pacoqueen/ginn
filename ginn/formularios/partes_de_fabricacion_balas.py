@@ -1666,7 +1666,7 @@ class PartesDeFabricacionBalas(Ventana):
                                padre = self.wids['ventana'])
 
     def cambiar_peso_bala(self, cell, path, newtext):
-        # TODO: No pueden cambiar el peso si la bala ya está en Murano. No hay método en la API para cambiar el peso de una serie.
+        # Comprobaciones previas:
         if not self.usuario or self.usuario.nivel > 3:
             utils.dialogo_info(titulo="OPERACIÓN NO PERMITIDA",
                            texto="No está permitido cambiar el peso de una "
@@ -1695,31 +1695,53 @@ class PartesDeFabricacionBalas(Ventana):
                                texto = "No puede cambiar el peso total de la producción si no marca el silo\noriginal de donde consumió la bala %s." % (codigo),
                                padre = self.wids['ventana'])
             return
+        # Cambio del peso en sí:
         try:
-            bala = pclases.Bala.select(pclases.Bala.q.codigo == codigo)[0]
-            self.descontar_material_adicional(bala.articulos[0], restar = False)
-            try:
-                bala.pesobala = float(newtext)
-                bala.articulo.pesoReal = bala.pesobala
-                bala.pesobala -= pclases.PESO_EMBALAJE_BALAS
-                bala.syncUpdate()
-            except ValueError:
-                utils.dialogo_info('NÚMERO INCORRECTO', 'El peso de la bala debe ser un número.', padre = self.wids['ventana'])
+            nuevopeso = float(newtext)
+        except ValueError:
+            utils.dialogo_info('NÚMERO INCORRECTO',
+                               'El peso del artículo debe ser un número.',
+                               padre = self.wids['ventana'])
+            return
+        articulo = pclases.Articulo.get_articulo(codigo)
+        volver_a_volcar_a_murano = False    # Flag para... eso. Volver a crear.
+        if articulo and articulo.api:
+            if not (self.usuario and self.usuario.nivel == 0):
+                # Si el usuario no es admin, no cambia peso
+                utils.dialogo_info(titulo="PRODUCCIÓN VOLCADA",
+                        texto="Este artículo ya ha sido creado en Murano.\n"
+                              "No puede modificar su peso.",
+                        padre=self.wids['ventana'])
                 return
-            self.descontar_material_adicional(bala.articulos[0], restar = True)
+            # Aquí el usuario tiene máximo nivel de privilegios. Elimino
+            # la bala/bigbag de Murano y la volveré a crear con el peso nuevo:
+            motivo = "Se corrige peso {}->{} kg.".format(articulo.peso_neto,
+                                                         nuevopeso)
+            murano.ops.delete_articulo(bala.articulo, observaciones=motivo)
+            volver_a_volcar_a_murano = True
+        if articulo and articulo.es_bala():
+            bala = articulo.bala
+            self.descontar_material_adicional(articulo, restar = False)
+            pesoantiguo = bala.pesobala
+            bala.pesobala = nuevopeso
+            articulo.pesoReal = bala.pesobala
+            bala.pesobala -= pclases.PESO_EMBALAJE_BALAS
+            bala.syncUpdate()
+            self.descontar_material_adicional(articulo, restar = True)
             bala.sync()
             bala.articulo.sync()
             model[path][2] = self.peso(bala.articulo) # = bala.articulo.peso_real
-        except IndexError:
-            bigbag = pclases.Bigbag.select(pclases.Bigbag.q.codigo == codigo)[0]
-            self.descontar_material_adicional(bigbag.articulos[0], restar = False)
-            try:
-                bigbag.pesobigbag = float(newtext)
-            except ValueError:
-                utils.dialogo_info('NÚMERO INCORRECTO', 'El peso del bigbag debe ser un número.', padre = self.wids['ventana'])
-                return
-            self.descontar_material_adicional(bigbag.articulos[0], restar = True)
+        elif articulo and articulo.es_bigbag():
+            bigbag = articulo.bigbag
+            self.descontar_material_adicional(articulo, restar = False)
+            pesoantiguo = bigbag.pesobigbag
+            bigbag.pesobigbag = nuevopeso
+            self.descontar_material_adicional(articulo, restar = True)
             model[path][2] = bigbag.pesobigbag
+        if volver_a_volcar_a_murano:
+            motivo = "Peso corregido {}->{} kg.".format(pesoantiguo,
+                                                        articulo.peso_neto)
+            murano.ops.create_articulo(articulo, observaciones = motivo)
         itr = model.get_iter(path)
         itr = model.iter_next(itr)
         if itr != None:
