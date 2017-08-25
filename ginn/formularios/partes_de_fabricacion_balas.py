@@ -544,14 +544,14 @@ class PartesDeFabricacionBalas(Ventana):
         """
         if self.objeto:
             confsilos = self.objeto.get_conf_silos()    # La última almacenada.
-            for silo in confsilos:
+            for silo in pclases.Silo.select():
                 checksilo = self.wids['ch_silo_ID%d' % (silo.id)]
                 scalesilo = self.wids['escala_ID%d' % (silo.id)]
                 if confsilos[silo]:     # Si para ese silo hay registro de
                                         # configuración en la base de datos:
                     checksilo.set_active(True)
                     scalesilo.set_sensitive(True)
-                    scalesilo.set_value(confsilos[silo].porcentaje)
+                    scalesilo.set_value(confsilos[silo].porcentaje * 100)
                 else:
                     checksilo.set_active(False)
                     scalesilo.set_sensitive(False)
