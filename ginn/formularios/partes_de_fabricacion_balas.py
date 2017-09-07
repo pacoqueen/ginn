@@ -1391,7 +1391,7 @@ class PartesDeFabricacionBalas(Ventana):
             if numcol == 2 and articulo and articulo.es_bala(): # Columna de
                 # peso. En NARANJA CHILLÓN si está fuera de lo "normal". A ver
                 # si así el "interfecto" está más atento.
-                if not (200 <= articulo.peso_real <= 300):
+                if not (250 <= articulo.peso_real <= 350):
                     cell.set_property("cell-background", "orange")
             utils.redondear_flotante_en_cell_cuando_sea_posible(column, cell, model, itr, i)
         cols = tv.get_columns()
