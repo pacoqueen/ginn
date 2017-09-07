@@ -1720,14 +1720,14 @@ class PartesDeFabricacionBalas(Ventana):
                 return
             # Aquí el usuario tiene máximo nivel de privilegios. Elimino
             # la bala/bigbag de Murano y la volveré a crear con el peso nuevo:
-            motivo = "Se corrige peso {}->{} kg.".format(articulo.peso_neto,
+            motivo = "Se corrige peso {}->{} kg.".format(articulo.peso_real,
                                                          nuevopeso)
             murano.ops.delete_articulo(articulo, observaciones=motivo)
             volver_a_volcar_a_murano = True
+        pesoantiguo = articulo.peso_real
         if articulo and articulo.es_bala():
             bala = articulo.bala
             self.descontar_material_adicional(articulo, restar = False)
-            pesoantiguo = bala.pesobala
             bala.pesobala = nuevopeso
             articulo.pesoReal = bala.pesobala
             bala.pesobala -= pclases.PESO_EMBALAJE_BALAS
@@ -1739,13 +1739,12 @@ class PartesDeFabricacionBalas(Ventana):
         elif articulo and articulo.es_bigbag():
             bigbag = articulo.bigbag
             self.descontar_material_adicional(articulo, restar = False)
-            pesoantiguo = bigbag.pesobigbag
             bigbag.pesobigbag = nuevopeso
             self.descontar_material_adicional(articulo, restar = True)
             model[path][2] = bigbag.pesobigbag
         if volver_a_volcar_a_murano:
             motivo = "Peso corregido {}->{} kg.".format(pesoantiguo,
-                                                        articulo.peso_neto)
+                                                        articulo.peso_real)
             murano.ops.create_articulo(articulo, observaciones = motivo)
         itr = model.get_iter(path)
         itr = model.iter_next(itr)
