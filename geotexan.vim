@@ -1,6 +1,6 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim:
 " Vim session script.
-" Created by session.vim 2.13.1 on 07 septiembre 2017 at 09:33:30.
+" Created by session.vim 2.13.1 on 07 septiembre 2017 at 09:50:38.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -58,30 +58,30 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winminheight=1 winheight=1 winminwidth=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 6 + 57) / 115)
-exe '2resize ' . ((&lines * 50 + 29) / 58)
-exe 'vert 2resize ' . ((&columns * 108 + 57) / 115)
+exe 'vert 1resize ' . ((&columns * 9 + 57) / 115)
+exe '2resize ' . ((&lines * 48 + 29) / 58)
+exe 'vert 2resize ' . ((&columns * 105 + 57) / 115)
 exe '3resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 3resize ' . ((&columns * 108 + 57) / 115)
+exe 'vert 3resize ' . ((&columns * 105 + 57) / 115)
 exe '4resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 4resize ' . ((&columns * 108 + 57) / 115)
-exe '5resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 5resize ' . ((&columns * 108 + 57) / 115)
+exe 'vert 4resize ' . ((&columns * 105 + 57) / 115)
+exe '5resize ' . ((&lines * 3 + 29) / 58)
+exe 'vert 5resize ' . ((&columns * 105 + 57) / 115)
 argglobal
 enew
 file __Tagbar__.1
 wincmd w
 argglobal
-let s:l = 1394 - ((18 * winheight(0) + 25) / 50)
+let s:l = 1736 - ((28 * winheight(0) + 24) / 48)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1394
-normal! 055|
+1736
+normal! 023|
 wincmd w
 argglobal
 edit api/tests/ramanujan.py
-let s:l = 627 - ((1 * winheight(0) + 0) / 1)
+let s:l = 627 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -99,7 +99,7 @@ normal! 029|
 wincmd w
 argglobal
 edit api/murano/ops.py
-let s:l = 2298 - ((0 * winheight(0) + 0) / 1)
+let s:l = 2298 - ((1 * winheight(0) + 1) / 3)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -107,15 +107,15 @@ normal! zt
 normal! 036|
 wincmd w
 2wincmd w
-exe 'vert 1resize ' . ((&columns * 6 + 57) / 115)
-exe '2resize ' . ((&lines * 50 + 29) / 58)
-exe 'vert 2resize ' . ((&columns * 108 + 57) / 115)
+exe 'vert 1resize ' . ((&columns * 9 + 57) / 115)
+exe '2resize ' . ((&lines * 48 + 29) / 58)
+exe 'vert 2resize ' . ((&columns * 105 + 57) / 115)
 exe '3resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 3resize ' . ((&columns * 108 + 57) / 115)
+exe 'vert 3resize ' . ((&columns * 105 + 57) / 115)
 exe '4resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 4resize ' . ((&columns * 108 + 57) / 115)
-exe '5resize ' . ((&lines * 1 + 29) / 58)
-exe 'vert 5resize ' . ((&columns * 108 + 57) / 115)
+exe 'vert 4resize ' . ((&columns * 105 + 57) / 115)
+exe '5resize ' . ((&lines * 3 + 29) / 58)
+exe 'vert 5resize ' . ((&columns * 105 + 57) / 115)
 tabnext 1
 if exists('s:wipebuf')
 "   silent exe 'bwipe ' . s:wipebuf

@@ -1722,7 +1722,7 @@ class PartesDeFabricacionBalas(Ventana):
             # la bala/bigbag de Murano y la volveré a crear con el peso nuevo:
             motivo = "Se corrige peso {}->{} kg.".format(articulo.peso_neto,
                                                          nuevopeso)
-            murano.ops.delete_articulo(bala.articulo, observaciones=motivo)
+            murano.ops.delete_articulo(articulo, observaciones=motivo)
             volver_a_volcar_a_murano = True
         if articulo and articulo.es_bala():
             bala = articulo.bala
