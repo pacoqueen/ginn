@@ -1325,6 +1325,7 @@ class PartesDeFabricacionBalas(Ventana):
     def colorear(self, tv):
         def cell_func(column, cell, model, itr, i):
             muestra = False
+            articulo = None
             if model[itr][1] != '':
                 ide = model[itr][-1]
                 try:
