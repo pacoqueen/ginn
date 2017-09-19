@@ -1033,6 +1033,16 @@ class PartesDeFabricacionRollos(Ventana):
         self.wids['b_back'].set_sensitive(self.objeto and self.objeto.anterior() and 1 or 0)
         self.wids['b_next'].set_sensitive(self.objeto and self.objeto.siguiente() and 1 or 0)
         self.wids['ch_bloqueado'].set_sensitive(MURANO)
+        if self.objeto:
+            tteorico = self.objeto.calcular_tiempo_teorico()
+            try:
+                horas = int(tteorico)
+                minutos = int((tteorico % 1) * 60)
+                str_tteorico = "{}:{:02d}".format(horas, minutos)
+                self.wids['e_o11'].set_tooltip_text(str_tteorico)
+            except:
+                pass    # Parte vacío o vete tú a saber.
+
 
     def rellenar_tabla_desechos(self):
         """
