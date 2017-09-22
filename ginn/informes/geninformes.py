@@ -170,20 +170,20 @@ def escribe(cadena_original, limite=None):
         # soporta UTF y falla con cp1252.
         try:
             cadena = cadena.encode('cp1252')
-        except Exception, msg:
+        except Exception, msg:  # Lazy developer is lazy.
             print 'geninformes.py (escribe): No se pudo cambiar codificación '\
-                  'de cadena. Mensaje de la excepción: %s' % (msg)
+                  'de cadena. Mensaje de la excepción: {}'.format(msg)
             try:
                 cadena = cadena.decode("utf-8", "ignore").encode("cp1252")
             except Exception, msg:
                 print 'geninformes.py (escribe): No se pudo decodificar de '\
-                      'UTF-8 la cadena. Mensaje de la excepción: %s' % (msg)
+                      'UTF-8 la cadena. Mensaje de la excepción: {}'.format(msg)
                 try:
                     cadena = cambiar_tildes(cadena)
                 except Exception, msg:
                     print 'geninformes.py (escribe): No se pudieron sustituir'\
                           ' los acentos gráficos. Mensaje de la '\
-                          'excepción: %s' % (msg)
+                          'excepción: %s'.format(msg)
                     cadena = sanitize_unicode(cadena)
                     # cadena = ''
     # DONE: No activar hasta que pruebe que funciona en producción. Sin esto
