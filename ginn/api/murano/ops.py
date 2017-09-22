@@ -488,6 +488,10 @@ def _get_modelo_etiqueta_ginn(id_etiqueta_murano):
     """
     # TODO: Debería mirar los campos módulo y función de Murano y dejar todo
     # este lío de mantener las tablas con ID idéntico entre ambos programas.
+    # Ya en Murano tienen una tabla con (id, nombre, modelo, función). Esta
+    # función debe convertirse en un "sincronizar" las dos tablas o bien
+    # sincronizar el registro en cuestión trayéndose modelo y función. Quizás
+    # lo primero. Tengo que "echarle una pensada".
     if id_etiqueta_murano == 4:
         # Normativa julio 2013
         res = 4
