@@ -144,6 +144,17 @@ def cursiva(c,              # Canvas
 def give_me_the_name_baby():
     return time.strftime("%Y%m%d%H%M%S")
 
+def sanitize_unicode(cadena):
+    """
+    Convierte los caracteres unicode ✔ y ✘ por caracteres ascii para contentar
+    a los Windows XP que siguen usando codificaciones del siglo pasado.
+    """
+    badchars =  ['✔', '✘']
+    goodchars = ['+', 'x']
+    mapeo = zip(badchars, goodchars)
+    for malo, bueno in mapeo:
+        cadena = cadena.replace(malo, bueno)
+    return cadena
 
 def escribe(cadena_original, limite=None):
     """
@@ -161,20 +172,20 @@ def escribe(cadena_original, limite=None):
             cadena = cadena.encode('cp1252')
         except Exception, msg:
             print 'geninformes.py (escribe): No se pudo cambiar codificación '\
-                  'de cadena "%s". Mensaje de la excepción: %s' % (cadena, msg)
+                  'de cadena. Mensaje de la excepción: %s' % (msg)
             try:
                 cadena = cadena.decode("utf-8", "ignore").encode("cp1252")
             except Exception, msg:
                 print 'geninformes.py (escribe): No se pudo decodificar de '\
-                      'UTF-8 la cadena "%s". Mensaje de la excepción: %s' % (
-                        cadena, msg)
+                      'UTF-8 la cadena. Mensaje de la excepción: %s' % (msg)
                 try:
                     cadena = cambiar_tildes(cadena)
                 except Exception, msg:
                     print 'geninformes.py (escribe): No se pudieron sustituir'\
-                          ' los acentos gráficos de "%s". Mensaje de la '\
-                          'excepción: %s' % (cadena, msg)
-                    cadena = ''
+                          ' los acentos gráficos. Mensaje de la '\
+                          'excepción: %s' % (msg)
+                    cadena = sanitize_unicode(cadena)
+                    # cadena = ''
     # DONE: No activar hasta que pruebe que funciona en producción. Sin esto
     # la única máquina que da problemas con la codificación es el Windows XP
     # del VirtualBox en la Debian de nostromo.
