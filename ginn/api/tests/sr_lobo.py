@@ -506,7 +506,8 @@ def make_consumos_bigbags(fsalida, simulate=True, fini=None, ffin=None):
                     # El bigbag está en otro almacén o no está. Me da igual.
                     # No lo puedo consumir ni se podrá consumir jamás. Hay que
                     # corregirlo a mano.
-                    report.write("El bigbag está en otro almacén o no está.\n")
+                    report.write("El bigbag {} está en otro almacén o no está."
+                                 "\n".format(bb.codigo))
                     res = False
     report.close()
     return res
