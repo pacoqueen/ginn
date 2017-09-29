@@ -9825,6 +9825,7 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
                     largo = 1000 * prollo.peso / prollo.densidad / campos.ancho
                         # 1000 * gr / gr/m² / m = m
                     rollo['descripcion'] = producto.nombre
+                    print "TATE!"
                     rollo['densidad'] = utils.float2str(prollo.densidad)
                     rollo['ancho'] = "%s m" % (campos.ancho) # Ancho se supone
                         # fijo. Los rollos no tienen campo ancho. Es el del

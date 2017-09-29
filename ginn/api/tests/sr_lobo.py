@@ -137,6 +137,12 @@ class CacheDB(object):
             cursor.execute(sql, (codigo, datetime.date.today()))
         self.db.commit()
 
+    def close(self):
+        """
+        Cierra la base de datos.
+        """
+        self.db.close()
+
 
 # pylint: disable=too-many-locals, too-many-branches, too-many-statements
 def _overwrite_articulo_ginn2Murano(articulo, report, simulate=True):
@@ -381,6 +387,7 @@ def sync_articulo(codigo, fsalida, simulate=True, force=True):
         if not simulate:
             cachedb.reset_success(codigo)
         report.write(" [KO]\n")
+    cachedb.close()
     report.close()
     return res
 

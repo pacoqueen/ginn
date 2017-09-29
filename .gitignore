@@ -80,3 +80,6 @@ API*.json
 extra/scripts/*.csv 
 extra/scripts/*.xls 
 extra/scripts/*.xlsx
+
+# Datos temporales
+ginn/api/tests/sr_lobo.db
