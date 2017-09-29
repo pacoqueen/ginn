@@ -119,7 +119,11 @@ class CacheDB(object):
         """
         sql = "update history set exitos=exitos+1 where codigo = ?"
         cursor = self.db.cursor()
-        cursor.execute(sql, (codigo, ))
+        try:
+            cursor.execute(sql, (codigo, ))
+        except sqlite3.OperationalError:
+            self._open_database()
+            cursor.execute(sql, (codigo, ))
         if not cursor.rowcount:
             sql = "insert into history values(?, 1, ?)"
             cursor.execute(sql, (codigo, datetime.date.today()))
@@ -362,7 +366,7 @@ def sync_articulo(codigo, fsalida, simulate=True, force=True, cachedb=None):
         cachedb = CacheDB()
         close_after = True
     if not force:
-        articulo_cerrado = cachedb.check_articulo_cerrado(codigo)
+        res = articulo_cerrado = cachedb.check_articulo_cerrado(codigo)
     if force or not articulo_cerrado:
         articulo = pclases.Articulo.get_articulo(codigo)
         if articulo:
