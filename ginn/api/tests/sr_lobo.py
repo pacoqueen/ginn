@@ -44,6 +44,23 @@ from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
 sys.argv = _argv
 
 
+def failarmy(func):
+    """
+    Decorador que reabre la base de datos en caso de error de acceso al fichero
+    y vuelve a intentar la operación.
+    """
+    def func_wrapper(self, codigo):
+        """
+        _Wrapper_ que ejecutará la función decorada.
+        """
+        try:
+            return func(self, codigo)
+        except sqlite3.OperationalError:
+            self.retry_open()
+            return func(self, codigo)
+    return func_wrapper
+
+
 class CacheDB(object):
     """
     Implementa una especie de "caché" para saber cuántas veces y cuándo fue
@@ -62,6 +79,14 @@ class CacheDB(object):
         except sqlite3.Error:
             self._create_database()
         self._check_tables()
+
+    def retry_open(self):
+        """
+        Intenta cerrar y volver a abrir la base de datos por si ha habido
+        error de acceso al fichero.
+        """
+        self.close()
+        self._open_database()
 
     def _create_database(self):
         """
@@ -113,22 +138,20 @@ class CacheDB(object):
         res = (exitos >= 2 or fecha <= datetime.date(hoy.year, hoy.month, 1))
         return res
 
+    @failarmy
     def inc_success(self, codigo):
         """
         Aumenta en 1 el contador de veces del código sincronizado.
         """
         sql = "update history set exitos=exitos+1 where codigo = ?"
         cursor = self.db.cursor()
-        try:
-            cursor.execute(sql, (codigo, ))
-        except sqlite3.OperationalError:
-            self._open_database()
-            cursor.execute(sql, (codigo, ))
+        cursor.execute(sql, (codigo, ))
         if not cursor.rowcount:
             sql = "insert into history values(?, 1, ?)"
             cursor.execute(sql, (codigo, datetime.date.today()))
         self.db.commit()
 
+    @failarmy
     def reset_success(self, codigo):
         """
         Pone a cero el contador de veces del código sincronizado.
