@@ -120,7 +120,7 @@ class CacheDB(object):
         sql = "update history set exitos=exitos+1 where codigo = ?"
         cursor = self.db.cursor()
         cursor.execute(sql, (codigo, ))
-        if not cursor.rowcount():
+        if not cursor.rowcount:
             sql = "insert into history values(?, 1, ?)"
             cursor.execute(sql, (codigo, datetime.date.today()))
         self.db.commit()
