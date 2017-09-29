@@ -101,11 +101,15 @@ class CacheDB(object):
         mes ya cerrado.
         Todos los meses menos el actual se consideran cerrados.
         """
+        hoy = datetime.date.today()
         sql = "SELECT exitos, fecha FROM history WHERE codigo=?"
         cursor = self.db.cursor()
         cursor.execute(sql, (codigo, ))
-        exitos, fecha = cursor.fetchone()
-        hoy = datetime.date.today()
+        try:
+            exitos, fecha = cursor.fetchone()
+        except TypeError:   # .fetchone devuelve None. No existe el artícuo.
+            exitos = 0
+            fecha = hoy
         res = (exitos >= 2 or fecha <= datetime.date(hoy.year, hoy.month, 1))
         return res
 
