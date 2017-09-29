@@ -9876,11 +9876,11 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
             c.drawString(0.5 * cm, height - 4.4 * cm,
                          escribe("Ancho: %s" % (rollo['ancho'])))
             c.drawString(0.5 * cm, height - 6.2 * cm,
-                         escribe("M²: %s" % (rollo['m2'])))
+                         escribe("m²: %s" % (rollo['m2'])))
             c.drawString(0.5 * cm, height - 5.0 * cm,
                          escribe("Peso: %s" % (rollo['peso'])))
             c.drawString(4.0 * cm, height - 6.2 * cm,
-                         escribe("M.lin: %s" % (rollo['mlin'])))
+                         escribe("m.lin: %s" % (rollo['mlin'])))
             c.drawString(0.5 * cm, height - 5.6 * cm,
                          escribe("Partida: %s" % (rollo['partida'])))
             c.setFont("Helvetica-Bold", 22)

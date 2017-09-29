@@ -313,7 +313,7 @@ def _rewrite_articulo_ginn2Murano(articulo, report, simulate=True):
 
 
 # pylint: disable=too-many-branches,too-many-statements,too-many-locals,too-many-nested-blocks
-def sync_articulo(codigo, fsalida, simulate=True, force=True):
+def sync_articulo(codigo, fsalida, simulate=True, force=True, cachedb=None):
     """
     Sincroniza el artículo de ginn cuyo código es "codigo", con el de
     Murano. Los datos de producción son los correctos, de modo que detecta y
@@ -357,7 +357,10 @@ def sync_articulo(codigo, fsalida, simulate=True, force=True):
         report.write("Simulando sincronización de artículo %s... " % codigo)
     else:
         report.write("Sincronizando artículo %s... " % codigo)
-    cachedb = CacheDB()
+    close_after = False
+    if not cachedb:
+        cachedb = CacheDB()
+        close_after = True
     if not force:
         articulo_cerrado = cachedb.check_articulo_cerrado(codigo)
     if force or not articulo_cerrado:
@@ -387,7 +390,8 @@ def sync_articulo(codigo, fsalida, simulate=True, force=True):
         if not simulate:
             cachedb.reset_success(codigo)
         report.write(" [KO]\n")
-    cachedb.close()
+    if close_after:
+        cachedb.close()
     report.close()
     return res
 
@@ -883,9 +887,12 @@ def main():
         for codigo in tqdm(args.codigos_productos, desc="Productos"):
             sync_producto(codigo, args.fsalida, args.simulate)
     if args.codigos_articulos:
+        cachedb = CacheDB()
         for codigo in tqdm(args.codigos_articulos, desc="Artículos"):
             # Con force a False tiraré de "caché".
-            sync_articulo(codigo, args.fsalida, args.simulate, force=False)
+            sync_articulo(codigo, args.fsalida, args.simulate, force=False,
+                          cachedb=cachedb)
+        cachedb.close()
 
 
 if __name__ == "__main__":
