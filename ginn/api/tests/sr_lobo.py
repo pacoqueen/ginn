@@ -20,10 +20,13 @@ from __future__ import print_function
 import datetime
 import sys
 import os
+import tempfile
 import subprocess
+import sqlite3
 import logging
 import argparse
 LOGFILENAME = "%s.log" % (".".join(os.path.basename(__file__).split(".")[:-1]))
+SQLFILENAME = "%s.db" % (".".join(os.path.basename(__file__).split(".")[:-1]))
 logging.basicConfig(filename=LOGFILENAME,
                     format="%(asctime)s %(levelname)-8s : %(message)s",
                     level=logging.DEBUG)
@@ -41,8 +44,266 @@ from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
 sys.argv = _argv
 
 
-# pylint: disable=too-many-branches,too-many-statements,too-many-locals
-def sync_articulo(codigo, fsalida, simulate=True):
+class CacheDB(object):
+    """
+    Implementa una especie de "caché" para saber cuántas veces y cuándo fue
+    la última vez que se consultó y dio por correcto un código de artículo
+    antes de lanzar consultas a ninguna de las dos bases de datos.
+    """
+    def __init__(self):
+        """
+        Instancia una conexión a una base de datos sqlite donde guardaremos
+        los datos.
+        Si la base de datos no existe, la crea. Si no la puede crear en el
+        directorio actual, usa uno temporal.
+        """
+        try:
+            self._open_database()
+        except sqlite3.Error:
+            self._create_database()
+        self._check_tables()
+
+    def _create_database(self):
+        """
+        Crea una base de datos `sqlite` en el directorio del script o
+        en el directorio temporal del usuario si no tiene permisos sobre
+        el actual.
+        """
+        # SQLite siempre crea el fichero si no lo encuentra al abrirlo.
+        self._open_database()
+
+    def _open_database(self):
+        """
+        Abre la base de datos del directorio actual. Si no existe, lo intenta
+        con el directorio temporal.
+        """
+        try:
+            conn = sqlite3.connect(SQLFILENAME, detect_types=sqlite3.PARSE_DECLTYPES)
+        except sqlite3.OperationalError:
+            tempdb = os.path.join(tempfile.gettempdir(), SQLFILENAME)
+            try:
+                conn = sqlite3.connect(tempdb, detect_types=sqlite3.PARSE_DECLTYPES)
+            except sqlite3.OperationalError:
+                conn = sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
+        self.db = conn
+
+    def _check_tables(self):
+        """
+        Comprueba si existen las tablas necesarias y las crea si no.
+        """
+        sql = "create table if not exists history(codigo text, exitos int, fecha date)"
+        c = self.db.cursor()
+        c.execute(sql)
+
+    def check_articulo_cerrado(self, codigo):
+        """
+        Comprueba si el código ha sido verificado más de dos veces y en un
+        mes ya cerrado.
+        Todos los meses menos el actual se consideran cerrados.
+        """
+        sql = "SELECT exitos, fecha FROM history WHERE codigo=?"
+        cursor = self.db.cursor()
+        cursor.execute(sql, (codigo, ))
+        exitos, fecha = cursor.fetchone()
+        hoy = datetime.date.today()
+        res = (exitos >= 2 or fecha <= datetime.date(hoy.year, hoy.month, 1))
+        return res
+
+    def inc_success(self, codigo):
+        """
+        Aumenta en 1 el contador de veces del código sincronizado.
+        """
+        sql = "update history set exitos=exitos+1 where codigo = ?"
+        cursor = self.db.cursor()
+        cursor.execute(sql, (codigo, ))
+        if not cursor.rowcount():
+            sql = "insert into history values(?, 1, ?)"
+            cursor.execute(sql, (codigo, datetime.date.today()))
+        self.db.commit()
+
+    def reset_success(self, codigo):
+        """
+        Pone a cero el contador de veces del código sincronizado.
+        """
+        sql = "update history set exitos=0 where codigo = ?"
+        cursor = self.db.cursor()
+        cursor.execute(sql, (codigo, ))
+        if not cursor.rowcount():
+            sql = "insert into history values(?, 0, ?)"
+            cursor.execute(sql, (codigo, datetime.date.today()))
+        self.db.commit()
+
+
+# pylint: disable=too-many-locals, too-many-branches, too-many-statements
+def _overwrite_articulo_ginn2Murano(articulo, report, simulate=True):
+    """
+    Sobrescribe los datos **de _Murano_** de acuerdo a los que tiene el artículo
+    en _ginn_.
+    """
+    res = True
+    altered = False
+    peso_bruto = articulo.peso_bruto
+    peso_neto = articulo.peso_neto
+    superficie = articulo.superficie
+    if superficie is None:
+        superficie = 0.0    # Es como lo devuelve Murano. Como float.
+    # pylint: disable=protected-access
+    (peso_bruto_murano,
+     peso_neto_murano,
+     superficie_murano) = murano.ops._get_dimensiones_murano(articulo)
+    # Solo trabajamos con 2 decimales. Redondeo para evitar falsos
+    # positivos en != por 0.00000001 unidad y cosas así.
+    peso_bruto = round(peso_bruto, 2)
+    peso_neto = round(peso_neto, 2)
+    superficie = round(superficie, 2)
+    peso_bruto_murano = round(peso_bruto_murano, 2)
+    peso_neto_murano = round(peso_neto_murano, 2)
+    superficie_murano = round(superficie_murano, 2)
+    if (peso_bruto_murano != peso_bruto or
+            peso_neto_murano != peso_neto or
+            superficie_murano != superficie):
+        report.write("Corrigiendo dimensiones ({} -> {}, {} -> {},"
+                     " {} -> {})... ".format(peso_bruto_murano,
+                                             peso_bruto,
+                                             peso_neto_murano,
+                                             peso_neto,
+                                             superficie_murano,
+                                             superficie))
+        altered = True
+        if not simulate:
+            _res = murano.ops.corregir_dimensiones_articulo(articulo,
+                                                            peso_bruto,
+                                                            peso_neto,
+                                                            superficie)
+        else:
+            _res = True
+        res = res and _res
+    # Si además es de tipo fibra de cemento, compruebo el palé:
+    if articulo.caja and articulo.caja.pale:
+        pale_murano = murano.ops._get_codigo_pale(articulo)
+        codigo_pale_ginn = articulo.caja.pale.codigo
+        if pale_murano != codigo_pale_ginn:
+            report.write("Corrigiendo palé "
+                         "({} -> {})...".format(pale_murano,
+                                                codigo_pale_ginn))
+            altered = True
+            if not simulate:
+                _res = murano.ops.corregir_pale(articulo)
+            else:
+                _res = True
+            res = res and _res
+    # Compruebo calidad:
+    try:
+        calidad_ginn = articulo.get_str_calidad()
+    except ValueError:
+        calidad_ginn = None
+    calidad_murano = murano.ops._get_calidad_murano(articulo)
+    misma_calidad = (calidad_ginn and calidad_murano and
+                     calidad_ginn.upper() == calidad_murano.upper())
+    if not misma_calidad:
+        if calidad_ginn:
+            report.write("Corrigiendo calidad en Murano "
+                         "({} -> {})...".format(calidad_murano,
+                                                calidad_ginn))
+            if not simulate:
+                _res = murano.ops.update_calidad(articulo, calidad_ginn)
+            else:
+                _res = True
+            altered = True
+        else:
+            report.write(":warning: Sin calidad en ginn. "
+                         "Calidad en Murano: '{}' (!)".format(
+                             calidad_murano))
+            altered = False
+            _res = False
+        res = res and _res
+    else:
+        _res = True
+        res = res and _res
+    # Y por último compruebo el producto:
+    prod_en_murano = murano.ops.get_producto_articulo_murano(articulo)
+    prod_en_ginn = articulo.productoVenta
+    if prod_en_murano != prod_en_ginn:
+        # Creo que esta rama está "muerta". Aquí no entraría nunca.
+        report.write("Corrigiendo producto de {}: {} -> {}".format(
+            articulo.codigo, prod_en_murano.descripcion,
+            prod_en_ginn.descripcion))
+        altered = True
+        if not simulate:
+            obs = "[sr_lobo] Prod. corregido acorde a ginn"
+            _res = murano.ops.update_producto(articulo, prod_en_ginn,
+                                              obs)
+        else:
+            _res = True
+        res = res and _res
+    if not altered:
+        report.write("Nada que hacer. ")
+        _res = True
+        res = res and _res
+    return res
+
+
+def _rewrite_articulo_ginn2Murano(articulo, report, simulate=True):
+    """
+    Sobrescribe la información de _Murano_ respecto al artículo recibido para
+    que quede igual que en _ginn_. Si el artículo no existía, lo crea. Si
+    ya existía corrige la información pertinente.
+    """
+    res = True
+    if murano.ops.esta_en_almacen(articulo) == 'GTX':
+        # No existe como ese producto, pero sí que existe porque está
+        # almacén, pero con otro producto entonces. Hay que cambiarlo
+        # a su producto correcto según ginn:
+        report.write("Cambiando producto en Murano...")
+        if not simulate:
+            obs = "[sr_lobo] Producto dif. ginn y Murano."
+            _res = murano.ops.update_producto(articulo,
+                                              articulo.productoVenta,
+                                              observaciones=obs)
+        else:
+            _res = True
+        res = res and _res
+    elif murano.ops.esta_en_almacen(articulo):
+        # Está en otro almacén que no es el principal.
+        report.write("WARNING: Artículo como otro producto en almacén {}"
+                     ".".format(murano.ops.esta_en_almacen(articulo)))
+        # Corregir a mano cambiando el producto en ginn o lo que sea.
+        _res = False
+        res = res and _res
+    else:
+        # No existe con el producto de ginn, pero puede que con algún
+        # otro y ya no está en almacén o que no exista en absoluto.
+        movserie = murano.ops.get_ultimo_movimiento_articulo_serie(
+            murano.connection.Connection(), articulo)
+        if not movserie:
+            if (articulo.parteDeProduccion
+                    and articulo.parteDeProduccion.bloqueado):
+                report.write("Creando... ")
+                if not simulate:
+                    obs = "[sr_lobo] Art. en ginn pero no en Murano"
+                    _res = murano.ops.create_articulo(articulo,
+                                                      observaciones=obs)
+                else:
+                    _res = True
+            else:   # Si el parte no está verificado, no creo todavía
+                    # el artículo.
+                report.write("Parte {} no verificado. No se crea {}. ".format(
+                    articulo.parteDeProduccion
+                    and articulo.parteDeProduccion.fechahorainicio
+                    or "N/D",
+                    articulo.codigo))
+                _res = True
+        else:   # Hay un movserie, seguramente de salida de albarán.
+            pvmurano = movserie['CodigoArticulo']
+            report.write("WARNING: Arículo ya vendido como {}. ".format(
+                pvmurano))
+            _res = True
+        res = res and _res
+    return res
+
+
+# pylint: disable=too-many-branches,too-many-statements,too-many-locals,too-many-nested-blocks
+def sync_articulo(codigo, fsalida, simulate=True, force=True):
     """
     Sincroniza el artículo de ginn cuyo código es "codigo", con el de
     Murano. Los datos de producción son los correctos, de modo que detecta y
@@ -54,180 +315,67 @@ def sync_articulo(codigo, fsalida, simulate=True):
     - Código palé
     - Producto de venta
     - Calidad (siempre que sea posible)
+
+    Para cada artículo comprobado se guarda en una pequeña base de datos local
+    en `sqlite3` el número de veces que se ha sincronizado con éxito y la
+    fecha.
+
+    A la hora de comprobar un artículo:
+    0. Si se ha recibido el parámetro `force==true`:
+        0.1. Se sincroniza el artículo y se actualiza el registro de `sqlite`.
+    1. Si no (`force==false`):
+        1.1. Si nunca ha sido sincronizado (artículo nuevo en ginn y todavía no en
+             Murano) o tiene el contador a 0, se sincroniza y se guarda el par
+             `(código, 1, día, mes, año)`.
+        1.2. Si ya había sido sincronizado al menos 2 veces anteriormente, se
+             incrementa el contador y **no se consulta nada a Murano ni a _ginn_**,
+             acelerando considerablemente la ejecución. **No se actualiza
+             tampoco la fecha**. La fecha solo guarda las sincronizaciones
+             **reales de _ginn_ contra _Murano_**.
+        1.3. En otro caso, sincroniza el artículo y:
+                1.3.1. Si se sincorniza con éxito, incrementa el contador
+                       **y actualiza la fecha**.
+                1.3.2. Si no, el contador se reinicia a 0.
+
+    Se supone que en meses cerrados no deben cambiarse los artículos. Si alguno
+    de meses anteriores (y ya comprobados **dos veces** por el _script_ debe
+    cambiarse puntualmente por algún motivo en concreto, se debe pasar el
+    parámetro `force` a `true`.
     """
     report = open(fsalida, "a", 0)
     if simulate:
         report.write("Simulando sincronización de artículo %s... " % codigo)
     else:
         report.write("Sincronizando artículo %s... " % codigo)
-    articulo = pclases.Articulo.get_articulo(codigo)
-    res = True
-    if articulo:
-        if not murano.ops.existe_articulo(articulo):
-            if murano.ops.esta_en_almacen(articulo) == 'GTX':
-                # No existe como ese producto, pero sí que existe porque está
-                # almacén, pero con otro producto entonces. Hay que cambiarlo
-                # a su producto correcto según ginn:
-                report.write("Cambiando producto en Murano...")
+    cachedb = CacheDB()
+    if not force:
+        articulo_cerrado = cachedb.check_articulo_cerrado(codigo)
+    if force or not articulo_cerrado:
+        articulo = pclases.Articulo.get_articulo(codigo)
+        if articulo:
+            if not murano.ops.existe_articulo(articulo):
+                res = _rewrite_articulo_ginn2Murano(articulo, report, simulate)
+            else:   # Si el artículo ya existe:
+                res = _overwrite_articulo_ginn2Murano(articulo, report, simulate)
+            if not articulo.api:
+                report.write("Actualizando valor api... ")
                 if not simulate:
-                    obs = "[sr_lobo] Producto dif. ginn y Murano."
-                    _res = murano.ops.update_producto(articulo,
-                                                      articulo.productoVenta,
-                                                      observaciones=obs)
+                    articulo.api = murano.ops.existe_articulo(articulo)
+                    articulo.syncUpdate()
+                    _res = articulo.api
                 else:
                     _res = True
                 res = res and _res
-            elif murano.ops.esta_en_almacen(articulo):
-                # Está en otro almacén que no es el principal.
-                report.write("Artículo como otro producto en almacén {}"
-                             ".".format(murano.ops.esta_en_almacen(articulo)))
-                # Corregir a mano cambiando el producto en ginn o lo que sea.
-                _res = False
-                res = res and _res
-            else:
-                # No existe con el producto de ginn, pero puede que con algún
-                # otro y ya no está en almacén o que no exista en absoluto.
-                movserie = murano.ops.get_ultimo_movimiento_articulo_serie(
-                    murano.connection.Connection(), articulo)
-                if not movserie:
-                    if (articulo.parteDeProduccion
-                            and articulo.parteDeProduccion.bloqueado):
-                        report.write("Creando... ")
-                        if not simulate:
-                            obs = "[sr_lobo] Art. en ginn pero no en Murano"
-                            _res = murano.ops.create_articulo(articulo,
-                                                              observaciones=obs)
-                        else:
-                            _res = True
-                    else:   # Si el parte no está verificado, no creo todavía
-                            # el artículo.
-                        report.write("Parte {} no verificado. No se crea {}. ".format(
-                            articulo.parteDeProduccion
-                            and articulo.parteDeProduccion.fechahorainicio
-                            or "N/D",
-                            articulo.codigo))
-                        _res = True
-                else:   # Hay un movserie, seguramente de salida de albarán.
-                    pvmurano = movserie['CodigoArticulo']
-                    report.write("Arículo ya vendido como {}. ".format(
-                        pvmurano))
-                    _res = True
-                res = res and _res
-        else:   # Si el artículo ya existe:
-            altered = False
-            peso_bruto = articulo.peso_bruto
-            peso_neto = articulo.peso_neto
-            superficie = articulo.superficie
-            if superficie is None:
-                superficie = 0.0    # Es como lo devuelve Murano. Como float.
-            # pylint: disable=protected-access
-            (peso_bruto_murano,
-             peso_neto_murano,
-             superficie_murano) = murano.ops._get_dimensiones_murano(articulo)
-            # Solo trabajamos con 2 decimales. Redondeo para evitar falsos
-            # positivos en != por 0.00000001 unidad y cosas así.
-            peso_bruto = round(peso_bruto, 2)
-            peso_neto = round(peso_neto, 2)
-            superficie = round(superficie, 2)
-            peso_bruto_murano = round(peso_bruto_murano, 2)
-            peso_neto_murano = round(peso_neto_murano, 2)
-            superficie_murano = round(superficie_murano, 2)
-            if (peso_bruto_murano != peso_bruto or
-                    peso_neto_murano != peso_neto or
-                    superficie_murano != superficie):
-                report.write("Corrigiendo dimensiones ({} -> {}, {} -> {},"
-                             " {} -> {})... ".format(peso_bruto_murano,
-                                                     peso_bruto,
-                                                     peso_neto_murano,
-                                                     peso_neto,
-                                                     superficie_murano,
-                                                     superficie))
-                altered = True
-                if not simulate:
-                    _res = murano.ops.corregir_dimensiones_articulo(articulo,
-                                                                    peso_bruto,
-                                                                    peso_neto,
-                                                                    superficie)
-                else:
-                    _res = True
-                res = res and _res
-            # Si además es de tipo fibra de cemento, compruebo el palé:
-            if articulo.caja and articulo.caja.pale:
-                pale_murano = murano.ops._get_codigo_pale(articulo)
-                codigo_pale_ginn = articulo.caja.pale.codigo
-                if pale_murano != codigo_pale_ginn:
-                    report.write("Corrigiendo palé "
-                                 "({} -> {})...".format(pale_murano,
-                                                        codigo_pale_ginn))
-                    altered = True
-                    if not simulate:
-                        _res = murano.ops.corregir_pale(articulo)
-                    else:
-                        _res = True
-                    res = res and _res
-            # Compruebo calidad:
-            try:
-                calidad_ginn = articulo.get_str_calidad()
-            except ValueError:
-                calidad_ginn = None
-            calidad_murano = murano.ops._get_calidad_murano(articulo)
-            misma_calidad = (calidad_ginn and calidad_murano and
-                             calidad_ginn.upper() == calidad_murano.upper())
-            if not misma_calidad:
-                if calidad_ginn:
-                    report.write("Corrigiendo calidad en Murano "
-                                 "({} -> {})...".format(calidad_murano,
-                                                        calidad_ginn))
-                    if not simulate:
-                        _res = murano.ops.update_calidad(articulo, calidad_ginn)
-                    else:
-                        _res = True
-                    altered = True
-                else:
-                    report.write(":warning: Sin calidad en ginn. "
-                                 "Calidad en Murano: '{}' (!)".format(
-                                     calidad_murano))
-                    altered = False
-                    _res = False
-                res = res and _res
-            else:
-                _res = True
-                res = res and _res
-            # Y por último compruebo el producto:
-            prod_en_murano = murano.ops.get_producto_articulo_murano(articulo)
-            prod_en_ginn = articulo.productoVenta
-            if prod_en_murano != prod_en_ginn:
-                # Creo que esta rama está "muerta". Aquí no entraría nunca.
-                report.write("Corrigiendo producto de {}: {} -> {}".format(
-                    articulo.codigo, prod_en_murano.descripcion,
-                    prod_en_ginn.descripcion))
-                altered = True
-                if not simulate:
-                    obs = "[sr_lobo] Prod. corregido acorde a ginn"
-                    _res = murano.ops.update_producto(articulo, prod_en_ginn,
-                                                      obs)
-                else:
-                    _res = True
-                res = res and _res
-            if not altered:
-                report.write("Nada que hacer. ")
-                _res = True
-                res = res and _res
-        if not articulo.api:
-            report.write("Actualizando valor api... ")
-            if not simulate:
-                articulo.api = murano.ops.existe_articulo(articulo)
-                articulo.syncUpdate()
-                _res = articulo.api
-            else:
-                _res = True
-            res = res and _res
-    else:
-        report.write("Artículo no encontrado en ginn.")
-        res = False
+        else:
+            report.write("Artículo no encontrado en ginn.")
+            res = False
     if res:
+        if not simulate:
+            cachedb.inc_success(codigo)     # Y si no existe, lo crea.
         report.write(" [OK]\n")
     else:
+        if not simulate:
+            cachedb.reset_success(codigo)
         report.write(" [KO]\n")
     report.close()
     return res
@@ -725,7 +873,8 @@ def main():
             sync_producto(codigo, args.fsalida, args.simulate)
     if args.codigos_articulos:
         for codigo in tqdm(args.codigos_articulos, desc="Artículos"):
-            sync_articulo(codigo, args.fsalida, args.simulate)
+            # Con force a False tiraré de "caché".
+            sync_articulo(codigo, args.fsalida, args.simulate, force=False)
 
 
 if __name__ == "__main__":
