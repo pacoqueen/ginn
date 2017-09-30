@@ -20,6 +20,7 @@ from __future__ import print_function
 import datetime
 import sys
 import os
+import time
 import tempfile
 import subprocess
 import sqlite3
@@ -56,6 +57,7 @@ def failarmy(func):
         try:
             return func(self, codigo)
         except sqlite3.OperationalError:
+            time.sleep(30)  # I/O Error quizás. Espero y vuelvo a intentar.
             self.retry_open()
             return func(self, codigo)
     return func_wrapper
