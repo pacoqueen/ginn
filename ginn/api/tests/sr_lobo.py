@@ -701,10 +701,15 @@ def make_consumos_bigbags(fsalida, simulate=True, fini=None, ffin=None):
                                  "\n".format(bb.codigo))
                     res = False
                     if not simulate and murano.ops.esta_consumido(bb.articulo):
-                        bb.api = True
-                        report.write(" > Corregido valor `api` de consumo de "
-                                     "{}.".format(bb.codigo))
-                        res = True
+                        # ¿Esta consumido en el mismo parte en _ginn_ y _Murano_?
+                        mov = murano.ops.get_ultimo_movimiento_articulo_serie(
+                            murano.connection.Connection(), bb.articulo)
+                        if mov['Documento'] == bb.parteDeProduccionID:
+                            bb.api = True
+                            bb.syncUpdate()
+                            report.write(" > Corregido valor `api` de consumo de "
+                                         "{}.".format(bb.codigo))
+                            res = True
     report.close()
     return res
 
