@@ -708,7 +708,7 @@ def make_consumos_bigbags(fsalida, simulate=True, fini=None, ffin=None):
                             bb.api = True
                             bb.syncUpdate()
                             report.write(" > Corregido valor `api` de consumo de "
-                                         "{}.".format(bb.codigo))
+                                         "{}.\n".format(bb.codigo))
                             res = True
     report.close()
     return res
