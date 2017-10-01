@@ -814,7 +814,18 @@ def query_articulos(producto, fini, ffin):
         rs = tabla.select(pclases.AND(tabla.q.fechahora >= fhoraini,
                                       tabla.q.fechahora < fhorafin))
         for item in tqdm(rs, desc="Artículos (strict)", total=rs.count()):
-            if item.articulo.productoVenta == producto:
+            try:
+                articulo = item.articulo
+            except IndexError:
+                print("Ítem sin artículo {}.".format(item.get_info()))
+                sys.exit(4)
+            try:
+                producto_articulo = articulo.productoVenta
+            except IndexError:
+                print("Artículo sin producto venta {})".format(
+                    articulo.get_info()))
+                sys.exit(5)
+            if producto_articulo == producto:
                 articulos.append(item.articulo)
     return articulos
 

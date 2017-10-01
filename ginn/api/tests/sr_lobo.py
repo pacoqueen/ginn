@@ -392,6 +392,7 @@ def sync_articulo(codigo, fsalida, simulate=True, force=True, cachedb=None):
         close_after = True
     if not force:
         res = articulo_cerrado = cachedb.check_articulo_cerrado(codigo)
+        # TODO: ¿Un tick o algo al log para saber que ha hecho acierto de caché?
     if force or not articulo_cerrado:
         articulo = pclases.Articulo.get_articulo(codigo)
         if articulo:
