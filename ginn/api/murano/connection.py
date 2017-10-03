@@ -10,13 +10,13 @@ VERBOSE y DEBUG.
 
 from __future__ import print_function
 import os
+import inspect
 import logging
+import pymssql
 logging.basicConfig(
     filename="%s.log" % (".".join(os.path.basename(__file__).split(".")[:-1])),
     format="%(asctime)s %(levelname)-8s : %(message)s",
     level=logging.DEBUG)
-import inspect
-import pymssql
 
 DEBUG = False
 VERBOSE = False
@@ -39,6 +39,7 @@ class Connection(object):
         self.__database = ""    # Inicialización temporal hasta que conecte.
         try:
             self.conn = self.__connect()
+        # pylint: disable=no-member
         except pymssql.InterfaceError as exception:
             if DEBUG:
                 self.conn = None    # No se pudo conectar. Modo "debug".
@@ -79,10 +80,11 @@ class Connection(object):
                 password = credentials.readlines()[0].split()[0]
                 credentials.close()
         try:
-            # pylint: disable=unexpected-keyword-arg
+            # pylint: disable=unexpected-keyword-arg, no-member
             conn = pymssql.connect(server=server, user=user,
                                    password=password, database=database)
         except TypeError:   # Depende de la versión usa host o server.
+            # pylint: disable=no-member
             conn = pymssql.connect(host=server, user=user,
                                    password=password, database=database)
         return conn
