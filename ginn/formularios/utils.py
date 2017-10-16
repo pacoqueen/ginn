@@ -3321,6 +3321,9 @@ def procesar_codigo(codigo, logger = None):
     o None si no se pudo encontrar el código o determinar la clase.
     """
     objeto = None
+    # Limpio el código de posibles errores de transmisión (DataError por
+    # caracteres espurios).
+    codigo = ''.join([c for c in codigo if c in string.letters + string.digits])
     if codigo.startswith("A"):      # Procesar albaran
         objeto = procesar_albaran(codigo, logger)
     elif codigo.startswith("R"):    # Procesar rollo
