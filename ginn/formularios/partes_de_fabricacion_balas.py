@@ -1868,7 +1868,10 @@ class PartesDeFabricacionBalas(Ventana):
                     hour = int(newtext.split(":")[0]),
                     minute = int(newtext.split(":")[1]))
             if (incidencia.horafin - incidencia.horainicio).days < 0:
-                incidencia.horafin += mx.DateTime.oneDay
+                try:
+                    incidencia.horafin += mx.DateTime.oneDay
+                except TypeError:
+                    incidencia.horafin += datetime.timedelta(days=1)
             while incidencia.horainicio < self.objeto.fechahorainicio: # El
                 # parte está en la franja de medianoche y la incidencia
                 # comienza después de las 12.
