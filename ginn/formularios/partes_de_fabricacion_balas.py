@@ -3089,6 +3089,7 @@ class PartesDeFabricacionBalas(Ventana):
                     a.bigbag.loteCem = lote
 
     def nuevo_lote(self, codigo):
+        lote = None
         if not isinstance(codigo, str):
             #codigo = `codigo`
             codigo = str(codigo)
