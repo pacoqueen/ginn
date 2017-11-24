@@ -1650,7 +1650,28 @@ class PartesDeFabricacionBolsas(Ventana):
                                 "¿Está completamente seguro?\n\n"
                                 "(Esta operación no se puede deshacer)",
                                 padre = self.wids['ventana'])
-                        if seguro:
+                    else:
+                        seguro = True
+                    if seguro:
+                        # Porque Mr. Soy-demasiado-listo-para-esperar me tiene hasta los...
+                        finparte = utils.convertir_a_fechahora(
+                                self.objeto.fechahorafin)
+                        ahora = mx.DateTime.now()
+                        parte_terminado = ahora - finparte > 0
+                        sensitive = self.wids['ch_bloqueado'].get_sensitive()
+                        activo = sensitive and parte_terminado
+                        # Impido verificar si el parte está abierto en
+                        # producción todavía. Tiene que pasar al menos 1
+                        # segundo desde la hora de fin de parte.
+                        if not activo:
+                            utils.dialogo_info(titulo="HOLA, MARTY",
+                                texto="No se puede cerrar un parte que todavía"
+                                      " no ha terminado de fabricarse.\n\n\n"
+                                      "(Y, por favor, si se te pregunta si "
+                                      "estás seguro, mejor que estés seguro "
+                                      "de verdad)",
+                                padre=self.wids['ventana'])
+                        else:
                             res = self.volcar_produccion()
                             if res:
                                 self.objeto.bloqueado = True
