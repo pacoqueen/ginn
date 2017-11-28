@@ -239,6 +239,7 @@ class ConsumoBalasPartida(Ventana):
         Comprueba si el usuario tiene permiso para escritura o nuevo y
         deshabilita o habilita los botones según sea el caso.
         """
+        permiso = False     # 20171122 FIX initialization bug
         if self.usuario:
             try:
                 ventana = pclases.Ventana.select(
