@@ -4517,10 +4517,9 @@ def cerrar_ventana_bascula(boton, ventana, com, src_id):
     ventana.destroy()
     com.close()
 
-def recv_serial(com, ventana, l_peso, ventana_parte, e_numbala, l_estable, l_peso_sin, b_aceptar):
+def read_from_com(com):
     """
-    A diferencia del de rollos, este simplemente actualiza el peso mostrado en pantalla.
-    La bala se creará con el peso mediante el botón correspondiente.
+    Abre el puerto `com`, lee hasta final de línea y devuelve lo leído.
     """
     try:
         c = com.readline(eol = '\r')
@@ -4544,6 +4543,22 @@ def recv_serial(com, ventana, l_peso, ventana_parte, e_numbala, l_estable, l_pes
     if com:
         com.flushInput()    # Evito que datos antiguos se queden en el
         com.flush()         # buffer impidiendo nuevas lecturas.
+    # NEW! Redundancia para tolerancia a errores
+    _c = read_from_com(com)
+    if _c != c:
+        estable = 3     # 3 = Peso nulo.
+        algo = "ERRSYNC"
+        peso_str = 0
+        c = "{} {} {}".format(estable, algo, peso_str)
+    return c
+
+def recv_serial(com, ventana, l_peso, ventana_parte, e_numbala, l_estable,
+                l_peso_sin, b_aceptar):
+    """
+    A diferencia del de rollos, este simplemente actualiza el peso mostrado en pantalla.
+    La bala se creará con el peso en pantalla mediante el botón correspondiente.
+    """
+    c = read_from_com(com)
     if c.strip() != '':
         # Tratar
         try:
