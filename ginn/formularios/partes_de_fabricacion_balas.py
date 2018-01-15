@@ -4517,7 +4517,7 @@ def cerrar_ventana_bascula(boton, ventana, com, src_id):
     ventana.destroy()
     com.close()
 
-def read_from_com(com):
+def read_from_com(com, crc=True):
     """
     Abre el puerto `com`, lee hasta final de línea y devuelve lo leído.
     """
@@ -4544,12 +4544,13 @@ def read_from_com(com):
         com.flushInput()    # Evito que datos antiguos se queden en el
         com.flush()         # buffer impidiendo nuevas lecturas.
     # NEW! Redundancia para tolerancia a errores
-    _c = read_from_com(com)
-    if _c != c:
-        estable = 3     # 3 = Peso nulo.
-        algo = "ERRSYNC"
-        peso_str = 0
-        c = "{} {} {}".format(estable, algo, peso_str)
+    if crc:
+        _c = read_from_com(com, crc=False)
+        if _c != c:
+            estable = 3     # 3 = Peso nulo.
+            algo = "ERRSYNC"
+            peso_str = 0
+            c = "{} {} {}".format(estable, algo, peso_str)
     return c
 
 def recv_serial(com, ventana, l_peso, ventana_parte, e_numbala, l_estable,
