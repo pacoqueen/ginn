@@ -4544,7 +4544,7 @@ def read_from_com(com, crc=True):
         com.flushInput()    # Evito que datos antiguos se queden en el
         com.flush()         # buffer impidiendo nuevas lecturas.
     # NEW! Redundancia para tolerancia a errores
-    if crc:
+    if crc and False:   # FIXME: No funciona como esperaba...
         _c = read_from_com(com, crc=False)
         if _c != c:
             estable = 3     # 3 = Peso nulo.
