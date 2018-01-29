@@ -1,6 +1,6 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim:
 " Vim session script.
-" Created by session.vim 2.13.1 on 15 enero 2018 at 17:53:20.
+" Created by session.vim 2.13.1 on 15 enero 2018 at 18:17:34.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -69,36 +69,36 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winminheight=1 winheight=1 winminwidth=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 14 + 57) / 115)
+exe 'vert 1resize ' . ((&columns * 17 + 57) / 115)
 exe '2resize ' . ((&lines * 42 + 28) / 56)
-exe 'vert 2resize ' . ((&columns * 100 + 57) / 115)
+exe 'vert 2resize ' . ((&columns * 97 + 57) / 115)
 exe '3resize ' . ((&lines * 1 + 28) / 56)
-exe 'vert 3resize ' . ((&columns * 100 + 57) / 115)
+exe 'vert 3resize ' . ((&columns * 97 + 57) / 115)
 exe '4resize ' . ((&lines * 1 + 28) / 56)
-exe 'vert 4resize ' . ((&columns * 100 + 57) / 115)
+exe 'vert 4resize ' . ((&columns * 97 + 57) / 115)
 exe '5resize ' . ((&lines * 1 + 28) / 56)
-exe 'vert 5resize ' . ((&columns * 100 + 57) / 115)
+exe 'vert 5resize ' . ((&columns * 97 + 57) / 115)
 exe '6resize ' . ((&lines * 1 + 28) / 56)
-exe 'vert 6resize ' . ((&columns * 100 + 57) / 115)
+exe 'vert 6resize ' . ((&columns * 97 + 57) / 115)
 exe '7resize ' . ((&lines * 1 + 28) / 56)
-exe 'vert 7resize ' . ((&columns * 100 + 57) / 115)
+exe 'vert 7resize ' . ((&columns * 97 + 57) / 115)
 exe '8resize ' . ((&lines * 1 + 28) / 56)
-exe 'vert 8resize ' . ((&columns * 100 + 57) / 115)
+exe 'vert 8resize ' . ((&columns * 97 + 57) / 115)
 argglobal
 enew
 file __Tagbar__.1
 wincmd w
 argglobal
-let s:l = 4548 - ((34 * winheight(0) + 21) / 42)
+let s:l = 4547 - ((31 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-4548
-normal! 033|
+4547
+normal! 060|
 wincmd w
 argglobal
 if bufexists('api/murano/connection.py') | buffer api/murano/connection.py | else | edit api/murano/connection.py | endif
-let s:l = 148 - ((1 * winheight(0) + 0) / 1)
+let s:l = 148 - ((0 * winheight(0) + 0) / 1)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -151,21 +151,21 @@ normal! zt
 normal! 0
 wincmd w
 2wincmd w
-exe 'vert 1resize ' . ((&columns * 14 + 57) / 115)
+exe 'vert 1resize ' . ((&columns * 17 + 57) / 115)
 exe '2resize ' . ((&lines * 42 + 28) / 56)
-exe 'vert 2resize ' . ((&columns * 100 + 57) / 115)
+exe 'vert 2resize ' . ((&columns * 97 + 57) / 115)
 exe '3resize ' . ((&lines * 1 + 28) / 56)
-exe 'vert 3resize ' . ((&columns * 100 + 57) / 115)
+exe 'vert 3resize ' . ((&columns * 97 + 57) / 115)
 exe '4resize ' . ((&lines * 1 + 28) / 56)
-exe 'vert 4resize ' . ((&columns * 100 + 57) / 115)
+exe 'vert 4resize ' . ((&columns * 97 + 57) / 115)
 exe '5resize ' . ((&lines * 1 + 28) / 56)
-exe 'vert 5resize ' . ((&columns * 100 + 57) / 115)
+exe 'vert 5resize ' . ((&columns * 97 + 57) / 115)
 exe '6resize ' . ((&lines * 1 + 28) / 56)
-exe 'vert 6resize ' . ((&columns * 100 + 57) / 115)
+exe 'vert 6resize ' . ((&columns * 97 + 57) / 115)
 exe '7resize ' . ((&lines * 1 + 28) / 56)
-exe 'vert 7resize ' . ((&columns * 100 + 57) / 115)
+exe 'vert 7resize ' . ((&columns * 97 + 57) / 115)
 exe '8resize ' . ((&lines * 1 + 28) / 56)
-exe 'vert 8resize ' . ((&columns * 100 + 57) / 115)
+exe 'vert 8resize ' . ((&columns * 97 + 57) / 115)
 tabnext 1
 if exists('s:wipebuf')
 "   silent exe 'bwipe ' . s:wipebuf

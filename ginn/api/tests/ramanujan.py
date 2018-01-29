@@ -774,7 +774,6 @@ def query_articulos_from_partes(producto, fini, ffin):
     PDP = pclases.ParteDeProduccion
     A = pclases.Articulo
     # pylint: disable=no-member
-    # TODO: fini y ffin deberían ser a las 6:00 horas, que es como filtra la consulta_producido.
     pdps = PDP.select(pclases.AND(PDP.q.fechahorainicio >= fhoraini,
                                   PDP.q.fechahorainicio < fhorafin,
                                   A.q.parteDeProduccionID == PDP.q.id,
