@@ -1928,16 +1928,21 @@ def consultar_producto(producto=None, nombre=None, ean=None):
 
 
 # pylint: disable=unused-argument
-def update_calidad(articulo, calidad, comentario=None, serie="API"):
+def update_calidad(articulo, calidad, comentario=None, serie="API",
+                   force=False):
     """
     Cambia la calidad del artículo en Murano a la recibida. Debe ser A, B o C.
+
+    Si el cambio es a calidad C hay casos donde se requiere un cambio de
+    producto además de calidad. En ese caso solo se permite si el parámetro
+    `force` es True.
     """
     if calidad not in "aAbBcC":
         raise ValueError("El parámetro calidad debe ser A, B o C.")
     # DONE: [Marcos Sage] No modificamos tablas. Hacemos salida del producto A
     # y volvemos a insertarlo como C. En ese caso no importa que se repita el
     # código para el mismo producto porque antes hemos hecho la salida.
-    if calidad in "Cc":
+    if calidad in "Cc" and not force:
         # TODO: Ojo porque si cambio a calidad C probablemente implique un
         # cambio de producto.
         raise NotImplementedError("Función no disponible por el momento.")
