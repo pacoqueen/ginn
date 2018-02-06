@@ -51,10 +51,10 @@ def parse_input(filename):
             codigo = row[2]
             descripcion = row[3]
             partida = row[4]
-            unidades = row[6]
-            neto = row[7]
-            bruto = row[8]
-            m2 = row[9]
+            unidades = int(row[6])
+            neto = float(row[7])
+            bruto = float(row[8])
+            m2 = float(row[9])
             struct_partida = {'código': partida,
                               'unidades': unidades,
                               'neto': neto,
