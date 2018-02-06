@@ -100,7 +100,7 @@ def main(filename):
         codigo_producto, descripcion = producto
         print("## {}: {}".format(codigo_producto, descripcion))
         for partida in productos[producto]:
-            print("### Partida {}: {} series ({} kg netos, {} kg brutos, {} m²".format(
+            print("### Partida {}: {} series ({} kg netos, {} kg brutos, {} m²)".format(
                 partida['código'], partida['unidades'], partida['neto'],
                 partida['bruto'], partida['m2']))
             codigos_rollo = buscar_en_almacen(partida['código'])
