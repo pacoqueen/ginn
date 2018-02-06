@@ -55,9 +55,9 @@ def parse_input(filename):
                 unidades = int(row[6])
             except ValueError:  # Es fila cabecera. Pasando
                 continue
-            neto = float(row[7])
-            bruto = float(row[8])
-            m2 = float(row[9])
+            neto = float(row[7].replace(",", "."))
+            bruto = float(row[8].replace(",", "."))
+            m2 = float(row[9].replace(",", "."))
             struct_partida = {'código': partida,
                               'unidades': unidades,
                               'neto': neto,
