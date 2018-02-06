@@ -27,7 +27,7 @@ import traceback
 import optparse
 import time
 import csv
-# import datetime
+from collections import OrderedDict
 # Determino dónde estoy para importar pclases y utils
 DIRACTUAL = os.path.split(os.path.abspath(os.path.curdir))[-1]
 if DIRACTUAL != "ginn":
@@ -44,7 +44,7 @@ def parse_input(filename):
     artículos a pasar a C (debe coincidir con las existencias de Murano en ese
     momento para ese producto y partida), kg brutos, netos y metros cuadrados.
     """
-    res = {}
+    res = OrderedDict()
     with open(filename, "r") as finput:
         reader = csv.reader(finput)
         for row in reader:
