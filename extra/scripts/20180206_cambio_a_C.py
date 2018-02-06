@@ -108,7 +108,7 @@ def main(filename):
                 for codigo in codigos_rollo:
                     articulo = pclases.Articulo.get_articulo(codigo)
                     try:
-                        if murano.ops.update_calidad(articulo, 'C'):
+                        if murano.ops.update_calidad(articulo, 'C', force=True):
                             print("Código {} pasado a calidad C.".format(articulo.codigo))
                         else:
                             print("[!] Código {} no se pudo pasar a C.".format(articulo.codigo))
