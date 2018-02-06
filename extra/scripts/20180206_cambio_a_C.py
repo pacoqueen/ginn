@@ -51,7 +51,10 @@ def parse_input(filename):
             codigo = row[2]
             descripcion = row[3]
             partida = row[4]
-            unidades = int(row[6])
+            try:
+                unidades = int(row[6])
+            except ValueError:  # Es fila cabecera. Pasando
+                continue
             neto = float(row[7])
             bruto = float(row[8])
             m2 = float(row[9])
