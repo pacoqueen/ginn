@@ -79,7 +79,7 @@ def buscar_en_almacen(codigo_partida):
     conn = murano.connection.Connection()
     sql = """SELECT NumeroSerieLc
              FROM {}.dbo.ArticulosSeries
-             WHERE UnidadesSerie > 0
+             WHERE UnidadesSerie > 0 AND CodigoTalla01_ = 'A'
              AND Partida = '{}';""".format(conn.get_database(),
                                            codigo_partida,
                                            murano.connection.CODEMPRESA)
