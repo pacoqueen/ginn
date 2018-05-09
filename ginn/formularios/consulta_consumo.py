@@ -40,7 +40,7 @@ from framework import pclases
 from formularios import ventana_progreso
 from formularios.ventana import Ventana
 from formularios import utils
-from formularios.consulta_ventas_por_producto import act_fecha
+#from formularios.consulta_ventas_por_producto import act_fecha
 from informes import geninformes
 import gtk
 import time
@@ -66,8 +66,8 @@ class ConsultaConsumo(Ventana):
                        'b_imprimir/clicked': self.imprimir,
                        'b_fecha_inicio/clicked': self.set_inicio,
                        'b_fecha_fin/clicked': self.set_fin,
-                       'e_fechainicio/focus-out-event': act_fecha,
-                       'e_fechafin/focus-out-event': act_fecha,
+                       'e_fechainicio/focus-out-event': utils.act_fechahora,
+                       'e_fechafin/focus-out-event': utils.act_fechahora,
                        "b_exportar/clicked": self.exportar}
         self.add_connections(connections)
         cols = (('Producto', 'gobject.TYPE_STRING', False, True, False, None),
@@ -85,12 +85,11 @@ class ConsultaConsumo(Ventana):
         utils.preparar_treeview(self.wids['tv_datos'], cols)
         for ncol in range(1, 4):
             self.wids['tv_datos'].get_column(ncol).get_cell_renderers()[0].set_property("xalign", 1)
-        self.fin = mx.DateTime.today()
-        self.wids['e_fechafin'].set_text(utils.str_fecha(self.fin))
+        self.fin = mx.DateTime.today() + mx.DateTime.TimeDelta(hours = 6)
+        self.wids['e_fechafin'].set_text(utils.str_fechahora(self.fin))
         self.wids['e_fechainicio'].set_text(
-            utils.str_fecha(mx.DateTime.localtime()
-                            - (7 * mx.DateTime.oneDay)))
-        self.inicio = utils.parse_fecha(self.wids['e_fechainicio'].get_text())
+            utils.str_fechahora(self.fin - (7 * mx.DateTime.oneDay)))
+        self.inicio = utils.parse_fechahora(self.wids['e_fechainicio'].get_text())
         # self.wids['ch_fibra'].set_active(True)
         self.wids['ch_geotextiles'].set_active(True)
         gtk.main()
@@ -133,17 +132,19 @@ class ConsultaConsumo(Ventana):
 
     def set_inicio(self, boton):
         temp = utils.mostrar_calendario(
-            fecha_defecto=utils.parse_fecha(
+            fecha_defecto=utils.parse_fechahora(
                 self.wids['e_fechainicio'].get_text()),
             padre=self.wids['ventana'])
-        self.wids['e_fechainicio'].set_text(utils.str_fecha(temp))
+        temp = mx.DateTime.DateFrom(day=temp[0], month=temp[1], year=temp[2]) + mx.DateTime.TimeDelta(hours = 6)
+        self.wids['e_fechainicio'].set_text(utils.str_fechahora(temp))
 
     def set_fin(self, boton):
         temp = utils.mostrar_calendario(
-            fecha_defecto=utils.parse_fecha(
+            fecha_defecto=utils.parse_fechahora(
                 self.wids['e_fechafin'].get_text()),
             padre=self.wids['ventana'])
-        self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
+        temp = mx.DateTime.DateFrom(day=temp[0], month=temp[1], year=temp[2]) + mx.DateTime.TimeDelta(hours = 6)
+        self.wids['e_fechafin'].set_text(utils.str_fechahora(temp))
 
     def por_fecha(self, e1, e2):
         """
@@ -177,12 +178,14 @@ class ConsultaConsumo(Ventana):
         materia prima consumida en los partes de producción.
         """
         try:
-            fechainicio = self.inicio = utils.parse_fecha(
+            fechainicio = self.inicio = utils.parse_fechahora(
                 self.wids['e_fechainicio'].get_text())
         except ValueError:
+            print "----->", self.wids['e_fechainicio'].get_text()
+            print utils.parse_fechahora(self.wids['e_fechainicio'].get_text())
             fechainicio = self.inicio = None
         try:
-            fechafin = self.fin = utils.parse_fecha(
+            fechafin = self.fin = utils.parse_fechahora(
                 self.wids['e_fechafin'].get_text())
         except ValueError:
             fechafin = self.fin = mx.DateTime.today()
@@ -219,9 +222,9 @@ class ConsultaConsumo(Ventana):
                     if key not in cons_balas:
                         cons_balas[key] = [c.productoCompra.descripcion,
                                            c.cantidad,
-                                           'N/A', 
-                                           'N/A', 
-                                           'N/A', 
+                                           'N/A',
+                                           'N/A',
+                                           'N/A',
                                            c.productoCompra.id,
                                            'C',
                                            c.productoCompra.unidad]
@@ -235,9 +238,9 @@ class ConsultaConsumo(Ventana):
                     if key not in cons_cemento:
                         cons_cemento[key] = [c.productoCompra.descripcion,
                                              c.cantidad,
-                                             'N/A', 
-                                             'N/A', 
-                                             'N/A', 
+                                             'N/A',
+                                             'N/A',
+                                             'N/A',
                                              c.productoCompra.id,
                                              'C',
                                              c.productoCompra.unidad]
@@ -255,9 +258,9 @@ class ConsultaConsumo(Ventana):
                         cons_cemento[key] = [
                             bb.articulo.productoVenta.descripcion,
                             peso_sin,
-                            clase_a and peso_sin or 0.0, 
-                            clase_b and peso_sin or 0.0, 
-                            clase_c and peso_sin or 0.0, 
+                            clase_a and peso_sin or 0.0,
+                            clase_b and peso_sin or 0.0,
+                            clase_c and peso_sin or 0.0,
                             bb.articulo.productoVenta.id,
                             'V',
                             "kg"]
@@ -277,9 +280,9 @@ class ConsultaConsumo(Ventana):
                     if key not in cons_rollos:
                         cons_rollos[key] = [c.productoCompra.descripcion,
                                             c.cantidad,
-                                            'N/A', 
-                                            'N/A', 
-                                            'N/A', 
+                                            'N/A',
+                                            'N/A',
+                                            'N/A',
                                             c.productoCompra.id,
                                             'C',
                                             c.productoCompra.unidad]
@@ -317,9 +320,9 @@ class ConsultaConsumo(Ventana):
                                     cons_rollos[key] = [
                                         productoVenta.descripcion,
                                         peso_neto_bala,
-                                        clase_a and peso_neto_bala or 0.0, 
-                                        clase_b and peso_neto_bala or 0.0, 
-                                        clase_c and peso_neto_bala or 0.0, 
+                                        clase_a and peso_neto_bala or 0.0,
+                                        clase_b and peso_neto_bala or 0.0,
+                                        clase_c and peso_neto_bala or 0.0,
                                         productoVenta.id,
                                         'V',
                                         'kg']
@@ -346,9 +349,9 @@ class ConsultaConsumo(Ventana):
                 str_a = str_b = str_c = cons_balas[k][2] # = 4 y a 5 = N/A
             self.resultado.append([cons_balas[k][0],
                                    cantidad,
-                                   str_a, 
-                                   str_b, 
-                                   str_c, 
+                                   str_a,
+                                   str_b,
+                                   str_c,
                                    cons_balas[k][5],
                                    cons_balas[k][6],
                                    cons_balas[k][7],
@@ -366,9 +369,9 @@ class ConsultaConsumo(Ventana):
                 str_a = str_b = str_c = cons_rollos[k][3] # = 4 y a 5 = N/A
             self.resultado.append([cons_rollos[k][0],
                                    cantidad,
-                                   str_a, 
-                                   str_b, 
-                                   str_c, 
+                                   str_a,
+                                   str_b,
+                                   str_c,
                                    cons_rollos[k][5],
                                    cons_rollos[k][6],
                                    cons_rollos[k][7],
@@ -386,9 +389,9 @@ class ConsultaConsumo(Ventana):
                 str_a = str_b = str_c = cons_cemento[k][3] # = 4 y a 5 = N/A
             self.resultado.append([cons_cemento[k][0],
                                    cantidad,
-                                   str_a, 
-                                   str_b, 
-                                   str_c, 
+                                   str_a,
+                                   str_b,
+                                   str_c,
                                    cons_cemento[k][5],
                                    cons_cemento[k][6],
                                    cons_cemento[k][7],
@@ -406,10 +409,10 @@ class ConsultaConsumo(Ventana):
         for i in xrange(len(model)):
             datos.append((model[i][0], model[i][1]))
         if not self.inicio:
-            fechaInforme = 'Hasta ' + utils.str_fecha(self.fin)
+            fechaInforme = 'Hasta ' + utils.str_fechahora(self.fin)
         else:
-            fechaInforme = (utils.str_fecha(self.inicio) 
-                            + ' - ' + utils.str_fecha(self.fin))
+            fechaInforme = (utils.str_fechahora(self.inicio)
+                            + ' - ' + utils.str_fechahora(self.fin))
         if datos != []:
             reports.abrir_pdf(geninformes.consumo_produccion(datos,
                                                              fechaInforme))

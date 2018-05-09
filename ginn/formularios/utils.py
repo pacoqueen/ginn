@@ -2110,6 +2110,18 @@ def parse_fecha(txt):
                                     month = mes,
                                     year = anno)
 
+def act_fechahora(entry, event):
+    """
+    Cambia los mnemotécnicos de fecha por la fecha debidamente formateada
+    o la cadena vacía para indicar que no hay límite de fecha.
+    """
+    txtfecha = entry.get_text()
+    try:
+        txtfecha = str_fechahora(parse_fechahora(txtfecha))
+    except (ValueError, TypeError):
+        txtfecha = ""
+    entry.set_text(txtfecha)
+
 def parse_fechahora(txt):
     """
     Devuelve un mx.DateTime con la fecha y hora de
