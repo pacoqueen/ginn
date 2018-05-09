@@ -181,8 +181,6 @@ class ConsultaConsumo(Ventana):
             fechainicio = self.inicio = utils.parse_fechahora(
                 self.wids['e_fechainicio'].get_text())
         except ValueError:
-            print "----->", self.wids['e_fechainicio'].get_text()
-            print utils.parse_fechahora(self.wids['e_fechainicio'].get_text())
             fechainicio = self.inicio = None
         try:
             fechafin = self.fin = utils.parse_fechahora(
@@ -191,10 +189,10 @@ class ConsultaConsumo(Ventana):
             fechafin = self.fin = mx.DateTime.today()
         PDP = pclases.ParteDeProduccion
         if not self.inicio:
-            pdps = PDP.select(PDP.q.fecha < self.fin, orderBy='fecha')
+            pdps = PDP.select(PDP.q.fechahorainicio < self.fin, orderBy='fecha')
         else:
-            pdps = PDP.select(pclases.AND(PDP.q.fecha >= self.inicio,
-                                          PDP.q.fecha < self.fin),
+            pdps = PDP.select(pclases.AND(PDP.q.fechahorainicio >= self.inicio,
+                                          PDP.q.fechahorainicio < self.fin),
                               orderBy='fecha')
         try:
             dias = ((fechafin - fechainicio) + mx.DateTime.oneDay).days
