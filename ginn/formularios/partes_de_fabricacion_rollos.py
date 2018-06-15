@@ -3018,20 +3018,29 @@ class PartesDeFabricacionRollos(Ventana):
                                       "de verdad)",
                                 padre=self.wids['ventana'])
                         else:
-                            res = self.volcar_produccion()
+                            errores = []
+                            res = self.volcar_produccion(errores)
                             if res:
                                 self.objeto.bloqueado = True
                                 self.objeto.sync()
                                 self.objeto.make_swap()
                             else:
                                 if mostrar_alerta:
+                                    # Para no inundar la pantalla. Con los primeros 20 basta
+                                    if len(errores) > 24:
+                                        errores = errores[:24]
+                                        errores.append("...")
+                                    strerrores = "\n".join([
+                                        "- {}".format(e) for e in errores])
                                     str_error = "No se pudo volcar toda la "\
                                     "producción a Murano.\n\n"\
                                     "Los artículos no volcados se han marcado"\
                                     " con el símbolo «✘».\n"\
                                     "Inténtelo más tarde o contacte con el "\
                                     "administrador.\nEl parte quedará "\
-                                    "pendiente de verificar mientras tanto."
+                                    "pendiente de verificar mientras tanto."\
+                                    "\n\n"\
+                                    "Errores detectados:\n{}".format(strerrores)
                                     utils.dialogo_info(titulo="ERROR VOLCADO",
                                             texto=str_error,
                                             padre=self.wids['ventana'])
@@ -3047,11 +3056,13 @@ class PartesDeFabricacionRollos(Ventana):
                             padre = self.wids['ventana'])
             ch.set_active(self.objeto.bloqueado)
 
-    def volcar_produccion(self):
+    def volcar_produccion(self, errores=[]):
         """
         Vuelca todos los artículos del parte y consumos relacionados a Murano.
         Devuelve True si todo ha ido bien o False si ocurrió algún error.
         Vuelca también los consumos del parte.
+        En la lista `errores` guardará los errores que se hayan podido
+        producir como cadenas de texto.
         """
         if self.objeto.articulos:
             res = True
@@ -3059,6 +3070,7 @@ class PartesDeFabricacionRollos(Ventana):
                 utils.dialogo_info(titulo="ERROR CONEXIÓN MURANO",
                         texto="No hay conexión con Murano. Se aborta operación.",
                         padre=self.wids['ventana'])
+                errores.append("No hay conexión con Murano.")
             else:
                 # Producción ===
                 vpro = VentanaProgreso(padre=self.wids['ventana'])
@@ -3072,18 +3084,25 @@ class PartesDeFabricacionRollos(Ventana):
                         articulo.codigo, int(i), tot))
                     try:
                         volcado = murano.ops.create_articulo(articulo, observaciones="")
-                        if not volcado and murano.ops.existe_articulo(articulo):
-                            # Si no se ha volcado porque ya existía y con ese
-                            # producto y no está con existencias a cero (o lo está,
-                            # pero porque se ha vendido; todo eso lo comprueba el
-                            # create_articulo), corrijo el valor de api porque algo
-                            # debió ir mal y no se actualizó en su momento. No
-                            # espero al Sr. Lobo.
-                            articulo.api = True
-                            articulo.sync()
+                        if not volcado:
+                            if murano.ops.existe_articulo(articulo):
+                                # Si no se ha volcado porque ya existía y con ese
+                                # producto y no está con existencias a cero (o lo está,
+                                # pero porque se ha vendido; todo eso lo comprueba el
+                                # create_articulo), corrijo el valor de api porque algo
+                                # debió ir mal y no se actualizó en su momento. No
+                                # espero al Sr. Lobo.
+                                articulo.api = True
+                                articulo.sync()
+                            else:
+                                errores.append("Artículo {} no existe en "
+                                               "Murano pero no se pudo volcar"
+                                               ".".format(articulo.codigo))
                         res = res and volcado
                     except:
                         res = False
+                        errores.append("Artículo {} no se pudo volcar.".format(
+                            articulo.codigo))
                 vpro.ocultar()
                 # Consumos ===
                 vpro = VentanaProgreso(padre=self.wids['ventana'])
@@ -3103,9 +3122,14 @@ class PartesDeFabricacionRollos(Ventana):
                         consumido = murano.ops.consumir(consumo.productoCompra,
                                                         consumo.cantidad,
                                                         consumo=consumo)
+                        if not consumido:
+                            errores.append("Consumo de {} no se pudo volcar"
+                                           ".".format(consumo.productoCompra.descripcion))
                         res = res and consumido
                     except:
                         res = False
+                        errores.append("Consumo {} no se pudo volcar.".format(
+                            consumo.productoCompra.descripcion))
                 if pcarga:
                     for bala in pcarga.balas:
                         i += 1
@@ -3114,9 +3138,15 @@ class PartesDeFabricacionRollos(Ventana):
                         try:
                             consumido = (bool(murano.ops.esta_consumido(bala.articulo))
                                          or murano.ops.consume_bala(bala))
+                            if not consumido:
+                                errores.append("Bala {} no se pudo consumir. "
+                                        "Compruebe que está en almacén en "
+                                        "Murano.".format(bala.codigo))
                             res = res and consumido
                         except:
                             res = False
+                            errores.append("Bala {} no se pudo consumir"
+                                           ".".format(bala.codigo))
                         pcarga.api = res
                         pcarga.sync()
                     vpro.ocultar()
