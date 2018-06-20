@@ -27,15 +27,15 @@
 ## partes_no_bloqueados.py - Partes de producción no bloqueados.
 ###################################################################
 ## NOTAS:
-##  
+##
 ###################################################################
 ## Changelog:
 ## 22 de mayo de 2006 -> Inicio
 ###################################################################
-## BUG: Si abre dos o más partes, bloquea alguno, vuelve a la 
-## ventana y actualiza con el botón Actualizar, es posible que 
+## BUG: Si abre dos o más partes, bloquea alguno, vuelve a la
+## ventana y actualiza con el botón Actualizar, es posible que
 ## se le active el CheckBox en el cell del path que ahora ocuparía
-## otro parte distinto (ya que el que ha sido verificado ya no 
+## otro parte distinto (ya que el que ha sido verificado ya no
 ## aparecería en la lista).
 ###################################################################
 
@@ -58,22 +58,22 @@ class PartesNoBloqueados(Ventana):
         self.add_connections(connections)
         cols = (('Producto', 'gobject.TYPE_STRING', False, True, True, None),
                 ('Fecha','gobject.TYPE_STRING', False, True, False, None),
-                ('Inicio turno','gobject.TYPE_STRING', 
+                ('Inicio turno','gobject.TYPE_STRING',
                     False, True, False, None),
                 ('Fin turno','gobject.TYPE_STRING', False, True, False, None),
-                ('Visto','gobject.TYPE_BOOLEAN', 
+                ('Visto','gobject.TYPE_BOOLEAN',
                     True, True, False, self.bloquear),
-                ('Lote/Partida', 'gobject.TYPE_STRING', 
+                ('Lote/Partida', 'gobject.TYPE_STRING',
                     False, True, False, None),
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(self.wids['tv_partes'], cols)
         self.wids['tv_partes'].connect("row-activated", self.abrir_parte_tv)
-        self.wids['tv_partes'].connect("cursor-changed", 
+        self.wids['tv_partes'].connect("cursor-changed",
             self.mostrar_info_parte)
         self.colorear(self.wids['tv_partes'])
         try:
-            ventanas_con_permiso = [p.ventana.fichero 
-                for p in self.usuario.permisos if p.permiso] 
+            ventanas_con_permiso = [p.ventana.fichero
+                for p in self.usuario.permisos if p.permiso]
                     # and p.escritura]  # STILL UNIMPLEMENTED
         except AttributeError:
             print "De momento esta ventana sólo se puede abrir desde el menú."
@@ -81,7 +81,7 @@ class PartesNoBloqueados(Ventana):
         for w in ("rb_bolsas", "rb_balas", "rb_rollos", "rb_todos"):
             self.wids[w].set_sensitive(False)
         tiene_al_menos_un_permiso = False
-        if ('partes_de_fabricacion_balas.py' in ventanas_con_permiso 
+        if ('partes_de_fabricacion_balas.py' in ventanas_con_permiso
             and 'partes_de_fabricacion_rollos.py' in ventanas_con_permiso
             and 'partes_de_fabricacion_bolsas.py' in ventanas_con_permiso):
             self.wids['rb_todos'].set_active(True)
@@ -105,8 +105,8 @@ class PartesNoBloqueados(Ventana):
             self.rellenar_partes()
             gtk.main()
         else:
-            utils.dialogo_info(titulo = "USUARIO SIN PERMISOS", 
-                texto = "No tiene permisos suficientes para bloquear partes.", 
+            utils.dialogo_info(titulo = "USUARIO SIN PERMISOS",
+                texto = "No tiene permisos suficientes para bloquear partes.",
                 padre = self.wids['ventana'])
 
     def chequear_cambios(self):
@@ -119,7 +119,7 @@ class PartesNoBloqueados(Ventana):
             model, itr = tv.get_selection().get_selected()
         except AttributeError:
             self.wids['ventana'].window.set_cursor(None)
-            return  # TreeView es None porque se estaba cerrando la ventana o 
+            return  # TreeView es None porque se estaba cerrando la ventana o
                     # algo.
         if itr!=None and model[itr][0] == "CLIC PARA VER":
             try:
@@ -144,7 +144,7 @@ class PartesNoBloqueados(Ventana):
                     lotepartida = "ERROR: PARTE INCOHERENTE"
             else:
                 lotepartida = 'VACIO'
-            producto = (parte.articulos != [] 
+            producto = (parte.articulos != []
                         and parte.articulos[0].productoVenta.nombre or 'VACÍO')
             model[itr][0] = producto
             model[itr][5] = lotepartida
@@ -161,14 +161,14 @@ class PartesNoBloqueados(Ventana):
             try:
                 pdp = pclases.ParteDeProduccion.get(idparte)
             except pclases.SQLObjectNotFound:
-                continue    # El parte se ha borrado entre actualización y 
+                continue    # El parte se ha borrado entre actualización y
                             # actualización de la ventana.
             pdp.sync()  # ¿Hay algún cambio pendiente de rescatar en local?
             if pdp.se_solapa():
                 self.logger.warning("%spartes_no_bloqueados::rellenar_partes"
                     " -> El parte ID %d se solapa con otros de la misma línea."
                     "Si estaba verificado, lo desbloqueo para que se vuelva a"
-                    " revisar." % (self.usuario 
+                    " revisar." % (self.usuario
                         and self.usuario.usuario + ": " or "", pdp.id))
                 pdp.bloqueado = False
         # Y ahora meto los de la consulta real:
@@ -182,14 +182,14 @@ class PartesNoBloqueados(Ventana):
             pclases.ParteDeProduccion.q.bloqueado == False, orderBy = "id")
         tot = partes.count()
         for parte in partes:
-            vpro.set_valor(i/tot, 'Recuperando parte %s' 
+            vpro.set_valor(i/tot, 'Recuperando parte %s'
                 % utils.str_fecha(parte.fecha))
             parte.sync()    # ¿Algún cambio en la BD no rescatado en local?
             i += 1
             lotepartida = "CLIC PARA VER"
-            if (self.wids['rb_todos'].get_active() or 
-               (self.wids['rb_balas'].get_active() and parte.es_de_balas()) or 
-               (self.wids['rb_rollos'].get_active() and parte.es_de_rollos()) 
+            if (self.wids['rb_todos'].get_active() or
+               (self.wids['rb_balas'].get_active() and parte.es_de_balas()) or
+               (self.wids['rb_rollos'].get_active() and parte.es_de_rollos())
                 or self.wids['rb_bolsas'].get_active() and parte.es_de_bolsas()
                ):
                 model.append(("CLIC PARA VER",
@@ -202,14 +202,14 @@ class PartesNoBloqueados(Ventana):
         self.wids['tv_partes'].set_model(model)
         self.wids['tv_partes'].thaw_child_notify()
         vpro.ocultar()
-    
-    def actualizar(self, b):    
+
+    def actualizar(self, b):
         self.rellenar_partes()
 
     def abrir_parte(self, b):
         model, itr = self.wids['tv_partes'].get_selection().get_selected()
         if itr != None:
-            self.abrir_parte_tv(self.wids['tv_partes'], model.get_path(itr), 
+            self.abrir_parte_tv(self.wids['tv_partes'], model.get_path(itr),
                                 None)
 
     def abrir_parte_tv(self, treeview, path, view_column):
@@ -223,19 +223,36 @@ class PartesNoBloqueados(Ventana):
         Abre la ventana del parte según el tipo que sea.
         path es el path que ocupa en el model.
         """
+        from formularios import launcher
         model = self.wids['tv_partes'].get_model()
-        model[path][4] = True   # OJO: Directamente se marca como visto. 
-                # En los partes se asegura que no se cierre hasta que la 
+        model[path][4] = True   # OJO: Directamente se marca como visto.
+                # En los partes se asegura que no se cierre hasta que la
                 # casilla esté marcada.
+        # HARCODED: Esas rutas a las ventanas de partes de producción...
         if parte.es_de_balas():
-            from formularios import partes_de_fabricacion_balas
-            ventana_parteb = partes_de_fabricacion_balas.PartesDeFabricacionBalas(parte)  # @UnusedVariable
+            try:
+                launcher.run("partes_de_fabricacion_balas",
+                             "PartesDeFabricacionBalas",
+                             self.usuario, pclases.confi, parte.puid)
+            except:
+                from formularios import partes_de_fabricacion_balas as pdpb
+                ventana_parteb = pdpb.PartesDeFabricacionBalas(parte)
         elif parte.es_de_rollos():
-            from formularios import partes_de_fabricacion_rollos
-            ventana_parteb = partes_de_fabricacion_rollos.PartesDeFabricacionRollos(parte)  # @UnusedVariable
+            try:
+                launcher.run("partes_de_fabricacion_rollos",
+                             "PartesDeFabricacionRollos",
+                             self.usuario, pclases.confi, parte.puid)
+            except:
+                from formularios import partes_de_fabricacion_rollos as pdpr
+                ventana_parteb = pdpr.PartesDeFabricacionRollos(parte)
         elif parte.es_de_bolsas():
-            from formularios import partes_de_fabricacion_bolsas
-            ventana_parteb = partes_de_fabricacion_bolsas.PartesDeFabricacionBolsas(parte)  # @UnusedVariable
+            try:
+                launcher.run("partes_de_fabricacion_bolsas",
+                             "PartesDeFabricacionBolsas",
+                             self.usuario, pclases.confi, parte.puid)
+            except:
+                from formularios import partes_de_fabricacion_bolsas as pdpc
+                ventana_parteb = pdpc.PartesDeFabricacionBolsas(parte)
 
     def bloquear(self, cell, path):
         """
@@ -252,12 +269,12 @@ class PartesNoBloqueados(Ventana):
 
     def colorear(self, tv):
         """
-        Asocia una función al treeview para resaltar los partes 
+        Asocia una función al treeview para resaltar los partes
         de la misma línea que se solapan entre ellos.
         """
         def cell_func(column, cell, model, itr, numcol):
             """
-            Si el parte se solapa con algún otro de su misma línea 
+            Si el parte se solapa con algún otro de su misma línea
             lo colorea en rojo.
             """
             idparte = model[itr][-1]
@@ -273,7 +290,7 @@ class PartesNoBloqueados(Ventana):
             cell.set_property("cell-background", color)
 
         cols = tv.get_columns()
-        for i in (1, 2, 3): # Las columnas que corresponden a la fecha y horas 
+        for i in (1, 2, 3): # Las columnas que corresponden a la fecha y horas
             column = cols[i]
             cells = column.get_cell_renderers()
             for cell in cells:
