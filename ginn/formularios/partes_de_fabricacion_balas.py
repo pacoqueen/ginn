@@ -3516,7 +3516,7 @@ class PartesDeFabricacionBalas(Ventana):
             vpro.mostrar()
             i = 0.0
             no_volcados = [a for a in self.objeto.articulos if not a.api]
-            tot = len(no_volcados)
+            tot = len(no_volcados)+2  # 2 pasos adicionales del volcado.
             for articulo in murano.ops.iter_create_articulos(no_volcados):
                 i += 1
                 try:
