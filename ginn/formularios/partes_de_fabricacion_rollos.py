@@ -3098,8 +3098,11 @@ class PartesDeFabricacionRollos(Ventana):
                         vpro.set_valor(i/tot,
                                        'Finalizando proceso {} (puede tardar '
                                        'varios minutos)'.format(articulo))
-                res = articulo
-                if not res:    # Alguno ha fallado.
+                if no_volcados:     # Algo se ha intentado
+                    res = articulo
+                else:               # No había nada que volcar.
+                    res = True
+                if not res and no_volcados:    # Alguno ha fallado.
                     errores.append("Algún artículo no se pudo volcar.")
                 vpro.ocultar()
                 # Consumos ===

@@ -2152,7 +2152,7 @@ def es_movimiento_salida_albaran(movserie):
     return res
 
 
-def create_articulos(articulos, simulate=False, serie='API'):
+def iter_create_articulos(articulos, simulate=False, serie='API'):
     """
     Crea en Murano **en un solo proceso de importación** los artículos de
     _ginn_ recibidos en una lista.
@@ -2163,7 +2163,9 @@ def create_articulos(articulos, simulate=False, serie='API'):
     con barras de progreso. Devuelve en cada paso el artículo insertado en la
     tabla temporal listo para procesar. En el último paso devuelve el
     `guid_proceso` o algo interpretable como booleano, que será False si
-    *alguno* de los artículos no se pudo importar.
+    *alguno* de los artículos no se pudo importar. El penúltimo es el
+    guid_proceso **antes** de ejecutarse el `fire`, para poder notificar al
+    usuario.
     """
     i = 0
     cantidad = 1    # Cantidad fija para todos. Esto es solo para dar de alta
@@ -2200,6 +2202,7 @@ def create_articulos(articulos, simulate=False, serie='API'):
                                        observaciones=observaciones,
                                        serie=serie)
         yield articulo
+    yield guid_proceso
     if procesar:
         if guid_proceso:  # Si todos ya existían, guid_proceso es None.
             res = fire(guid_proceso)
@@ -2215,7 +2218,7 @@ def create_articulos(articulos, simulate=False, serie='API'):
         articulo.syncUpdate()
         # res = reduce(lambda i, l: i and l, articulos)
     todos_volcados = len([i for i in articulos if bool(i)]) == len(articulos)
-    res = todos_volcados and res
+    res = len(articulos) and todos_volcados and res
     yield res
 
 
