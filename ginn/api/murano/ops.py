@@ -2152,9 +2152,76 @@ def es_movimiento_salida_albaran(movserie):
     return res
 
 
+def create_articulos(articulos, simulate=False, serie='API'):
+    """
+    Crea en Murano **en un solo proceso de importación** los artículos de
+    _ginn_ recibidos en una lista.
+    Si `simulate` es True, no conecta con Murano. Solo simula la operación con
+    éxito.
+    Devuelve True si **todos** los artículos se volcaron.
+    Funciona **COMO UN GENERADOR** para poder ser usado en parte_produccion_*
+    con barras de progreso. Devuelve en cada paso el artículo insertado en la
+    tabla temporal listo para procesar. En el último paso devuelve el
+    `guid_proceso` o algo interpretable como booleano, que será False si
+    *alguno* de los artículos no se pudo importar.
+    """
+    i = 0
+    cantidad = 1    # Cantidad fija para todos. Esto es solo para dar de alta
+    # productos con trazabilidad más rápidamente.
+    guid_proceso = None     # El primer GUID es nulo. Hay que crearlo con el
+    # primero de los artículos a volcar.
+    observaciones = ""  # Para que los comentarios del registro de Murano sean
+    # automáticos y se fuerce la serie 'FAB'.
+    procesar = True     # Se puede llegar a usar, como con los palés, para
+    # encadenar varias importaciones en un mismo proceso de importación. De
+    # momento no se permite y se procesa la importación completa.
+    totarticulos = len(articulos)
+    if VERBOSE:
+        # pylint: disable=import-error
+        from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
+        articulos = tqdm(articulos, total=totarticulos, leave=False)
+    for articulo in articulos:
+        i += 1
+        producto = articulo.productoVenta
+        if VERBOSE:
+            articulos.set_description("Creando articulo %s... (%d/%d)" % (
+                articulo.codigo, i, totarticulos))
+        # El primer articulo instanaciará el IdProcesoIME y se lo iré pasando
+        # a los demás articulos. No lanzo el fire de ninguna de ellas. Lo haré
+        # cuando tenga la estructura completa en la tmpIME montada.
+        guid_proceso = create_articulo(articulo,
+                                       cantidad=cantidad,
+                                       producto=producto,
+                                       guid_proceso=guid_proceso,
+                                       simulate=simulate,
+                                       procesar=False,
+                                       codigo_almacen=None,     # Auto
+                                       calidad=None,            # Auto
+                                       observaciones=observaciones,
+                                       serie=serie)
+        yield articulo
+    if procesar:
+        if guid_proceso:  # Si todos ya existían, guid_proceso es None.
+            res = fire(guid_proceso)
+        else:   # Nada que insertar. Nada insertado. Resultado, False.
+            res = False
+    else:
+        res = guid_proceso
+    # Hasta que no finaliza no puedo comprobar si ha habido errores. Compruebo
+    # los que se han volcado, les pongo el campo `.api` a True y devuelvo en
+    # consecuencia.
+    for articulo in articulos:
+        articulo.api = existe_articulo(articulo)
+        articulo.syncUpdate()
+        # res = reduce(lambda i, l: i and l, articulos)
+    todos_volcados = len([i for i in articulos if bool(i)]) == len(articulos)
+    res = todos_volcados and res
+    yield res
+
+
 def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
-                    simulate=False, codigo_almacen=None, calidad=None,
-                    observaciones=None,serie="API"):
+                    simulate=False, procesar=True, codigo_almacen=None,
+                    calidad=None, observaciones=None, serie="API"):
     """
     Crea un artículo nuevo en Murano con el producto recibido. Si no se
     recibe ninguno, se usa el que tenga asociado en ginn. Si se recibe un
@@ -2186,6 +2253,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
                 res = create_bala(articulo.bala, delta, producto,
                                   guid_proceso=guid_proceso,
                                   simulate=simulate,
+                                  procesar=procesar,
                                   codigo_almacen=codigo_almacen,
                                   calidad=calidad,
                                   comentario=observaciones,
@@ -2194,6 +2262,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
                 res = create_bala(articulo.balaCable, delta, producto,
                                   guid_proceso=guid_proceso,
                                   simulate=simulate,
+                                  procesar=procesar,
                                   codigo_almacen=codigo_almacen,
                                   calidad=calidad,
                                   comentario=observaciones,
@@ -2202,6 +2271,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
                 res = create_bigbag(articulo.bigbag, delta, producto,
                                     guid_proceso=guid_proceso,
                                     simulate=simulate,
+                                    procesar=procesar,
                                     codigo_almacen=codigo_almacen,
                                     calidad=calidad,
                                     comentario=observaciones,
@@ -2210,6 +2280,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
                 res = create_caja(articulo.caja, delta, producto,
                                   guid_proceso=guid_proceso,
                                   simulate=simulate,
+                                  procesar=procesar,
                                   codigo_almacen=codigo_almacen,
                                   calidad=calidad,
                                   comentario=observaciones,
@@ -2218,6 +2289,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
                 res = create_rollo(articulo.rollo, delta, producto,
                                    guid_proceso=guid_proceso,
                                    simulate=simulate,
+                                   procesar=procesar,
                                    codigo_almacen=codigo_almacen,
                                    calidad=calidad,
                                    comentario=observaciones,
@@ -2226,6 +2298,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
                 res = create_rollo(articulo.rolloDefectuoso, delta, producto,
                                    guid_proceso=guid_proceso,
                                    simulate=simulate,
+                                   procesar=procesar,
                                    codigo_almacen=codigo_almacen,
                                    calidad=calidad,
                                    comentario=observaciones,
@@ -2234,6 +2307,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
                 res = create_rollo(articulo.rolloC, delta, producto,
                                    guid_proceso=guid_proceso,
                                    simulate=simulate,
+                                   procesar=procesar,
                                    codigo_almacen=codigo_almacen,
                                    calidad=calidad,
                                    comentario=observaciones,

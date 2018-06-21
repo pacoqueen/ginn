@@ -3086,32 +3086,21 @@ class PartesDeFabricacionRollos(Ventana):
                 vpro.mostrar()
                 i = 0.0
                 no_volcados = [a for a in self.objeto.articulos if not a.api]
-                tot = len(no_volcados)
-                for articulo in no_volcados:
+                tot = len(no_volcados)+2  # 2 pasos adicionales del volcado.
+                for articulo in murano.ops.iter_create_articulos(no_volcados):
                     i += 1
-                    vpro.set_valor(i/tot, 'Volcando artículo {} ({}/{})'.format(
-                        articulo.codigo, int(i), tot))
                     try:
-                        volcado = murano.ops.create_articulo(articulo, observaciones="")
-                        if not volcado:
-                            if murano.ops.existe_articulo(articulo):
-                                # Si no se ha volcado porque ya existía y con ese
-                                # producto y no está con existencias a cero (o lo está,
-                                # pero porque se ha vendido; todo eso lo comprueba el
-                                # create_articulo), corrijo el valor de api porque algo
-                                # debió ir mal y no se actualizó en su momento. No
-                                # espero al Sr. Lobo.
-                                articulo.api = True
-                                articulo.sync()
-                            else:
-                                errores.append("Artículo {} no existe en "
-                                               "Murano pero no se pudo volcar"
-                                               ".".format(articulo.codigo))
-                        res = res and volcado
-                    except:
-                        res = False
-                        errores.append("Artículo {} no se pudo volcar.".format(
-                            articulo.codigo))
+                        vpro.set_valor(i/tot,
+                                       'Volcando artículo {} ({}/{})'.format(
+                                           articulo.codigo, int(i), tot))
+                    except AttributeError:
+                        # Artículo es un valor booleano o un guid_proceso
+                        vpro.set_valor(i/tot,
+                                       'Finalizando proceso {} (puede tardar '
+                                       'varios minutos)'.format(articulo))
+                res = articulo
+                if not res:    # Alguno ha fallado.
+                    errores.append("Algún artículo no se pudo volcar.")
                 vpro.ocultar()
                 # Consumos ===
                 vpro = VentanaProgreso(padre=self.wids['ventana'])
