@@ -1544,15 +1544,21 @@ class PartesDeFabricacionRollos(Ventana):
         elif articulo.es_rollo_defectuoso():
             rollo = articulo.rolloDefectuoso
         try:
-            descontar_material_adicional(self, rollo.articulo, restar = False)
+            descontar_material_adicional(self, rollo.articulo, restar=False)
             rollo.peso = float(newtext)
         except ValueError:
-            utils.dialogo_info('NÚMERO INCORRECTO', 'El peso del rollo debe ser un número.', padre = self.wids['ventana'])
+            utils.dialogo_info('NÚMERO INCORRECTO',
+                               'El peso del rollo debe ser un número.',
+                               padre=self.wids['ventana'])
             return
-        descontar_material_adicional(self, rollo.articulo, restar = True)
-        model[path][2] = rollo.peso     # Columna 2 = peso. Columna 3 = densidad.
+        descontar_material_adicional(self, rollo.articulo, restar=True)
+        rollo.articulo.pesoReal = rollo.peso
+        rollo.articulo.sync()
+        model[path][2] = rollo.peso   # Columna 2 = peso. Columna 3 = densidad.
         if articulo.es_rollo():
-            pesosin = (rollo.peso - articulo.productoVenta.camposEspecificosRollo.pesoEmbalaje) * 1000
+            producto = articulo.productoVenta
+            pesoembalaje = producto.camposEspecificosRollo.pesoEmbalaje
+            pesosin = (rollo.peso - pesoembalaje) * 1000
         elif articulo.es_rollo_defectuoso():
             pesosin = (rollo.peso - rollo.pesoEmbalaje) * 1000
         try:
@@ -1561,14 +1567,17 @@ class PartesDeFabricacionRollos(Ventana):
             dens = 0
         rollo.densidad = dens
         model[path][3] = rollo.densidad
-        self.rellenar_tabla_rollos(actualizar_tabla = False)
+        self.rellenar_tabla_rollos(actualizar_tabla=False)
         itr = model.get_iter(path)
         itr = model.iter_next(itr)
-        if itr != None:
+        if itr is not None:
             path_siguiente = model.get_path(itr)
             column = self.wids['tv_rollos'].get_column(2)
             cell = column.get_cell_renderers()[0]
-            self.wids['tv_rollos'].set_cursor_on_cell(path_siguiente, column, cell, start_editing=False)
+            self.wids['tv_rollos'].set_cursor_on_cell(path_siguiente,
+                                                      column,
+                                                      cell,
+                                                      start_editing=False)
 
     def cambiar_motivo_incidencia(self, cell, path, newtext):
         # Funcionalidad no implementada.
