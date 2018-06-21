@@ -3517,20 +3517,22 @@ class PartesDeFabricacionBalas(Ventana):
             i = 0.0
             no_volcados = [a for a in self.objeto.articulos if not a.api]
             tot = len(no_volcados)
-            for articulo in no_volcados:
+            for articulo in murano.ops.iter_create_articulos(no_volcados):
                 i += 1
-                vpro.set_valor(i/tot, 'Volcando artículo {} ({}/{})'.format(
-                    articulo.codigo, int(i), tot))
                 try:
-                    volcado = murano.ops.create_articulo(articulo, observaciones="")
-                    if not volcado and murano.ops.existe_articulo(articulo):
-                        # No se ha volcado, pero porque ya existía. Para no esperar
-                        # al Sr. Lobo, me encargo de actualizar `api` aquí:
-                        articulo.api = True
-                        articulo.sync()
-                    res = res and volcado
-                except:
-                    res = False
+                    vpro.set_valor(i/tot, 'Volcando artículo {} ({}/{})'.format(
+                        articulo.codigo, int(i), tot))
+                except AttributeError:
+                    # Artículo es un valor booleano o un guid_proceso
+                    vpro.set_valor(i/tot,
+                                   'Finalizando proceso {} (puede tardar '
+                                   'varios minutos)'.format(articulo))
+            if no_volcados:     # Algo se ha intentado
+                res = articulo
+            else:               # No había nada que volcar.
+                res = True
+            if not res and no_volcados:    # Alguno ha fallado.
+                errores.append("Algún artículo no se pudo volcar.")
             vpro.ocultar()
             # Consumos ===
             vpro = VentanaProgreso(padre=self.wids['ventana'])
