@@ -2322,7 +2322,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
             if VERBOSE:
                 print("ops::create_articulo --> {}.res = {} ({})".format(
                     articulo.puid, res, type(res)))
-            articulo.api = res
+            articulo.api = bool(res)
             articulo.syncUpdate()
     else:
         logging.warning("El código %s ya existe en Murano. Se ignora.",
