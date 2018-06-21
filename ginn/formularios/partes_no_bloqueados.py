@@ -231,6 +231,7 @@ class PartesNoBloqueados(Ventana):
         # HARCODED: Esas rutas a las ventanas de partes de producción...
         if parte.es_de_balas():
             try:
+                raise NotImplementedError
                 launcher.run("partes_de_fabricacion_balas",
                              "PartesDeFabricacionBalas",
                              self.usuario, pclases.confi, parte.puid)
@@ -239,6 +240,7 @@ class PartesNoBloqueados(Ventana):
                 ventana_parteb = pdpb.PartesDeFabricacionBalas(parte)
         elif parte.es_de_rollos():
             try:
+                raise NotImplementedError
                 launcher.run("partes_de_fabricacion_rollos",
                              "PartesDeFabricacionRollos",
                              self.usuario, pclases.confi, parte.puid)
@@ -247,6 +249,7 @@ class PartesNoBloqueados(Ventana):
                 ventana_parteb = pdpr.PartesDeFabricacionRollos(parte)
         elif parte.es_de_bolsas():
             try:
+                raise NotImplementedError
                 launcher.run("partes_de_fabricacion_bolsas",
                              "PartesDeFabricacionBolsas",
                              self.usuario, pclases.confi, parte.puid)
