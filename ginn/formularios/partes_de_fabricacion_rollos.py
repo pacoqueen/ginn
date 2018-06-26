@@ -3098,6 +3098,10 @@ class PartesDeFabricacionRollos(Ventana):
                         vpro.set_valor(i/tot,
                                        'Finalizando proceso {} (puede tardar '
                                        'varios minutos)'.format(articulo))
+                    except ZeroDivisionError:
+                        # Caso extraño en el que tot es None y no logro entender
+                        # por qué. Si es un parte sin bultos, peta.
+                        vpro.set_valor(0.99, 'Tratando excepción. Espere.')
                 if no_volcados:     # Algo se ha intentado
                     res = articulo
                 else:               # No había nada que volcar.
