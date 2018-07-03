@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2017  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2018  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -30,9 +30,8 @@
 ## NOTAS:
 ##
 ## ----------------------------------------------------------------
-## TODO: No se pueden crear rollos B aquí si no es desde la línea
-## con la ventana de pesaje automático. Ya no se permite hacerlo
-## manualmente marcando con el botón derecho y tal. FIXME
+## TO-DO:
+##
 ###################################################################
 ## Changelog:
 ## 15 de noviembre de 2005 -> Inicio

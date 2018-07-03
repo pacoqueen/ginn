@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2017  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2018  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -3940,12 +3940,13 @@ class PartesDeFabricacionBalas(Ventana):
                                 'tipo': campos.tipoMaterialBala
                                   and str(campos.tipoMaterialBala.descripcion)
                                   or "",
-                                'longitud':str(campos.corte),
-                                'nbala':str(b.numbala),
-                                'dtex':str(campos.dtex),
-                                'dia':utils.str_fecha(b.fechahora),
-                                'acabado':acabado,
-                                'codigoBarra':producto.codigo}
+                                'longitud': str(campos.corte),
+                                'nbala': str(b.numbala),
+                                'dtex': str(campos.dtex),
+                                'dia': utils.str_fecha(b.fechahora),
+                                'acabado': acabado,
+                                'codigoBarra': producto.codigo,
+                                'objeto': b}
                     balas.append(elemento)
                 # NEW! 19/04/2017: Si el bigbag tiene un modelo de etiqueta
                 # específico, lo uso. Si no, uso el código antiguo para el
@@ -3969,7 +3970,7 @@ class PartesDeFabricacionBalas(Ventana):
                     balas = balas_con_otro_modelo[fetiqueta]
                     reports.abrir_pdf(
                             geninformes.etiquetasBalasEtiquetadora(balas,
-                                                                   hook=fetiqueta.get_func()))
+                                                    hook=fetiqueta.get_func()))
                 # Si han quedado artículos con la etiqueta por defecto:
                 if balas:
                     try:
