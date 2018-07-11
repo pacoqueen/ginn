@@ -333,8 +333,12 @@ class PartesDeFabricacionBolsas(Ventana):
         # (Nombre, tipo, editable, ordenable, buscable, función_actualización)
         cols = (('Nº. de Palet', 'gobject.TYPE_STRING',
                     False, True, True, None),
-                ('Nº Bolsas/Caja', 'gobject.TYPE_STRING',
-                    True, True, None, self.cambiar_numbolsas),
+                ('# cajas/palé', 'gobject.TYPE_STRING',
+                    False, True, False, None),
+                ('# bolsas/caja', 'gobject.TYPE_STRING',
+                    True, True, False, self.cambiar_numbolsas),
+                ('Peso neto', 'gobject.TYPE_STRING',
+                    False, True, False, None),
                 ('B', "gobject.TYPE_BOOLEAN",
                     True, True, False, self.pasar_pale_a_B),
                 ('Observaciones', 'gobject.TYPE_STRING',
@@ -714,8 +718,12 @@ class PartesDeFabricacionBolsas(Ventana):
                     volcado = " ✔"
                 else:
                     volcado = " ✘"
+                peso_neto = sum([c.articulo.peso_neto for c in pale.cajas])
+                numcajas = len(pale.cajas)  # = pale.numcajas
                 pales[pale] = model.append(None, ("Palé " + pale.codigo + volcado,
+                                                  numcajas,
                                                   pale.numbolsas,
+                                                  peso_neto,
                                                   es_clase_b,
                                                   pale.observaciones,
                                                   pale.get_puid()))
@@ -730,7 +738,9 @@ class PartesDeFabricacionBolsas(Ventana):
                 else:
                     volcado = " ✘"
                 cajas[caja] = model.append(pales[pale], ("Caja " + caja.codigo + volcado,
+                                                         1,  # 1 caja por caja:)
                                                          caja.numbolsas,
+                                                         caja.peso,
                                                          es_clase_b,
                                                          caja.observaciones,
                                                          caja.get_puid()))
@@ -1039,7 +1049,7 @@ class PartesDeFabricacionBolsas(Ventana):
         clase, aidi = puid.split(":")
         objeto = getattr(pclases, clase).get(int(aidi))
         objeto.observaciones = newtext
-        model[path][3] = newtext
+        model[path][5] = newtext
 
     def crear_nuevo_partedeproduccion(self, widget):
         """
@@ -1986,7 +1996,8 @@ class PartesDeFabricacionBolsas(Ventana):
         Si la fila que ha marcado era B cambia todo el palé a A. Si no, hace
         lo contrario y lo cambia entero a A.
         """
-        # TODO
+        # TODO: Implica cambiar bolsas por caja y demás. No es solo cambiar un
+        # atributo en el objeto.
         pass
 
     def consumir_manual(self, boton):
