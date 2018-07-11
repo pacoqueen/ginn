@@ -1,6 +1,6 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim:
 " Vim session script.
-" Created by session.vim 2.13.1 on 03 julio 2018 at 11:54:02.
+" Created by session.vim 2.13.1 on 11 julio 2018 at 14:32:55.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -28,7 +28,6 @@ badd +1 ~/Geotexan/src/Geotex-INN/geotexan.vim
 badd +1 api/tests/sr_lobo.py
 badd +1 api/tests/ramanujan.py
 badd +947 formularios/menu.py
-badd +1641 formularios/partes_de_fabricacion_bolsas.py
 badd +1 api/murano/ops.py
 argglobal
 silent! argdel *
@@ -56,30 +55,30 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 27 + 67) / 134)
+exe 'vert 1resize ' . ((&columns * 24 + 67) / 135)
 exe '2resize ' . ((&lines * 17 + 28) / 57)
-exe 'vert 2resize ' . ((&columns * 106 + 67) / 134)
+exe 'vert 2resize ' . ((&columns * 110 + 67) / 135)
 exe '3resize ' . ((&lines * 17 + 28) / 57)
-exe 'vert 3resize ' . ((&columns * 106 + 67) / 134)
+exe 'vert 3resize ' . ((&columns * 110 + 67) / 135)
 exe '4resize ' . ((&lines * 17 + 28) / 57)
-exe 'vert 4resize ' . ((&columns * 106 + 67) / 134)
+exe 'vert 4resize ' . ((&columns * 110 + 67) / 135)
 exe '5resize ' . ((&lines * 1 + 28) / 57)
-exe 'vert 5resize ' . ((&columns * 106 + 67) / 134)
+exe 'vert 5resize ' . ((&columns * 110 + 67) / 135)
 argglobal
 enew
 file __Tagbar__.1
 wincmd w
 argglobal
-let s:l = 2217 - ((8 * winheight(0) + 8) / 17)
+let s:l = 1824 - ((8 * winheight(0) + 8) / 17)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-2217
-normal! 041|
+1824
+normal! 018|
 wincmd w
 argglobal
 if bufexists('api/tests/ramanujan.py') | buffer api/tests/ramanujan.py | else | edit api/tests/ramanujan.py | endif
-let s:l = 410 - ((9 * winheight(0) + 8) / 17)
+let s:l = 410 - ((0 * winheight(0) + 8) / 17)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -88,7 +87,7 @@ normal! 024|
 wincmd w
 argglobal
 if bufexists('api/tests/sr_lobo.py') | buffer api/tests/sr_lobo.py | else | edit api/tests/sr_lobo.py | endif
-let s:l = 49 - ((3 * winheight(0) + 8) / 17)
+let s:l = 49 - ((1 * winheight(0) + 8) / 17)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -99,15 +98,15 @@ argglobal
 enew
 wincmd w
 2wincmd w
-exe 'vert 1resize ' . ((&columns * 27 + 67) / 134)
+exe 'vert 1resize ' . ((&columns * 24 + 67) / 135)
 exe '2resize ' . ((&lines * 17 + 28) / 57)
-exe 'vert 2resize ' . ((&columns * 106 + 67) / 134)
+exe 'vert 2resize ' . ((&columns * 110 + 67) / 135)
 exe '3resize ' . ((&lines * 17 + 28) / 57)
-exe 'vert 3resize ' . ((&columns * 106 + 67) / 134)
+exe 'vert 3resize ' . ((&columns * 110 + 67) / 135)
 exe '4resize ' . ((&lines * 17 + 28) / 57)
-exe 'vert 4resize ' . ((&columns * 106 + 67) / 134)
+exe 'vert 4resize ' . ((&columns * 110 + 67) / 135)
 exe '5resize ' . ((&lines * 1 + 28) / 57)
-exe 'vert 5resize ' . ((&columns * 106 + 67) / 134)
+exe 'vert 5resize ' . ((&columns * 110 + 67) / 135)
 tabnext 1
 if exists('s:wipebuf') && s:wipebuf != bufnr('%')
 "   silent exe 'bwipe ' . s:wipebuf
@@ -137,7 +136,7 @@ if !getbufvar(s:bufnr_save, '&modified')
   endif
 endif
 execute "cd" fnameescape(s:cwd_save)
-1resize 55|vert 1resize 27|2resize 17|vert 2resize 106|3resize 17|vert 3resize 106|4resize 17|vert 4resize 106|5resize 1|vert 5resize 106|
+1resize 55|vert 1resize 24|2resize 17|vert 2resize 110|3resize 17|vert 3resize 110|4resize 17|vert 4resize 110|5resize 1|vert 5resize 110|
 2wincmd w
 tabnext 1
 if exists('s:wipebuf')
