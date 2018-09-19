@@ -726,10 +726,10 @@ def get_produccion(producto_ginn, fini, ffin, strict=False):
     Toda la producción se hacen sobre el almacén GTX. No es necesario filtrar
     por almacén.
     ___
-    Ojo porque los cambios de producto se ven como producción en Murano, pero
+    ~~Ojo porque los cambios de producto se ven como producción en Murano, pero
     la fecha de alta será la del cambio en Murano, no la de la producción
     original. Eso puede provocar descuadres si ha pasado mucho tiempo entre
-    que se fabricó y se corrigió el producto.
+    que se fabricó y se corrigió el producto.~~ Ya no es así. Van en canal API.
     """
     # A todos los efectos el día comienza en el turno de las 6:
     fhoraini = datetime.datetime(fini.year, fini.month, fini.day, 6)

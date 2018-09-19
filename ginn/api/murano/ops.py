@@ -3325,6 +3325,7 @@ def _sync_campos_especificos_rollo(prod_ginn, prod_murano):
         try:
             cer.clienteID = prod_murano.GEO_Cliente_id
         except TypeError:
+            cer.clienteID = None
             res = False
     else:
         cer.clienteID = None
@@ -3373,7 +3374,11 @@ def _sync_campos_especificos_bala(prod_ginn, prod_murano):
     ceb.modeloEtiqueta = _get_modelo_etiqueta_ginn(
             prod_murano.GEO_Modelo_etiqueta_id)
     if prod_murano.GEO_Cliente_id:
-        ceb.clienteID = prod_murano.GEO_Cliente_id
+        try:
+            ceb.clienteID = prod_murano.GEO_Cliente_id
+        except TypeError:
+            ceb.clienteID = None
+            res = False
     else:
         ceb.clienteID = None
     return res
