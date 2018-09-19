@@ -3377,8 +3377,8 @@ def _sync_campos_especificos_bala(prod_ginn, prod_murano):
         if prod_murano.GEO_Cliente_id.startswith("C"):
             # Como no admitimos id alfanuméricos y es poco probable que
             # lleguemos a un millón de clientes, uso los nuevos clientes
-            # C000nnn de Murano como 1000nnn en ginn.
-            cliente_id = prod_murano.GEO_Cliente_id.replace("C", "1000")
+            # Cnnnnnn de Murano como 1nnnnnn en ginn.
+            cliente_id = prod_murano.GEO_Cliente_id.replace("C", "1")
         else:
             try:
                 cliente_id = int(prod_murano.GEO_Cliente_id)
