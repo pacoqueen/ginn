@@ -3374,8 +3374,18 @@ def _sync_campos_especificos_bala(prod_ginn, prod_murano):
     ceb.modeloEtiqueta = _get_modelo_etiqueta_ginn(
             prod_murano.GEO_Modelo_etiqueta_id)
     if prod_murano.GEO_Cliente_id:
+        if prod_murano.GEO_Cliente_id.startswith("C"):
+            # Como no admitimos id alfanuméricos y es poco probable que
+            # lleguemos a un millón de clientes, uso los nuevos clientes
+            # C000nnn de Murano como 1000nnn en ginn.
+            cliente_id = prod_murano.GEO_Cliente_id.replace("C", "1000")
+        else:
+            try:
+                cliente_id = int(prod_murano.GEO_Cliente_id)
+            except ValueError:
+                cliente_id = prod_murano.GEO_Cliente_id
         try:
-            ceb.clienteID = prod_murano.GEO_Cliente_id
+            ceb.clienteID = cliente_id
         except TypeError:
             ceb.clienteID = None
             res = False
