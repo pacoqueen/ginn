@@ -3322,8 +3322,18 @@ def _sync_campos_especificos_rollo(prod_ginn, prod_murano):
     res = prod_ginn
     cer = prod_ginn.camposEspecificosRollo
     if prod_murano.GEO_Cliente_id:
+        if prod_murano.GEO_Cliente_id.startswith("C"):
+            # Como no admitimos id alfanuméricos y es poco probable que
+            # lleguemos a un millón de clientes, uso los nuevos clientes
+            # Cnnnnnn de Murano como 1nnnnnn en ginn.
+            cliente_id = prod_murano.GEO_Cliente_id.replace("C", "1")
+        else:
+            try:
+                cliente_id = int(prod_murano.GEO_Cliente_id)
+            except ValueError:
+                cliente_id = prod_murano.GEO_Cliente_id
         try:
-            cer.clienteID = prod_murano.GEO_Cliente_id
+            cer.clienteID = cliente_id
         except TypeError:
             cer.clienteID = None
             res = False
