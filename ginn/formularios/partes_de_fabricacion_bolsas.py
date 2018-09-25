@@ -2168,7 +2168,7 @@ def imprimir_etiquetas_pales(pales, padre = None, mostrar_dialogo = True):
             try:
                 func_etiqueta = pales[0].productoVenta.camposEspecificosBala.modeloEtiqueta.get_func()
                 filetiqpale = func_etiqueta(pales)
-            except AttributeError, IndexError, ValueError:  # Fallback a etiqueta por defecto.
+            except (AttributeError, IndexError, ValueError):  # Fallback a etiqueta por defecto.
                 filetiqpale = geninformes.generar_etiqueta_pale(pales, tipo)
             for pale in pales:
                 pclases.Auditoria.modificado(pale,
