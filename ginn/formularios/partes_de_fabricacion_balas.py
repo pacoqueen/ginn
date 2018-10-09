@@ -3499,11 +3499,13 @@ class PartesDeFabricacionBalas(Ventana):
                             padre = self.wids['ventana'])
             ch.set_active(self.objeto.bloqueado)
 
-    def volcar_produccion(self):
+    def volcar_produccion(self, errores=[]):
         """
         Vuelca todos los artículos del parte y consumos relacionados a Murano.
         Devuelve True si todo ha ido bien o False si ocurrió algún error.
         Vuelca también los consumos del parte.
+        En la lista `errores` guardará los errores que se hayan podido
+        producir como cadenas de texto.
         """
         res = True
         if not MURANO:

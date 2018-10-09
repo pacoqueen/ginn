@@ -1,6 +1,6 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim:
 " Vim session script.
-" Created by session.vim 2.13.1 on 19 septiembre 2018 at 13:57:27.
+" Created by session.vim 2.13.1 on 09 octubre 2018 at 10:28:49.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -56,30 +56,30 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 31 + 63) / 126)
-exe '2resize ' . ((&lines * 34 + 28) / 57)
-exe 'vert 2resize ' . ((&columns * 94 + 63) / 126)
-exe '3resize ' . ((&lines * 6 + 28) / 57)
-exe 'vert 3resize ' . ((&columns * 94 + 63) / 126)
-exe '4resize ' . ((&lines * 11 + 28) / 57)
-exe 'vert 4resize ' . ((&columns * 94 + 63) / 126)
+exe 'vert 1resize ' . ((&columns * 19 + 57) / 115)
+exe '2resize ' . ((&lines * 17 + 28) / 57)
+exe 'vert 2resize ' . ((&columns * 95 + 57) / 115)
+exe '3resize ' . ((&lines * 17 + 28) / 57)
+exe 'vert 3resize ' . ((&columns * 95 + 57) / 115)
+exe '4resize ' . ((&lines * 17 + 28) / 57)
+exe 'vert 4resize ' . ((&columns * 95 + 57) / 115)
 exe '5resize ' . ((&lines * 1 + 28) / 57)
-exe 'vert 5resize ' . ((&columns * 94 + 63) / 126)
+exe 'vert 5resize ' . ((&columns * 95 + 57) / 115)
 argglobal
 enew
 file __Tagbar__.1
 wincmd w
 argglobal
-let s:l = 3338 - ((18 * winheight(0) + 17) / 34)
+let s:l = 3335 - ((10 * winheight(0) + 8) / 17)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-3338
-normal! 015|
+3335
+normal! 012|
 wincmd w
 argglobal
 if bufexists('api/tests/ramanujan.py') | buffer api/tests/ramanujan.py | else | edit api/tests/ramanujan.py | endif
-let s:l = 410 - ((0 * winheight(0) + 3) / 6)
+let s:l = 410 - ((0 * winheight(0) + 8) / 17)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -88,26 +88,26 @@ normal! 024|
 wincmd w
 argglobal
 if bufexists('api/tests/sr_lobo.py') | buffer api/tests/sr_lobo.py | else | edit api/tests/sr_lobo.py | endif
-let s:l = 68 - ((1 * winheight(0) + 5) / 11)
+let s:l = 71 - ((10 * winheight(0) + 8) / 17)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-68
-normal! 08|
+71
+normal! 07|
 wincmd w
 argglobal
 enew
 wincmd w
 2wincmd w
-exe 'vert 1resize ' . ((&columns * 31 + 63) / 126)
-exe '2resize ' . ((&lines * 34 + 28) / 57)
-exe 'vert 2resize ' . ((&columns * 94 + 63) / 126)
-exe '3resize ' . ((&lines * 6 + 28) / 57)
-exe 'vert 3resize ' . ((&columns * 94 + 63) / 126)
-exe '4resize ' . ((&lines * 11 + 28) / 57)
-exe 'vert 4resize ' . ((&columns * 94 + 63) / 126)
+exe 'vert 1resize ' . ((&columns * 19 + 57) / 115)
+exe '2resize ' . ((&lines * 17 + 28) / 57)
+exe 'vert 2resize ' . ((&columns * 95 + 57) / 115)
+exe '3resize ' . ((&lines * 17 + 28) / 57)
+exe 'vert 3resize ' . ((&columns * 95 + 57) / 115)
+exe '4resize ' . ((&lines * 17 + 28) / 57)
+exe 'vert 4resize ' . ((&columns * 95 + 57) / 115)
 exe '5resize ' . ((&lines * 1 + 28) / 57)
-exe 'vert 5resize ' . ((&columns * 94 + 63) / 126)
+exe 'vert 5resize ' . ((&columns * 95 + 57) / 115)
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0
 "   silent exe 'bwipe ' . s:wipebuf
@@ -137,7 +137,7 @@ if !getbufvar(s:bufnr_save, '&modified')
   endif
 endif
 execute "cd" fnameescape(s:cwd_save)
-1resize 55|vert 1resize 31|2resize 34|vert 2resize 94|3resize 6|vert 3resize 94|4resize 11|vert 4resize 94|5resize 1|vert 5resize 94|
+1resize 55|vert 1resize 19|2resize 17|vert 2resize 95|3resize 17|vert 3resize 95|4resize 17|vert 4resize 95|5resize 1|vert 5resize 95|
 2wincmd w
 tabnext 1
 if exists('s:wipebuf')
