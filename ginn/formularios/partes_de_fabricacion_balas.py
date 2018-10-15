@@ -1741,7 +1741,7 @@ class PartesDeFabricacionBalas(Ventana):
             bigbag = articulo.bigbag
             self.descontar_material_adicional(articulo, restar = False)
             bigbag.pesobigbag = nuevopeso
-            bigbag.articulo.peso_real = nuevopeso
+            bigbag.articulo.pesoReal = nuevopeso
             self.descontar_material_adicional(articulo, restar = True)
             model[path][2] = bigbag.pesobigbag
         if volver_a_volcar_a_murano:
