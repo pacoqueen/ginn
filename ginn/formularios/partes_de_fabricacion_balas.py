@@ -1741,12 +1741,13 @@ class PartesDeFabricacionBalas(Ventana):
             bigbag = articulo.bigbag
             self.descontar_material_adicional(articulo, restar = False)
             bigbag.pesobigbag = nuevopeso
+            bigbag.articulo.peso_real = nuevopeso
             self.descontar_material_adicional(articulo, restar = True)
             model[path][2] = bigbag.pesobigbag
         if volver_a_volcar_a_murano:
             motivo = "Peso corregido {}->{} kg.".format(pesoantiguo,
                                                         articulo.peso_real)
-            murano.ops.create_articulo(articulo, observaciones = motivo)
+            murano.ops.create_articulo(articulo, observaciones=motivo)
         itr = model.get_iter(path)
         itr = model.iter_next(itr)
         if itr != None:
