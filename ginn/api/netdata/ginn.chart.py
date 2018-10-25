@@ -29,8 +29,14 @@ CHARTS = {
         'options': [None, 'Articulos fabricados', 'bultos', 'articulos',
                     'produccion', 'line'],
         'lines': [
-            ['balas A+B', 'balas C', 'bigbag', 'cajas', 'pales', 'rollos A',
-                'rollos B', 'rollos C']
+            ['balas A+B'],
+            ['balas C'],
+            ['bigbag'],
+            ['cajas'],
+            ['pales'],
+            ['rollos A'],
+            ['rollos B'],
+            ['rollos C']
         ]
     }
 }

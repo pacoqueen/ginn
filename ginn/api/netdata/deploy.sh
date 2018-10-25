@@ -3,6 +3,8 @@
 # Coloca cada fichero en su sitio. Se ejecuta desde `bacall`.
 if [[ $EUID -ne 0 ]]; then
    echo "Este _script_ debe ejecutarse como root: sudo "$0 1>&2
+   echo "E incluso..."
+   echo "> $ letsgo; cd -; sudo netdata/deploy.sh; sudo service netdata restart; echo -e \"\e[92mDONE\!\""
    exit 1
 fi
 BASEPATH=$(dirname $(realpath $0))
