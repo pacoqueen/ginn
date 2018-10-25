@@ -43,15 +43,15 @@ CHARTS = {
     },
     'producido': {
         'options': [None, 'kg fabricados', 'kg', 'articulos',
-                    'produccion', 'line'],
+                    'produccion', 'stacked'],
         'lines': [
-            ['kg fibra A+B', "fibra A+B", 'area'],
-            ['kg fibra C', "fibra C", 'area'],
-            ['kg fibra bigbag', "bigbag", 'area'],
-            ['kg fibra cemento', "cemento", 'area'],
-            ['kg geotextiles A', "gtx A", 'area'],
-            ['kg geotextiles B', "gtx B", 'area'],
-            ['kg geotextiles C', "gtx C", 'area']
+            ['kg fibra A+B', "fibra A+B", 'absolute'],
+            ['kg fibra C', "fibra C", 'absolute'],
+            ['kg fibra bigbag', "bigbag", 'absolute'],
+            ['kg fibra cemento', "cemento", 'absolute'],
+            ['kg geotextiles A', "gtx A", 'absolute'],
+            ['kg geotextiles B', "gtx B", 'absolute'],
+            ['kg geotextiles C', "gtx C", 'absolute']
         ]
     },
     'produccion': {
@@ -92,6 +92,9 @@ class Service(SimpleService):
         #     if dimension_id not in self.charts['random']:
         #         self.charts['random'].add_dimension([dimension_id])
         #     data[dimension_id] = self.random.randint(0, 100)
+        # TODO: ¿Podría traerme la producción estándar y nombre del producto
+        # de lo que se esté fabricando en ese momento en cada línea para
+        # compararlo con los kg/hora?
         # Datos para el gráfico de productos terminados (almacén)
         raw = self._get_raw_data()
         data['balas A+B'] = raw[pclases.Bala]['bultos']
