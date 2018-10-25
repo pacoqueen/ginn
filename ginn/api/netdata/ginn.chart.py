@@ -29,7 +29,7 @@ CHARTS = {
 #    },
     'articulos': {
         'options': [None, 'Articulos fabricados', 'bultos', 'articulos',
-                    'produccion', 'line'],
+                    'produccion', 'area'],
         'lines': [
             ['balas A+B', None, 'absolute'],
             ['balas C', None, 'absolute'],
