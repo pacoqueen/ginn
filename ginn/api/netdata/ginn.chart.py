@@ -42,7 +42,7 @@ CHARTS = {
         ]
     },
     'produccion': {
-        'options': [None, 'Articulos fabricados', 'kg/hora', 'articulos',
+        'options': [None, 'Producción a la hora', 'kg/hora', 'articulos',
                     'produccion', 'line'],
         'lines': [
             ['kg fibra A+B', "fibra A+B", 'absolute'],
@@ -107,7 +107,11 @@ class Service(SimpleService):
         for clase in clases:
             data[clase] = dict()
             data[clase]['bultos'] = clase.select().count()
-            antes = datetime.datetime.now()-datetime.timedelta(hours=1)
+            if 4 <= datetime.datetime.now().month <= 10:
+                # UGLY HACK: daylight saving
+                antes = datetime.datetime.now()-datetime.timedelta(hours=2)
+            else:
+                antes = datetime.datetime.now()-datetime.timedelta(hours=1)
             # kg fabricados en la última hora
             select_results = clase.select(clase.q.fechahora >= antes)
             for dim_name in ('pesobala', 'peso', 'pesobigbag'):
