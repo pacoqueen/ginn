@@ -125,7 +125,7 @@ class Service(SimpleService):
                 prodestandar = raw[linea]['kghora']
                 if producto not in self.charts['produccion']:
                     self.charts['produccion'].add_dimension([producto])
-                    data[producto] = prodestandar
+                data[producto] = prodestandar
         return data
 
     def _get_raw_data(self):
