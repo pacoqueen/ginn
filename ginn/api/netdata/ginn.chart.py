@@ -18,7 +18,7 @@ from framework import pclases
 priority = 90000
 retries = 60
 
-ORDER = ['articulos', 'produccion'] # , 'random']
+ORDER = ['articulos', 'producido', 'produccion'] # , 'random']
 CHARTS = {
 #    'random': {
 #        'options': [None, 'A random number', 'ordinal', 'random', 'random',
@@ -41,8 +41,8 @@ CHARTS = {
             ['rollos C', None, 'absolute']
         ]
     },
-    'produccion': {
-        'options': [None, 'Producción a la hora', 'kg/hora', 'articulos',
+    'producido': {
+        'options': [None, 'kg fabricados', 'kg', 'articulos',
                     'produccion', 'line'],
         'lines': [
             ['kg fibra A+B', "fibra A+B", 'absolute'],
@@ -52,6 +52,19 @@ CHARTS = {
             ['kg geotextiles A', "gtx A", 'absolute'],
             ['kg geotextiles B', "gtx B", 'absolute'],
             ['kg geotextiles C', "gtx C", 'absolute']
+        ]
+    },
+    'produccion': {
+        'options': [None, 'Produccion a la hora', 'kg/hora', 'produccion',
+                    'produccion', 'line'],
+        'lines': [
+            ['kghora fibra A+B', "fibra A+B", 'absolute'],
+            ['kghora fibra C', "fibra C", 'absolute'],
+            ['kghora fibra bigbag', "bigbag", 'absolute'],
+            ['kghora fibra cemento', "cemento", 'absolute'],
+            ['kghora geotextiles A', "gtx A", 'absolute'],
+            ['kghora geotextiles B', "gtx B", 'absolute'],
+            ['kghora geotextiles C', "gtx C", 'absolute']
         ]
     }
 }
@@ -89,7 +102,7 @@ class Service(SimpleService):
         data['rollos A'] = raw[pclases.Rollo]['bultos']
         data['rollos B'] = raw[pclases.RolloDefectuoso]['bultos']
         data['rollos C'] = raw[pclases.RolloC]['bultos']
-        # Datos para el gráfico de kg frabricados (producción)
+        # Datos para el gráfico de kg frabricados (almacén)
         data['kg fibra A+B'] = raw[pclases.Bala]['kg']
         data['kg fibra C'] = raw[pclases.BalaCable]['kg']
         data['kg fibra bigbag'] = raw[pclases.Bigbag]['kg']
@@ -97,6 +110,14 @@ class Service(SimpleService):
         data['kg geotextiles A'] = raw[pclases.Rollo]['kg']
         data['kg geotextiles B'] = raw[pclases.RolloDefectuoso]['kg']
         data['kg geotextiles C'] = raw[pclases.RolloC]['kg']
+        # Datos para el gráfico de kg frabricados (producción)
+        data['kghora fibra A+B'] = raw[pclases.Bala]['kghora']
+        data['kghora fibra C'] = raw[pclases.BalaCable]['kghora']
+        data['kghora fibra bigbag'] = raw[pclases.Bigbag]['kghora']
+        data['kghora fibra cemento'] = raw[pclases.Caja]['kghora']
+        data['kghora geotextiles A'] = raw[pclases.Rollo]['kghora']
+        data['kghora geotextiles B'] = raw[pclases.RolloDefectuoso]['kghora']
+        data['kghora geotextiles C'] = raw[pclases.RolloC]['kghora']
         return data
 
     def _get_raw_data(self):
@@ -120,8 +141,10 @@ class Service(SimpleService):
                         mean = select_results.sum(dim_name)
                     else:
                         mean = 0
-                    data[clase]['kg'] = mean
+                    data[clase]['kghora'] = mean
+                    data[clase]['kg'] = clase.select().sum(dim_name)
                 except Exception:
+                    data[clase]['kghora'] = 0
                     data[clase]['kg'] = 0
                     continue
                 else:
