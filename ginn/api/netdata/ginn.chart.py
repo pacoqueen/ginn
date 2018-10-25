@@ -118,6 +118,14 @@ class Service(SimpleService):
         data['kghora geotextiles A'] = raw[pclases.Rollo]['kghora']
         data['kghora geotextiles B'] = raw[pclases.RolloDefectuoso]['kghora']
         data['kghora geotextiles C'] = raw[pclases.RolloC]['kghora']
+        # Datos de producciones estándar
+        for linea in ('fibra', 'geotextiles', 'cemento'):
+            if raw[linea]['producto']:
+                producto = raw[linea]['producto']
+                prodestandar = raw[linea]['kghora']
+                if producto not in self.charts['produccion']:
+                    self.charts['produccion'].add_dimension([producto])
+                    data[producto] = prodestandar
         return data
 
     def _get_raw_data(self):
@@ -164,13 +172,10 @@ class Service(SimpleService):
                     geotextiles = (pdp.productoVenta.nombre, pdp.prodestandar)
                 elif pdp.es_de_bolsas():
                     cemento = (pdp.productoVenta.nombre, pdp.prodestandar)
-            data[fibra[0]] = {'kghora': fibra[1]}
-            data[geotextiles[0]] = {'kghora': geotextiles[1]}
-            data[cemento[0]] = {'kghora': cemento[1]}
-            for producto, prodestandar in (fibra, geotextiles, cemento):
-                if producto not in self.charts['produccion']:
-                    self.charts['produccion'].add_dimension([producto])
-                data[producto] = prodestandar
+            data['fibra'] = {'producto': fibra[0], 'kghora': fibra[1]}
+            data['geotextiles'] = {'producto': geotextiles[0],
+                                   'kghora': geotextiles[1]}
+            data['cemento'] = {'producto': cemento[0], 'kghora': cemento[1]}
         return data
 
 
