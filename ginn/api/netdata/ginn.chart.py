@@ -31,13 +31,13 @@ CHARTS = {
                     'produccion', 'line'],
         'lines': [
             ['balas A+B', None, 'absolute'],
-            ['balas C', None, 'percentage-of-absolute-row'],
+            ['balas C', None, 'absolute'],
             ['bigbag', None, 'absolute'],
             ['cajas', None, 'absolute'],
             ['pales', None, 'absolute'],
             ['rollos A', None, 'absolute'],
             ['rollos B', None, 'absolute'],
-            ['rollos C', None, 'percentage-of-absolute-row']
+            ['rollos C', None, 'absolute']
         ]
     },
     'produccion': {
