@@ -150,7 +150,7 @@ class Service(SimpleService):
                 else:
                     break
             # Los datos de producción estándar de los partes abiertos
-            initurno = self.inicio_turno()
+            initurno = inicio_turno()
             pdps = pclases.ParteDeProduccion.select(
                     pclases.ParteDeProduccion.q.fechahorainicio >= initurno,
                     orderBy="fechahorainicio")
@@ -173,25 +173,26 @@ class Service(SimpleService):
                 data[producto] = prodestandar
         return data
 
-    def inicio_turno(self, hora=datetime.datetime.now()):
-        """
-        Devuelve la fecha y hora de inicio del turno según la fecha/hora
-        recibida.
-        """
-        if hora.hour >= 22:
-            hora_inicio = 22
-        elif hora.hour >= 14:
-            hora_inicio = 14
-        elif hora.hour >= 6:
-            hora_inicio = 6
-        else:
-            hora_inicio = 22
-        res = datetime.datetime(year=hora.year,
-                                month=hora.month,
-                                day=hora.day,
-                                hour=hora_inicio,
-                                minute=0,
-                                second=0)
-        if res > hora:  # Corrijo el día si estoy en el turno de madrugada
-            res -= datetime.timedelta(days=1)
-        return res
+
+def inicio_turno(hora=datetime.datetime.now()):
+    """
+    Devuelve la fecha y hora de inicio del turno según la fecha/hora
+    recibida.
+    """
+    if hora.hour >= 22:
+        hora_inicio = 22
+    elif hora.hour >= 14:
+        hora_inicio = 14
+    elif hora.hour >= 6:
+        hora_inicio = 6
+    else:
+        hora_inicio = 22
+    res = datetime.datetime(year=hora.year,
+                            month=hora.month,
+                            day=hora.day,
+                            hour=hora_inicio,
+                            minute=0,
+                            second=0)
+    if res > hora:  # Corrijo el día si estoy en el turno de madrugada
+        res -= datetime.timedelta(days=1)
+    return res
