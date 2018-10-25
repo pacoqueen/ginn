@@ -26,10 +26,11 @@ CHARTS = {
         ]
     },
     'articulos': {
-        'options': [None, 'Artículos fabricados', 'bultos', 'articulos',
+        'options': [None, 'Articulos fabricados', 'bultos', 'articulos',
                     'produccion', 'line'],
         'lines': [
-            ['rollos']
+            ['balas A+B', 'balas C', 'bigbag', 'cajas', 'pales', 'rollos A',
+                'rollos B', 'rollos C']
         ]
     }
 }
@@ -60,9 +61,20 @@ class Service(SimpleService):
             data[dimension_id] = self.random.randint(0, 100)
         # Datos para el gráfico de producción
         raw = self._get_raw_data()
-        data['rollos'] = raw[pclases.Rollo]
+        data['balas A+B'] = raw[pclases.Bala]
+        data['balas C'] = raw[pclases.BalaCable]
+        data['bigbag'] = raw[pclases.Bigbag]
+        data['cajas'] = raw[pclases.Caja]
+        data['pales'] = raw[pclases.Pale]
+        data['rollos A'] = raw[pclases.Rollo]
+        data['rollos B'] = raw[pclases.RolloDefectuoso]
+        data['rollos C'] = raw[pclases.RolloC]
         return data
 
     def _get_raw_data(self):
-        data = {pclases.Rollo: pclases.Rollo.select().count()}
+        data = {}
+        for clase in (pclases.Bala, pclases.BalaCable, pclases.Bigbag,
+                      pclases.Caja, pclases.Pale, pclases.Rollo,
+                      pclases.RolloDefectuoso, pclases.RolloC):
+            data[clase] = clase.select().count()
         return data
