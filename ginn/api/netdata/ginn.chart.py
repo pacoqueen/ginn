@@ -7,7 +7,8 @@ from random import SystemRandom
 
 from bases.FrameworkServices.SimpleService import SimpleService
 
-import os, sys
+import os
+import sys
 sys.path.append(os.path.join('/', 'home', 'compartido', 'ginn', 'ginn'))
 from framework import pclases
 
@@ -29,14 +30,14 @@ CHARTS = {
         'options': [None, 'Articulos fabricados', 'bultos', 'articulos',
                     'produccion', 'line'],
         'lines': [
-            ['balas A+B'],
-            ['balas C'],
-            ['bigbag'],
-            ['cajas'],
-            ['pales'],
-            ['rollos A'],
-            ['rollos B'],
-            ['rollos C']
+            ['balas A+B', None, 'incremental'],
+            ['balas C', None, 'incremental'],
+            ['bigbag', None, 'incremental'],
+            ['cajas', None, 'incremental'],
+            ['pales', None, 'incremental'],
+            ['rollos A', None, 'incremental'],
+            ['rollos B', None, 'incremental'],
+            ['rollos C', None, 'incremental']
         ]
     },
     'produccion': {
