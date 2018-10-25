@@ -17,15 +17,15 @@ from framework import pclases
 priority = 90000
 retries = 60
 
-ORDER = ['articulos', 'produccion', 'random']
+ORDER = ['articulos', 'produccion'] # , 'random']
 CHARTS = {
-    'random': {
-        'options': [None, 'A random number', 'ordinal', 'random', 'random',
-                    'line'],
-        'lines': [
-            ['random1']
-        ]
-    },
+#    'random': {
+#        'options': [None, 'A random number', 'ordinal', 'random', 'random',
+#                    'line'],
+#        'lines': [
+#            ['random1']
+#        ]
+#    },
     'articulos': {
         'options': [None, 'Articulos fabricados', 'bultos', 'articulos',
                     'produccion', 'line'],
@@ -72,13 +72,12 @@ class Service(SimpleService):
 
     def _get_data(self):
         data = dict()
-
         # Datos para el gráfico de prueba (números aleatorios)
-        for i in range(1, 4):
-            dimension_id = ''.join(['random', str(i)])
-            if dimension_id not in self.charts['random']:
-                self.charts['random'].add_dimension([dimension_id])
-            data[dimension_id] = self.random.randint(0, 100)
+        # for i in range(1, 4):
+        #     dimension_id = ''.join(['random', str(i)])
+        #     if dimension_id not in self.charts['random']:
+        #         self.charts['random'].add_dimension([dimension_id])
+        #     data[dimension_id] = self.random.randint(0, 100)
         # Datos para el gráfico de productos terminados (almacén)
         raw = self._get_raw_data()
         data['balas A+B'] = raw[pclases.Bala]['bultos']
