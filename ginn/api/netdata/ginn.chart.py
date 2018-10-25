@@ -30,27 +30,27 @@ CHARTS = {
         'options': [None, 'Articulos fabricados', 'bultos', 'articulos',
                     'produccion', 'line'],
         'lines': [
-            ['balas A+B', None, 'incremental'],
-            ['balas C', None, 'incremental'],
-            ['bigbag', None, 'incremental'],
-            ['cajas', None, 'incremental'],
-            ['pales', None, 'incremental'],
-            ['rollos A', None, 'incremental'],
-            ['rollos B', None, 'incremental'],
-            ['rollos C', None, 'incremental']
+            ['balas A+B', None, 'absolute'],
+            ['balas C', None, 'percentage-of-absolute-row'],
+            ['bigbag', None, 'absolute'],
+            ['cajas', None, 'absolute'],
+            ['pales', None, 'absolute'],
+            ['rollos A', None, 'absolute'],
+            ['rollos B', None, 'absolute'],
+            ['rollos C', None, 'percentage-of-absolute-row']
         ]
     },
     'produccion': {
         'options': [None, 'Articulos fabricados', 'kg', 'articulos',
                     'produccion', 'line'],
         'lines': [
-            ['kg fibra A+B', "fibra A+B"],
-            ['kg fibra C', "fibra C"],
-            ['kg fibra bigbag', "bigbag"],
-            ['kg fibra cemento', "cemento"],
-            ['kg geotextiles A', "gtx A"],
-            ['kg geotextiles B', "gtx B"],
-            ['kg geotextiles C', "gtx C"]
+            ['kg fibra A+B', "fibra A+B", 'incremental'],
+            ['kg fibra C', "fibra C", 'incremental'],
+            ['kg fibra bigbag', "bigbag", 'incremental'],
+            ['kg fibra cemento', "cemento", 'incremental'],
+            ['kg geotextiles A', "gtx A", 'incremental'],
+            ['kg geotextiles B', "gtx B", 'incremental'],
+            ['kg geotextiles C', "gtx C", 'incremental']
         ]
     }
 }
