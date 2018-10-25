@@ -169,7 +169,7 @@ class Service(SimpleService):
             data[cemento[0]] = {'kghora': cemento[1]}
             for producto, prodestandar in (fibra, geotextiles, cemento):
                 if producto not in self.charts['produccion']:
-                    self.charts['produccion'].add_dimension(producto)
+                    self.charts['produccion'].add_dimension([producto])
                 data[producto] = prodestandar
         return data
 
