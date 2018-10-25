@@ -45,13 +45,13 @@ CHARTS = {
         'options': [None, 'kg fabricados', 'kg', 'articulos',
                     'produccion', 'line'],
         'lines': [
-            ['kg fibra A+B', "fibra A+B", 'stacked'],
-            ['kg fibra C', "fibra C", 'stacked'],
-            ['kg fibra bigbag', "bigbag", 'stacked'],
-            ['kg fibra cemento', "cemento", 'stacked'],
-            ['kg geotextiles A', "gtx A", 'stacked'],
-            ['kg geotextiles B', "gtx B", 'stacked'],
-            ['kg geotextiles C', "gtx C", 'stacked']
+            ['kg fibra A+B', "fibra A+B", 'area'],
+            ['kg fibra C', "fibra C", 'area'],
+            ['kg fibra bigbag', "bigbag", 'area'],
+            ['kg fibra cemento', "cemento", 'area'],
+            ['kg geotextiles A', "gtx A", 'area'],
+            ['kg geotextiles B', "gtx B", 'area'],
+            ['kg geotextiles C', "gtx C", 'area']
         ]
     },
     'produccion': {
