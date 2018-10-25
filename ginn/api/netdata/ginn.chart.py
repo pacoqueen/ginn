@@ -50,7 +50,7 @@ CHARTS = {
             ['kg fibra cemento', "cemento", 'incremental', 60*60],
             ['kg geotextiles A', "gtx A", 'incremental', 60*60],
             ['kg geotextiles B', "gtx B", 'incremental', 60*60],
-            ['kg geotextiles C', "gtx C", 'incremental, 60*60']
+            ['kg geotextiles C', "gtx C", 'incremental', 60*60]
         ]
     }
 }
