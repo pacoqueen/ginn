@@ -120,7 +120,7 @@ class Service(SimpleService):
         data['kghora geotextiles C'] = raw[pclases.RolloC]['kghora']
         # Datos de producciones estándar
         for linea in ('fibra', 'geotextiles', 'cemento'):
-            if raw[linea]['producto']:
+            if raw[linea]['producto'] is not None:
                 producto = raw[linea]['producto']
                 prodestandar = raw[linea]['kghora']
                 if producto not in self.charts['produccion']:
