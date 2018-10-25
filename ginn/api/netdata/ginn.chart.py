@@ -108,10 +108,10 @@ class Service(SimpleService):
             data[clase] = dict()
             data[clase]['bultos'] = clase.select().count()
             if 4 <= datetime.datetime.now().month <= 10:
-                # UGLY HACK: daylight saving
-                antes = datetime.datetime.now()-datetime.timedelta(hours=2)
+                # UGLY HACK: daylight saving + timezone UTC+1
+                antes = datetime.datetime.now()-datetime.timedelta(hours=3)
             else:
-                antes = datetime.datetime.now()-datetime.timedelta(hours=1)
+                antes = datetime.datetime.now()-datetime.timedelta(hours=2)
             # kg fabricados en la última hora
             select_results = clase.select(clase.q.fechahora >= antes)
             for dim_name in ('pesobala', 'peso', 'pesobigbag'):
