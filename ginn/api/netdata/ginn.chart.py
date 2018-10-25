@@ -16,7 +16,7 @@ from framework import pclases
 priority = 90000
 retries = 60
 
-ORDER = ['artículos', 'random']
+ORDER = ['articulos', 'random']
 CHARTS = {
     'random': {
         'options': [None, 'A random number', 'ordinal', 'random', 'random',
@@ -25,9 +25,9 @@ CHARTS = {
             ['random1']
         ]
     },
-    'artículos': {
-        'options': [None, 'Artículos fabricados', 'bultos', 'artículos',
-                    'producción', 'line'],
+    'articulos': {
+        'options': [None, 'Artículos fabricados', 'bultos', 'articulos',
+                    'produccion', 'line'],
         'lines': [
             ['rollos']
         ]
