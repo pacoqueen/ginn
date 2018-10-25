@@ -9,6 +9,7 @@ from bases.FrameworkServices.SimpleService import SimpleService
 
 import os
 import sys
+import datetime
 sys.path.append(os.path.join('/', 'home', 'compartido', 'ginn', 'ginn'))
 from framework import pclases
 
@@ -107,9 +108,14 @@ class Service(SimpleService):
             data[clase] = dict()
             data[clase]['bultos'] = clase.select().count()
             for dim_name in ('pesobala', 'peso', 'pesobigbag'):
+                # Media de kg/segundo de las últimas hora
+                ayer = datetime.datetime.now()-datetime.timedelta(hours=1)
+                select_results = clase.select(clase.q.fechahora >= ayer)
                 try:
-                    data[clase]['kg'] = clase.select().sum(dim_name)
+                    mean = select_results.sum(dim_name) / (60*60)
+                    data[clase]['kg'] = mean
                 except Exception:
+                    data[clase]['kg'] = 0
                     continue
                 else:
                     break
