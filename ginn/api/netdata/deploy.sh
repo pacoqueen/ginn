@@ -6,7 +6,6 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 BASEPATH=$(dirname $(realpath $0))
-exit 0
 
 cp -f $BASEPATH/ginn.chart.py /usr/libexec/netdata/python.d/ginn.chart.py
 cp -f $BASEPATH/ginn.conf /etc/netdata/orig/python.d/ginn.conf
