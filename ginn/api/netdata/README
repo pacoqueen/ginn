@@ -1,0 +1,12 @@
+Plugin para ver algunas métricas de ginn en netdata.
+
+* `ginn.chart.py`
+    - debe ir en `/usr/libexec/netdata/python.d/ginn.chart.py`
+    - Es el plugin en sí. Recolecta y analiza datos. Devuelve valores que 
+      son consumidos por netdata para montar la gráfica.
+* `ginn.conf`
+    - debe ir en /etc/netdata/orig/python.d/ginn.conf
+    - Configuración general ("stock config file") para el plugin.
+* `ginn.local.conf`
+    - debe ir en /etc/netdata/python.d/ginn.conf
+    - Configuración particular para el netdata e instancia de ginn corriendo.
