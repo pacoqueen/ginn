@@ -107,12 +107,15 @@ class Service(SimpleService):
         for clase in clases:
             data[clase] = dict()
             data[clase]['bultos'] = clase.select().count()
+            antes = datetime.datetime.now()-datetime.timedelta(hours=1)
+            # kg fabricados en la última hora
+            select_results = clase.select(clase.q.fechahora >= antes)
             for dim_name in ('pesobala', 'peso', 'pesobigbag'):
-                # Media de kg/segundo de las últimas hora
-                ayer = datetime.datetime.now()-datetime.timedelta(hours=1)
-                select_results = clase.select(clase.q.fechahora >= ayer)
                 try:
-                    mean = select_results.sum(dim_name)
+                    if select_results.count():
+                        mean = select_results.sum(dim_name)
+                    else:
+                        mean = 0
                     data[clase]['kg'] = mean
                 except Exception:
                     data[clase]['kg'] = 0
