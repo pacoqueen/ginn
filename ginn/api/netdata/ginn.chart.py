@@ -92,9 +92,6 @@ class Service(SimpleService):
         #     if dimension_id not in self.charts['random']:
         #         self.charts['random'].add_dimension([dimension_id])
         #     data[dimension_id] = self.random.randint(0, 100)
-        # TODO: ¿Podría traerme la producción estándar y nombre del producto
-        # de lo que se esté fabricando en ese momento en cada línea para
-        # compararlo con los kg/hora?
         # Datos para el gráfico de productos terminados (almacén)
         raw = self._get_raw_data()
         data['balas A+B'] = raw[pclases.Bala]['bultos']
@@ -152,4 +149,49 @@ class Service(SimpleService):
                     continue
                 else:
                     break
+            # Los datos de producción estándar de los partes abiertos
+            initurno = self.inicio_turno()
+            pdps = pclases.ParteDeProduccion.select(
+                    pclases.ParteDeProduccion.q.fechahorainicio >= initurno,
+                    orderBy="fechahorainicio")
+            fibra = (None, None)
+            geotextiles = (None, None)
+            cemento = (None, None)
+            for pdp in pdps:
+                if pdp.es_de_balas():
+                    fibra = (pdp.productoVenta, pdp.prodestandar)
+                elif pdp.es_de_geotextiles():
+                    geotextiles = (pdp.productoVenta, pdp.prodestandar)
+                elif pdp.es_de_bolsas():
+                    cemento = (pdp.productoVenta, pdp.prodestandar)
+            data[fibra[0]]['kghora'] = fibra[1]
+            data[geotextiles[0]]['kghora'] = geotextiles[1]
+            data[cemento[0]]['kghora'] = cemento[1]
+            for producto, prodestandar in (fibra, geotextiles, cemento):
+                if producto not in self.charts['produccion']:
+                    self.charts['produccion'].add_dimension(producto)
+                data[producto] = prodestandar
         return data
+
+    def inicio_turno(self, hora=datetime.datetime.now()):
+        """
+        Devuelve la fecha y hora de inicio del turno según la fecha/hora
+        recibida.
+        """
+        if hora.hour >= 22:
+            hora_inicio = 22
+        elif hora.hour >= 14:
+            hora_inicio = 14
+        elif hora.hour >= 6:
+            hora_inicio = 6
+        else:
+            hora_inicio = 22
+        res = datetime.datetime(year=hora.year,
+                                month=hora.month,
+                                day=hora.day,
+                                hour=hora_inicio,
+                                minute=0,
+                                second=0)
+        if res > hora:  # Corrijo el día si estoy en el turno de madrugada
+            res -= datetime.timedelta(days=1)
+        return res
