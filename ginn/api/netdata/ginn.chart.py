@@ -159,14 +159,14 @@ class Service(SimpleService):
             cemento = (None, None)
             for pdp in pdps:
                 if pdp.es_de_balas():
-                    fibra = (pdp.productoVenta, pdp.prodestandar)
+                    fibra = (pdp.productoVenta.nombre, pdp.prodestandar)
                 elif pdp.es_de_geotextiles():
-                    geotextiles = (pdp.productoVenta, pdp.prodestandar)
+                    geotextiles = (pdp.productoVenta.nombre, pdp.prodestandar)
                 elif pdp.es_de_bolsas():
-                    cemento = (pdp.productoVenta, pdp.prodestandar)
-            data[fibra[0]]['kghora'] = fibra[1]
-            data[geotextiles[0]]['kghora'] = geotextiles[1]
-            data[cemento[0]]['kghora'] = cemento[1]
+                    cemento = (pdp.productoVenta.nombre, pdp.prodestandar)
+            data[fibra[0]] = {'kghora': fibra[1]}
+            data[geotextiles[0]] = {'kghora': geotextiles[1]}
+            data[cemento[0]] = {'kghora': cemento[1]}
             for producto, prodestandar in (fibra, geotextiles, cemento):
                 if producto not in self.charts['produccion']:
                     self.charts['produccion'].add_dimension(producto)
