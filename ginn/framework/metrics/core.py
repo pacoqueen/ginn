@@ -112,7 +112,7 @@ def get_existencias(productos=[]):
     for producto in productos:
         stocks = murano.ops.get_stock_murano(producto, 'GTX')
         for calidad in stocks:
-            for dimension in stocks[calidad]:
+            for dimension in stocks[calidad].keys():
                 if dimension not in ("KG", "M2"):
                     stocks[calidad].pop(dimension)
         res[producto] = stocks
