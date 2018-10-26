@@ -3,30 +3,25 @@
 # Author: Put your name here (your github login)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from random import SystemRandom
+# from random import SystemRandom
 
 from bases.FrameworkServices.SimpleService import SimpleService
 
 import os
 import sys
 import datetime
-sys.path.append(os.path.join('/', 'home', 'compartido', 'ginn', 'ginn'))
-from framework import pclases
+try:
+    from framework import pclases
+except ImportError:
+    sys.path.append(os.path.join('/', 'home', 'compartido', 'ginn', 'ginn'))
+    from framework import pclases
 
-# default module values
-# update_every = 4
+
 priority = 90000
 retries = 60
 
-ORDER = ['articulos', 'producido', 'produccion'] # , 'random']
+ORDER = ['articulos', 'producido', 'produccion']
 CHARTS = {
-#    'random': {
-#        'options': [None, 'A random number', 'ordinal', 'random', 'random',
-#                    'line'],
-#        'lines': [
-#            ['random1']
-#        ]
-#    },
     'articulos': {
         'options': [None, 'Articulos fabricados', 'bultos', 'articulos',
                     'produccion', 'area'],
@@ -75,7 +70,7 @@ class Service(SimpleService):
         SimpleService.__init__(self, configuration=configuration, name=name)
         self.order = ORDER
         self.definitions = CHARTS
-        self.random = SystemRandom()
+        # self.random = SystemRandom()
 
     @staticmethod
     def check():
@@ -123,6 +118,8 @@ class Service(SimpleService):
             if raw[linea]['producto'] is not None:
                 producto = raw[linea]['producto']
                 prodestandar = raw[linea]['kghora']
+                if not prodestandar:
+                    prodestandar = -1   # Para **destacar** la fibra a 0 kg/h.
                 if producto not in self.charts['produccion']:
                     self.charts['produccion'].add_dimension([producto])
                 data[producto] = prodestandar
