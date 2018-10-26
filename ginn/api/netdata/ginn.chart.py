@@ -114,13 +114,13 @@ class Service(SimpleService):
         # Datos de producciones estándar
         for linea in ('fibra', 'geotextiles', 'cemento'):
             if raw[linea]['producto'] is not None:
-                producto = raw[linea]['producto'].nombre
+                leyenda = raw[linea]['producto'].nombre
                 prodestandar = raw[linea]['kghora']
                 if not prodestandar:
                     prodestandar = -1   # Para **destacar** la fibra a 0 kg/h.
-                if producto not in self.charts['produccion']:
-                    self.charts['produccion'].add_dimension([producto])
-                data[producto] = prodestandar
+                if leyenda not in self.charts['produccion']:
+                    self.charts['produccion'].add_dimension([leyenda])
+                data[leyenda] = prodestandar
         # Datos de almacén de productos fabricándose
         for clave in raw.keys():    # Recorro TODOS los datos.
             if isinstance(clave, metrics.ProductoVenta):
