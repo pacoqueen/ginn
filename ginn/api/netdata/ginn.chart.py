@@ -127,10 +127,9 @@ class Service(SimpleService):
         for clave in raw.keys():    # Recorro TODOS los datos.
             if isinstance(clave, metrics.ProductoVenta):
                 producto = clave
-                for calidad in raw[producto]:
+                for calidad in raw[producto].keys():
                     leyenda = "[{}] {}".format(calidad, producto.nombre)
-                    existencias = raw[clave][calidad]
-                    existencias = 1
+                    existencias = raw[producto][calidad]
                     if leyenda not in self.charts['almacen']:
                         self.charts['almacen'].add_dimension([leyenda])
                     data[leyenda] = existencias
