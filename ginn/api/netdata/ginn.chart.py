@@ -65,7 +65,7 @@ CHARTS = {
         'options': ['stock', 'Existencias', 'kg',
                     'articulos', 'produccion', 'stacked', None, 10],
         'lines': [
-            ['productoVenta']
+            ['lineas produciendo']
         ]
     }
 }
@@ -124,8 +124,10 @@ class Service(SimpleService):
                     self.charts['produccion'].add_dimension([leyenda])
                 data[leyenda] = prodestandar
         # Datos de almacén de productos fabricándose
+        data['lineas produciendo'] = 0
         for clave in raw.keys():    # Recorro TODOS los datos.
             if isinstance(clave, metrics.ProductoVenta):
+                data['lineas produciendo'] += 1
                 producto = clave
                 for calidad in raw[producto].keys():
                     leyenda = "[{}] {}".format(calidad, producto.nombre)
