@@ -62,8 +62,8 @@ CHARTS = {
         ]
     },
     'almacen': {
-        'options': ['stock', 'Existencias', 'kg',
-                    'articulos', 'produccion', 'stacked', None, 10],
+        'options': ['stock', 'Existencias', 'kg o m²',
+                    'articulos', 'produccion', 'line', None, 10],
         'lines': [
             ['lineas produciendo']
         ]
@@ -131,7 +131,10 @@ class Service(SimpleService):
                 producto = clave
                 for calidad in raw[producto].keys():
                     leyenda = "[{}] {}".format(calidad, producto.nombre)
-                    existencias = raw[producto][calidad]['KG']
+                    try:
+                        existencias = raw[producto][calidad]['KG']
+                    except KeyError:
+                        existencias = raw[producto][calidad]['M2']
                     if leyenda not in self.charts['almacen']:
                         self.charts['almacen'].add_dimension([leyenda])
                     data[leyenda] = existencias

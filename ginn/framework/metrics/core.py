@@ -104,12 +104,16 @@ def inicio_turno(hora=datetime.datetime.now()):
 def get_existencias(productos=[]):
     """
     Devuelve las existencias por calidad de los productos recibidos en la
-    lista en **kg** y solo para el almacén principal ('GTX').
+    lista en kg o m² y solo para el almacén principal ('GTX').
     """
     res = dict()
     if isinstance(productos, ProductoVenta):
         productos = [productos]
     for producto in productos:
-        stocks = murano.ops.get_stock_murano(producto, 'GTX', None, 'KG')
+        stocks = murano.ops.get_stock_murano(producto, 'GTX')
+        for calidad in stocks:
+            for dimension in stocks[calidad]:
+                if dimension not in ("KG", "M2"):
+                    stocks[calidad].pop(dimension)
         res[producto] = stocks
     return res
