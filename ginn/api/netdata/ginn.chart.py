@@ -19,7 +19,7 @@ except ImportError:
 priority = 90000
 retries = 60
 
-ORDER = ['almacen', 'produccion', 'articulos', 'producido']
+ORDER = ['produccion', 'almacen', 'articulos', 'producido']
 CHARTS = {
     'articulos': {
         'options': [None, 'Articulos fabricados', 'bultos', 'articulos',
