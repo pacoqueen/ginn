@@ -9,7 +9,7 @@ class BasicTestSuite(unittest.TestCase):
 
     def test_import(self):
         try:
-            from core import *                                      # noqa
+            import core
             assert True
         except ImportError:
             assert False
