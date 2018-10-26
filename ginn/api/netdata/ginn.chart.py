@@ -49,7 +49,7 @@ CHARTS = {
         ]
     },
     'produccion': {
-        'options': ['Producción', 'Produccion a la hora', 'kg/hora',
+        'options': ['productivity', 'Produccion a la hora', 'kg/hora',
                     'produccion', 'produccion', 'line', None, 10],
         'lines': [
             ['kghora fibra A+B', "fibra A+B", 'absolute'],

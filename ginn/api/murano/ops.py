@@ -15,6 +15,7 @@ import os
 import sys
 import time
 import logging
+from collections import defaultdict
 
 NOMFLOG = ".".join(os.path.basename(__file__).split(".")[:-1])
 logging.basicConfig(filename="%s.log" % (NOMFLOG),
@@ -3487,22 +3488,25 @@ def get_stock_murano(producto, _almacen=None, _calidad=None, _unidad=None):
                        periodo)
     rs = conn.run_sql(sql)
     # Tratamiento de datos: los meto en un diccionario bien estructurado.
-    for registro in rs:
+    for registro in rs:     # Cada registro, el acumulado de una partida
         almacen = registro['CodigoAlmacen']
         calidad = registro['CodigoTalla01_']
         if almacen not in res:
             res[almacen] = {}
         if calidad not in res[almacen]:
-            res[almacen][calidad] = {}
+            res[almacen][calidad] = defaultdict(lambda: 0.0)
         stock_basica = registro['UnidadSaldo']
         stock_especifica = registro['UnidadSaldoTipo_']
         unidad_especifica = registro['TipoUnidadMedida_']
         unidad_basica = pmurano['UnidadMedida2_']
-        if _unidad and unidad_especifica == _unidad:
-            res[almacen][calidad][unidad_especifica] = stock_especifica
-        if _unidad and unidad_basica == _unidad:
-            res[almacen][calidad][unidad_especifica] = stock_especifica
-        res[almacen][calidad][unidad_basica] = stock_basica
+        if _unidad:
+            if _unidad == unidad_especifica:
+                res[almacen][calidad][unidad_especifica] += stock_especifica
+            elif _unidad == unidad_basica:
+                res[almacen][calidad][unidad_basica] += stock_basica
+        else:
+            res[almacen][calidad][unidad_basica] += stock_basica
+            res[almacen][calidad][unidad_especifica] += stock_especifica
     # Ahora filtro por los valores recibidos:
     # La unidad se filtra arriba directamente. La unidad (KG, BALA...) siempre
     # se devuelve para saber en qué está el valor. A no ser que (y por
