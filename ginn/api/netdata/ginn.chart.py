@@ -114,7 +114,8 @@ class Service(SimpleService):
         data['kghora geotextiles B'] = raw[metrics.RolloDefectuoso]['kghora']
         data['kghora geotextiles C'] = raw[metrics.RolloC]['kghora']
         # Datos de producciones estándar
-        for linea in ('fibra', 'geotextiles', 'cemento'):
+        for linea in ('fibra', 'geotextiles', 'cemento', 'fibra_c',
+                      'geotextiles_c'):
             if raw[linea]['producto'] is not None:
                 leyenda = raw[linea]['producto'].nombre
                 prodestandar = raw[linea]['kghora']
