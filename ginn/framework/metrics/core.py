@@ -53,6 +53,8 @@ def bultos_fabricados(desde=None):
 
 
 def produccion_estandar(fechahora=datetime.datetime.now()):
+    # TODO: La parte de buscar por fecha hora no está. Solo busca el **último**
+    #  de cada tipo **a partir de fechahora**.
     data = dict()
     initurno = inicio_turno(fechahora)
     pdps = ParteDeProduccion.select(
