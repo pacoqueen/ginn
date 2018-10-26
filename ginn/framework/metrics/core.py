@@ -82,19 +82,19 @@ def produccion_estandar(fechahora=datetime.datetime.now()):
         hace_una_hora = datetime.datetime.now()-datetime.timedelta(hours=2)
     balas_c = BalaCable.select(BalaCable.q.fechahora >= hace_una_hora,
                                orderBy="-fechahora")
-    if balas_c.count():
-        kilos_c = balas_c.sum('peso')
+    try:
         producto = balas_c[0].productoVenta
-    else:
+        kilos_c = balas_c.sum('peso')
+    except IndexError:
         kilos_c = 0
         producto = None
     data['fibra_c'] = {'producto': producto, 'kghora': kilos_c}
     rollos_c = BalaCable.select(BalaCable.q.fechahora >= hace_una_hora,
-                               orderBy="-fechahora")
-    if rollos_c.count():
-        kilos_c = rollos_c.sum('peso')
+                                orderBy="-fechahora")
+    try:
         producto = rollos_c[0].productoVenta
-    else:
+        kilos_c = rollos_c.sum('peso')
+    except IndexError:
         kilos_c = 0
         producto = None
     data['geotextiles_c'] = {'producto': None, 'kghora': 0}
