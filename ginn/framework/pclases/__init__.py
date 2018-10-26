@@ -76,7 +76,12 @@ if sys.executable.endswith("pythonw.exe"):
     # Más info: http://bugs.python.org/issue706263
     DEBUG = VERBOSE = False
 
-from lib.myprint import myprint
+try:
+    from lib.myprint import myprint
+except ImportError:
+    sys.path.insert(0, os.path.abspath(
+        os.path.join(os.path.dirname(__file__), '..', '..')))
+    from lib.myprint import myprint
 
 if DEBUG or VERBOSE:
     myprint("IMPORTANDO PCLASES")
