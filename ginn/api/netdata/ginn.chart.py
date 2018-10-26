@@ -128,8 +128,9 @@ class Service(SimpleService):
             if isinstance(clave, metrics.ProductoVenta):
                 producto = clave
                 for calidad in raw[producto]:
-                    leyenda = "{} {}".format(clave.nombre, calidad)
+                    leyenda = "[{}] {}".format(calidad, producto.nombre)
                     existencias = raw[clave][calidad]
+                    existencias = 1
                     if leyenda not in self.charts['almacen']:
                         self.charts['almacen'].add_dimension([leyenda])
                     data[leyenda] = existencias
