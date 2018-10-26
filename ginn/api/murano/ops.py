@@ -3501,12 +3501,12 @@ def get_stock_murano(producto, _almacen=None, _calidad=None, _unidad=None):
         unidad_basica = pmurano['UnidadMedida2_']
         if _unidad:
             if _unidad == unidad_especifica:
-                res[almacen][calidad][unidad_especifica] += stock_especifica
+                res[almacen][calidad][unidad_especifica] += float(stock_especifica)
             elif _unidad == unidad_basica:
-                res[almacen][calidad][unidad_basica] += stock_basica
+                res[almacen][calidad][unidad_basica] += float(stock_basica)
         else:
-            res[almacen][calidad][unidad_basica] += stock_basica
-            res[almacen][calidad][unidad_especifica] += stock_especifica
+            res[almacen][calidad][unidad_basica] += float(stock_basica)
+            res[almacen][calidad][unidad_especifica] += float(stock_especifica)
     # Ahora filtro por los valores recibidos:
     # La unidad se filtra arriba directamente. La unidad (KG, BALA...) siempre
     # se devuelve para saber en qué está el valor. A no ser que (y por
