@@ -24,8 +24,8 @@ try:
                         format="%(asctime)s %(levelname)-8s : %(message)s",
                         level=logging.DEBUG)
 except:     # Error de permisos. Fallback a temporal
-    nomflog = os.path.join(gettempdir(), NOMFLOG)
-    logging.basicConfig(filename="{}.log".format(nomflog),
+    nomflog = os.path.join(gettempdir(), "ops.tmp")
+    logging.basicConfig(filename="{}{}.log".format(nomflog, time.time()),
                         format="%(asctime)s %(levelname)-8s : %(message)s",
                         level=logging.DEBUG)
 
