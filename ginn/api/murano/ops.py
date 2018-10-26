@@ -16,11 +16,19 @@ import sys
 import time
 import logging
 from collections import defaultdict
+from tempfile import gettempdir
 
 NOMFLOG = ".".join(os.path.basename(__file__).split(".")[:-1])
-logging.basicConfig(filename="%s.log" % (NOMFLOG),
-                    format="%(asctime)s %(levelname)-8s : %(message)s",
-                    level=logging.DEBUG)
+try:
+    logging.basicConfig(filename="%s.log" % (NOMFLOG),
+                        format="%(asctime)s %(levelname)-8s : %(message)s",
+                        level=logging.DEBUG)
+except:     # Error de permisos. Fallback a temporal
+    nomflog = os.path.join(gettempdir(), NOMFLOG)
+    logging.basicConfig(filename="{}.log".format(nomflog),
+                        format="%(asctime)s %(levelname)-8s : %(message)s",
+                        level=logging.DEBUG)
+
 import datetime
 from collections import namedtuple
 from connection import Connection, DEBUG, VERBOSE, CODEMPRESA, CANALES
