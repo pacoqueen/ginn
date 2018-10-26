@@ -49,7 +49,7 @@ CHARTS = {
         ]
     },
     'produccion': {
-        'options': ['productivodad', 'Produccion a la hora', 'kg/hora',
+        'options': ['productividad', 'Produccion a la hora', 'kg/hora',
                     'produccion', 'produccion', 'line', None, 10],
         'lines': [
             ['kghora fibra A+B', "fibra A+B", 'absolute'],
@@ -62,9 +62,11 @@ CHARTS = {
         ]
     },
     'almacen': {
-        'options': ['stock', 'Existencias', 'kg', 'articulos', 'produccion',
-                    'stacked', None, 10],
-        'lines': ['productoVenta']
+        'options': ['stock', 'Existencias', 'kg',
+                    'articulos', 'produccion', 'stacked', None, 10],
+        'lines': [
+            ['productoVenta']
+        ]
     }
 }
 
