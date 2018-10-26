@@ -62,7 +62,7 @@ CHARTS = {
         ]
     },
     'almacen': {
-        'options': ['stock', 'Existencias', 'kg o m²',
+        'options': ['stock', 'Existencias', 'kg o m2',
                     'articulos', 'produccion', 'line', None, 10],
         'lines': [
             ['lineas produciendo']
@@ -133,6 +133,8 @@ class Service(SimpleService):
                     leyenda = "[{}] {}".format(calidad, producto.nombre)
                     try:
                         existencias = raw[producto][calidad]['KG']
+                        if not existencias:
+                            raise KeyError  # Si no dimensión KG, da 0 también
                     except KeyError:
                         existencias = raw[producto][calidad]['M2']
                     if leyenda not in self.charts['almacen']:
