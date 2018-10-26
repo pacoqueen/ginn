@@ -214,6 +214,7 @@ def main():
     parser.add_argument("-v", "--view", dest="ver_salida",
                         help="Abre el fichero de salida en un editor externo.",
                         default=False, action='store_true')
+    # TODO: Agregar opción para corregir todos los PV con existencias.
     args = parser.parse_args()
     if args.ver_salida:
         if not os.path.exists(args.fsalida):

@@ -24,6 +24,10 @@ class BasicTestSuite(unittest.TestCase):
         data = produccion_estandar()
         assert isinstance(data, dict)
 
+    def test_get_existencias(self):
+        from core import get_existencias
+        data = get_existencias()
+        assert isinstance(data, dict)
 
 if __name__ == '__main__':
     unittest.main()

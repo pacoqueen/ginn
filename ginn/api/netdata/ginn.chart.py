@@ -19,7 +19,7 @@ except ImportError:
 priority = 90000
 retries = 60
 
-ORDER = ['articulos', 'producido', 'produccion']
+ORDER = ['almacen', 'produccion', 'articulos', 'producido']
 CHARTS = {
     'articulos': {
         'options': [None, 'Articulos fabricados', 'bultos', 'articulos',
@@ -60,6 +60,11 @@ CHARTS = {
             ['kghora geotextiles B', "gtx B", 'absolute'],
             ['kghora geotextiles C', "gtx C", 'absolute']
         ]
+    },
+    'almacen': {
+        'options': ['stock', 'Existencias', 'kg', 'articulos', 'produccion',
+                    'stacked', None, 10],
+        'lines': ['productoVenta']
     }
 }
 
@@ -109,13 +114,23 @@ class Service(SimpleService):
         # Datos de producciones estándar
         for linea in ('fibra', 'geotextiles', 'cemento'):
             if raw[linea]['producto'] is not None:
-                producto = raw[linea]['producto']
+                producto = raw[linea]['producto'].nombre
                 prodestandar = raw[linea]['kghora']
                 if not prodestandar:
                     prodestandar = -1   # Para **destacar** la fibra a 0 kg/h.
                 if producto not in self.charts['produccion']:
                     self.charts['produccion'].add_dimension([producto])
                 data[producto] = prodestandar
+        # Datos de almacén de productos fabricándose
+        for clave in raw.keys():    # Recorro TODOS los datos.
+            if isinstance(clave, metrics.ProductoVenta):
+                producto = clave
+                for calidad in raw[producto]:
+                    leyenda = "{} {}".format(clave.nombre, calidad)
+                    existencias = raw[clave][calidad]
+                    if leyenda not in self.charts['almacen']:
+                        self.charts['almacen'].add_dimension([leyenda])
+                    data[leyenda] = existencias
         return data
 
     def _get_raw_data(self):
@@ -125,6 +140,12 @@ class Service(SimpleService):
         # {'fibra|geotextiles|cemento': {'producto': productoVenta,
         #                                'kghora': valor}}
         data_referencia = metrics.produccion_estandar()
-        for clave in data_referencia:
-            data[clave] = data_referencia[clave]
+        productos_fabricandose = []
+        for linea in data_referencia:
+            data[linea] = data_referencia[linea]
+            if data[linea]['producto']:
+                productos_fabricandose.append(data[linea]['producto'])
+        data_existencias = metrics.get_existencias(productos_fabricandose)
+        for clave in data_existencias:
+            data[clave] = data_existencias[clave]
         return data

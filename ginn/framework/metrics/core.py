@@ -4,17 +4,19 @@
 import datetime
 
 try:
-    from framework.pclases import Bala, BalaCable, Bigbag, Caja, Pale   # noqa
-    from framework.pclases import Rollo, RolloDefectuoso, RolloC        # noqa
-    from framework.pclases import ParteDeProduccion                     # noqa
+    from framework.pclases import Bala, BalaCable, Bigbag, Caja, Pale
+    from framework.pclases import Rollo, RolloDefectuoso, RolloC
+    from framework.pclases import ParteDeProduccion, ProductoVenta
+    from api import murano
 except ImportError:
     import os
     import sys
     sys.path.insert(0, os.path.abspath(
         os.path.join(os.path.dirname(__file__), '..', '..')))
-    from framework.pclases import Bala, BalaCable, Bigbag, Caja, Pale   # noqa
-    from framework.pclases import Rollo, RolloDefectuoso, RolloC        # noqa
-    from framework.pclases import ParteDeProduccion                     # noqa
+    from framework.pclases import Bala, BalaCable, Bigbag, Caja, Pale
+    from framework.pclases import Rollo, RolloDefectuoso, RolloC
+    from framework.pclases import ParteDeProduccion, ProductoVenta
+    from api import murano
 
 
 def bultos_fabricados(desde=None):
@@ -61,11 +63,11 @@ def produccion_estandar(fechahora=datetime.datetime.now()):
     cemento = (None, None)
     for pdp in pdps:
         if pdp.es_de_balas():
-            fibra = (pdp.productoVenta.nombre, pdp.prodestandar)
+            fibra = (pdp.productoVenta, pdp.prodestandar)
         elif pdp.es_de_geotextiles():
-            geotextiles = (pdp.productoVenta.nombre, pdp.prodestandar)
+            geotextiles = (pdp.productoVenta, pdp.prodestandar)
         elif pdp.es_de_bolsas():
-            cemento = (pdp.productoVenta.nombre, pdp.prodestandar)
+            cemento = (pdp.productoVenta, pdp.prodestandar)
     data['fibra'] = {'producto': fibra[0], 'kghora': fibra[1]}
     data['geotextiles'] = {'producto': geotextiles[0],
                            'kghora': geotextiles[1]}
@@ -94,4 +96,18 @@ def inicio_turno(hora=datetime.datetime.now()):
                             second=0)
     if res > hora:  # Corrijo el día si estoy en el turno de madrugada
         res -= datetime.timedelta(days=1)
+    return res
+
+
+def get_existencias(productos=[]):
+    """
+    Devuelve las existencias por calidad de los productos recibidos en la
+    lista en **kg** y solo para el almacén principal ('GTX').
+    """
+    res = dict()
+    if isinstance(productos, ProductoVenta):
+        productos = [productos]
+    for producto in productos:
+        stocks = murano.ops.get_stock_murano(producto, 'GTX', None, 'KG')
+        res[producto] = stocks
     return res
