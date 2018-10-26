@@ -129,7 +129,7 @@ class Service(SimpleService):
                 producto = clave
                 for calidad in raw[producto].keys():
                     leyenda = "[{}] {}".format(calidad, producto.nombre)
-                    existencias = raw[producto][calidad]
+                    existencias = raw[producto][calidad]['KG']
                     if leyenda not in self.charts['almacen']:
                         self.charts['almacen'].add_dimension([leyenda])
                     data[leyenda] = existencias
