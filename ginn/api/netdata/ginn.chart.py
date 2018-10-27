@@ -140,7 +140,7 @@ class Service(SimpleService):
                         existencias = raw[producto][calidad]['M2']
                     if leyenda not in self.charts['almacen']:
                         self.charts['almacen'].add_dimension(
-                                [leyenda, None, "incremental"])
+                                [leyenda, None, "absolute"])
                     data[leyenda] = existencias
         return data
 
