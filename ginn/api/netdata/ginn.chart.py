@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Description: example netdata python.d module
-# Author: Put your name here (your github login)
+# Description: Geotex-INN netdata python.d module
+# Author: frbogado@geotexan.com (https://github.com/Geotexan)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 # from random import SystemRandom
@@ -139,7 +139,8 @@ class Service(SimpleService):
                     except KeyError:
                         existencias = raw[producto][calidad]['M2']
                     if leyenda not in self.charts['almacen']:
-                        self.charts['almacen'].add_dimension([leyenda])
+                        self.charts['almacen'].add_dimension(
+                                [leyenda, None, "incremental"])
                     data[leyenda] = existencias
         return data
 

@@ -60,9 +60,9 @@ def produccion_estandar(fechahora=datetime.datetime.now()):
     pdps = ParteDeProduccion.select(
             ParteDeProduccion.q.fechahorainicio >= initurno,
             orderBy="fechahorainicio")
-    fibra = (None, None)
-    geotextiles = (None, None)
-    cemento = (None, None)
+    fibra = (None, 0)
+    geotextiles = (None, 0)
+    cemento = (None, 0)
     for pdp in pdps:
         if pdp.es_de_balas():
             fibra = (pdp.productoVenta, pdp.prodestandar)

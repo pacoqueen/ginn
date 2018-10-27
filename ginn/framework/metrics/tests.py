@@ -29,5 +29,6 @@ class BasicTestSuite(unittest.TestCase):
         data = get_existencias()
         assert isinstance(data, dict)
 
+
 if __name__ == '__main__':
     unittest.main()

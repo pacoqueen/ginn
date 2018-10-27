@@ -6,4 +6,4 @@ from core import Rollo, RolloDefectuoso, RolloC         # noqa
 from core import ParteDeProduccion, ProductoVenta       # noqa
 from core import bultos_fabricados, produccion_estandar, get_existencias # noqa
 
-__all__ = ["bultos_fabricados", "produccion_estandar"]
+__all__ = ["bultos_fabricados", "produccion_estandar", "get_existencias"]

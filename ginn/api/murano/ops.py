@@ -6,7 +6,8 @@ Operaciones.
 
 """
 
-# TODO: No sincroniza el campo que indica que el geotextil es C en los productos de venta de tipo Geotextil.
+# TODO: No sincroniza el campo que indica que el geotextil es C en los
+# productos de venta de tipo Geotextil.
 
 # pylint: disable=too-many-lines, wrong-import-position, relative-import
 
@@ -23,17 +24,18 @@ try:
     logging.basicConfig(filename="%s.log" % (NOMFLOG),
                         format="%(asctime)s %(levelname)-8s : %(message)s",
                         level=logging.DEBUG)
-except:     # Error de permisos. Fallback a temporal
+except:     # Error de permisos. Fallback a temporal                     # noqa
     nomflog = os.path.join(gettempdir(), "ops.tmp")
     logging.basicConfig(filename="{}{}.log".format(nomflog, time.time()),
                         format="%(asctime)s %(levelname)-8s : %(message)s",
                         level=logging.DEBUG)
 
-import datetime
-from collections import namedtuple
-from connection import Connection, DEBUG, VERBOSE, CODEMPRESA, CANALES
-from export import determinar_familia_murano
-from extra import get_peso_bruto, get_peso_neto, get_superficie, AttrDict
+import datetime                                                          # noqa
+from collections import namedtuple                                       # noqa
+from connection import Connection, DEBUG, VERBOSE, CODEMPRESA, CANALES   # noqa
+from export import determinar_familia_murano                             # noqa
+from extra import get_peso_bruto, get_peso_neto, get_superficie          # noqa
+from extra import AttrDict                                               # noqa
 
 try:
     import win32com.client
@@ -45,7 +47,7 @@ else:
 RUTA_GINN = os.path.abspath(os.path.join(
     os.path.dirname(__file__), "..", "..", "..", "ginn"))
 sys.path.append(RUTA_GINN)
-from framework import pclases   # pylint: disable=import-error
+from framework import pclases   # pylint: disable=import-error          # noqa
 
 
 # DocumentoUnico a «No» para evitar error con decimales.
@@ -504,7 +506,7 @@ def _get_modelo_etiqueta_ginn(id_etiqueta_murano):
     if id_etiqueta_murano == 4:
         # Normativa julio 2013
         res = 4
-    elif id_etiqueta_murano in range(1, 99): # Hasta 99 modelos. Se puede cambiar.
+    elif id_etiqueta_murano in range(1, 99):  # Hasta 99 modelos. Cambiable.
         # Resulta que el ID coincide en ambas bases de datos.
         res = id_etiqueta_murano
     else:   # Incluido el 0, que es el equivalente al None en Murano
@@ -1239,11 +1241,12 @@ def get_fecha_entrada(articulo, campo="FechaRegistro"):
     Si el artículo no se encuentra, devuelve None.
     Permite obtener la fecha, fecha de registro o serie del alta especificando
     el campo en la llamada a la función. Por defecto devuelve la fecha de
-    registro, que no tiene por qué coincidir con la fecha indicada para el alta.
+    registro, que no tiene por qué coincidir con la fecha indicada para el
+    alta.
     """
     assert campo in ("Fecha", "FechaRegistro", "SerieDocumento"), "Solo se"\
-            " admiten Fecha, FechaRegistro o SerieDocumento como campo a "\
-            "obtener."
+        " admiten Fecha, FechaRegistro o SerieDocumento como campo a "\
+        "obtener."
     if isinstance(articulo, pclases.Articulo):
         codigo = articulo.codigo
     else:
@@ -1791,7 +1794,7 @@ def create_pale(pale, cantidad=1, producto=None, guid_proceso=None,
     se cambia a True.
     """
     assert observaciones is not None, "murano.ops.create_pale::"\
-            "Debe indicar el motivo en el parámetro «observaciones»."
+        "Debe indicar el motivo en el parámetro «observaciones»."
     # Los palés se crean automáticamente al crear las cajas con el código de
     # palé informado. No hay que crear movimiento de stock ni de número de
     # serie para eso.
@@ -1824,7 +1827,7 @@ def create_pale(pale, cantidad=1, producto=None, guid_proceso=None,
     # No es necesario. Cada caja lanza su proceso y el palé no crea
     # registros en la base de datos. No hay que lanzar ninún proceso adicional.
     if procesar:
-        if guid_proceso: # Si todas las cajas ya existían, guid_proceso es None.
+        if guid_proceso:  # Si todas las cajas ya existían,guid_proceso es None
             res = fire(guid_proceso)
         else:   # Nada que insertar. Nada insertado. Resultado, False.
             res = False
@@ -1959,18 +1962,19 @@ def update_calidad(articulo, calidad, comentario=None, serie="API",
         if not comentario:
             observaciones_baja = "Baja por cambio a calidad {}".format(calidad)
         else:
-            observaciones_baja=comentario
+            observaciones_baja = comentario
         res = delete_articulo(articulo,
                               observaciones=observaciones_baja,
                               serie=serie)
         if res:
             if not comentario:
-                observaciones_alta = "Alta por cambio a calidad {}.".format(calidad)
+                observaciones_alta = "Alta por cambio a calidad {}.".format(
+                        calidad)
             else:
                 observaciones_alta = comentario
             res = create_articulo(articulo, calidad=calidad,
-                    observaciones=observaciones_alta,
-                    serie=serie)
+                                  observaciones=observaciones_alta,
+                                  serie=serie)
     return res
 
 
@@ -2249,7 +2253,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
     lo que se haya indicado en `serie`.
     """
     assert observaciones is not None, "murano.ops.create_articulo::"\
-            "Debe indicar el motivo en el parámetro «observaciones»."
+        "Debe indicar el motivo en el parámetro «observaciones»."
     # TODO: ¿Y al descontar existencias? ¿Comprobar también que existan antes?
     # De todos modos el proceso de importación devolverá error si la serie
     # está duplicada.
@@ -2643,7 +2647,8 @@ def _get_fin_proceso_importacion_retcode(guid):
       AND sysTraceDescription LIKE 'Fin proceso de importaci%n';""".format(
           conn.get_database(), guid)
     try:
-        # FIXME: Ojo porque puede crear 2 registros con el mismo texto y guid. ¿Mismo sysStatus también? Espero que sí... Preguntar a Sage.
+        # FIXME: Ojo porque puede crear 2 registros con el mismo texto y guid.
+        # ¿Mismo sysStatus también? Espero que sí... Preguntar a Sage.
         res = conn.run_sql(sql)[0]['sysStatus']
     except IndexError:
         res = None
@@ -2695,8 +2700,8 @@ def espera_activa(funcion, parametros, res=None, timeout=30, tick=5):
             time.sleep(tick)
             timeout -= tick
     tiempo = time.time() - antes
-    strlog = "[{}] Espera activa finalizada en {}/{} intentos ({:.2f} s).".format(
-        success and '✔' or '✘', tries, max_tries, tiempo)
+    strlog = "[{}] Espera activa finalizada en {}/{} intentos ({:.2f} s)"\
+             ".".format(success and '✔' or '✘', tries, max_tries, tiempo)
     logging.warning(strlog)
     return res
 
@@ -2713,7 +2718,8 @@ def fire(guid_proceso, ignore_errors=False,
     Devuelve True si se completó con éxito o False en caso contrario.
     Ya no devuelve None si Murano lanzó asíncronamente los procesos de
     importación y acumulación. Ahora se hace espera activa hasta que acabe
-    el proceso o el tiempo máximo de espera (único caso en que devolvería None).
+    el proceso o el tiempo máximo de espera (único caso en que devolvería
+    None).
     """
     antes = time.time()
     strerror = "No puede ejecutar código nativo de Murano. Necesita instalar"\
@@ -2747,13 +2753,15 @@ def fire(guid_proceso, ignore_errors=False,
     # parámetro esté a 0.
     # 0 = Ejecutar en todos los módulos.
     # 4 = Procesar solo para el módulo de gestión. [20160704] Cambiamos 0 por 4
-    ### [20170601] Espera activa.
+    # ### [20170601] Espera activa.
     # DONE: En lugar de usar el código de retorno, como resulta que al final
-    # las llamadas a la dll son asíncronas, haremos un SELECT contra LsysTraceIME buscando
-    # el GUID en cuestión y en sysTraceDescription el texto 'Fin proceso de importación".
-    # Si sysStatus es 0, ha acabado bien. Si es 2 (u otro valor), ha habido fallos.
-    # **Si el registro no existe, es que no ha terminado todavía.** Hacer espera activa hasta
-    # que aparezca el registro.
+    # las llamadas a la dll son asíncronas, haremos un SELECT contra
+    # LsysTraceIME buscando el GUID en cuestión y en sysTraceDescription el
+    # texto 'Fin proceso de importación".
+    # Si sysStatus es 0, ha acabado bien. Si es 2 (u otro valor), ha habido
+    # fallos.
+    # **Si el registro no existe, es que no ha terminado todavía.** Hacer
+    # espera activa hasta que aparezca el registro.
     retCode = None  # XXX: [20170601] Por algún motivo que ni Félix ni yo
     # adivinamos, la lcOEM ha empezado a devolver 1 aunque importe
     # correctamente los registros. Por tanto, el valor de retorno ya no es
@@ -2762,7 +2770,7 @@ def fire(guid_proceso, ignore_errors=False,
     if retCode is None:
         retCode = espera_activa(_get_fin_proceso_importacion_retcode,
                                 [guid_proceso], retCode, timeout=40, tick=5)
-    ### EOEspera_activa
+    # ### EOEspera_activa
     strverbose = "Importación `%s` concluida con código de retorno: %s" % (
         guid_proceso, retCode)
     logging.info(strverbose)
@@ -2819,7 +2827,7 @@ def fire(guid_proceso, ignore_errors=False,
             retCode = burano.EjecutaScript(nombrescript, paramsscript)
             # retCode devuelve (True, ...) si se hace con éxito. El problema es
             # que no sé si retCode[0] será False cuando falla.
-            ### Fuerzo espera activa para obtener el resultado **real**
+            # ### Fuerzo espera activa para obtener el resultado **real**
             #   (la llamada dentro de la dll parece ser asíncrona y el valor de
             #   retorno, si lo hay, no es de fiar. Puede que siempre sea True
             #   pase lo que pase por dentro de Murano)
@@ -2834,7 +2842,7 @@ def fire(guid_proceso, ignore_errors=False,
             logging.info(strverbose)
             if VERBOSE and DEBUG:
                 print(strverbose)
-        ## Ya no es necesario el script del canal DIV. Sage solucionó el bug.
+        # ## Ya no es necesario el script del canal DIV. Sage solucionó el bug.
         # nombrescript = "GEO_DividirStock"
         # paramsscript = "Label:=Inicio"
         # strverbose = "Lanzando script `%s`..." % (
@@ -3509,7 +3517,8 @@ def get_stock_murano(producto, _almacen=None, _calidad=None, _unidad=None):
         unidad_basica = pmurano['UnidadMedida2_']
         if _unidad:
             if _unidad == unidad_especifica:
-                res[almacen][calidad][unidad_especifica] += float(stock_especifica)
+                res[almacen][calidad][unidad_especifica] += float(
+                        stock_especifica)
             elif _unidad == unidad_basica:
                 res[almacen][calidad][unidad_basica] += float(stock_basica)
         else:

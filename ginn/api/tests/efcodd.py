@@ -32,8 +32,8 @@ ruta_ginn = os.path.abspath(os.path.join(
 sys.path.append(ruta_ginn)
 # pylint: disable=import-error,wrong-import-position
 # from framework import pclases
-from api import murano
-from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
+from api import murano                                                  # noqa
+from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.         # noqa
 sys.argv = _argv
 
 
