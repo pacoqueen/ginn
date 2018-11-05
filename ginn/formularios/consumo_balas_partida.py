@@ -82,6 +82,7 @@ class ConsumoBalasPartida(Ventana):
                        'b_from_albaran/clicked': self.fecha_from_albaran}
         self.add_connections(connections)
         cols = (('Nº Bala', 'gobject.TYPE_STRING', False, True, True, None),
+                ('Producto', 'gobject.TYPE_STRING', False, True, False, None),
                 ('Peso', 'gobject.TYPE_FLOAT', True, True, False,
                     self.cambiar_peso_bala),
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None))
@@ -89,16 +90,17 @@ class ConsumoBalasPartida(Ventana):
         # Al loro porque me voy a cargar la mitad de lo que ha hecho el
         # preparar_listview.
         import gobject
-        model = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_FLOAT,
-                              gobject.TYPE_FLOAT, gobject.TYPE_INT64)
+        model = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING,
+                              gobject.TYPE_FLOAT, gobject.TYPE_FLOAT,
+                              gobject.TYPE_INT64)
         self.wids['tv_balas'].set_model(model)
         self.wids['tv_balas'].get_selection().set_mode(gtk.SELECTION_MULTIPLE)
         cell = gtk.CellRendererProgress()
         column = gtk.TreeViewColumn('Consumido', cell)
-        column.add_attribute(cell, 'value', 2)
-        column.set_sort_column_id(2)
-        self.wids['tv_balas'].insert_column(column, 2)
-        cols = (("#Balas", "gobject.TYPE_INT64", False, True, False, None),
+        column.add_attribute(cell, 'value', 3)
+        column.set_sort_column_id(3)
+        self.wids['tv_balas'].insert_column(column, 3)
+        cols = (("# balas", "gobject.TYPE_INT64", False, True, False, None),
                 ('Peso', 'gobject.TYPE_FLOAT', False, True, False, None),
                 ("Lote", "gobject.TYPE_STRING", False, True, True, None),
                 ("Fibra", "gobject.TYPE_STRING", False, True, False, None),
@@ -449,10 +451,15 @@ class ConsumoBalasPartida(Ventana):
                     consumos_estimados -= bala.pesobala
                 else:
                     porcion_consumida = (consumos_estimados
-                            /  bala.pesobala) * 100  # % consumido
+                            / bala.pesobala) * 100  # % consumido
                     consumos_estimados = 0      # Ya no puedo descontar más o
                                                 # me quedaré por debajo de 0.
-                model.append((bala.codigo, bala.pesobala, porcion_consumida,
+                model.append((bala.codigo,
+                              "{}: {}".format(
+                                  bala.articulo.productoVenta.id,
+                                  bala.articulo.productoVenta.descripcion),
+                              bala.articulo.peso_neto,
+                              porcion_consumida,
                               bala.id))
                 cantidad += bala.pesobala
                 i += 1
