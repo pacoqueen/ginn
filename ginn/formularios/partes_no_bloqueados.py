@@ -133,11 +133,13 @@ class PartesNoBloqueados(Ventana):
                 # actualización de la ventana.
             pdp.sync()  # ¿Hay algún cambio pendiente de rescatar en local?
             if pdp.se_solapa():
-                txt_warn = "%spartes_no_bloqueados::rellenar_partes"
-                " -> El parte ID %d se solapa con otros de la misma línea."
-                "Si estaba verificado, lo desbloqueo para que se vuelva a"
-                " revisar." % (self.usuario
-                               and self.usuario.usuario + ": " or "", pdp.id)
+                txt_warn = "{}{}partes_no_bloqueados::rellenar_partes"\
+                 " -> El parte ID {} se solapa con otros de la misma línea."\
+                 "Si estaba verificado, lo desbloqueo para que se vuelva a"\
+                 " revisar.".format(self.usuario
+                                    and self.usuario.usuario or "",
+                                    self.usuario and ": " or "",
+                                    pdp.id)
                 self.logger.warning(txt_warn)
                 pdp.bloqueado = False
         # Y ahora meto los de la consulta real:

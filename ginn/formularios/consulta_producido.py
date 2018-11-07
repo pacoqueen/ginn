@@ -450,15 +450,20 @@ class ConsultaProducido(Ventana):
         self.resumen_gtx(pdps_rollos)
 
     def procesar_rollos_c(self, prod_rollos):
+        # A todos los efectos el día comienza en el turno de las 6:
+        ffin = self.fin
+        fini = self.inicio
+        fhorafin = datetime.datetime(ffin.year, ffin.month, ffin.day, 6)
         if not self.inicio:
             rollosc = pclases.RolloC.select(
-                    pclases.RolloC.q.fechahora < self.fin,
-                              orderBy = 'fechahora')
+                    pclases.RolloC.q.fechahora < fhorafin,
+                    orderBy='fechahora')
         else:
+            fhoraini = datetime.datetime(fini.year, fini.month, fini.day, 6)
             rollosc = pclases.RolloC.select(pclases.AND(
-                                pclases.RolloC.q.fechahora >= self.inicio,
-                                pclases.RolloC.q.fechahora < self.fin),
-                              orderBy = 'fechahora')
+                                pclases.RolloC.q.fechahora >= fhoraini,
+                                pclases.RolloC.q.fechahora < fhorafin),
+                              orderBy='fechahora')
         for rolloc in rollosc:
             key = rolloc.productoVenta.puid
             cantidad = rolloc.peso_sin
