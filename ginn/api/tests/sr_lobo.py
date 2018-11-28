@@ -264,6 +264,8 @@ def _overwrite_articulo_ginn2Murano(articulo, report, simulate=True):
     prod_en_ginn = articulo.productoVenta
     if prod_en_murano != prod_en_ginn:
         # Creo que esta rama está "muerta". Aquí no entraría nunca.
+        # Sí que entraría. Basta con cambiar el producto en Murano con
+        # `update_producto` y no cambiarlo en ginn.
         report.write("Corrigiendo producto de {}: {} -> {}".format(
             articulo.codigo, prod_en_murano.descripcion,
             prod_en_ginn.descripcion))
