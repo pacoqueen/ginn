@@ -47,7 +47,7 @@ sys.argv = _argv
 
 # TODO: Hacer un parámetro para demonio o algo que saque la consulta de
 # inventario a lo cron y lo vuelque a un Excel.
-# TODO: Hacer un chequeo por A, B y C antes de los totales para detectar
+# DONE: Hacer un chequeo por A, B y C antes de los totales para detectar
 # errores al importar un bulto como A siendo B y cosas así.
 
 
