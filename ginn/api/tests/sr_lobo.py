@@ -39,9 +39,9 @@ ruta_ginn = os.path.abspath(os.path.join(
     os.path.dirname(__file__), "..", "..", "..", "ginn"))
 sys.path.append(ruta_ginn)
 # pylint: disable=import-error,wrong-import-position
-from framework import pclases
-from api import murano
-from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
+from framework import pclases   # noqa
+from api import murano          # noqa
+from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto. # noqa
 sys.argv = _argv
 
 
@@ -105,20 +105,24 @@ class CacheDB(object):
         con el directorio temporal.
         """
         try:
-            conn = sqlite3.connect(SQLFILENAME, detect_types=sqlite3.PARSE_DECLTYPES)
+            conn = sqlite3.connect(SQLFILENAME,
+                                   detect_types=sqlite3.PARSE_DECLTYPES)
         except sqlite3.OperationalError:
             tempdb = os.path.join(tempfile.gettempdir(), SQLFILENAME)
             try:
-                conn = sqlite3.connect(tempdb, detect_types=sqlite3.PARSE_DECLTYPES)
+                conn = sqlite3.connect(tempdb,
+                                       detect_types=sqlite3.PARSE_DECLTYPES)
             except sqlite3.OperationalError:
-                conn = sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
+                conn = sqlite3.connect(":memory:",
+                                       detect_types=sqlite3.PARSE_DECLTYPES)
         self.db = conn
 
     def _check_tables(self):
         """
         Comprueba si existen las tablas necesarias y las crea si no.
         """
-        sql = "create table if not exists history(codigo text, exitos int, fecha date)"
+        sql = "create table if not exists "\
+              "history(codigo text, exitos int, fecha date)"
         c = self.db.cursor()
         c.execute(sql)
 
@@ -176,8 +180,8 @@ class CacheDB(object):
 # pylint: disable=too-many-locals, too-many-branches, too-many-statements
 def _overwrite_articulo_ginn2Murano(articulo, report, simulate=True):
     """
-    Sobrescribe los datos **de _Murano_** de acuerdo a los que tiene el artículo
-    en _ginn_.
+    Sobrescribe los datos **de _Murano_** de acuerdo a los que tiene el
+    artículo en _ginn_.
     """
     res = True
     altered = False
@@ -343,7 +347,8 @@ def _rewrite_articulo_ginn2Murano(articulo, report, simulate=True):
     return res
 
 
-# pylint: disable=too-many-branches,too-many-statements,too-many-locals,too-many-nested-blocks
+# pylint: disable=too-many-branches,too-many-statements,too-many-locals,
+# pylint: too-many-nested-blocks
 def sync_articulo(codigo, fsalida, simulate=True, force=True, cachedb=None):
     """
     Sincroniza el artículo de ginn cuyo código es "codigo", con el de
@@ -365,14 +370,14 @@ def sync_articulo(codigo, fsalida, simulate=True, force=True, cachedb=None):
     0. Si se ha recibido el parámetro `force==true`:
         0.1. Se sincroniza el artículo y se actualiza el registro de `sqlite`.
     1. Si no (`force==false`):
-        1.1. Si nunca ha sido sincronizado (artículo nuevo en ginn y todavía no en
-             Murano) o tiene el contador a 0, se sincroniza y se guarda el par
-             `(código, 1, día, mes, año)`.
+        1.1. Si nunca ha sido sincronizado (artículo nuevo en ginn y todavía
+             no en Murano) o tiene el contador a 0, se sincroniza y se guarda
+             el par `(código, 1, día, mes, año)`.
         1.2. Si ya había sido sincronizado al menos 2 veces anteriormente, se
-             incrementa el contador y **no se consulta nada a Murano ni a _ginn_**,
-             acelerando considerablemente la ejecución. **No se actualiza
-             tampoco la fecha**. La fecha solo guarda las sincronizaciones
-             **reales de _ginn_ contra _Murano_**.
+             incrementa el contador y **no se consulta nada a Murano ni
+             a _ginn_**, acelerando considerablemente la ejecución. **No se
+             actualiza tampoco la fecha**. La fecha solo guarda las
+             sincronizaciones **reales de _ginn_ contra _Murano_**.
         1.3. En otro caso, sincroniza el artículo y:
                 1.3.1. Si se sincorniza con éxito, incrementa el contador
                        **y actualiza la fecha**.
@@ -394,14 +399,15 @@ def sync_articulo(codigo, fsalida, simulate=True, force=True, cachedb=None):
         close_after = True
     if not force:
         res = articulo_cerrado = cachedb.check_articulo_cerrado(codigo)
-        # TODO: ¿Un tick o algo al log para saber que ha hecho acierto de caché?
+        # TODO: ¿Un tick o algo al log para saber que acierto de caché?
     if force or not articulo_cerrado:
         articulo = pclases.Articulo.get_articulo(codigo)
         if articulo:
             if not murano.ops.existe_articulo(articulo):
                 res = _rewrite_articulo_ginn2Murano(articulo, report, simulate)
             else:   # Si el artículo ya existe:
-                res = _overwrite_articulo_ginn2Murano(articulo, report, simulate)
+                res = _overwrite_articulo_ginn2Murano(articulo, report,
+                                                      simulate)
             if not articulo.api:
                 report.write("Actualizando valor api... ")
                 if not simulate:
@@ -685,7 +691,7 @@ def make_consumos_bigbags(fsalida, simulate=True, fini=None, ffin=None):
     pdps = pclases.ParteDeProduccion.select(pclases.AND(
         pclases.ParteDeProduccion.q.fecha >= fini,
         pclases.ParteDeProduccion.q.fecha < ffin,
-        pclases.ParteDeProduccion.q.bloqueado == True))
+        pclases.ParteDeProduccion.q.bloqueado == True))     # noqa
     report.write("Consumos bigbag: {} partes encontrados.\n".format(
         pdps.count()))
     res = True
@@ -701,19 +707,20 @@ def make_consumos_bigbags(fsalida, simulate=True, fini=None, ffin=None):
                     # El bigbag está en otro almacén o no está. Me da igual.
                     # No lo puedo consumir ni se podrá consumir jamás. Hay que
                     # corregirlo a mano.
-                    report.write("El bigbag {} está en otro almacén, no está o "
-                                 "ya se ha consumido y el valor `api` está mal."
-                                 "\n".format(bb.codigo))
+                    report.write("El bigbag {} está en otro almacén, no está "
+                                 "o ya se ha consumido y el valor `api` está "
+                                 "mal.\n".format(bb.codigo))
                     res = False
                     if not simulate and murano.ops.esta_consumido(bb.articulo):
-                        # ¿Esta consumido en el mismo parte en _ginn_ y _Murano_?
+                        # ¿Esta consumido en el mismo parte en _ginn_ y
+                        # _Murano_?
                         mov = murano.ops.get_ultimo_movimiento_articulo_serie(
                             murano.connection.Connection(), bb.articulo)
                         if mov['Documento'] == bb.parteDeProduccionID:
                             bb.api = True
                             bb.syncUpdate()
-                            report.write(" > Corregido valor `api` de consumo de "
-                                         "{}.\n".format(bb.codigo))
+                            report.write(" > Corregido valor `api` de consumo"
+                                         " de {}.\n".format(bb.codigo))
                             res = True
     report.close()
     return res
@@ -749,10 +756,10 @@ def make_consumos_balas(fsalida, simulate=True, fini=None, ffin=None):
     pcargas = pclases.PartidaCarga.select(pclases.AND(
         pclases.PartidaCarga.q.fecha >= fini,
         pclases.PartidaCarga.q.fecha <= ffin,
-        pclases.PartidaCarga.q.api == False))
+        pclases.PartidaCarga.q.api == False))   # noqa
     # DONE: Debería meter un filtro más para no consumir las partidas de carga
     # que no tengan todos los partes de producción verificados. Así doy margen
-    # a Jesús para que pueda modificarlas. Si no tiene partes, no volcar tampoco.
+    # para que puedan modificarlas. Si no tiene partes, no volcar tampoco.
     report.write("{} partidas de carga encontradas.\n".format(pcargas.count()))
     for pcarga in tqdm(pcargas, total=pcargas.count(),
                        desc="Partidas de carga", unit="partida"):
@@ -815,7 +822,7 @@ def make_consumos_materiales(fsalida, simulate=True, fini=None, ffin=None):
     pdps = pclases.ParteDeProduccion.select(pclases.AND(
         pclases.ParteDeProduccion.q.fechahorainicio >= fini,
         pclases.ParteDeProduccion.q.fechahorafin <= ffin,
-        pclases.ParteDeProduccion.q.bloqueado == True))
+        pclases.ParteDeProduccion.q.bloqueado == True))     # noqa
     report.write("{} partes encontrados.\n".format(pdps.count()))
     res = True
     for pdp in tqdm(pdps, total=pdps.count(),
@@ -874,8 +881,8 @@ def check_unidades_series_positivas():
                   conn.get_database(), murano.connection.CODEMPRESA)
     articulos = conn.run_sql(sql)
     assert len(articulos) == 0, "Se detectaron artículos con UnidadesSerie "\
-            "negativas: {}".format("; ".join(
-                [a['NumeroSerieLc'] for a in articulos]))
+        "negativas: {}".format("; ".join(
+            [a['NumeroSerieLc'] for a in articulos]))
 
 
 def main():

@@ -36,12 +36,12 @@ ruta_ginn = os.path.abspath(os.path.join(
     os.path.dirname(__file__), "..", "..", "..", "ginn"))
 sys.path.append(ruta_ginn)
 # pylint: disable=import-error,wrong-import-position
-from framework import pclases
-from api import murano
-from api.murano.connection import CODEMPRESA
-from api.murano import connection
-from api.murano.extra import get_peso_neto, get_superficie
-from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
+from framework import pclases                                   # noqa
+from api import murano                                          # noqa
+from api.murano.connection import CODEMPRESA                    # noqa
+from api.murano import connection                               # noqa
+from api.murano.extra import get_peso_neto, get_superficie      # noqa
+from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto. # noqa
 sys.argv = _argv
 
 
@@ -73,7 +73,7 @@ def calcular_desviacion(existencias_ini, produccion, ventas, consumos, ajustes,
 
 # pylint: disable=too-many-locals, too-many-statements, too-many-arguments
 def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
-                  data_res, dev=False):
+                  data_res, dev=False, calidad=None):
     """
     Recibe un producto de ginn y comprueba que entre las fechas fini y ffin
     (recibidas como `datetimes`) es correcto el cálculo
@@ -98,19 +98,28 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
     El parámetro «dev» es solo para depurar el script ("modo desarrollo"),
     no los cálculos. Únicamente sirve para ejecutarlo sin conexión a SQLServer.
 
+    Si calidad es None, no tiene en cuenta calidad. Si es 'A', 'B' o 'C' solo
+    realiza los cálculos para los bultos de esa calidad.
+
     Devuelve True si todo cuadra.
     """
-    # TODO: Productos sin trazabilidad no deberían analizarse. O bien hacerlo de
-    # otra forma, porque las existencias finales son 0 si se consulta por serie.
+    try:
+        calidad = calidad.upper()
+    except AttributeError:   # Calidad es None.
+        pass
+    assert calidad in (None, 'A', 'B', 'C'), "Calidad debe ser None o A/B/C."
+    # TODO: Productos sin trazabilidad no deberían analizarse. O bien hacerlo
+    # de otra forma, porque las existencias finales son 0 si se consulta por
+    # serie.
     # Habría que conectar a otra tabla para ver las existencias e incluso para
     # contar los ajustes (que es como se agrega stock a estos productos).
     res = False
-    # 0.- Localizo el producto y todos los datos que solo puedo sacar de Murano.
+    # 0.- Localizo el producto y todos los datos que solo puedo sacar de Murano
     (producto_murano, existencias_ini, existencias_fin,
      produccion_ginn, ventas, consumos_ginn,
      volcados_murano, consumos_murano, ajustes) = calcular_movimientos(
-         producto_ginn, data_inventario, fini, ffin, dev)
-    # 1,- La "cuenta" en sí.
+         producto_ginn, data_inventario, fini, ffin, dev, calidad=calidad)
+    # 1.- La "cuenta" en sí.
     desviacion = calcular_desviacion(existencias_ini, produccion_ginn, ventas,
                                      consumos_ginn, ajustes, existencias_fin)
     res = desviacion == [.0, .0, .0]
@@ -118,7 +127,8 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
     # inventario?
     if not res and not dev:
         nventas = get_ventas(producto_murano,
-                             fini + datetime.timedelta(days=1), ffin)
+                             fini + datetime.timedelta(days=1), ffin,
+                             calidad=calidad)
         ndesviacion = calcular_desviacion(existencias_ini, produccion_ginn,
                                           nventas, consumos_ginn, ajustes,
                                           existencias_fin)
@@ -217,7 +227,8 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
     return res
 
 
-def calcular_movimientos(producto_ginn, data_inventario, fini, ffin, dev=False):
+def calcular_movimientos(producto_ginn, data_inventario, fini, ffin,
+                         dev=False, calidad=None):
     """
     Lanza las consultas, hace los cálculos y devuelve:
     - La representación del registro del producto en Murano
@@ -231,15 +242,23 @@ def calcular_movimientos(producto_ginn, data_inventario, fini, ffin, dev=False):
     - ajustes manuales hechos en Murano para regularizaciones, etc. (serie MAN)
     - ajustes manuales hechos desde API ginn en Murano (serie API)
     """
+    try:
+        calidad = calidad.upper()
+    except AttributeError:   # Calidad es None.
+        pass
+    assert calidad in (None, 'A', 'B', 'C'), "Calidad debe ser None o A/B/C."
     # Datos de Murano. Si estoy en el equipo de desarrollo, uso 0 para todos.
     if not dev:
         producto_murano = murano.ops.get_producto_murano(producto_ginn)
-        existencias_fin = get_existencias_murano(producto_murano)
-        ventas = get_ventas(producto_murano, fini, ffin)
-        volcados_murano = get_volcados_fab(producto_murano, fini, ffin)
-        consumos_murano = get_bajas_consumo(producto_murano, fini, ffin)
-        ajustes_murano = get_ajustes_murano(producto_murano, fini, ffin)
-        ajustes_ginn = get_volcados_api(producto_murano, fini, ffin)
+        existencias_fin = get_existencias_murano(producto_murano, calidad)
+        ventas = get_ventas(producto_murano, fini, ffin, calidad)
+        volcados_murano = get_volcados_fab(producto_murano, fini, ffin,
+                                           calidad)
+        consumos_murano = get_bajas_consumo(producto_murano, fini, ffin,
+                                            calidad)
+        ajustes_murano = get_ajustes_murano(producto_murano, fini, ffin,
+                                            calidad)
+        ajustes_ginn = get_volcados_api(producto_murano, fini, ffin, calidad)
     else:
         producto_murano = None
         existencias_fin = 0, 0, 0
@@ -249,10 +268,13 @@ def calcular_movimientos(producto_ginn, data_inventario, fini, ffin, dev=False):
         ajustes_murano = 0, 0, 0
         ajustes_ginn = 0, 0, 0
     existencias_ini = get_existencias_inventario(data_inventario,
-                                                 producto_ginn)
+                                                 producto_ginn,
+                                                 calidad=calidad)
     # Obtengo los datos de producción y consumos del ERP.
-    produccion_ginn = get_produccion(producto_ginn, fini, ffin)
-    consumos_ginn = get_consumos_ginn(producto_ginn, fini, ffin)
+    produccion_ginn = get_produccion(producto_ginn, fini, ffin,
+                                     calidad=calidad)
+    consumos_ginn = get_consumos_ginn(producto_ginn, fini, ffin,
+                                      calidad=calidad)
     # Si hay procesos de importación pendientes de pasar a Murano, contarán
     # como ajustes negativos. Hay que asegurarse de ejecutar el Sr. Lobo antes.
     # Los ajustes de ginn y los de Murano siguen la misma norma: positivos para
@@ -265,7 +287,7 @@ def calcular_movimientos(producto_ginn, data_inventario, fini, ffin, dev=False):
             ajustes)
 
 
-def get_existencias_inventario(data_inventario, producto_ginn):
+def get_existencias_inventario(data_inventario, producto_ginn, calidad=None):
     """
     Devuelve las existencias que se registraron en el fichero de inventario.
     """
@@ -277,33 +299,57 @@ def get_existencias_inventario(data_inventario, producto_ginn):
     #   cualquier otra cosa que salga de aquí no valdrá. De todos modos, si
     #   alguien hace cambios y nuestros cálculos se basan en movimientos
     #   donde **ya** están esos cambios, el resultado no será fiable.
+    try:
+        calidad = calidad.upper()
+    except AttributeError:   # Calidad es None.
+        pass
+    assert calidad in (None, 'A', 'B', 'C'), "Calidad debe ser None o A/B/C."
     almacen = 'GTX'
     codigo = 'PV{}'.format(producto_ginn.id)
-    res = [0, .0, .0]   # Bultos, metros, kilos
+    bultos = {'A': 0, 'B': 0, 'C': 0, '': 0}
+    metros = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
+    kilos = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
     for fila in data_inventario.dict:
         try:
             codigo_sheet = fila[u'Código producto']
-        except KeyError:    # El orden siempre es el mismo...
+        except KeyError:  # El orden siempre es el mismo...
             codigo_sheet = fila[fila.keys()[2]]
         try:
             almacen_sheet = fila[u'Almacén']
-        except KeyError:    # aunque haya cambiado el nombre de las columnas.
+        except KeyError:  # aunque haya cambiado el nombre de las columnas.
             almacen_sheet = fila[fila.keys()[0]]
+        try:
+            calidad_sheet = fila[u'Calidad']
+        except KeyError:
+            calidad_sheet = fila[fila.keys()[5]]
+        calidad_sheet
         if codigo_sheet == codigo and almacen_sheet == almacen:
-            # No distinguimos A, B y C.
-            res[0] += int(fila['Bultos'])
-            res[1] += float(fila['Metros cuadrados'])
-            res[2] += float(fila['Peso neto'])
-    return res
+            bultos[calidad_sheet] += int(fila['Bultos'])
+            metros[calidad_sheet] += float(fila['Metros cuadrados'])
+            kilos[calidad_sheet] += float(fila['Peso neto'])
+    if calidad is None:
+        sumbultos = sum([bultos[i] for i in bultos])
+        summetros = sum([metros[i] for i in metros])
+        sumkilos = sum([kilos[i] for i in kilos])
+    else:
+        sumbultos = bultos[calidad]
+        summetros = metros[calidad]
+        sumkilos = kilos[calidad]
+    return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
-def get_existencias_murano(producto_murano):
+def get_existencias_murano(producto_murano, calidad=None):
     """
     Devuelve las existencias que Murano tiene en este momento.
     Devuelve una tupla (bultos, m², kg).
     Obtiene todos los datos de la tabla ArticulosSerie.
     **Solo se consulta sobre el almacén GTX.**
     """
+    try:
+        calidad = calidad.upper()
+    except AttributeError:   # Calidad es None.
+        pass
+    assert calidad in (None, 'A', 'B', 'C'), "Calidad debe ser None o A/B/C."
     # TODO: También podría recibir un fichero de inventario para calcular
     # desviaciones entre dos .xls.
     almacen = "GTX"
@@ -354,13 +400,18 @@ def get_existencias_murano(producto_murano):
         bultos[calidad] += total['bultos']
         metros[calidad] += float(total['metros_cuadrados'])
         kilos[calidad] += float(total['peso_neto'])
-    sumbultos = sum([bultos[i] for i in bultos])
-    summetros = sum([metros[i] for i in metros])
-    sumkilos = sum([kilos[i] for i in kilos])
+    if calidad is None:
+        sumbultos = sum([bultos[i] for i in bultos])
+        summetros = sum([metros[i] for i in metros])
+        sumkilos = sum([kilos[i] for i in kilos])
+    else:
+        sumbultos = bultos[calidad]
+        summetros = metros[calidad]
+        sumkilos = kilos[calidad]
     return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
-def get_ventas(producto_murano, fini, ffin):
+def get_ventas(producto_murano, fini, ffin, calidad=None):
     """
     Devuelve las salidas de albarán en Murano del producto recibido entre
     las fechas de inicio y de fin. Ojo, **no las ventas facturadas** sino las
@@ -374,6 +425,11 @@ def get_ventas(producto_murano, fini, ffin):
     - MovimientoArticuloSerie (tampoco se usa)
         OrigenDocumento = 1
     """
+    try:
+        calidad = calidad.upper()
+    except AttributeError:   # Calidad es None.
+        pass
+    assert calidad in (None, 'A', 'B', 'C'), "Calidad debe ser None o A/B/C."
     almacen = "GTX"
     fini = fini.strftime("%Y-%m-%d")
     ffin = ffin.strftime("%Y-%m-%d")
@@ -405,7 +461,8 @@ def get_ventas(producto_murano, fini, ffin):
         unidad = total['UnidadMedida1_']
         # Este assert no es cierto para producto sin tratamiento de series como
         # el PV185 (Restos de geotextiles) que se vende por KG.
-        # assert float(total['Unidades2_']) % 1.0 == 0.0, "Bultos debe ser un entero."
+        # assert float(total['Unidades2_']) % 1.0 == 0.0, \
+        #     "Bultos debe ser un entero."
         bultos[calidad] += int(total['Unidades2_'])
         if unidad == 'M2':
             totalmetros = float(total['Unidades'])
@@ -415,9 +472,14 @@ def get_ventas(producto_murano, fini, ffin):
             totalmetros = float(total['MetrosCuadrados'])
         metros[calidad] += totalmetros
         kilos[calidad] += totalkilos
-    sumbultos = sum([bultos[i] for i in bultos])
-    summetros = sum([metros[i] for i in metros])
-    sumkilos = sum([kilos[i] for i in kilos])
+    if calidad is None:
+        sumbultos = sum([bultos[i] for i in bultos])
+        summetros = sum([metros[i] for i in metros])
+        sumkilos = sum([kilos[i] for i in kilos])
+    else:
+        sumbultos = bultos[calidad]
+        summetros = metros[calidad]
+        sumkilos = kilos[calidad]
     return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
@@ -493,10 +555,11 @@ def get_registros_movimientoarticuloserie(fini, ffin, codigo, almacen,
     res = conn.run_sql(sql)
     return res
 
+
 # pylint: disable=too-many-arguments, too-many-branches
 def get_volcados(producto_murano, fini, ffin, tipo_movimiento,
                  origen_movimiento, codigo_canal,
-                 origen_documento, comentario=None, serie=None):
+                 origen_documento, comentario=None, serie=None, calidad=None):
     """
     Devuelve los volcados realizados de cada tipo, que viene determinado por
     los parámetros a pasar a la consulta SQL.
@@ -508,6 +571,11 @@ def get_volcados(producto_murano, fini, ffin, tipo_movimiento,
     Si serie es None, no se aplica. Si, por ejemplo, es '!MAN' se hace un
     <> 'MAN' y si es 'MAN' se hace un Serie[Documento] = 'MAN';
     """
+    try:
+        calidad = calidad.upper()
+    except AttributeError:   # Calidad es None.
+        pass
+    assert calidad in (None, 'A', 'B', 'C'), "Calidad debe ser None o A/B/C."
     almacen = "GTX"
     fini = fini.strftime("%Y-%m-%d")
     ffin = ffin.strftime("%Y-%m-%d")
@@ -541,19 +609,24 @@ def get_volcados(producto_murano, fini, ffin, tipo_movimiento,
         calidad = total['CodigoTalla01_']
         unidad = total['UnidadMedida1_']
         bultos[calidad] += total['UnidadesSerie']
-        if unidad == 'ROLLO' and total['MetrosCuadrados']: #No C que, va por kg
+        if unidad == 'ROLLO' and total['MetrosCuadrados']:  # No C, va por kg
             totalkilos = float(total['PesoNeto_'])
             kilos[calidad] += totalkilos
         else:   # Será cero para BALAS, BIGBAG y CAJAS, pero por... belleza.
             totalmetros = float(total['MetrosCuadrados'])
             metros[calidad] += totalmetros
-    sumbultos = sum([bultos[i] for i in bultos])
-    summetros = sum([metros[i] for i in metros])
-    sumkilos = sum([kilos[i] for i in kilos])
+    if calidad is None:
+        sumbultos = sum([bultos[i] for i in bultos])
+        summetros = sum([metros[i] for i in metros])
+        sumkilos = sum([kilos[i] for i in kilos])
+    else:
+        sumbultos = bultos[calidad]
+        summetros = metros[calidad]
+        sumkilos = kilos[calidad]
     return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
-def get_volcados_fab(producto_murano, fini, ffin):
+def get_volcados_fab(producto_murano, fini, ffin, calidad=None):
     """
     Devuelve los movimientos de series de tipo FAB (las que proceden del API
     de ginn)  en Murano con fecha de registro entre las recibidas para contar
@@ -587,10 +660,10 @@ def get_volcados_fab(producto_murano, fini, ffin):
     """
     # Lo primero son las altas:
     altas = get_volcados(producto_murano, fini, ffin, 1, 'F', '', 2,
-                         serie="FAB")
+                         serie="FAB", calidad=calidad)
     # Ahora las bajas por eliminación desde partes, no por consumo.
     bajas = get_volcados(producto_murano, fini, ffin, 2, 'F', '', 11,
-                         '!Consumo%', serie="FAB")
+                         '!Consumo%', serie="FAB", calidad=calidad)
     # Y ahora las sumo (los movimientos de salida vienen en positivo de Murano
     # y viene todo sumado, sin desglose por calidades).
     sumbultos = altas[0] - bajas[0]
@@ -599,7 +672,7 @@ def get_volcados_fab(producto_murano, fini, ffin):
     return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
-def get_bajas_consumo(producto_murano, fini, ffin):
+def get_bajas_consumo(producto_murano, fini, ffin, calidad=None):
     """
     Devuelve los movimientos de series de tipo FAB (las que proceden del API
     de ginn) con fecha de registro entre las recibidas y que sean de consumos.
@@ -615,16 +688,18 @@ def get_bajas_consumo(producto_murano, fini, ffin):
         SerieDocumento <> 'MAN'
     """
     consumos_balas = get_volcados(producto_murano, fini, ffin, 2, 'F',
-                                  'CONSFIB', 11, 'Consumo bala%', '!MAN')
+                                  'CONSFIB', 11, 'Consumo bala%', '!MAN',
+                                  calidad=calidad)
     consumos_bigbags = get_volcados(producto_murano, fini, ffin, 2, 'F',
-                                    'CONSBB', 11, 'Consumo bigbag%', '!MAN')
+                                    'CONSBB', 11, 'Consumo bigbag%', '!MAN',
+                                    calidad=calidad)
     sumbultos = consumos_balas[0] + consumos_bigbags[0]
     summetros = consumos_balas[1] + consumos_bigbags[1]
     sumkilos = consumos_balas[2] + consumos_bigbags[2]
     return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
-def get_ajustes_murano(producto_murano, fini, ffin):
+def get_ajustes_murano(producto_murano, fini, ffin, calidad=None):
     """
     Ajustes manuales:
         Altas:
@@ -648,9 +723,9 @@ def get_ajustes_murano(producto_murano, fini, ffin):
     # Eliminaciones manuales, movimientos manuales de salida por ajustes...
     # El código canal a None hará que no se use ese parámetro en el SQL
     ajustes_positivos = get_volcados(producto_murano, fini, ffin, 1, 'E', None,
-                                     10, serie='MAN')
+                                     10, serie='MAN', calidad=calidad)
     ajustes_negativos = get_volcados(producto_murano, fini, ffin, 2, 'S', None,
-                                     11, serie='MAN')
+                                     11, serie='MAN', calidad=calidad)
     sumbultos = ajustes_positivos[0] - ajustes_negativos[0]
     summetros = ajustes_positivos[1] - ajustes_negativos[1]
     sumkilos = ajustes_positivos[2] - ajustes_negativos[2]
@@ -658,7 +733,7 @@ def get_ajustes_murano(producto_murano, fini, ffin):
     return res
 
 
-def get_volcados_api(producto_murano, fini, ffin):
+def get_volcados_api(producto_murano, fini, ffin, calidad=None):
     """
     Devuelve los movimientos de series de tipo API (las que proceden del API
     de ginn) en Murano con fecha de registro entre las recibidas para contar
@@ -688,10 +763,10 @@ def get_volcados_api(producto_murano, fini, ffin):
     """
     # Lo primero son las altas:
     altas = get_volcados(producto_murano, fini, ffin, 1, 'F', '', 2,
-                         serie="API")
+                         serie="API", calidad=calidad)
     # Ahora las bajas por eliminación desde partes, no por consumo.
     bajas = get_volcados(producto_murano, fini, ffin, 2, 'F', '', 11,
-                         '!Consumo%', serie="API")
+                         '!Consumo%', serie="API", calidad=calidad)
     # Y ahora las sumo (los movimientos de salida vienen en positivo de Murano
     # y viene todo sumado, sin desglose por calidades).
     sumbultos = altas[0] - bajas[0]
@@ -700,9 +775,8 @@ def get_volcados_api(producto_murano, fini, ffin):
     return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
-
 # pylint: disable=too-many-branches
-def get_produccion(producto_ginn, fini, ffin, strict=False):
+def get_produccion(producto_ginn, fini, ffin, strict=False, calidad=None):
     """
     Devuelve todos la producción del producto entre las fechas. Se obtiene de
     ginn.
@@ -731,6 +805,11 @@ def get_produccion(producto_ginn, fini, ffin, strict=False):
     original. Eso puede provocar descuadres si ha pasado mucho tiempo entre
     que se fabricó y se corrigió el producto.~~ Ya no es así. Van en canal API.
     """
+    try:
+        calidad = calidad.upper()
+    except AttributeError:   # Calidad es None.
+        pass
+    assert calidad in (None, 'A', 'B', 'C'), "Calidad debe ser None o A/B/C."
     # A todos los efectos el día comienza en el turno de las 6:
     fhoraini = datetime.datetime(fini.year, fini.month, fini.day, 6)
     bultos = {'A': 0, 'B': 0, 'C': 0}
@@ -756,9 +835,14 @@ def get_produccion(producto_ginn, fini, ffin, strict=False):
             bultos['C'] += 1
             metros['C'] += get_superficie(a) or 0
             kilos['C'] += get_peso_neto(a)
-    sumbultos = sum([bultos[i] for i in bultos])
-    summetros = sum([metros[i] for i in metros])
-    sumkilos = sum([kilos[i] for i in kilos])
+    if calidad is None:
+        sumbultos = sum([bultos[i] for i in bultos])
+        summetros = sum([metros[i] for i in metros])
+        sumkilos = sum([kilos[i] for i in kilos])
+    else:
+        sumbultos = bultos[calidad]
+        summetros = metros[calidad]
+        sumkilos = kilos[calidad]
     return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
@@ -778,9 +862,6 @@ def query_articulos_from_partes(producto, fini, ffin):
                                   PDP.q.fechahorainicio < fhorafin,
                                   A.q.parteDeProduccionID == PDP.q.id,
                                   A.q.productoVentaID == producto.id))
-    # Versión one-liner:
-    # articulos = sorted([y for x in [[a for a in pdp.articulos] for pdp in PDP.select(pclases.AND(PDP.q.fecha >= fini, PDP.q.fecha < ffin)) if pdp.productoVenta == pv] for y in x], key = lambda a: a.codigo)     # pylint:disable=line-too-long
-    # Porque el groupBy necesitaría un poco de low-level en el SQLObject:
     tratados = []
     res = []
     for pdp in tqdm(pdps, desc="Producción {}".format(producto.puid),
@@ -828,8 +909,9 @@ def query_articulos(producto, fini, ffin):
                 articulos.append(item.articulo)
     return articulos
 
+
 # pylint:disable=too-many-branches
-def get_consumos_ginn(producto_ginn, fini, ffin):
+def get_consumos_ginn(producto_ginn, fini, ffin, calidad=None):
     """
     Devuelve los consumos del producto entre las fechas. Los consumos se toman
     de ginn y la fecha usada para determinar si entra en el filtro es la
@@ -849,6 +931,11 @@ def get_consumos_ginn(producto_ginn, fini, ffin):
     Todos los consumos se hacen sobre el almacén GTX. No es necesario filtrar
     por almacén.
     """
+    try:
+        calidad = calidad.upper()
+    except AttributeError:   # Calidad es None.
+        pass
+    assert calidad in (None, 'A', 'B', 'C'), "Calidad debe ser None o A/B/C."
     bultos = {'A': 0, 'B': 0, 'C': 0}
     metros = {'A': 0.0, 'B': 0.0, 'C': 0.0}
     kilos = {'A': 0.0, 'B': 0.0, 'C': 0.0}
@@ -867,16 +954,21 @@ def get_consumos_ginn(producto_ginn, fini, ffin):
             bultos['C'] += 1
             metros['C'] += get_superficie(articulo) or 0
             kilos['C'] += get_peso_neto(articulo)
-    sumbultos = sum([bultos[i] for i in bultos])
-    summetros = sum([metros[i] for i in metros])
-    sumkilos = sum([kilos[i] for i in kilos])
+    if calidad is None:
+        sumbultos = sum([bultos[i] for i in bultos])
+        summetros = sum([metros[i] for i in metros])
+        sumkilos = sum([kilos[i] for i in kilos])
+    else:
+        sumbultos = bultos[calidad]
+        summetros = metros[calidad]
+        sumkilos = kilos[calidad]
     return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
 def get_articulos_consumidos_ginn(producto, fini, ffin):
     """
     Devuelve una lista de artículos del producto de ginn recibido consumido en
-    los partes de producción entre las fechas fini (incluida) y ffin (no incl.).
+    los partes de producción entre las fechas fini (incluida) y ffin (no incl.)
     """
     # A todos los efectos el día comienza en el turno de las 6:
     fhoraini = datetime.datetime(fini.year, fini.month, fini.day, 6)
@@ -934,7 +1026,7 @@ def parse_fecha(cadfecha):
     hoy = datetime.date.today()
     if "-" in cadfecha:
         cadfecha = cadfecha.replace("-", "/")
-    if not "/" in cadfecha:
+    if "/" not in cadfecha:
         if len(cadfecha) <= 2:
             cadfecha += "/{}/{}".format(hoy.month, hoy.year)
         elif len(cadfecha) <= 4:
@@ -991,8 +1083,8 @@ def buscar_ultimo_fichero_inventario(ruta="."):
         res = max([os.path.join(ruta, f) for f in os.listdir(ruta)
                    if f.endswith('ramanujan.xls')], key=os.path.getctime)
     except ValueError:
-        print("Fichero YYYYMMDD_HH_ramanujan.xls no encontrado en `{}`.".format(
-            ruta))
+        print("Fichero YYYYMMDD_HH_ramanujan.xls no encontrado en "
+              "`{}`.".format(ruta))
         sys.exit(2)
     return res
 
@@ -1199,6 +1291,9 @@ def main():
     data_res = tablib.Dataset(title="Desviaciones")
     inventario = tablib.Dataset(title="Totales")
     desglose = tablib.Dataset(title="Desglose")
+    desviaciones_a = tablib.Dataset(title="A")
+    desviaciones_b = tablib.Dataset(title="B")
+    desviaciones_c = tablib.Dataset(title="C")
     data_res.headers = ['Código', 'Producto',
                         'Ini. (bultos)', 'Ini. (m²)', 'Ini. (kg)',
                         'Prod. (bultos)', 'Prod. (m²)', 'Prod. (kg)',
@@ -1207,6 +1302,9 @@ def main():
                         'Ajustes (bultos)', 'Ajustes (m²)', 'Ajustes (kg)',
                         'Fin. (bultos)', 'Fin. (m²)', 'Fin. (kg)',
                         'Dif. (bultos)', 'Dif. (m²)', 'Dif. (kg)']
+    desviaciones_a.headers = data_res.headers[:]
+    desviaciones_b.headers = desviaciones_a.headers[:]
+    desviaciones_c.headers = desviaciones_b.headers[:]
     inventario.headers = ['Almacén', 'Familia', 'Código producto',
                           'Descripción', 'Partida', 'Calidad', 'Bultos',
                           'Peso neto', 'Peso bruto', 'Metros cuadrados']
@@ -1218,6 +1316,12 @@ def main():
     for producto in tqdm(productos, desc="Productos"):
         res = cuentalavieja(producto, data_inventario, fini, ffin, report,
                             data_res, args.debug)
+        cuentalavieja(producto, data_inventario, fini, ffin, report,
+                      desviaciones_a, args.debug, calidad="A")
+        cuentalavieja(producto, data_inventario, fini, ffin, report,
+                      desviaciones_b, args.debug, calidad="B")
+        cuentalavieja(producto, data_inventario, fini, ffin, report,
+                      desviaciones_c, args.debug, calidad="C")
         results.append((producto, res))
         do_inventario(producto, inventario, desglose)
     fallos = [p for p in results if not p[1]]
@@ -1233,7 +1337,8 @@ def main():
     report.write("\n\n___\n\n")
     report.close()
     fout = args.fsalida.replace(".md", ".xls")
-    book = tablib.Databook((data_res, inventario, desglose))
+    book = tablib.Databook((data_res, inventario, desglose,
+                            desviaciones_a, desviaciones_b, desviaciones_c))
     with open(fout, 'wb') as f:
         # pylint: disable=no-member
         f.write(book.xls)
