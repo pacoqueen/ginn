@@ -25,16 +25,16 @@
 
 
 ###################################################################
-## productos_venta.py - Catálogo de productos de venta.
+#  productos_venta.py - Catálogo de productos de venta.
 ###################################################################
-## NOTAS:
-##  
+#  NOTAS:
+#
 ###################################################################
-## Changelog:
-## 9 de octubre de 2005 -> Inicio 
-## 9 de octubre de 2005 -> 90% funcional (faltan fichas de prod.)
-## 9 de enero de 2006 -> Separo productos de venta del resto.
-## 23 de enero de 2006 -> Portado a clase.
+#  Changelog:
+#  9 de octubre de 2005 -> Inicio
+#  9 de octubre de 2005 -> 90% funcional (faltan fichas de prod.)
+#  9 de enero de 2006 -> Separo productos de venta del resto.
+#  23 de enero de 2006 -> Portado a clase.
 ###################################################################
 # TODO: ¿Qué tal un autocompletado en uso y dni como en los geotextiles?
 ###################################################################
@@ -52,6 +52,7 @@ except ImportError:
     from psycopg2 import ProgrammingError as psycopg_ProgrammingError
 from sqlobject.dberrors import DuplicateEntryError, IntegrityError
 
+
 class ProductosDeVentaBalas(Ventana):
     def __init__(self, objeto = None, usuario = None):
         """
@@ -61,12 +62,12 @@ class ProductosDeVentaBalas(Ventana):
         """
         self.usuario = usuario
         self._objetoreciencreado = None
-        Ventana.__init__(self, 'productos_de_venta_balas.glade', objeto, 
-                         usuario = usuario)
+        Ventana.__init__(self, 'productos_de_venta_balas.glade', objeto,
+                         usuario=usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_anterior/clicked': self.ir_a_anterior,
-                       'b_siguiente/clicked':self.ir_a_siguiente,
-                       'b_contar/clicked' : self.muestra_stock,
+                       'b_siguiente/clicked': self.ir_a_siguiente,
+                       'b_contar/clicked': self.muestra_stock,
                        'b_fichas/clicked': self.ver_ficha,
                        'b_articulos/clicked': self.ver_articulos,
                        'b_tarifas/clicked': self.ver_tarifas,
@@ -77,8 +78,8 @@ class ProductosDeVentaBalas(Ventana):
                        'b_add_campoesp/clicked': self.add_campoesp,
                        'b_drop_campoesp/clicked': self.drop_campoesp,
                        'b_change_campoesp/clicked': self.change_campoesp,
-                       'b_buscar/clicked': self.buscar_producto, 
-                       'ch_no_anno_cert/toggled': self.change_anno_cert, 
+                       'b_buscar/clicked': self.buscar_producto,
+                       'ch_no_anno_cert/toggled': self.change_anno_cert,
                        'sp_anno_certificacion/output': utils.show_leading_zeros
                       }
         self.add_connections(connections)
@@ -97,8 +98,8 @@ class ProductosDeVentaBalas(Ventana):
         del objeto en memoria.
         """
         producto = self.objeto
-        if producto == None: return False   # Si no hay producto activo, 
-                    # devuelvo que no hay cambio respecto a la ventana. 
+        if producto == None: return False   # Si no hay producto activo,
+                    # devuelvo que no hay cambio respecto a la ventana.
         # Datos a comparar:
         # - código <-> e_codigo
         # - descripción <-> e_descripcion
@@ -140,15 +141,15 @@ class ProductosDeVentaBalas(Ventana):
             cajasPale_compara = "N/A"
         condicion = condicion and (
             cajasPale_compara == self.wids['e_cajasPale'].get_text())
-        condicion = (condicion and 
+        condicion = (condicion and
             producto.dni == self.wids['e_dni'].get_text())
-        condicion = (condicion and 
+        condicion = (condicion and
             producto.uso == self.wids['e_uso'].get_text())
         if self.wids['ch_no_anno_cert'].get_active():
             condicion = (condicion and producto.annoCertificacion == None)
         else:
             condicion = (condicion and
-                producto.annoCertificacion 
+                producto.annoCertificacion
                     == self.wids['sp_anno_certificacion'].get_value_as_int())
         cliente = utils.combo_get_value(self.wids['cbe_cliente'])
         if cliente == 0:
@@ -159,7 +160,7 @@ class ProductosDeVentaBalas(Ventana):
             cliente_objeto = None
         condicion = (condicion and cliente_objeto == cliente)
         try:
-            condicion = (condicion and self.objeto.obsoleto 
+            condicion = (condicion and self.objeto.obsoleto
                                     == self.wids['ch_obsoleto'].get_active())
         except (KeyError, AttributeError):
             pass    # Versión antigua de la base de datos.
@@ -167,11 +168,11 @@ class ProductosDeVentaBalas(Ventana):
 
     def aviso_actualizacion(self):
         """
-        Muestra una ventana modal con el mensaje de objeto 
+        Muestra una ventana modal con el mensaje de objeto
         actualizado.
         """
         utils.dialogo_info('ACTUALIZAR',
-                           'El producto ha sido modificado remotamente.\nDebe actualizar la información mostrada en pantalla.\nPulse el botón «Actualizar»', 
+                           'El producto ha sido modificado remotamente.\nDebe actualizar la información mostrada en pantalla.\nPulse el botón «Actualizar»',
                            padre = self.wids['ventana'])
         self.wids['b_actualizar'].set_sensitive(True)
 
@@ -200,9 +201,9 @@ class ProductosDeVentaBalas(Ventana):
             dde_nombre = ""
         clientes = ((0, dde_nombre), )
         for cliente in pclases.Cliente.select(
-                pclases.Cliente.q.inhabilitado == False, 
+                pclases.Cliente.q.inhabilitado == False,
                 orderBy = "nombre"):
-            clientes += ((cliente.id, "%s (%s)" % (cliente.nombre, 
+            clientes += ((cliente.id, "%s (%s)" % (cliente.nombre,
                                                    cliente.cif)), )
         utils.rellenar_lista(self.wids['cbe_cliente'], clientes)
         # HACK: Como glade-gtk2 ya no me abre el glade ni desde la 3.8.4:
@@ -211,7 +212,7 @@ class ProductosDeVentaBalas(Ventana):
     def add_campo_obsoleto(self):
         e_uso = self.wids['e_uso']
         tabla = e_uso.parent
-        i, d, ar, ab = tabla.child_get(e_uso, 'left-attach','right-attach', 
+        i, d, ar, ab = tabla.child_get(e_uso, 'left-attach','right-attach',
                                               'top-attach', 'bottom-attach')
         tabla.remove(e_uso)
         tabla.attach(e_uso, i, d - 1, ar, ab)
@@ -221,28 +222,28 @@ class ProductosDeVentaBalas(Ventana):
 
     def activar_widgets(self, s, chequear_permisos = True):
         """
-        Activa o desactiva (sensitive=True/False) todos 
-        los widgets de la ventana que dependan del 
+        Activa o desactiva (sensitive=True/False) todos
+        los widgets de la ventana que dependan del
         objeto mostrado.
         Entrada: s debe ser True o False. En todo caso
         se evaluará como boolean.
         """
-        ws = ('e_idproducto', 'e_codigo', 'e_descripcion', 'e_nombre', 
-              'e_precio', 'e_minimo', 'e_stock', 'b_contar', 'e_dtex', 
-              'e_corte', 'e_color','chk_antiuv','b_borrar', 'b_fichas', 
-              'b_articulos','b_tarifas','e_arancel', 'e_prodestandar', 
-              'cb_material', 'expander2', 'ch_reciclada', 'cbe_cliente') 
+        ws = ('e_idproducto', 'e_codigo', 'e_descripcion', 'e_nombre',
+              'e_precio', 'e_minimo', 'e_stock', 'b_contar', 'e_dtex',
+              'e_corte', 'e_color','chk_antiuv','b_borrar', 'b_fichas',
+              'b_articulos','b_tarifas','e_arancel', 'e_prodestandar',
+              'cb_material', 'expander2', 'ch_reciclada', 'cbe_cliente')
         for w in ws:
             self.wids[w].set_sensitive(s)
         if chequear_permisos:
             self.check_permisos(nombre_fichero_ventana = "productos_de_venta_balas.py")
         if self.objeto and len(self.objeto.articulos) > 0:
-            self.wids['ch_reciclada'].set_sensitive(False)  
+            self.wids['ch_reciclada'].set_sensitive(False)
             # Una vez se ha fabricado algo no puedo dejar que cambie la fibra a reciclada y viceversa, puesto que entonces me
             # alteraría el cálculo de stock, la forma de dar de alta más balas, etiquetas etc...
         if self.objeto and not self.objeto.es_bolsa():
             self.wids['cbe_cliente'].set_sensitive(False)
-    
+
 
     def ir_a_primero(self):
         """
@@ -256,7 +257,7 @@ class ProductosDeVentaBalas(Ventana):
             producto = pclases.ProductoVenta.select(pclases.ProductoVenta.q.camposEspecificosBalaID != None)[0]  # Selecciono todos y me quedo con el primero de la lista
             producto.notificador.activar(self.aviso_actualizacion)      # Activo la notificación
         except:
-            producto = None     
+            producto = None
         self.objeto = producto
         self.actualizar_ventana()
 
@@ -271,11 +272,11 @@ class ProductosDeVentaBalas(Ventana):
                 try:
                     self.guardar(None)
                 except:
-                    utils.dialogo_info(titulo = 'NO SE PUDO GUARDAR', 
+                    utils.dialogo_info(titulo = 'NO SE PUDO GUARDAR',
                         texto = 'Los cambios no se pudieron guardar '
-                            'automáticamente.\nDebe hacerlo de forma manual', 
+                            'automáticamente.\nDebe hacerlo de forma manual',
                         padre = self.wids['ventana'])
-                    return 
+                    return
         producto = self.objeto
         linea = pclases.LineaDeProduccion.select(
             pclases.LineaDeProduccion.q.nombre.contains('fibra'))[0]
@@ -283,20 +284,20 @@ class ProductosDeVentaBalas(Ventana):
             pclases.LineaDeProduccion.q.nombre.contains('bolsa'))[0]
         try:
             anterior = pclases.ProductoVenta.select(pclases.AND(
-                pclases.ProductoVenta.q.camposEspecificosBalaID != None, 
+                pclases.ProductoVenta.q.camposEspecificosBalaID != None,
                 pclases.OR(
-                  pclases.ProductoVenta.q.lineaDeProduccionID == linea.id, 
+                  pclases.ProductoVenta.q.lineaDeProduccionID == linea.id,
                   pclases.ProductoVenta.q.lineaDeProduccionID == lineaembol.id
                 ),
                 pclases.ProductoVenta.q.id < producto.id),orderBy='-id')[0]
         except IndexError:
-            utils.dialogo_info(texto = "El elemento seleccionado es el primero registrado en el sistema", 
-                               titulo="ERROR", 
+            utils.dialogo_info(texto = "El elemento seleccionado es el primero registrado en el sistema",
+                               titulo="ERROR",
                                padre = self.wids['ventana'])
             return
         self.objeto = anterior
         self.actualizar_ventana()
-        
+
     def ir_a_siguiente(self,widget):
         """
         Hace que el siguiente registro (ordenados por ID interno)
@@ -308,31 +309,31 @@ class ProductosDeVentaBalas(Ventana):
                 try:
                     self.guardar(None)
                 except:
-                    utils.dialogo_info(titulo = 'NO SE PUDO GUARDAR', 
-                                       texto = 'Los cambios no se pudieron guardar automáticamente.\nDebe hacerlo de forma manual', 
+                    utils.dialogo_info(titulo = 'NO SE PUDO GUARDAR',
+                                       texto = 'Los cambios no se pudieron guardar automáticamente.\nDebe hacerlo de forma manual',
                                        padre = self.wids['ventana'])
-                    return 
+                    return
         producto = self.objeto
         linea = pclases.LineaDeProduccion.select(pclases.LineaDeProduccion.q.nombre.contains('fibra'))[0]
         lineaembol = pclases.LineaDeProduccion.select(
             pclases.LineaDeProduccion.q.nombre.contains('bolsa'))[0]
         try:
             siguiente = pclases.ProductoVenta.select(pclases.AND(
-                pclases.ProductoVenta.q.camposEspecificosBalaID != None, 
+                pclases.ProductoVenta.q.camposEspecificosBalaID != None,
                 pclases.OR(
-                  pclases.ProductoVenta.q.lineaDeProduccionID == linea.id, 
+                  pclases.ProductoVenta.q.lineaDeProduccionID == linea.id,
                   pclases.ProductoVenta.q.lineaDeProduccionID == lineaembol.id
                 ),
                 pclases.ProductoVenta.q.id > producto.id),orderBy='id')[0]
         except IndexError:
             utils.dialogo_info(texto = "El elemento seleccionado es el último"
-                                       " registrado en el sistema", 
-                               titulo = "ERROR", 
+                                       " registrado en el sistema",
+                               titulo = "ERROR",
                                padre = self.wids['ventana'])
             return
         self.objeto = siguiente
         self.actualizar_ventana()
-    
+
 
     def refinar_resultados_busqueda(self, resultados):
         """
@@ -347,14 +348,14 @@ class ProductosDeVentaBalas(Ventana):
             filas_res.append((r.id, r.codigo, r.nombre, r.descripcion))
         idproducto = utils.dialogo_resultado(filas_res,
                         titulo = 'Seleccione producto',
-                        cabeceras = ('ID Interno', 
-                                     'Código', 
-                                     'Nombre', 
-                                     'Descripción'), 
-                        padre = self.wids['ventana'], 
-                        abrir_en_ventana_nueva = 
-                            (ProductosDeVentaBalas, 
-                             pclases.ProductoVenta, 
+                        cabeceras = ('ID Interno',
+                                     'Código',
+                                     'Nombre',
+                                     'Descripción'),
+                        padre = self.wids['ventana'],
+                        abrir_en_ventana_nueva =
+                            (ProductosDeVentaBalas,
+                             pclases.ProductoVenta,
                              self.usuario))
         if idproducto < 0:
             return None
@@ -366,7 +367,7 @@ class ProductosDeVentaBalas(Ventana):
         Introduce la información del producto actual
         en los widgets.
         No se chequea que sea != None, así que
-        hay que tener cuidado de no llamar a 
+        hay que tener cuidado de no llamar a
         esta función en ese caso.
         """
         self.wids['b_guardar'].set_sensitive(False)
@@ -376,20 +377,20 @@ class ProductosDeVentaBalas(Ventana):
         lineaembol = pclases.LineaDeProduccion.select(
             pclases.LineaDeProduccion.q.nombre.contains('bolsa'))[0]
         productos = pclases.ProductoVenta.select(pclases.AND(
-            pclases.ProductoVenta.q.camposEspecificosBalaID != None, 
+            pclases.ProductoVenta.q.camposEspecificosBalaID != None,
             pclases.OR(
-                pclases.ProductoVenta.q.lineaDeProduccionID == linea.id, 
+                pclases.ProductoVenta.q.lineaDeProduccionID == linea.id,
                 pclases.ProductoVenta.q.lineaDeProduccionID == lineaembol.id
             )), orderBy = 'id')
         productos_count = productos.count()
         yo_index = pclases.SQLlist(productos).index(producto) + 1
         self.wids['ventana'].set_title(
             "Productos de venta: FIBRA - %s (%d de %d)" % (
-                producto.descripcion, 
-                yo_index, 
+                producto.descripcion,
+                yo_index,
                 productos_count))
         if len(producto.articulos) > 0:
-            self.wids['ch_reciclada'].set_sensitive(False)  
+            self.wids['ch_reciclada'].set_sensitive(False)
             # Una vez se ha fabricado algo no puedo dejar que cambie la fibra a reciclada y viceversa, puesto que entonces me
             # alteraría el cálculo de stock, la forma de dar de alta más balas, etiquetas etc...
         self.wids['i_barcode'].set_from_file(EanBarCode().getImage(producto.codigo))
@@ -406,7 +407,7 @@ class ProductosDeVentaBalas(Ventana):
         self.wids['e_corte'].set_text(str(campos.corte))
         self.wids['e_color'].set_text(str(campos.color))
         self.wids['chk_antiuv'].set_active(campos.antiuv)
-        utils.combo_set_from_db(self.wids['cb_material'], 
+        utils.combo_set_from_db(self.wids['cb_material'],
                                 campos.tipoMaterialBalaID)
         # Campos para bolsas de fibra de cemento:
         if campos.gramosBolsa != None:
@@ -456,16 +457,16 @@ class ProductosDeVentaBalas(Ventana):
             lineaembol = pclases.LineaDeProduccion.select(
                 pclases.LineaDeProduccion.q.nombre.contains('bolsa'))[0]
             anteriores = pclases.ProductoVenta.select(pclases.AND(
-                pclases.ProductoVenta.q.camposEspecificosBalaID != None, 
+                pclases.ProductoVenta.q.camposEspecificosBalaID != None,
                 pclases.OR(
-                  pclases.ProductoVenta.q.lineaDeProduccionID == linea.id, 
+                  pclases.ProductoVenta.q.lineaDeProduccionID == linea.id,
                   pclases.ProductoVenta.q.lineaDeProduccionID == lineaembol.id
                 ),
                 pclases.ProductoVenta.q.id < producto.id)).count()
             siguientes = pclases.ProductoVenta.select(pclases.AND(
-                pclases.ProductoVenta.q.camposEspecificosBalaID != None, 
+                pclases.ProductoVenta.q.camposEspecificosBalaID != None,
                 pclases.OR(
-                  pclases.ProductoVenta.q.lineaDeProduccionID == linea.id, 
+                  pclases.ProductoVenta.q.lineaDeProduccionID == linea.id,
                   pclases.ProductoVenta.q.lineaDeProduccionID == lineaembol.id
                 ),
                 pclases.ProductoVenta.q.id > producto.id)).count()
@@ -486,11 +487,11 @@ class ProductosDeVentaBalas(Ventana):
         model.clear()
         for t in pclases.Tarifa.select():
             model.append((t.nombre, t.obtener_precio(self.objeto), t.id))
- 
+
     def mostrar_especificos(self):
         """
         Muestra los datos específicos del producto.
-        Elimina los hijos que componen la tabla 
+        Elimina los hijos que componen la tabla
         antes de insertar los nuevos.
         """
         hijos = self.wids['tabla'].get_children()
@@ -498,7 +499,7 @@ class ProductosDeVentaBalas(Ventana):
             hijo.destroy()
         producto = self.objeto
         filas = len(producto.camposEspecificos)
-        if filas == 0: 
+        if filas == 0:
             filas = 1   # Para evitar el "assert". De todas formas aunque sea de 1x2, si no hay datos específicos no se va a mostrar nada.
         self.wids['tabla'].resize(filas, 2)
         y = 0   # Fila donde insertar el campo.
@@ -525,7 +526,7 @@ class ProductosDeVentaBalas(Ventana):
         vpro.mostrar()
         vpro.set_valor(0.9, 'Contando existencias en almacén...')
         while gtk.events_pending(): gtk.main_iteration(False)
-        self.wids['e_stock'].set_text("%s Kg" 
+        self.wids['e_stock'].set_text("%s Kg"
             % utils.float2str(round(producto.get_stock(),2)))
         vpro.ocultar()
 
@@ -542,8 +543,8 @@ class ProductosDeVentaBalas(Ventana):
 
     def buscar_cod_libre(self):
         """
-        Devuelve un código de tres cifras como 
-        cadena que no esté ya en la tabla de 
+        Devuelve un código de tres cifras como
+        cadena que no esté ya en la tabla de
         productos como producto terminado.
         Siempre devolverá el primer código
         libre más cercano a 000.
@@ -553,27 +554,27 @@ class ProductosDeVentaBalas(Ventana):
         """
         prods = pclases.ProductoVenta.select(#pclases.AND(
             #pclases.OR(
-            #    pclases.ProductoVenta.q.camposEspecificosBalaID !=None, 
-            #    pclases.ProductoVenta.q.camposEspecificosRolloID !=None, 
-            #    pclases.ProductoVenta.q.camposEspecificosEspecialID !=None), 
+            #    pclases.ProductoVenta.q.camposEspecificosBalaID !=None,
+            #    pclases.ProductoVenta.q.camposEspecificosRolloID !=None,
+            #    pclases.ProductoVenta.q.camposEspecificosEspecialID !=None),
             pclases.ProductoVenta.q.codigo.startswith('843603219'))#)
-        # Incluyo todo tipo de productos porque aunque la fibra esté limitada 
-        # al rango 300~400, el resto no, y al crearlos ha podido pillar uno 
+        # Incluyo todo tipo de productos porque aunque la fibra esté limitada
+        # al rango 300~400, el resto no, y al crearlos ha podido pillar uno
         # de esos números.
         codsproducto = [int(p.codigo[-4:-1]) for p in prods]
         codsproducto.sort()
-        #for i in xrange(300, 400):  # OJO: Códigos hardcoded. Para balas se 
+        #for i in xrange(300, 400):  # OJO: Códigos hardcoded. Para balas se
                                     # han asignado los códigos 300 a 399.
-        for i in xrange(1000):  # Ya no hay división entre fibra y geotextiles 
-            # a la hora de asignar códigos EAN. Se han agotado los de fibra y 
+        for i in xrange(1000):  # Ya no hay división entre fibra y geotextiles
+            # a la hora de asignar códigos EAN. Se han agotado los de fibra y
             # "liberamos" el resto de los 500 (o así) que nos quedan.
             try:
                 if not i in codsproducto:
                     return "%03d" % i
             except IndexError:  # No hay o me pasé de rango
                 return "%03d" % i
-        utils.dialogo_info('NO QUEDAN CÓDIGOS DISPONIBLES', 
-                           'Todos los códigos EAN13 fueron asignados.', 
+        utils.dialogo_info('NO QUEDAN CÓDIGOS DISPONIBLES',
+                           'Todos los códigos EAN13 fueron asignados.',
                            padre = self.wids['ventana'])
         return '999'
 
@@ -585,10 +586,10 @@ class ProductosDeVentaBalas(Ventana):
         codpais = '84'
         codempresa = '3603219'
         codproducto = self.buscar_cod_libre()
-        codtemp = codpais + codempresa + codproducto 
+        codtemp = codpais + codempresa + codproducto
         digitoc = self.calcular_digitoc(codtemp)
         return codtemp + digitoc
-        
+
     def crear_nuevo_producto(self, widget):
         """
         Función callback del botón b_nuevo.
@@ -598,7 +599,7 @@ class ProductosDeVentaBalas(Ventana):
         de campos que no se hayan pedido aquí.
         """
         producto = self.objeto
-        if producto != None:
+        if producto is not None:
             producto.notificador.desactivar()
         try:
             tipoDefecto = pclases.TipoMaterialBala.select(
@@ -606,49 +607,49 @@ class ProductosDeVentaBalas(Ventana):
               )[0]
         except IndexError:
             tipoDefecto = None
-        campos = pclases.CamposEspecificosBala(dtex = 0,
-                                            corte = 0,
-                                            color = '',
-                                            antiuv = False,
-                                            tipoMaterialBala = tipoDefecto, 
-                                            reciclada = False, 
-                                            gramosBolsa = None,
-                                            bolsasCaja = None,
-                                            cajasPale = None)
+        campos = pclases.CamposEspecificosBala(dtex=0,
+                                               corte=0,
+                                               color='',
+                                               antiuv=False,
+                                               tipoMaterialBala=tipoDefecto,
+                                               reciclada=False,
+                                               gramosBolsa=None,
+                                               bolsasCaja=None,
+                                               cajasPale=None)
         pclases.Auditoria.nuevo(campos, self.usuario, __file__)
         linea = pclases.LineaDeProduccion.select(
             pclases.LineaDeProduccion.q.nombre.contains('fibra'))[0]
-            # Por defecto se va a crear como producto de la línea de fibras. 
+            # Por defecto se va a crear como producto de la línea de fibras.
             # Al guardar se cambiará a la línea de embolsado si fuera el caso.
         try:
-            producto = pclases.ProductoVenta(lineaDeProduccion = linea,
-                                    camposEspecificosRollo = None,
-                                    camposEspecificosBala = campos, 
-                                    codigo = self.generar_codigo_ean(), 
-                                    nombre = '',
-                                    descripcion = '', 
-                                    preciopordefecto = 0, 
-                                    minimo = 0,
-                                    arancel = '')
+            producto = pclases.ProductoVenta(lineaDeProduccion=linea,
+                                             camposEspecificosRollo=None,
+                                             camposEspecificosBala=campos,
+                                             codigo=self.generar_codigo_ean(),
+                                             nombre='',
+                                             descripcion='',
+                                             preciopordefecto=0,
+                                             minimo=0,
+                                             arancel='')
         #except (DuplicateEntryError, IntegrityError), msg:
         except Exception, msg:
-            utils.dialogo_info(titulo = "ERROR AL CREAR PRODUCTO", 
+            utils.dialogo_info(titulo = "ERROR AL CREAR PRODUCTO",
                 texto = "Se produjo el siguiente error al crear el producto:"
                         "\n\n%s\n\n"
                         "Probablemente se deba a que no quedan códigos EAN\n"
                         "disponibles. Pulse Aceptar para enviar un mensaje\n"
-                        "de error por correo al desarrollador." % msg, 
+                        "de error por correo al desarrollador." % msg,
                 padre = self.wids['ventana'])
             raise IntegrityError(msg)
         else:
             pclases.Auditoria.nuevo(producto, self.usuario, __file__)
             self._objetoreciencreado = producto
-            utils.dialogo_info('PRODUCTO CREADO', 
+            utils.dialogo_info('PRODUCTO CREADO',
                            'Se ha creado un producto nuevo.\nA continuación '
                            'complete la información del producto y guarde '
                            'los cambios.\n\nNO OLVIDE INTRODUCIR LA '
                            'FORMULACIÓN PARA EL CONSUMO AUTOMÁTICO DE '
-                           'MATERIALES EN LA VENTANA CORRESPONDIENTE.', 
+                           'MATERIALES EN LA VENTANA CORRESPONDIENTE.',
                            padre = self.wids['ventana'])
             producto.notificador.activar(self.aviso_actualizacion)
             self.objeto = producto
@@ -664,8 +665,8 @@ class ProductosDeVentaBalas(Ventana):
         """
         producto = self.objeto
         a_buscar = utils.dialogo_entrada(
-                "Introduzca código, nombre o descripción de producto:", 
-                padre = self.wids['ventana']) 
+                "Introduzca código, nombre o descripción de producto:",
+                padre = self.wids['ventana'])
         if a_buscar != None:
             a_buscar = a_buscar.strip()
             try:
@@ -677,7 +678,7 @@ class ProductosDeVentaBalas(Ventana):
                     pclases.ProductoVenta.q.nombre.contains(a_buscar),
                     pclases.ProductoVenta.q.descripcion.contains(a_buscar),
                     pclases.ProductoVenta.q.id == ida_buscar)
-            criterio = pclases.AND(criterio, 
+            criterio = pclases.AND(criterio,
                     pclases.ProductoVenta.q.camposEspecificosBalaID != None)
             resultados = pclases.ProductoVenta.select(criterio)
             if resultados.count() > 1:
@@ -691,7 +692,7 @@ class ProductosDeVentaBalas(Ventana):
                     # (Más abajo será cuando se cambie realmente el objeto actual por este resultado.)
             elif resultados.count() < 1:
                     ## Sin resultados de búsqueda
-                    utils.dialogo_info('SIN RESULTADOS', 'La búsqueda no produjo resultados.\nPruebe a cambiar el texto buscado o déjelo en blanco para ver una lista completa.\n(Atención: Ver la lista completa puede resultar lento si el número de elementos es muy alto)', 
+                    utils.dialogo_info('SIN RESULTADOS', 'La búsqueda no produjo resultados.\nPruebe a cambiar el texto buscado o déjelo en blanco para ver una lista completa.\n(Atención: Ver la lista completa puede resultar lento si el número de elementos es muy alto)',
                                        padre = self.wids['ventana'])
                     return
             ## Un único resultado
@@ -714,23 +715,23 @@ class ProductosDeVentaBalas(Ventana):
         producto = self.objeto
         codigo = self.wids['e_codigo'].get_text()
         if len(codigo) < 12:
-            utils.dialogo_info(titulo = "CÓDIGO DEMASIADO CORTO", 
-                               texto = "El código debe tener 13 dígitos para ajustarse al formato EAN-13.\nSe va a completar con ceros.", 
+            utils.dialogo_info(titulo = "CÓDIGO DEMASIADO CORTO",
+                               texto = "El código debe tener 13 dígitos para ajustarse al formato EAN-13.\nSe va a completar con ceros.",
                                padre = self.wids['ventana'])
             codigo += "0" * (12 - len(codigo))  # Completo hasta 12 para que después se le haga la suma de control.
         if len(codigo) == 12:
             codigo = codigo + self.calcular_digitoc(codigo)
         if len(codigo) > 13:
-            utils.dialogo_info(titulo = "CÓDIGO INCORRECTO", 
-                               texto = "Código EAN-13 incorrecto. Debe tener exactamente 13 dígitos.\nPuede introducir 12 y dejar que se calcule atomáticamente el dígito de control, si le es más cómodo.\n\nA continuación se va a recortar el código a 13 dígitos y se intentará comprobar la suma de control.", 
+            utils.dialogo_info(titulo = "CÓDIGO INCORRECTO",
+                               texto = "Código EAN-13 incorrecto. Debe tener exactamente 13 dígitos.\nPuede introducir 12 y dejar que se calcule atomáticamente el dígito de control, si le es más cómodo.\n\nA continuación se va a recortar el código a 13 dígitos y se intentará comprobar la suma de control.",
                                padre = self.wids['ventana'])
             codigo = codigo[:13]
         if len(codigo) == 13:
             digitocontrol = self.calcular_digitoc(codigo[:12])
             if codigo[12] != digitocontrol:
-                utils.dialogo_info(titulo = "FALLÓ SUMA DE COMPROBACIÓN", 
+                utils.dialogo_info(titulo = "FALLÓ SUMA DE COMPROBACIÓN",
                                    texto = "El dígito de control no es correct"
-                                           "o. Se corregirá automáticamente.", 
+                                           "o. Se corregirá automáticamente.",
                                    padre = self.wids['ventana'])
                 codigo = codigo[:12] + digitocontrol
         descripcion = self.wids['e_descripcion'].get_text()
@@ -765,7 +766,7 @@ class ProductosDeVentaBalas(Ventana):
         color = self.wids['e_color'].get_text()
         antiuv = self.wids['chk_antiuv'].get_active()
         reciclada = self.wids['ch_reciclada'].get_active()
-        idtipoMaterialBala = utils.combo_get_value(self.wids['cb_material']) 
+        idtipoMaterialBala = utils.combo_get_value(self.wids['cb_material'])
         prodestandar = self.wids['e_prodestandar'].get_text()
         try:
             prodestandar = utils.parse_float(prodestandar)
@@ -784,10 +785,10 @@ class ProductosDeVentaBalas(Ventana):
                 producto_asignado = producto_asignado.descripcion
             except IndexError:
                 producto_asignado = "?"
-            utils.dialogo_info(titulo = "CÓDIGO DUPLICADO", 
+            utils.dialogo_info(titulo = "CÓDIGO DUPLICADO",
                                texto = "El código EAN %s no se encuentra "
                                "disponible.\nActualmente está asignado a:"
-                               " %s" % (codigo, producto_asignado), 
+                               " %s" % (codigo, producto_asignado),
                                padre = self.wids['ventana'])
         producto.descripcion = descripcion
         if producto.camposEspecificosBala.gramosBolsa:
@@ -819,7 +820,7 @@ class ProductosDeVentaBalas(Ventana):
             self.objeto.obsoleto = self.wids['ch_obsoleto'].get_active()
         except (KeyError, AttributeError):
             pass    # Versión antigua de la base de datos.
-        # Fuerzo la actualización de la BD y no espero a que SQLObject lo 
+        # Fuerzo la actualización de la BD y no espero a que SQLObject lo
         # haga por mí:
         producto.syncUpdate()
         # Vuelvo a activar el notificador
@@ -831,7 +832,7 @@ class ProductosDeVentaBalas(Ventana):
         """
         Elimina el producto de la tabla pero NO
         intenta eliminar ninguna de sus relaciones,
-        de forma que si se incumple alguna 
+        de forma que si se incumple alguna
         restricción de la BD, cancelará la eliminación
         y avisará al usuario.
         """
@@ -848,7 +849,7 @@ class ProductosDeVentaBalas(Ventana):
                 campos.destroy(ventana = __file__)
             except:
                 utils.dialogo_info(titulo = "NO SE PUEDE ELIMINAR",
-                                   texto = "El producto no se puede eliminar. Verifique que no\ntiene ventas o producción relacionada.", 
+                                   texto = "El producto no se puede eliminar. Verifique que no\ntiene ventas o producción relacionada.",
                                    padre = self.wids['ventana'])
             else:
                 self.objeto = None
@@ -865,9 +866,9 @@ class ProductosDeVentaBalas(Ventana):
         Muestra las existencias del artículo en el almacén
         """
         producto = self.objeto
-        elementos = pclases.Articulo.select(pclases.AND(pclases.Articulo.q.albaranSalidaID == None, 
-                                                        pclases.Articulo.q.productoVentaID == producto.id, 
-                                                        pclases.Bala.q.partidaCargaID == None, 
+        elementos = pclases.Articulo.select(pclases.AND(pclases.Articulo.q.albaranSalidaID == None,
+                                                        pclases.Articulo.q.productoVentaID == producto.id,
+                                                        pclases.Bala.q.partidaCargaID == None,
                                                         pclases.Bala.q.id == pclases.Articulo.q.balaID))
         utils.dialogo_info(titulo = 'EXISTENCIAS', texto = 'Hay %d balas de %s en el almacén.\nEl mínimo es %d.' % (elementos.count(),producto.descripcion,producto.minimo), padre = self.wids['ventana'])
 
@@ -875,7 +876,7 @@ class ProductosDeVentaBalas(Ventana):
         from formularios import tarifas_de_precios
         tarifas_de_precios.TarifasDePrecios()
         return
-        
+
     def add_campoesp(self, w):
         campo = utils.dialogo_entrada('Introduzca nombre del campo:', 'NOMBRE')
         if not campo:
@@ -892,7 +893,7 @@ class ProductosDeVentaBalas(Ventana):
 
     def seleccionar_campoesp(self, campos):
         ops = [(c.id, c.nombre) for c in campos]
-        return utils.dialogo_combo('SELECCIONE CAMPO', 
+        return utils.dialogo_combo('SELECCIONE CAMPO',
                                    'Seleccione un campo al que camiar el valor o eliminar.\nSi desea cambiar el nombre del campo debe eliminarlo\ny crear uno nuevo con el nuevo nombre.\n',
                                    ops)
 
