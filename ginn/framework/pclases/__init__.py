@@ -9517,25 +9517,26 @@ class AlbaranEntrada(SQLObject, PRPCTOO):
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
+
 class Articulo(SQLObject, PRPCTOO):
     class sqlmeta:
         fromDatabase = True
-    #----------------------------------------------- balaID = ForeignKey('Bala')
-    #--------------------------------------------- rolloID = ForeignKey('Rollo')
-    #----------------------------- productoVentaID = ForeignKey('ProductoVenta')
-    #----------------------------- albaranSalidaID = ForeignKey('AlbaranSalida')
-    #--------------------- parteDeProduccionID = ForeignKey('ParteDeProduccion')
+    # --------------------------------------------- balaID = ForeignKey('Bala')
+    # ------------------------------------------- rolloID = ForeignKey('Rollo')
+    # --------------------------- productoVentaID = ForeignKey('ProductoVenta')
+    # --------------------------- albaranSalidaID = ForeignKey('AlbaranSalida')
+    # ------------------- parteDeProduccionID = ForeignKey('ParteDeProduccion')
     lineasDeDevolucion = MultipleJoin('LineaDeDevolucion')
-    #--------------------------- bigbagID = ForeignKey('Bigbag', default = None)
-    #--------- rolloDefectuosoID = ForeignKey('RolloDefectuoso', default = None)
-    #--------------------- balaCableID = ForeignKey("BalaCable", default = None)
-    #--------------------------- rolloCID = ForeignKey("RolloC", default = None)
-    #------------ almacenID = ForeignKey("Almacen")   # NO default = None porque
-        # precísamente cuando se crea (fabrica) es cuando por cojones debe
-        # estar en un almacén. Si después se vende, entonces sí será None.
+    # ------------------------- bigbagID = ForeignKey('Bigbag', default = None)
+    # ------- rolloDefectuosoID = ForeignKey('RolloDefectuoso', default = None)
+    # ------------------- balaCableID = ForeignKey("BalaCable", default = None)
+    # ------------------------- rolloCID = ForeignKey("RolloC", default = None)
+    # ---------- almacenID = ForeignKey("Almacen")   # NO default = None porque
+    # precísamente cuando se crea (fabrica) es cuando por cojones debe
+    # estar en un almacén. Si después se vende, entonces sí será None.
     lineasDeMovimiento = MultipleJoin("LineaDeMovimiento")
-    #---------------------------- #bolsaID = ForeignKey('Bolsa', default = None)
-    #------------------------------- cajaID = ForeignKey('Caja', default = None)
+    # -------------------------- #bolsaID = ForeignKey('Bolsa', default = None)
+    # ----------------------------- cajaID = ForeignKey('Caja', default = None)
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -9583,6 +9584,32 @@ class Articulo(SQLObject, PRPCTOO):
 
         return cad
 
+    @staticmethod
+    def all(reverse=False):
+        """
+        Iterador sobre TODOS los artículos, ordenados por ID (ascendente por
+        defecto; `reverse=True` para descendente).
+        """
+        if not reverse:
+            ide = 0
+            while ide < Articulo.select().max("id"):
+                try:
+                    articulo = Articulo.get(ide)
+                except SQLObjectNotFound:
+                    articulo = None
+                else:
+                    yield articulo
+                ide += 1
+        else:
+            ide = Articulo.select().max("id")
+            while ide > Articulo.select().min("id"):
+                try:
+                    articulo = Articulo.get(ide)
+                except SQLObjectNotFound:
+                    articulo = None
+                else:
+                    yield articulo
+                ide -= 1
 
     @staticmethod
     def get_articulo(codigo):
