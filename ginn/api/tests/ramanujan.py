@@ -1111,7 +1111,7 @@ def load_inventario(fich_inventario, hoja="Totales"):
     """
     book = tablib.Databook().load(None, open(fich_inventario, "r+b").read())
     sheets = book.sheets()
-    assert 2 <= len(sheets) <= 3, "El fichero '{}' no parece ser "\
+    assert 2 <= len(sheets) <= 6, "El fichero '{}' no parece ser "\
                                   "válido.".format(fich_inventario)
     found = False
     data = None
