@@ -396,14 +396,14 @@ def get_existencias_murano(producto_murano, calidad=None):
     metros = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
     kilos = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
     for total in totales:
-        calidad = total['calidad']
-        bultos[calidad] += total['bultos']
-        metros[calidad] += float(total['metros_cuadrados'])
-        kilos[calidad] += float(total['peso_neto'])
+        quality = total['calidad']
+        bultos[quality] += total['bultos']
+        metros[quality] += float(total['metros_cuadrados'])
+        kilos[quality] += float(total['peso_neto'])
     if calidad is None:
-        sumbultos = sum([bultos[i] for i in bultos])
-        summetros = sum([metros[i] for i in metros])
-        sumkilos = sum([kilos[i] for i in kilos])
+        sumbultos = sum([bultos[qlty] for qlty in bultos])
+        summetros = sum([metros[qlty] for qlty in metros])
+        sumkilos = sum([kilos[qlty] for qlty in kilos])
     else:
         sumbultos = bultos[calidad]
         summetros = metros[calidad]
