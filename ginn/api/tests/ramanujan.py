@@ -322,7 +322,6 @@ def get_existencias_inventario(data_inventario, producto_ginn, calidad=None):
             calidad_sheet = fila[u'Calidad']
         except KeyError:
             calidad_sheet = fila[fila.keys()[5]]
-        calidad_sheet
         if codigo_sheet == codigo and almacen_sheet == almacen:
             bultos[calidad_sheet] += int(fila['Bultos'])
             metros[calidad_sheet] += float(fila['Metros cuadrados'])
@@ -457,21 +456,21 @@ def get_ventas(producto_murano, fini, ffin, calidad=None):
     conn = connection.Connection()
     totales = conn.run_sql(sql)
     for total in totales:
-        calidad = total['CodigoTalla01_']
+        quality = total['CodigoTalla01_']
         unidad = total['UnidadMedida1_']
         # Este assert no es cierto para producto sin tratamiento de series como
         # el PV185 (Restos de geotextiles) que se vende por KG.
         # assert float(total['Unidades2_']) % 1.0 == 0.0, \
         #     "Bultos debe ser un entero."
-        bultos[calidad] += int(total['Unidades2_'])
+        bultos[quality] += int(total['Unidades2_'])
         if unidad == 'M2':
             totalmetros = float(total['Unidades'])
             totalkilos = float(total['PesoNeto_'])
         else:
             totalkilos = float(total['Unidades'])
             totalmetros = float(total['MetrosCuadrados'])
-        metros[calidad] += totalmetros
-        kilos[calidad] += totalkilos
+        metros[quality] += totalmetros
+        kilos[quality] += totalkilos
     if calidad is None:
         sumbultos = sum([bultos[i] for i in bultos])
         summetros = sum([metros[i] for i in metros])
@@ -591,14 +590,14 @@ def get_volcados(producto_murano, fini, ffin, tipo_movimiento,
                                             tipo_movimiento, origen_movimiento,
                                             codigo_canal, serie)
     for total in totales:
-        calidad = total['CodigoTalla01_']
+        quality = total['CodigoTalla01_']
         unidad = total['UnidadMedida1_']
         if unidad == 'M2':
             totalmetros = float(total['Unidades'])
-            metros[calidad] += totalmetros
+            metros[quality] += totalmetros
         else:
             totalkilos = float(total['Unidades'])
-            kilos[calidad] += totalkilos
+            kilos[quality] += totalkilos
     # Bultos y la dimensión adicional (metros cuadrados o kilos) de otra:
     # (Aunque también se podría haber obtenido todo de aquí, pero así me
     # aseguro --double-check-- de que es coherente entre las 2 tablas)
@@ -606,15 +605,15 @@ def get_volcados(producto_murano, fini, ffin, tipo_movimiento,
                                                     almacen, origen_documento,
                                                     comentario, serie)
     for total in totales:
-        calidad = total['CodigoTalla01_']
+        quality = total['CodigoTalla01_']
         unidad = total['UnidadMedida1_']
-        bultos[calidad] += total['UnidadesSerie']
+        bultos[quality] += total['UnidadesSerie']
         if unidad == 'ROLLO' and total['MetrosCuadrados']:  # No C, va por kg
             totalkilos = float(total['PesoNeto_'])
-            kilos[calidad] += totalkilos
+            kilos[quality] += totalkilos
         else:   # Será cero para BALAS, BIGBAG y CAJAS, pero por... belleza.
             totalmetros = float(total['MetrosCuadrados'])
-            metros[calidad] += totalmetros
+            metros[quality] += totalmetros
     if calidad is None:
         sumbultos = sum([bultos[i] for i in bultos])
         summetros = sum([metros[i] for i in metros])
