@@ -48,7 +48,7 @@ def main(verbose=False, simulate=False):
     5. Elimina todos los rollos B anteriores a 2019 que **no** sean los del
        listado.
     """
-    murano.ops.CODEMPRESA = 8000    # XXX
+    # murano.ops.CODEMPRESA = 8000    # XXX
     report = open("20190131_regularizacion_2018.out.md", "w")
     report.write("# Inicio regularización\n")
     report.write("{}\n".format(datetime.datetime.today()))
@@ -114,7 +114,7 @@ def convertir_rollos_a_c(verbose, simulate, report):
                                                             "+nzumer +rparra",
                                               fecha=FECHA)
             report.write(resd and "✔" or "✘")
-            report.write("\n")
+            report.write(" ")
             if resd:
                 resc = murano.ops.create_articulo(nuevo_articulo,
                                                   observaciones="Reg. enero "
@@ -123,7 +123,7 @@ def convertir_rollos_a_c(verbose, simulate, report):
                                                                 "+rparra",
                                                   fecha=FECHA)
                 report.write(resc and "✔" or "✘")
-                report.write("\n")
+                report.write(" ")
             res = resd and resc
             if res:
                 good += 1
