@@ -161,8 +161,8 @@ def convertir_balas_a_b(verbose, simulate, report):
                 articulo.bala.claseb = True
                 articulo.bala.sync()
             res = murano.ops.update_calidad(articulo, "B",
-                                            comentario="Reg. enero 2019 "
-                                                       "+nzumer +rparra",
+                                            observaciones="Reg. enero 2019 "
+                                                          "+nzumer +rparra",
                                             fecha=FECHA)
             if res:
                 good += 1
@@ -240,8 +240,8 @@ def consumir_cajas(verbose, simulate, report):
             articulo.productoVenta.id))
         if not simulate:
             res = murano.ops.delete_articulo(articulo,
-                                             comentario="Reg. enero 2019 "
-                                                        "+nzumer +rparra",
+                                             observaciones="Reg. enero 2019 "
+                                                           "+nzumer +rparra",
                                              fecha=FECHA)
             if res:
                 good += 1
@@ -282,8 +282,8 @@ def eliminar_balas(verbose, simulate, report):
             articulo.productoVenta.id))
         if not simulate:
             res = murano.ops.delete_articulo(articulo,
-                                             comentario="Reg. enero 2019 "
-                                                        "+nzumer +rparra",
+                                             observaciones="Reg. enero 2019 "
+                                                           "+nzumer +rparra",
                                              fecha=FECHA)
             if res:
                 good += 1
@@ -335,8 +335,10 @@ def eliminar_rollos_b(verbose, simulate, report):
                 articulo.productoVenta.id, articulo.get_str_calidad()))
             if not simulate:
                 res = murano.ops.delete_articulo(articulo,
-                                                 comentario="Reg. enero 2019 "
-                                                            "+nzumer +rparra",
+                                                 observaciones="Reg. enero "
+                                                               "2019 "
+                                                               "+nzumer "
+                                                               "+rparra",
                                                  fecha=FECHA)
                 if res:
                     good += 1
