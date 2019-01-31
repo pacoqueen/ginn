@@ -161,8 +161,8 @@ def convertir_balas_a_b(verbose, simulate, report):
                 articulo.bala.claseb = True
                 articulo.bala.sync()
             res = murano.ops.update_calidad(articulo, "B",
-                                            observaciones="Reg. enero 2019 "
-                                                          "+nzumer +rparra",
+                                            comentario="Reg. enero 2019 "
+                                                       "+nzumer +rparra",
                                             fecha=FECHA)
             if res:
                 good += 1
