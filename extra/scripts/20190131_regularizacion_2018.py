@@ -88,7 +88,7 @@ def convertir_rollos_a_c(verbose, simulate, report):
     bad = 0
     total = len(codigos)
     for c in tqdm(codigos, desc="Rollos a C"):
-        articulo = pclases.get_articulo(c)
+        articulo = pclases.Articulo.get_articulo(c)
         nuevo_articulo = pclases.Articulo(
                 rolloC=pclases.RolloC(peso=articulo.peso),
                 bala=None, bigbag=None, rollo=None, fechahora=FECHA,
@@ -145,7 +145,7 @@ def convertir_balas_a_b(verbose, simulate, report):
     bad = 0
     total = len(codigos)
     for c in tqdm(codigos, desc="Balas a B"):
-        articulo = pclases.get_articulo(c)
+        articulo = pclases.Articulo.get_articulo(c)
         report.write("* Convirtiendo {} ({} [PV{}]) de {} a B ".format(
             articulo.codigo, articulo.productoVenta.descripcion,
             articulo.productoVenta.id, articulo.get_str_calidad()))
@@ -226,7 +226,7 @@ def consumir_cajas(verbose, simulate, report):
     bad = 0
     total = len(codigos)
     for c in tqdm(codigos, desc="Eliminar cajas consumidas"):
-        articulo = pclases.get_articulo(c)
+        articulo = pclases.Articulo.get_articulo(c)
         report.write("* Eliminando {} ({} [PV{}]) ".format(
             articulo.codigo, articulo.productoVenta.descripcion,
             articulo.productoVenta.id))
@@ -268,7 +268,7 @@ def eliminar_balas(verbose, simulate, report):
     bad = 0
     total = len(codigos)
     for c in tqdm(codigos, desc="Eliminar balas desaparecidas"):
-        articulo = pclases.get_articulo(c)
+        articulo = pclases.Articulo.get_articulo(c)
         report.write("* Eliminando {} ({} [PV{}]) ".format(
             articulo.codigo, articulo.productoVenta.descripcion,
             articulo.productoVenta.id))
