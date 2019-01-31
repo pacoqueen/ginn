@@ -1697,9 +1697,9 @@ class PartesDeFabricacionBalas(Ventana):
             silo_marcado = silo_marcado or self.wids['ch_silo_ID%d' % (silo.id)].get_active()
         silo_marcado = silo_marcado or self.wids['ch_reciclada_0'].get_active() or self.wids['ch_reciclada_1'].get_active()
         if silo_marcado == False:
-            utils.dialogo_info(titulo = "NO PUEDE CAMBIAR LA PRODUCCIÓN",
-                               texto = "No puede cambiar el peso total de la producción si no marca el silo\noriginal de donde consumió la bala %s." % (codigo),
-                               padre = self.wids['ventana'])
+            utils.dialogo_info(titulo="NO PUEDE CAMBIAR LA PRODUCCIÓN",
+                               texto="No puede cambiar el peso total de la producción si no marca el silo\noriginal de donde consumió la bala %s." % (codigo),
+                               padre=self.wids['ventana'])
             return
         # Cambio del peso en sí:
         try:
@@ -1707,7 +1707,7 @@ class PartesDeFabricacionBalas(Ventana):
         except ValueError:
             utils.dialogo_info('NÚMERO INCORRECTO',
                                'El peso del artículo debe ser un número.',
-                               padre = self.wids['ventana'])
+                               padre=self.wids['ventana'])
             return
         articulo = pclases.Articulo.get_articulo(codigo)
         volver_a_volcar_a_murano = False    # Flag para... eso. Volver a crear.

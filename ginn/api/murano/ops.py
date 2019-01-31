@@ -955,7 +955,7 @@ def crear_proceso_IME(conexion):
 
 # pylint: disable=too-many-locals
 def prepare_params_movstock(articulo, cantidad=1, producto=None,
-                            codigo_almacen=None, calidad=None):
+                            codigo_almacen=None, calidad=None, fecha=None):
     """
     Prepara los parámetros comunes a todos los artículos con movimiento de
     serie y devuelve la conexión a la base de datos MS-SQLServer.
@@ -964,10 +964,13 @@ def prepare_params_movstock(articulo, cantidad=1, producto=None,
     assert abs(cantidad) == 1
     c = Connection()
     database = c.get_database()
-    today = datetime.datetime.today()
-    ejercicio = today.year
-    periodo = today.month
-    fecha = today.strftime("%Y-%m-%d %H:%M:%S")
+    if fecha is None or not isinstance(fecha, datetime.datetime):
+        today = datetime.datetime.today()
+    else:
+        today = fecha
+        ejercicio = today.year
+        periodo = today.month
+        fecha = today.strftime("%Y-%m-%d %H:%M:%S")
     documento = int(today.strftime("%Y%m%d"))
     if not producto:
         producto = articulo.productoVenta
@@ -1096,7 +1099,7 @@ def estimar_precio_coste(articulo, precio_kg):
 # pylint: disable=too-many-arguments
 def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
                 simulate=False, procesar=True, codigo_almacen=None,
-                calidad=None, comentario=None, serie='API'):
+                calidad=None, comentario=None, serie='API', fecha=None):
     """
     Crea una bala en las tablas temporales de Murano.
     Recibe un objeto bala de ginn.
@@ -1132,7 +1135,7 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
          codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
          unidades, precio, importe, unidades2, unidad_medida2,
          factor_conversion, origen_movimiento) = prepare_params_movstock(
-            articulo, cantidad, producto, codigo_almacen, calidad)
+            articulo, cantidad, producto, codigo_almacen, calidad, fecha=fecha)
         if not guid_proceso:
             id_proceso_IME = crear_proceso_IME(c)
         else:
@@ -1270,7 +1273,7 @@ def get_fecha_entrada(articulo, campo="FechaRegistro"):
 
 # pylint: disable=too-many-arguments,too-many-statements
 def consume_bala(bala, cantidad=-1, producto=None, guid_proceso=None,
-                 simulate=False, procesar=True):
+                 simulate=False, procesar=True, fecha=None):
     """
     Crea un movimiento de salida de una bala en las tablas temporales de
     Murano.
@@ -1311,7 +1314,8 @@ def consume_bala(bala, cantidad=-1, producto=None, guid_proceso=None,
          codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
          unidades, precio, importe, unidades2, unidad_medida2,
          factor_conversion, origen_movimiento) = prepare_params_movstock(
-            articulo, cantidad, producto)   # pylint: disable=bad-continuation
+            articulo, cantidad, producto,
+            fecha=fecha)   # pylint: disable=bad-continuation
         try:
             documento = bala.partidaCarga.numpartida  # No código. Solo números
         except AttributeError:
@@ -1395,7 +1399,7 @@ def consume_partida_carga(partida_carga):
 
 # pylint: disable=too-many-arguments,too-many-statements
 def consume_bigbag(bigbag, cantidad=-1, producto=None, guid_proceso=None,
-                   simulate=False, procesar=True):
+                   simulate=False, procesar=True, fecha=None):
     """
     Crea un movimiento de salida de un bigbag en las tablas temporales de
     Murano.
@@ -1434,7 +1438,8 @@ def consume_bigbag(bigbag, cantidad=-1, producto=None, guid_proceso=None,
          codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
          unidades, precio, importe, unidades2, unidad_medida2,
          factor_conversion, origen_movimiento) = prepare_params_movstock(
-            articulo, cantidad, producto)   # pylint: disable=bad-continuation
+            articulo, cantidad, producto,
+            fecha=fecha)   # pylint: disable=bad-continuation
         try:
             documento = bigbag.parteDeProduccion.id  # Única forma
             # numérica de localizarlo.
@@ -1509,7 +1514,7 @@ def consume_bigbag(bigbag, cantidad=-1, producto=None, guid_proceso=None,
 
 def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
                   simulate=False, procesar=True, codigo_almacen=None,
-                  calidad=None, comentario=None, serie='API'):
+                  calidad=None, comentario=None, serie='API', fecha=None):
     """
     Crea un bigbag en Murano a partir de la información del bigbag en ginn.
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
@@ -1536,7 +1541,7 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
          codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
          unidades, precio, importe, unidades2, unidad_medida2,
          factor_conversion, origen_movimiento) = prepare_params_movstock(
-            articulo, cantidad, producto, codigo_almacen, calidad)
+            articulo, cantidad, producto, codigo_almacen, calidad, fecha=fecha)
         if not guid_proceso:
             id_proceso_IME = crear_proceso_IME(c)
         else:
@@ -1598,7 +1603,7 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
 
 def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
                  simulate=False, procesar=True, codigo_almacen=None,
-                 calidad=None, comentario=None, serie='API'):
+                 calidad=None, comentario=None, serie='API', fecha=None):
     """
     Crea un rollo en Murano a partir de la información del rollo en ginn.
     Si cantidad = -1 realiza un decremento en el almacén de Murano.
@@ -1628,7 +1633,7 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
          codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
          unidades, precio, importe, unidades2, unidad_medida2,
          factor_conversion, origen_movimiento) = prepare_params_movstock(
-            articulo, cantidad, producto, codigo_almacen, calidad)
+            articulo, cantidad, producto, codigo_almacen, calidad, fecha=fecha)
         if not guid_proceso:
             id_proceso_IME = crear_proceso_IME(c)
         else:
@@ -1691,7 +1696,7 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
 
 def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
                 simulate=False, procesar=True, codigo_almacen=None,
-                calidad=None, comentario=None, serie='API'):
+                calidad=None, comentario=None, serie='API', fecha=None):
     """
     Crea una caja en Murano a partir de la información del objeto caja en ginn.
     Si cantidad es 1, realiza un decremento.
@@ -1718,7 +1723,7 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
          codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
          unidades, precio, importe, unidades2, unidad_medida2,
          factor_conversion, origen_movimiento) = prepare_params_movstock(
-            articulo, cantidad, producto, codigo_almacen, calidad)
+            articulo, cantidad, producto, codigo_almacen, calidad, fecha=fecha)
         if not guid_proceso:
             id_proceso_IME = crear_proceso_IME(c)
         else:
@@ -1941,7 +1946,7 @@ def consultar_producto(producto=None, nombre=None, ean=None):
 
 # pylint: disable=unused-argument
 def update_calidad(articulo, calidad, comentario=None, serie="API",
-                   force=False):
+                   force=False, fecha=None):
     """
     Cambia la calidad del artículo en Murano a la recibida. Debe ser A, B o C.
 
@@ -1974,7 +1979,7 @@ def update_calidad(articulo, calidad, comentario=None, serie="API",
                 observaciones_alta = comentario
             res = create_articulo(articulo, calidad=calidad,
                                   observaciones=observaciones_alta,
-                                  serie=serie)
+                                  serie=serie, fecha=fecha)
     return res
 
 
@@ -2165,7 +2170,7 @@ def es_movimiento_salida_albaran(movserie):
     return res
 
 
-def iter_create_articulos(articulos, simulate=False, serie='API'):
+def iter_create_articulos(articulos, simulate=False, serie='API', fecha=None):
     """
     Crea en Murano **en un solo proceso de importación** los artículos de
     _ginn_ recibidos en una lista.
@@ -2213,7 +2218,8 @@ def iter_create_articulos(articulos, simulate=False, serie='API'):
                                        codigo_almacen=None,     # Auto
                                        calidad=None,            # Auto
                                        observaciones=observaciones,
-                                       serie=serie)
+                                       serie=serie,
+                                       fecha=fecha)
         yield articulo
     yield guid_proceso
     if procesar:
@@ -2237,7 +2243,7 @@ def iter_create_articulos(articulos, simulate=False, serie='API'):
 
 def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
                     simulate=False, procesar=True, codigo_almacen=None,
-                    calidad=None, observaciones=None, serie="API"):
+                    calidad=None, observaciones=None, serie="API", fecha=None):
     """
     Crea un artículo nuevo en Murano con el producto recibido. Si no se
     recibe ninguno, se usa el que tenga asociado en ginn. Si se recibe un
@@ -2273,7 +2279,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
                                   codigo_almacen=codigo_almacen,
                                   calidad=calidad,
                                   comentario=observaciones,
-                                  serie=serie)
+                                  serie=serie, fecha=fecha)
             elif articulo.es_balaCable():
                 res = create_bala(articulo.balaCable, delta, producto,
                                   guid_proceso=guid_proceso,
@@ -2282,7 +2288,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
                                   codigo_almacen=codigo_almacen,
                                   calidad=calidad,
                                   comentario=observaciones,
-                                  serie=serie)
+                                  serie=serie, fecha=fecha)
             elif articulo.es_bigbag():
                 res = create_bigbag(articulo.bigbag, delta, producto,
                                     guid_proceso=guid_proceso,
@@ -2291,7 +2297,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
                                     codigo_almacen=codigo_almacen,
                                     calidad=calidad,
                                     comentario=observaciones,
-                                    serie=serie)
+                                    serie=serie, fecha=fecha)
             elif articulo.es_caja():
                 res = create_caja(articulo.caja, delta, producto,
                                   guid_proceso=guid_proceso,
@@ -2300,7 +2306,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
                                   codigo_almacen=codigo_almacen,
                                   calidad=calidad,
                                   comentario=observaciones,
-                                  serie=serie)
+                                  serie=serie, fecha=fecha)
             elif articulo.es_rollo():
                 res = create_rollo(articulo.rollo, delta, producto,
                                    guid_proceso=guid_proceso,
@@ -2309,7 +2315,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
                                    codigo_almacen=codigo_almacen,
                                    calidad=calidad,
                                    comentario=observaciones,
-                                   serie=serie)
+                                   serie=serie, fecha=fecha)
             elif articulo.es_rollo_defectuoso():
                 res = create_rollo(articulo.rolloDefectuoso, delta, producto,
                                    guid_proceso=guid_proceso,
@@ -2318,7 +2324,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
                                    codigo_almacen=codigo_almacen,
                                    calidad=calidad,
                                    comentario=observaciones,
-                                   serie=serie)
+                                   serie=serie, fecha=fecha)
             elif articulo.es_rolloC():
                 res = create_rollo(articulo.rolloC, delta, producto,
                                    guid_proceso=guid_proceso,
@@ -2327,7 +2333,7 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
                                    codigo_almacen=codigo_almacen,
                                    calidad=calidad,
                                    comentario=observaciones,
-                                   serie=serie)
+                                   serie=serie, fecha=fecha)
             else:
                 raise ValueError("El artículo %s no es bala, bala de cable, "
                                  "bigbag, caja, rollo ni rollo C."
@@ -2343,7 +2349,8 @@ def create_articulo(articulo, cantidad=1, producto=None, guid_proceso=None,
     return res
 
 
-def update_producto(articulo, producto, observaciones=None, serie="API"):
+def update_producto(articulo, producto, observaciones=None, serie="API",
+                    fecha=None):
     """
     Cambia el artículo recibido al producto indicado.
     """
@@ -2351,7 +2358,7 @@ def update_producto(articulo, producto, observaciones=None, serie="API"):
     if res:
         res = create_articulo(articulo, producto=producto,
                               observaciones=observaciones,
-                              serie=serie)
+                              serie=serie, fecha=fecha)
     return res
 
 
@@ -2360,7 +2367,7 @@ def update_stock(producto, delta, almacen, guid_proceso=None,
     """
     Incrementa o decrementa el stock del producto en la cantidad recibida en
     en el parámetro «delta».
-    El producto no debe tener trazabilidad. En otro caso deben usarse las
+    El producto **no** debe tener trazabilidad. En otro caso deben usarse las
     funciones "crear_[bala|rollo...]".
     """
     assert isinstance(producto, pclases.ProductoCompra)
@@ -2434,7 +2441,7 @@ def update_stock(producto, delta, almacen, guid_proceso=None,
 
 
 def delete_articulo(articulo, codigo_almacen=None, observaciones=None,
-                    serie='API'):
+                    serie='API', fecha=None):
     """
     Elimina el artículo en Murano mediante la creación de un movimiento de
     stock negativo de ese código de producto.
@@ -2453,7 +2460,7 @@ def delete_articulo(articulo, codigo_almacen=None, observaciones=None,
                               producto=producto_anterior,
                               codigo_almacen=codigo_almacen,
                               observaciones=observaciones,
-                              serie=serie)
+                              serie=serie, fecha=fecha)
     else:
         logging.warning("El artículo %s no existe en Murano.", articulo.codigo)
     return res
