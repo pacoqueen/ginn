@@ -61,7 +61,8 @@ def main(verbose=False, simulate=False):
     eliminar_rollos_b(verbose, simulate, report)
     report.write("Fin regularización\n")
     report.write("{}\n".format(datetime.datetime.today()))
-    report.write("---\n")
+    report.write("\nDr. Cavadas has left the building.\n")
+    report.write("\n---\n\n")
     report.close()
 
 
