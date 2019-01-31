@@ -90,7 +90,8 @@ def convertir_rollos_a_c(verbose, simulate, report):
     for c in tqdm(codigos, desc="Rollos a C"):
         articulo = pclases.Articulo.get_articulo(c)
         if not simulate:
-            nuevo_articulo = pclases.Articulo(
+            if murano.ops.CODEMPRESA == 10200:
+                nuevo_articulo = pclases.Articulo(
                     rolloC=pclases.RolloC(peso=articulo.peso,
                                           observaciones="Reg. enero 2019 "
                                                         "+nzumer +rparra"),
@@ -99,6 +100,8 @@ def convertir_rollos_a_c(verbose, simulate, report):
                     albaranSalida=None,
                     almacen=pclases.Almacen.get_almacen_principal(),
                     pesoReal=articulo.peso)
+            else:
+                nuevo_articulo = articulo
             report.write("* Convirtiendo {} ({} [PV{}]) a {} ({} [PV{}]"
                          ") ".format(articulo.codigo,
                                      articulo.productoVenta.descripcion,
@@ -154,8 +157,9 @@ def convertir_balas_a_b(verbose, simulate, report):
             articulo.codigo, articulo.productoVenta.descripcion,
             articulo.productoVenta.id, articulo.get_str_calidad()))
         if not simulate:
-            articulo.bala.claseb = True
-            articulo.bala.sync()
+            if murano.ops.CODEMPRESA == 10200:
+                articulo.bala.claseb = True
+                articulo.bala.sync()
             res = murano.ops.update_calidad(articulo, "B",
                                             comentario="Reg. enero 2019 "
                                                        "+nzumer +rparra",
