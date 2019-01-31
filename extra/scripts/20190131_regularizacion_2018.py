@@ -291,7 +291,7 @@ def eliminar_balas(verbose, simulate, report):
                 bad += 1
             report.write(res and "✔" or "✘")
         report.write("\n")
-    report.write("{}/{} balas convertidas. {} errores.\n".format(
+    report.write("{}/{} balas eliminadas. {} errores.\n".format(
         good, total, bad))
     report.write("Eliminar cajas consumidas: FINALIZADO\n\n")
 
@@ -347,7 +347,7 @@ def eliminar_rollos_b(verbose, simulate, report):
                 report.write(res and "✔" or "✘")
             report.write("\n")
         else:
-            report.write("* {} no se elimina. [PV{}], calidad {}\n".format(
+            report.write("* {} no se elimina ({} [PV{}]), calidad {}\n".format(
                     articulo.codigo, articulo.productoVenta.descripcion,
                     articulo.productoVenta.id, articulo.get_str_calidad()))
     report.write("{}/{} rollos eliminados. {} errores.\n".format(

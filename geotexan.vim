@@ -1,6 +1,6 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim:
 " Vim session script.
-" Created by session.vim 2.13.1 on 22 enero 2019 at 09:09:44.
+" Created by session.vim 2.13.1 on 01 febrero 2019 at 00:29:05.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -13,7 +13,7 @@ if &background != 'light'
 	set background=light
 endif
 if !exists('g:colors_name') || g:colors_name != 'summerfruit256' | colorscheme summerfruit256 | endif
-call setqflist([{'lnum': 54, 'col': 80, 'pattern': '', 'valid': 1, 'vcol': 0, 'nr': -1, 'type': 'E', 'module': '', 'filename': 'framework/metrics/core.py', 'text': 'E501: line too long (97 > 79 characters)'}, {'lnum': 80, 'col': 80, 'pattern': '', 'valid': 1, 'vcol': 0, 'nr': -1, 'type': 'E', 'module': '', 'filename': 'framework/metrics/core.py', 'text': 'E501: line too long (97 > 79 characters)'}, {'lnum': 107, 'col': 80, 'pattern': '', 'valid': 1, 'vcol': 0, 'nr': -1, 'type': 'E', 'module': '', 'filename': 'framework/metrics/core.py', 'text': 'E501: line too long (97 > 79 characters)'}, {'lnum': 133, 'col': 80, 'pattern': '', 'valid': 1, 'vcol': 0, 'nr': -1, 'type': 'E', 'module': '', 'filename': 'framework/metrics/core.py', 'text': 'E501: line too long (97 > 79 characters)'}])
+call setqflist([])
 let SessionLoad = 1
 if &cp | set nocp | endif
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
@@ -25,18 +25,15 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +1 api/netdata/ginn.chart.py
 badd +1 ~/Geotexan/src/Geotex-INN/geotexan.vim
 badd +947 formularios/menu.py
 badd +1 api/murano/ops.py
-badd +1 api/tests/efcodd.py
-badd +1 framework/metrics/__init__.py
-badd +1 framework/metrics/core.py
-badd +1 framework/metrics/tests.py
+badd +1 ~/Geotexan/src/Geotex-INN/extra/scripts/20190131_regularizacion_2018.py
+badd +282 api/tests/sr_lobo.py
 argglobal
 silent! argdel *
 $argadd ~/Geotexan/src/Geotex-INN/geotexan.vim
-edit api/tests/efcodd.py
+edit api/murano/ops.py
 set splitbelow splitright
 wincmd _ | wincmd |
 vsplit
@@ -46,19 +43,7 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-wincmd _ | wincmd |
-split
-wincmd _ | wincmd |
-split
-wincmd _ | wincmd |
-split
-wincmd _ | wincmd |
-split
-6wincmd k
-wincmd w
-wincmd w
-wincmd w
-wincmd w
+2wincmd k
 wincmd w
 wincmd w
 set nosplitbelow
@@ -68,97 +53,45 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 1 + 52) / 105)
-exe '2resize ' . ((&lines * 8 + 26) / 53)
-exe 'vert 2resize ' . ((&columns * 103 + 52) / 105)
-exe '3resize ' . ((&lines * 7 + 26) / 53)
-exe 'vert 3resize ' . ((&columns * 103 + 52) / 105)
-exe '4resize ' . ((&lines * 7 + 26) / 53)
-exe 'vert 4resize ' . ((&columns * 103 + 52) / 105)
-exe '5resize ' . ((&lines * 7 + 26) / 53)
-exe 'vert 5resize ' . ((&columns * 103 + 52) / 105)
-exe '6resize ' . ((&lines * 8 + 26) / 53)
-exe 'vert 6resize ' . ((&columns * 103 + 52) / 105)
-exe '7resize ' . ((&lines * 7 + 26) / 53)
-exe 'vert 7resize ' . ((&columns * 103 + 52) / 105)
-exe '8resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 8resize ' . ((&columns * 103 + 52) / 105)
+exe 'vert 1resize ' . ((&columns * 18 + 62) / 125)
+exe '2resize ' . ((&lines * 18 + 28) / 57)
+exe 'vert 2resize ' . ((&columns * 106 + 62) / 125)
+exe '3resize ' . ((&lines * 31 + 28) / 57)
+exe 'vert 3resize ' . ((&columns * 106 + 62) / 125)
+exe '4resize ' . ((&lines * 4 + 28) / 57)
+exe 'vert 4resize ' . ((&columns * 106 + 62) / 125)
 argglobal
 enew
 file __Tagbar__.1
 wincmd w
 argglobal
-let s:l = 230 - ((3 * winheight(0) + 4) / 8)
+let s:l = 1950 - ((1 * winheight(0) + 9) / 18)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-230
-normal! 010|
-wincmd w
-argglobal
-if bufexists('framework/metrics/tests.py') | buffer framework/metrics/tests.py | else | edit framework/metrics/tests.py | endif
-let s:l = 47 - ((0 * winheight(0) + 3) / 7)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-47
-normal! 037|
-wincmd w
-argglobal
-if bufexists('api/netdata/ginn.chart.py') | buffer api/netdata/ginn.chart.py | else | edit api/netdata/ginn.chart.py | endif
-let s:l = 143 - ((0 * winheight(0) + 3) / 7)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-143
-normal! 057|
-wincmd w
-argglobal
-if bufexists('framework/metrics/core.py') | buffer framework/metrics/core.py | else | edit framework/metrics/core.py | endif
-let s:l = 31 - ((3 * winheight(0) + 3) / 7)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-31
+1950
 normal! 0
 wincmd w
 argglobal
-if bufexists('framework/metrics/__init__.py') | buffer framework/metrics/__init__.py | else | edit framework/metrics/__init__.py | endif
-let s:l = 22 - ((3 * winheight(0) + 4) / 8)
+if bufexists('~/Geotexan/src/Geotex-INN/extra/scripts/20190131_regularizacion_2018.py') | buffer ~/Geotexan/src/Geotex-INN/extra/scripts/20190131_regularizacion_2018.py | else | edit ~/Geotexan/src/Geotex-INN/extra/scripts/20190131_regularizacion_2018.py | endif
+let s:l = 353 - ((18 * winheight(0) + 15) / 31)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-22
-normal! 0
-wincmd w
-argglobal
-if bufexists('api/murano/ops.py') | buffer api/murano/ops.py | else | edit api/murano/ops.py | endif
-let s:l = 1655 - ((1 * winheight(0) + 3) / 7)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-1655
-normal! 013|
+353
+normal! 043|
 wincmd w
 argglobal
 enew
 wincmd w
-2wincmd w
-exe 'vert 1resize ' . ((&columns * 1 + 52) / 105)
-exe '2resize ' . ((&lines * 8 + 26) / 53)
-exe 'vert 2resize ' . ((&columns * 103 + 52) / 105)
-exe '3resize ' . ((&lines * 7 + 26) / 53)
-exe 'vert 3resize ' . ((&columns * 103 + 52) / 105)
-exe '4resize ' . ((&lines * 7 + 26) / 53)
-exe 'vert 4resize ' . ((&columns * 103 + 52) / 105)
-exe '5resize ' . ((&lines * 7 + 26) / 53)
-exe 'vert 5resize ' . ((&columns * 103 + 52) / 105)
-exe '6resize ' . ((&lines * 8 + 26) / 53)
-exe 'vert 6resize ' . ((&columns * 103 + 52) / 105)
-exe '7resize ' . ((&lines * 7 + 26) / 53)
-exe 'vert 7resize ' . ((&columns * 103 + 52) / 105)
-exe '8resize ' . ((&lines * 1 + 26) / 53)
-exe 'vert 8resize ' . ((&columns * 103 + 52) / 105)
+3wincmd w
+exe 'vert 1resize ' . ((&columns * 18 + 62) / 125)
+exe '2resize ' . ((&lines * 18 + 28) / 57)
+exe 'vert 2resize ' . ((&columns * 106 + 62) / 125)
+exe '3resize ' . ((&lines * 31 + 28) / 57)
+exe 'vert 3resize ' . ((&columns * 106 + 62) / 125)
+exe '4resize ' . ((&lines * 4 + 28) / 57)
+exe 'vert 4resize ' . ((&columns * 106 + 62) / 125)
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0
 "   silent exe 'bwipe ' . s:wipebuf
@@ -176,7 +109,7 @@ let &so = s:so_save | let &siso = s:siso_save
 " Everything down here is generated by vim-session (not supported
 " by :mksession out of the box).
 
-8wincmd w
+4wincmd w
 tabnext 1
 let s:bufnr_save = bufnr("%")
 let s:cwd_save = getcwd()
@@ -188,8 +121,8 @@ if !getbufvar(s:bufnr_save, '&modified')
   endif
 endif
 execute "cd" fnameescape(s:cwd_save)
-1resize 51|vert 1resize 1|2resize 8|vert 2resize 103|3resize 7|vert 3resize 103|4resize 7|vert 4resize 103|5resize 7|vert 5resize 103|6resize 8|vert 6resize 103|7resize 7|vert 7resize 103|8resize 1|vert 8resize 103|
-2wincmd w
+1resize 55|vert 1resize 18|2resize 18|vert 2resize 106|3resize 31|vert 3resize 106|4resize 4|vert 4resize 106|
+3wincmd w
 tabnext 1
 if exists('s:wipebuf')
   if empty(bufname(s:wipebuf))
