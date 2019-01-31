@@ -89,19 +89,23 @@ def convertir_rollos_a_c(verbose, simulate, report):
     total = len(codigos)
     for c in tqdm(codigos, desc="Rollos a C"):
         articulo = pclases.Articulo.get_articulo(c)
-        nuevo_articulo = pclases.Articulo(
-                rolloC=pclases.RolloC(peso=articulo.peso),
-                bala=None, bigbag=None, rollo=None, fechahora=FECHA,
-                productoVenta=pvgtxc, parteDeProduccion=None,
-                albaranSalida=None,
-                almacen=pclases.Almacen.get_almacen_principal(),
-                pesoReal=articulo.peso)
-        report.write("* Convirtiendo {} ({} [PV{}]) a {} ({} [PV{}]) ".format(
-            articulo.codigo, articulo.productoVenta.descripcion,
-            articulo.productoVenta.id, nuevo_articulo.codigo,
-            nuevo_articulo.productoVenta.descripcion,
-            nuevo_articulo.productoVenta.id))
         if not simulate:
+            nuevo_articulo = pclases.Articulo(
+                    rolloC=pclases.RolloC(peso=articulo.peso,
+                                          observaciones="Reg. enero 2019 "
+                                                        "+nzumer +rparra"),
+                    bala=None, bigbag=None, rollo=None, fechahora=FECHA,
+                    productoVenta=pvgtxc, parteDeProduccion=None,
+                    albaranSalida=None,
+                    almacen=pclases.Almacen.get_almacen_principal(),
+                    pesoReal=articulo.peso)
+            report.write("* Convirtiendo {} ({} [PV{}]) a {} ({} [PV{}]"
+                         ") ".format(articulo.codigo,
+                                     articulo.productoVenta.descripcion,
+                                     articulo.productoVenta.id,
+                                     nuevo_articulo.codigo,
+                                     nuevo_articulo.productoVenta.descripcion,
+                                     nuevo_articulo.productoVenta.id))
             resd = murano.ops.delete_articulo(articulo,
                                               observaciones="Reg. enero 2019 "
                                                             "+nzumer +rparra",
@@ -313,7 +317,7 @@ def eliminar_rollos_b(verbose, simulate, report):
     rollosd = pclases.RolloDefectuoso.select(
             pclases.RolloDefectuoso.q.fechahora < dosmildiecinueve,
             orderBy="-id")
-    for rd in tqdm(rollosd, total=rollosd.count()):
+    for rd in tqdm(rollosd, desc="Buscar rollos B", total=rollosd.count()):
         a = rd.articulo
         if murano.ops.esta_en_almacen(a):
             articulos.append(a)
