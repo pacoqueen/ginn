@@ -93,7 +93,7 @@ def convertir_rollos_a_c(verbose, simulate, report):
                 rolloC=pclases.RolloC(peso=articulo.peso),
                 bala=None, bigbag=None, rollo=None, fechahora=FECHA,
                 productoVenta=pvgtxc, parteDeProduccion=None,
-                albarnSalida=None,
+                albaranSalida=None,
                 almacen=pclases.Almacen.get_almacen_principal(),
                 pesoReal=articulo.peso)
         report.write("* Convirtiendo {} ({} [PV{}]) a {} ({} [PV{}]) ".format(
