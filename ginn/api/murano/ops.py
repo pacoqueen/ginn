@@ -965,12 +965,14 @@ def prepare_params_movstock(articulo, cantidad=1, producto=None,
     c = Connection()
     database = c.get_database()
     if fecha is None or not isinstance(fecha, datetime.datetime):
+        # TODO: Si la fecha no es correcta, en vez de petar ignoro el
+        # error silenciosamente. Danger, danger! High voltage!
         today = datetime.datetime.today()
     else:
         today = fecha
-        ejercicio = today.year
-        periodo = today.month
-        fecha = today.strftime("%Y-%m-%d %H:%M:%S")
+    ejercicio = today.year
+    periodo = today.month
+    fecha = today.strftime("%Y-%m-%d %H:%M:%S")
     documento = int(today.strftime("%Y%m%d"))
     if not producto:
         producto = articulo.productoVenta
