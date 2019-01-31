@@ -165,7 +165,7 @@ def convertir_balas_a_b(verbose, simulate, report):
             else:
                 bad += 1
             report.write(res and "✔" or "✘")
-            report.write("\n")
+        report.write("\n")
     report.write("{}/{} balas convertidas. {} errores.\n".format(
         good, total, bad))
     report.write("Convertir balas a B: FINALIZADO\n\n")
@@ -244,7 +244,7 @@ def consumir_cajas(verbose, simulate, report):
             else:
                 bad += 1
             report.write(res and "✔" or "✘")
-            report.write("\n")
+        report.write("\n")
     report.write("{}/{} cajas eliminadas. {} errores.\n".format(
         good, total, bad))
     report.write("Eliminar cajas consumidas: FINALIZADO\n\n")
@@ -286,7 +286,7 @@ def eliminar_balas(verbose, simulate, report):
             else:
                 bad += 1
             report.write(res and "✔" or "✘")
-            report.write("\n")
+        report.write("\n")
     report.write("{}/{} balas convertidas. {} errores.\n".format(
         good, total, bad))
     report.write("Eliminar cajas consumidas: FINALIZADO\n\n")
@@ -339,7 +339,7 @@ def eliminar_rollos_b(verbose, simulate, report):
                 else:
                     bad += 1
                 report.write(res and "✔" or "✘")
-                report.write("\n")
+            report.write("\n")
         else:
             report.write("* {} no se elimina. [PV{}], calidad {}\n".format(
                     articulo.codigo, articulo.productoVenta.descripcion,
