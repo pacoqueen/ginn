@@ -365,7 +365,7 @@ class ConsultaProducido(Ventana):
         fin = utils.str_fecha(fin)
         self.wids['e_fechafin'].set_text(fin)
 
-    def buscar(self,boton):
+    def buscar(self, boton):
         """
         Dadas fecha de inicio y de fin, busca los productos A y B
         fabricados y cantidad en los partes de producción iniciados entre

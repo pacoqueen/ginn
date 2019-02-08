@@ -1972,7 +1972,7 @@ def update_calidad(articulo, calidad, comentario=None, serie="API",
             observaciones_baja = comentario
         res = delete_articulo(articulo,
                               observaciones=observaciones_baja,
-                              serie=serie)
+                              serie=serie, fecha=fecha)
         if res:
             if not comentario:
                 observaciones_alta = "Alta por cambio a calidad {}.".format(

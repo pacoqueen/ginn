@@ -10250,7 +10250,7 @@ class Articulo(SQLObject, PRPCTOO):
         elif self.es_rolloC():
             self.rolloC.fechahora = fechahora
         elif self.es_caja():
-            self.bolsa.fechahora = fechahora
+            self.caja.fechahora = fechahora
         else:
             # ¿Artículo que no es ni bala, ni bigbag ni rollo? Devuelvo None. NO DEBERÍA PASAR.
             myprint("ERROR: pclases.py: get_fechahora: ¡Artículo no es ni bala "\

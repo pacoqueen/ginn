@@ -1728,21 +1728,21 @@ class PartesDeFabricacionBalas(Ventana):
         pesoantiguo = articulo.peso_real
         if articulo and articulo.es_bala():
             bala = articulo.bala
-            self.descontar_material_adicional(articulo, restar = False)
+            self.descontar_material_adicional(articulo, restar=False)
             bala.pesobala = nuevopeso
             articulo.pesoReal = bala.pesobala
             bala.pesobala -= pclases.PESO_EMBALAJE_BALAS
             bala.syncUpdate()
-            self.descontar_material_adicional(articulo, restar = True)
+            self.descontar_material_adicional(articulo, restar=True)
             bala.sync()
             bala.articulo.sync()
             model[path][2] = self.peso(bala.articulo) # = bala.articulo.peso_real
         elif articulo and articulo.es_bigbag():
             bigbag = articulo.bigbag
-            self.descontar_material_adicional(articulo, restar = False)
+            self.descontar_material_adicional(articulo, restar=False)
             bigbag.pesobigbag = nuevopeso
             bigbag.articulo.pesoReal = nuevopeso
-            self.descontar_material_adicional(articulo, restar = True)
+            self.descontar_material_adicional(articulo, restar=True)
             model[path][2] = bigbag.pesobigbag
         if volver_a_volcar_a_murano:
             motivo = "Peso corregido {}->{} kg.".format(pesoantiguo,

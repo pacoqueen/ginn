@@ -189,7 +189,8 @@ class ConsultaConsumo(Ventana):
             fechafin = self.fin = mx.DateTime.today()
         PDP = pclases.ParteDeProduccion
         if not self.inicio:
-            pdps = PDP.select(PDP.q.fechahorainicio < self.fin, orderBy='fecha')
+            pdps = PDP.select(PDP.q.fechahorainicio < self.fin,
+                              orderBy='fecha')
         else:
             pdps = PDP.select(pclases.AND(PDP.q.fechahorainicio >= self.inicio,
                                           PDP.q.fechahorainicio < self.fin),
