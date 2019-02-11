@@ -4,7 +4,7 @@
 import datetime
 
 try:
-    from framework.pclases import Bala, BalaCable, Bigbag, Caja, Pale
+    from framework.pclases import Bala, BalaCable, Bigbag, Caja  # , Pale
     from framework.pclases import Rollo, RolloDefectuoso, RolloC
     from framework.pclases import ParteDeProduccion, ProductoVenta
     from framework.pclases import Articulo
@@ -15,7 +15,7 @@ except ImportError:
     import sys
     sys.path.insert(0, os.path.abspath(
         os.path.join(os.path.dirname(__file__), '..', '..')))
-    from framework.pclases import Bala, BalaCable, Bigbag, Caja, Pale
+    from framework.pclases import Bala, BalaCable, Bigbag, Caja  # , Pale
     from framework.pclases import Rollo, RolloDefectuoso, RolloC
     from framework.pclases import ParteDeProduccion, ProductoVenta
     from framework.pclases import Articulo
@@ -51,7 +51,8 @@ SELECT [CodigoArticulo]
    AND CodigoAlmacen = 'GTX'
    AND StatusTraspasadoIME = 1	-- 0 si no ha terminado
    AND Fecha >= @desde
- GROUP BY CodigoArticulo, CodigoTalla01_, UnidadMedida1_, StatusTraspasadoIME, TipoImportacionIME
+ GROUP BY CodigoArticulo, CodigoTalla01_, UnidadMedida1_,
+          StatusTraspasadoIME, TipoImportacionIME
 -- ORDER BY Fecha DESC;
 
 -- Entradas pendientes de volcar:
@@ -77,7 +78,8 @@ SELECT [CodigoArticulo]
    AND CodigoAlmacen = 'GTX'
    AND StatusTraspasadoIME = 0	-- 1 si ha terminado
    AND Fecha >= @desde
- GROUP BY CodigoArticulo, CodigoTalla01_, UnidadMedida1_, StatusTraspasadoIME, TipoImportacionIME
+ GROUP BY CodigoArticulo, CodigoTalla01_, UnidadMedida1_, StatusTraspasadoIME,
+          TipoImportacionIME
 -- ORDER BY Fecha DESC;
 
 --
@@ -104,7 +106,8 @@ SELECT [CodigoArticulo]
    AND CodigoAlmacen = 'GTX'
    AND StatusTraspasadoIME = 1	-- 0 si no ha terminado
    AND Fecha >= @desde
- GROUP BY CodigoArticulo, CodigoTalla01_, UnidadMedida1_, StatusTraspasadoIME, TipoImportacionIME
+ GROUP BY CodigoArticulo, CodigoTalla01_, UnidadMedida1_, StatusTraspasadoIME,
+          TipoImportacionIME
  -- ORDER BY Fecha DESC;
 
 -- Salidas pendientes de terminar de procesar
@@ -130,7 +133,8 @@ SELECT [CodigoArticulo]
    AND CodigoAlmacen = 'GTX'
    AND StatusTraspasadoIME = 0	-- 1 si ha terminado
    AND Fecha >= @desde
- GROUP BY CodigoArticulo, CodigoTalla01_, UnidadMedida1_, StatusTraspasadoIME, TipoImportacionIME
+ GROUP BY CodigoArticulo, CodigoTalla01_, UnidadMedida1_, StatusTraspasadoIME,
+          TipoImportacionIME
  -- ORDER BY Fecha DESC;
 """
 SQL_IN0 = """
@@ -146,10 +150,15 @@ SQL_OUT1 = """
 def bultos_fabricados(desde=None):
     """Bultos fabricados por clase desde la fecha indicada."""
     data = {}
-    clases = (Bala, BalaCable, Bigbag,
-              Caja, Pale, Rollo,
-              RolloDefectuoso, RolloC)
-    for clase in clases:
+    clases = ((Bala, 'pesobala'),
+              (BalaCable, 'peso'),
+              (Bigbag, 'pesobigbag'),
+              (Caja, 'peso'),
+              # (Pale, ''),
+              (Rollo, 'peso'),
+              (RolloDefectuoso, 'peso'),
+              (RolloC, 'peso'))
+    for clase, dim_name in clases:
         data[clase] = dict()
         data[clase]['bultos'] = clase.select().count()
         if 4 <= datetime.datetime.now().month <= 10:
@@ -159,20 +168,16 @@ def bultos_fabricados(desde=None):
             antes = datetime.datetime.now()-datetime.timedelta(hours=2)
         # kg fabricados en la última hora
         select_results = clase.select(clase.q.fechahora >= antes)
-        for dim_name in ('pesobala', 'peso', 'pesobigbag'):
-            try:
-                if select_results.count():
-                    mean = select_results.sum(dim_name)
-                else:
-                    mean = 0
-                data[clase]['kghora'] = mean
-                data[clase]['kg'] = clase.select().sum(dim_name)
-            except Exception:
-                data[clase]['kghora'] = 0
-                data[clase]['kg'] = 0
-                continue
+        try:
+            if select_results.count():
+                mean = select_results.sum(dim_name)
             else:
-                break
+                mean = 0
+            data[clase]['kghora'] = mean
+            data[clase]['kg'] = clase.select().sum(dim_name)
+        except Exception:
+            data[clase]['kghora'] = 0
+            data[clase]['kg'] = 0
     return data
 
 
