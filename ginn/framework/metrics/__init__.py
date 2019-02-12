@@ -10,7 +10,7 @@ __author__ = ''
 __license__ = ''
 __copyright__ = ''
 
-from core import Bala, BalaCable, Bigbag, Caja, Pale    # noqa
+from core import Bala, BalaCable, Bigbag, Caja # , Pale    # noqa
 from core import Rollo, RolloDefectuoso, RolloC         # noqa
 from core import ParteDeProduccion, ProductoVenta       # noqa
 
