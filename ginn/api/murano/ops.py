@@ -2509,6 +2509,16 @@ def get_existencias_silo(silo):
     4. Se devuelve ese diccionario.
     """
     res = {}
+    conn = Connection()
+    rs_ejercicio = conn.run_sql("""SELECT MAX(Ejercicio) AS ejercicio
+                                   FROM {}.dbo.AcumuladoStock
+                                   WHERE CodigoEmpresa = {};
+                                """.format(conn.get_database(),
+                                           CODEMPRESA))
+    try:
+        ejercicio = rs_ejercicio[0]['ejercicio']
+    except (IndexError, KeyError):
+        ejercicio = datetime.date.today().year
     almacen = buscar_almacen_silo(silo)
     sql_silos = """SELECT AcumuladoStock.Ejercicio,
                           AcumuladoStock.CodigoEmpresa,
@@ -2554,9 +2564,12 @@ def get_existencias_silo(silo):
                 Articulos.CodigoEmpresa = Familias.CodigoEmpresa AND
                 Familias.CodigoSubfamilia = '**********'
         WHERE AcumuladoStock.Periodo = 99
+          AND AcumuladoStock.Ejercicio = %d
           AND AcumuladoStock.CodigoAlmacen = '%s'
-          AND AcumuladoStock.CodigoEmpresa = '%s';""" % (almacen, CODEMPRESA)
-    conn = Connection()
+          AND AcumuladoStock.CodigoEmpresa = '%s'
+          AND AcumuladoStock.UnidadSaldo <> 0
+        ORDER BY FechaUltimaEntrada DESC;""" % (
+                  ejercicio, almacen, CODEMPRESA)
     res_murano = conn.run_sql(sql_silos)
     for registro in res_murano:
         codigo_producto = registro['CodigoArticulo']
