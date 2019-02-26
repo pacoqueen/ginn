@@ -37,6 +37,7 @@ ruta_ginn = os.path.abspath(os.path.join(
 sys.path.append(ruta_ginn)
 # pylint: disable=import-error,wrong-import-position
 from framework import pclases                                   # noqa
+from framework.memoize import memoized                          # noqa
 from api import murano                                          # noqa
 from api.murano.connection import CODEMPRESA                    # noqa
 from api.murano import connection                               # noqa
@@ -72,7 +73,8 @@ def calcular_desviacion(existencias_ini, produccion, ventas, consumos, ajustes,
 
 
 # pylint: disable=too-many-locals, too-many-statements, too-many-arguments
-def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
+def cuentalavieja(producto_ginn, data_inventario, data_pendiente,
+                  fini, ffin, report,
                   data_res, dev=False, calidad=None):
     """
     Recibe un producto de ginn y comprueba que entre las fechas fini y ffin
@@ -100,6 +102,11 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
 
     Si calidad es None, no tiene en cuenta calidad. Si es 'A', 'B' o 'C' solo
     realiza los cálculos para los bultos de esa calidad.
+
+    data_pendiente trae los valores de producción y consumos no volcados
+    del mes pasado que ha entrado este mes en Murano sin proceder de la
+    producción y consumos del mes corriente. Viene un diccionario con **todos**
+    los productos y dentro de cada uno las calidades y None para los totales.
 
     Devuelve True si todo cuadra.
     """
@@ -200,30 +207,139 @@ def cuentalavieja(producto_ginn, data_inventario, fini, ffin, report,
         report.write(" **[KO]**\n")
     report.write("\n")
     # 5.- Guardo los resultados en el Dataset para exportarlos después.
-    data_res.append(['PV{}'.format(producto_ginn.id),
-                     producto_ginn.descripcion,
-                     existencias_ini[0],   # A
-                     existencias_ini[1],   # B
-                     existencias_ini[2],   # C
-                     produccion_ginn[0],
-                     produccion_ginn[1],
-                     produccion_ginn[2],
-                     ventas[0],
-                     ventas[1],
-                     ventas[2],
-                     consumos_ginn[0],
-                     consumos_ginn[1],
-                     consumos_ginn[2],
-                     ajustes[0],
-                     ajustes[1],
-                     ajustes[2],
-                     existencias_fin[0],
-                     existencias_fin[1],
-                     existencias_fin[2],
-                     desviacion[0],
-                     desviacion[1],
-                     desviacion[2]])
+    if not dev:
+        familia = producto_murano['CodigoFamilia']
+    else:
+        familia = "TEST"
+    cuadra = res and "OK" or "KO"
+    pendiente = find_pendiente_mes_pasado(producto_ginn, dev, calidad)
+    en_curso = find_produccion_en_curso(producto_ginn, dev, calidad)
+    suma = ("=", "=", "=")      # =D2+G2-J2-M2+P2+Y2-AB2
+    delta = ("=", "=", "=")     # =S2-AH2
+    data_res.append([familia,                           # A
+                     'PV{}'.format(producto_ginn.id),   # B
+                     producto_ginn.descripcion,         # C
+                     existencias_ini[0],                # D
+                     existencias_ini[1],                # E
+                     existencias_ini[2],                # F
+                     produccion_ginn[0],                # G
+                     produccion_ginn[1],                # H
+                     produccion_ginn[2],                # I
+                     ventas[0],                         # J
+                     ventas[1],                         # K
+                     ventas[2],                         # L
+                     consumos_ginn[0],                  # M
+                     consumos_ginn[1],                  # N
+                     consumos_ginn[2],                  # O
+                     ajustes[0],                        # P
+                     ajustes[1],                        # Q
+                     ajustes[2],                        # R
+                     existencias_fin[0],                # S
+                     existencias_fin[1],                # T
+                     existencias_fin[2],                # U
+                     desviacion[0],                     # V
+                     desviacion[1],                     # W
+                     desviacion[2],                     # X
+                     pendiente[0],                      # Y
+                     pendiente[1],                      # Z
+                     pendiente[2],                      # AA
+                     en_curso[0],                       # AB
+                     en_curso[1],                       # AC
+                     en_curso[2],                       # AD
+                     suma[0],                           # AE
+                     suma[1],                           # AF
+                     suma[2],                           # AG
+                     delta[0],                          # AH
+                     delta[1],                          # AI
+                     delta[2],                          # AJ
+                     '',                                # AK
+                     cuadra                             # AL
+                     ])
     # 6.- Y devuelvo si todo cuadra (True) o hay alguna desviación (False)
+    return res
+
+
+def find_pendiente_mes_pasado(producto_ginn, dev=False, calidad=None):
+    """
+    De la hoja de cálculo del mes pasado extrae lo que estaba pendiente
+    de volcar entonces para agregarlo a la producción de este mes.
+    """
+    # TODO
+    res = [0, 0, 0]
+    return res
+
+
+def find_produccion_en_curso(producto_ginn, dev=False, calidad=None):
+    """
+    A través de ginn devuelve la producción pendiente de validar en el
+    momento de la ejecución.
+    """
+    en_curso = get_produccion_en_curso(producto_ginn, dev)
+    if calidad:
+        res = (en_curso[calidad]['#'],
+               en_curso[calidad]['m2'],
+               en_curso[calidad]['kg'])
+    else:
+        res = (sum([en_curso[calidad]['#'] for calidad in en_curso.keys()]),
+               sum([en_curso[calidad]['m2'] for calidad in en_curso.keys()]),
+               sum([en_curso[calidad]['kg'] for calidad in en_curso.keys()]))
+    return res
+
+
+@memoized
+def get_produccion_en_curso(producto_ginn, dev=False):
+    """
+    Devuelve la producción y los consumos pendientes de volcar a Murano
+    en el momento actual. El resultado es un diccionario con los bultos, m² y
+    kg por calidad.
+    """
+    res = {'A': {'#': 0,
+                 'kg': 0.0,
+                 'm2': 0.0},
+           'B': {'#': 0,
+                 'kg': 0.0,
+                 'm2': 0.0},
+           'C': {'#': 0,
+                 'kg': 0.0,
+                 'm2': 0.0}}
+    pcargas = set()     # Porque una misma partida de carga ha podido ser
+    # consumida en varios partes de producción tengo que quedarme con un
+    # conjunto donde no se repitan para no contarlos varias veces.
+    no_bloqueados = pclases.ParteDeProduccion.selectBy(bloqueado=False)
+    for pdp in no_bloqueados:
+        # PRODUCCIÓN
+        for a in pdp.articulos:
+            if a.productoVenta == producto_ginn:
+                calidad = a.get_str_calidad()
+                res[calidad]['#'] += 1
+                try:
+                    res[calidad]['m2'] += a.superficie
+                except TypeError:
+                    pass        # No tiene superficie. Sumo 0.
+                res[calidad]['kg'] += a.peso_neto
+        # CONSUMOS
+        if pdp.es_de_bolsas():
+            for bigbag in pdp.bigbags:
+                if not bigbag.api:
+                    pv = bigbag.productoVenta
+                    if pv == producto_ginn:
+                        calidad = a.get_str_calidad()
+                        res[calidad]['#'] -= 1  # Consumos entran en negativo
+                        # Es bigbag. No tiene superficie
+                        res[calidad]['kg'] -= a.peso_neto
+        elif pdp.es_de_geotextiles():
+            pcarga = pdp.partidaCarga
+            if not pcarga.api:
+                pcargas.add(pcarga)
+    # Suma de los consumos de fibra en partidas de carga no validadas:
+    for pcarga in pcargas:
+        for bala in pcarga.balas:
+            pv = bala.productoVenta
+            if pv == producto_ginn:
+                calidad = a.get_str_calidad()
+                res[calidad]['#'] -= 1
+                # Es bala. No tiene superficie
+                res[calidad]['kg'] -= a.peso_neto
     return res
 
 
@@ -1110,7 +1226,7 @@ def load_inventario(fich_inventario, hoja="Totales"):
     """
     book = tablib.Databook().load(None, open(fich_inventario, "r+b").read())
     sheets = book.sheets()
-    assert 2 <= len(sheets) <= 6, "El fichero '{}' no parece ser "\
+    assert 2 <= len(sheets) <= 7, "El fichero '{}' no parece ser "\
                                   "válido.".format(fich_inventario)
     found = False
     data = None
@@ -1125,7 +1241,70 @@ def load_inventario(fich_inventario, hoja="Totales"):
     return data
 
 
-def do_inventario(producto, totales, desglose):
+def load_pendiente_mes_pasado(fich_inventario):
+    """
+    Abre el fichero de inventario y extrae los datos de las columnas de
+    pendiente de volcar **del mes anterior** en bultos, m² y kg.
+    Devuelve un diccionario de códigos de producto con las calidades
+    None (todos), A, B y C y a su vez con diccionarios con '#', 'm2' y 'kg'.
+     {None: {'#': 0, 'm2': 0.0, 'kg': 0.0},
+      'A':  {'#': 0, 'm2': 0.0, 'kg': 0.0},
+      'B':  {'#': 0, 'm2': 0.0, 'kg': 0.0},
+      'C':  {'#': 0, 'm2': 0.0, 'kg': 0.0}}
+    """
+    res = {}
+    book = tablib.Databook().load(None, open(fich_inventario, "r+b").read())
+    sheets = book.sheets()
+    assert 2 <= len(sheets) <= 7, "El fichero '{}' no parece ser "\
+                                  "válido.".format(fich_inventario)
+    for hoja in ("Desviaciones",    # Pendiente volcar totales
+                 "A",               # Pendiente volcar calidad A
+                 "B",               # Pendiente volcar calidad B
+                 "C"):              # Pendiente volcar calidad c
+        if hoja == "Desviaciones":
+            calidad = None
+        else:
+            calidad = hoja  # A, B o C
+        found = False
+        data = None
+        for data in sheets:
+            if hoja.lower() in data.__repr__().lower():
+                found = True
+                break
+        if not found:
+            sys.stderr.write("Hoja de inventario no encontrada en {}.".format(
+                fich_inventario))
+            sys.exit(3)
+        else:
+            # almacen = 'GTX'
+            # Las producciones solo pueden ser en el almacén principal.
+            bultos = {'A': 0, 'B': 0, 'C': 0, '': 0}
+            metros = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
+            kilos = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
+            for fila in data.dict:
+                try:
+                    codigo_sheet = fila[u'Código']
+                except KeyError:  # El orden siempre es el mismo...
+                    codigo_sheet = fila[fila.keys()[1]]
+                codigo = codigo_sheet
+                try:
+                    bultos = int(fila[u'No volcado n→n+1 (bultos)'])
+                    metros = float(fila[u'No volcado n→n+1 (m²)'])
+                    kilos = float(fila[u'No volcado n→n+1 (kg)'])
+                except KeyError:    # No existe la fila. Inventario antiguo.
+                    bultos = 0
+                    metros = 0.0
+                    kilos = 0.0
+                    # Uso ceros y ya completaré a mano.
+                if codigo not in res:
+                    res[codigo] = {}
+                res[codigo][calidad] = {'#': bultos,
+                                        'm2': round(metros, 2),
+                                        'kg': round(kilos, 2)}
+    return res
+
+
+def do_inventario(producto, totales, desglose, dev=False):
     """
     Agrega a los datasets de tablib las existencias actuales del producto y
     el desglose por bultos del mismo.
@@ -1192,36 +1371,43 @@ def do_inventario(producto, totales, desglose):
              ArticulosSeries.CodigoTalla01_,
              ArticulosSeries.CodigoPale;
     """.format(codarticulo, codalmacen)
-    conn = connection.Connection()
-    rs_totales = conn.run_sql(sql_totales)
-    rs_desgloses = conn.run_sql(sql_desglose)
-    for rs_total in rs_totales:
-        fila_total = [rs_total['CodigoAlmacen'],
-                      rs_total['familia'],
-                      rs_total['CodigoArticulo'],
-                      rs_total['DescripcionArticulo'],
-                      rs_total['Partida'],
-                      rs_total['calidad'],
-                      rs_total['bultos'],
-                      rs_total['peso_neto'],
-                      rs_total['peso_bruto'],
-                      rs_total['metros_cuadrados']]
-        totales.append(fila_total)
-    for rs_desglose in rs_desgloses:
-        fila_desglose = [rs_desglose['CodigoAlmacen'],
-                         rs_desglose['familia'],
-                         rs_desglose['CodigoArticulo'],
-                         rs_desglose['DescripcionArticulo'],
-                         rs_desglose['NumeroSerieLc'],
-                         rs_desglose['Partida'],
-                         rs_desglose['calidad'],
-                         rs_desglose['bultos'],
-                         rs_desglose['peso_neto'],
-                         rs_desglose['peso_bruto'],
-                         rs_desglose['metros_cuadrados'],
-                         rs_desglose['fecha_fabricacion'],
-                         rs_desglose['CodigoPale']]
-        desglose.append(fila_desglose)
+    if not dev:
+        conn = connection.Connection()
+        rs_totales = conn.run_sql(sql_totales)
+        rs_desgloses = conn.run_sql(sql_desglose)
+        for rs_total in rs_totales:
+            fila_total = [rs_total['CodigoAlmacen'],
+                          rs_total['familia'],
+                          rs_total['CodigoArticulo'],
+                          rs_total['DescripcionArticulo'],
+                          rs_total['Partida'],
+                          rs_total['calidad'],
+                          rs_total['bultos'],
+                          rs_total['peso_neto'],
+                          rs_total['peso_bruto'],
+                          rs_total['metros_cuadrados']]
+            totales.append(fila_total)
+        for rs_desglose in rs_desgloses:
+            fila_desglose = [rs_desglose['CodigoAlmacen'],
+                             rs_desglose['familia'],
+                             rs_desglose['CodigoArticulo'],
+                             rs_desglose['DescripcionArticulo'],
+                             rs_desglose['NumeroSerieLc'],
+                             rs_desglose['Partida'],
+                             rs_desglose['calidad'],
+                             rs_desglose['bultos'],
+                             rs_desglose['peso_neto'],
+                             rs_desglose['peso_bruto'],
+                             rs_desglose['metros_cuadrados'],
+                             rs_desglose['fecha_fabricacion'],
+                             rs_desglose['CodigoPale']]
+            desglose.append(fila_desglose)
+    else:
+        totales.append(['ALMACÉN', 'FAMILIA', 'PV000', 'Descripción',
+                        'P-000', 'A', 0, 0.0, 0.0, 0.0])
+        desglose.append(['ALMACÉN', 'FAMILIA', 'PV000', 'Descripción',
+                         'Q000000', 'P-000', 'A', 0, 0.0, 0.0, 0.0,
+                         datetime.datetime.now(), 'P-000'])
 
 
 def main():
@@ -1287,20 +1473,32 @@ def main():
                  "\n")
     report.write("## Todas las cantidades son en (bultos, m², kg).\n")
     data_inventario = load_inventario(fich_inventario)
+    data_pendiente = load_pendiente_mes_pasado(fich_inventario)
     data_res = tablib.Dataset(title="Desviaciones")
     inventario = tablib.Dataset(title="Totales")
     desglose = tablib.Dataset(title="Desglose")
+    resumen = tablib.Dataset(title="Resumen")
     desviaciones_a = tablib.Dataset(title="A")
     desviaciones_b = tablib.Dataset(title="B")
     desviaciones_c = tablib.Dataset(title="C")
-    data_res.headers = ['Código', 'Producto',
-                        'Ini. (bultos)', 'Ini. (m²)', 'Ini. (kg)',
-                        'Prod. (bultos)', 'Prod. (m²)', 'Prod. (kg)',
-                        'Ventas (bultos)', 'Ventas (m²)', 'Ventas (kg)',
-                        'Cons. (bultos)', 'Cons. (m²)', 'Cons. (kg)',
+    data_res.headers = ['Familia',          'Código',       'Producto',
+                        'Ini. (bultos)',    'Ini. (m²)',    'Ini. (kg)',
+                        'Prod. (bultos)',   'Prod. (m²)',   'Prod. (kg)',
+                        'Ventas (bultos)',  'Ventas (m²)',  'Ventas (kg)',
+                        'Cons. (bultos)',   'Cons. (m²)',   'Cons. (kg)',
                         'Ajustes (bultos)', 'Ajustes (m²)', 'Ajustes (kg)',
-                        'Fin. (bultos)', 'Fin. (m²)', 'Fin. (kg)',
-                        'Dif. (bultos)', 'Dif. (m²)', 'Dif. (kg)']
+                        'Fin. (bultos)',    'Fin. (m²)',    'Fin. (kg)',
+                        'Dif. (bultos)',    'Dif. (m²)',    'Dif. (kg)',
+                        'En curso n-1→n (bultos)',
+                        'En curso n-1→n (m²)',
+                        'En curso n-1→n (kg)',
+                        'En curso n→n+1 (bultos)',
+                        'En curso n→n+1 (m²)',
+                        'En curso n→n+1 (kg)',
+                        '∑ (bultos)',       '∑ (m²)',       '∑ (kg)',
+                        'Δ (bultos)',       'Δ (m²)',       'Δ (kg)',
+                        'Notas', 'ℹ'
+                        ]
     desviaciones_a.headers = data_res.headers[:]
     desviaciones_b.headers = desviaciones_a.headers[:]
     desviaciones_c.headers = desviaciones_b.headers[:]
@@ -1312,17 +1510,32 @@ def main():
                         'Calidad', 'Bultos', 'Peso neto', 'Peso bruto',
                         'Metros cuadrados', 'Fecha importación a Murano',
                         'Palé']
+    resumen.headers = ['Familia', 'Calidad',
+                       'Ini. (bultos)',     'Ini. (m²)',    'Ini. (kg)',
+                       'Prod. (bultos)',    'Prod. (m²)',   'Prod. (kg)',
+                       'Ventas (bultos)',   'Ventas (m²)',  'Ventas (kg)',
+                       'Cons. (bultos)',    'Cons. (m²)',   'Cons. (kg)',
+                       'Ajustes (bultos)',  'Ajustes (m²)', 'Ajustes (kg)',
+                       'En curso (bultos)', 'En curso (m²)', 'En curso (kg)',
+                       '∑ (bultos)',        '∑ (m²)',       '∑ (kg)',
+                       'Murano (#)',        'Murano (m²)',  'Murano (kg)',
+                       'Δ (bultos)',        'Δ (m²)',       'Δ (kg)',
+                       'ℹ']
     for producto in tqdm(productos, desc="Productos"):
-        res = cuentalavieja(producto, data_inventario, fini, ffin, report,
+        res = cuentalavieja(producto, data_inventario, data_pendiente,
+                            fini, ffin, report,
                             data_res, args.debug)
-        cuentalavieja(producto, data_inventario, fini, ffin, report,
+        cuentalavieja(producto, data_inventario, data_pendiente,
+                      fini, ffin, report,
                       desviaciones_a, args.debug, calidad="A")
-        cuentalavieja(producto, data_inventario, fini, ffin, report,
+        cuentalavieja(producto, data_inventario, data_pendiente,
+                      fini, ffin, report,
                       desviaciones_b, args.debug, calidad="B")
-        cuentalavieja(producto, data_inventario, fini, ffin, report,
+        cuentalavieja(producto, data_inventario, data_pendiente,
+                      fini, ffin, report,
                       desviaciones_c, args.debug, calidad="C")
         results.append((producto, res))
-        do_inventario(producto, inventario, desglose)
+        do_inventario(producto, inventario, desglose, args.debug)
     fallos = [p for p in results if not p[1]]
     report.write("Encontradas {} desviaciones: {}".format(
         len(fallos), "; ".join(['PV{}'.format(p[0].id) for p in fallos])))

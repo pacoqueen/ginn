@@ -2598,7 +2598,9 @@ def get_carga_mas_antigua_silo(silo):
                            ['productoCompra', 'siloID', 'cantidad'])
     productos_cargados = get_existencias_silo(silo)
     cs = None
-    for pc in productos_cargados:   # Solo devolverá uno.
+    for pc in productos_cargados:
+        # Solo devolverá uno: el último. Las cargas están ordenadas por fecha
+        # de carga de la más nueva a la más antigua.
         cs = CargaSilo(pc, silo.id, productos_cargados[pc])
     return cs
 
