@@ -1410,6 +1410,108 @@ def do_inventario(producto, totales, desglose, dev=False):
                          datetime.datetime.now(), 'P-000'])
 
 
+def determine_linea(producto, dev=False):
+    """
+    Recibe un producto de ginn y a partir de su familia en Murano devuelve
+    la línea de producción a la que pertenece.
+    """
+    # HARCODED
+    lineas = {'Fibra': ('VTA FIB', 'VTA RESFIB', 'VTA CEMFIB'),
+              'Geotextiles': ('VTA GTX', 'VTA RESGTX'),
+              'Geocem': ('VTA GEOCEM', ),
+              'Comercializado': ('VTA COMER', 'EMBA')}
+    if dev:
+        linea = "Test"
+    else:
+        pvmurano = murano.ops.get_producto_murano(producto)
+        familia = pvmurano['CodigoFamilia']
+        for linea in lineas:
+            if familia in lineas[linea]:
+                break
+    return linea
+
+
+def do_resumen(producto, resumen,
+               desviaciones_a, desviaciones_b, desviaciones_c,
+               dev=False):
+    """
+    Monta la pestaña resumen por línea de producción y calidad.
+    """
+    linea = determine_linea(producto, dev)
+    for qlty, desviaciones in (("A", desviaciones_a),
+                               ("B", desviaciones_b),
+                               ("C", desviaciones_c)):
+        calidad = "Calidad {}".format(qlty)
+        for fila in desviaciones.dict:
+            codigo = fila['Código']
+            if codigo == 'PV{}'.format(producto.id):
+                iniciales = (desviaciones['Ini. (bultos)'][0],
+                             desviaciones['Ini. (m²)'][0],
+                             desviaciones['Ini. (kg)'][0])
+                producidos = (desviaciones['Prod. (bultos)'][0],
+                              desviaciones['Prod. (m²)'][0],
+                              desviaciones['Prod. (kg)'][0])
+                vendidos = (desviaciones['Ventas (bultos)'][0],
+                            desviaciones['Ventas (m²)'][0],
+                            desviaciones['Ventas (kg)'][0])
+                consumidos = (desviaciones['Cons. (bultos)'][0],
+                              desviaciones['Cons. (m²)'][0],
+                              desviaciones['Cons. (kg)'][0])
+                ajustes = (desviaciones['Ajustes (bultos)'][0],
+                           desviaciones['Ajustes (m²)'][0],
+                           desviaciones['Ajustes (kg)'][0])
+                try:
+                    en_curso = (desviaciones['No volcado n-1→n (bultos)'][0]
+                                - desviaciones['No volcado n→n+1 (bultos)'][0],
+                                desviaciones['No volcado n-1→n (m²)'][0]
+                                - desviaciones['No volcado n→n+1 (m²)'][0],
+                                desviaciones['No volcado n-1→n (kg)'][0]
+                                - desviaciones['No volcado n→n+1 (kg'][0])
+                except KeyError:
+                    # Versión antigua. No tenemos lo pendiente por A, B y C.
+                    en_curso = (0, 0.0, 0.0)    # Habrá que hacerlo a mano.
+                total = (iniciales[0] + producidos[0]
+                         - vendidos[0] - consumidos[0]
+                         + ajustes[0] + en_curso[0],
+                         iniciales[1] + producidos[1]
+                         - vendidos[1] - consumidos[1]
+                         + ajustes[1] + en_curso[1],
+                         iniciales[2] + producidos[2]
+                         - vendidos[2] - consumidos[2]
+                         + ajustes[2] + en_curso[2])
+                en_murano = (desviaciones['Fin. (bultos)'][0],
+                             desviaciones['Fin. (m²)'][0],
+                             desviaciones['Fin. (kg)'][0])
+                delta = (en_murano[0] - total[0],
+                         en_murano[1] - total[1],
+                         en_murano[2] - total[2])
+                fila = [linea, calidad,                                 # 0, 1
+                        iniciales[0], iniciales[1], iniciales[2],
+                        producidos[0], producidos[1], producidos[2],
+                        vendidos[0], vendidos[1], vendidos[2],          # 8..10
+                        consumidos[0], consumidos[1], consumidos[2],
+                        ajustes[0], ajustes[1], ajustes[2],
+                        en_curso[0], en_curso[1], en_curso[2],
+                        total[0], total[1], total[2],                   # ..22
+                        en_murano[0], en_murano[1], en_murano[2],
+                        delta[0], delta[1], delta[2], '']               # ..29
+                # Busco la fila de la línea que acabo de calcular.
+                found = False
+                for i in range(len(resumen)):
+                    if (resumen[i][0] == linea              # 'Familia'
+                            and resumen[i][1] == calidad):  # 'Calidad'
+                        # Y agrego las cifras
+                        resumen[i] = [linea, calidad] + map(
+                                lambda x, y: x+y,
+                                resumen[i][2:-1],
+                                fila[2:-1])
+                        found = True
+                        break
+                if not found:
+                    # O la creo nueva
+                    resumen.append(fila)
+
+
 def main():
     """
     Rutina principal.
@@ -1536,6 +1638,9 @@ def main():
                       desviaciones_c, args.debug, calidad="C")
         results.append((producto, res))
         do_inventario(producto, inventario, desglose, args.debug)
+        do_resumen(producto, resumen,
+                   desviaciones_a, desviaciones_b, desviaciones_c,
+                   args.debug)
     fallos = [p for p in results if not p[1]]
     report.write("Encontradas {} desviaciones: {}".format(
         len(fallos), "; ".join(['PV{}'.format(p[0].id) for p in fallos])))
@@ -1550,7 +1655,8 @@ def main():
     report.close()
     fout = args.fsalida.replace(".md", ".xls")
     book = tablib.Databook((data_res, inventario, desglose,
-                            desviaciones_a, desviaciones_b, desviaciones_c))
+                            desviaciones_a, desviaciones_b, desviaciones_c,
+                            resumen))
     with open(fout, 'wb') as f:
         # pylint: disable=no-member
         f.write(book.xls)
