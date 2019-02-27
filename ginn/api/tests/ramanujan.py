@@ -1568,28 +1568,28 @@ def do_resumen(producto, resumen,
             except KeyError:
                 codigo = fila[u'Código']
             if codigo == 'PV{}'.format(producto.id):
-                iniciales = (desviaciones[u'Ini. (bultos)'][0],
-                             desviaciones[u'Ini. (m²)'][0],
-                             desviaciones[u'Ini. (kg)'][0])
-                producidos = (desviaciones[u'Prod. (bultos)'][0],
-                              desviaciones[u'Prod. (m²)'][0],
-                              desviaciones[u'Prod. (kg)'][0])
-                vendidos = (desviaciones[u'Ventas (bultos)'][0],
-                            desviaciones[u'Ventas (m²)'][0],
-                            desviaciones[u'Ventas (kg)'][0])
-                consumidos = (desviaciones[u'Cons. (bultos)'][0],
-                              desviaciones[u'Cons. (m²)'][0],
-                              desviaciones[u'Cons. (kg)'][0])
-                ajustes = (desviaciones[u'Ajustes (bultos)'][0],
-                           desviaciones[u'Ajustes (m²)'][0],
-                           desviaciones[u'Ajustes (kg)'][0])
+                iniciales = (fila[u'Ini. (bultos)'],
+                             fila[u'Ini. (m²)'],
+                             fila[u'Ini. (kg)'])
+                producidos = (fila[u'Prod. (bultos)'],
+                              fila[u'Prod. (m²)'],
+                              fila[u'Prod. (kg)'])
+                vendidos = (fila[u'Ventas (bultos)'],
+                            fila[u'Ventas (m²)'],
+                            fila[u'Ventas (kg)'])
+                consumidos = (fila[u'Cons. (bultos)'],
+                              fila[u'Cons. (m²)'],
+                              fila[u'Cons. (kg)'])
+                ajustes = (fila[u'Ajustes (bultos)'],
+                           fila[u'Ajustes (m²)'],
+                           fila[u'Ajustes (kg)'])
                 try:
-                    en_curso = (desviaciones[u'No volcado n-1→n (bultos)'][0] -
-                                desviaciones[u'No volcado n→n+1 (bultos)'][0],
-                                desviaciones[u'No volcado n-1→n (m²)'][0] -
-                                desviaciones[u'No volcado n→n+1 (m²)'][0],
-                                desviaciones[u'No volcado n-1→n (kg)'][0] -
-                                desviaciones[u'No volcado n→n+1 (kg'][0])
+                    en_curso = (fila[u'No volcado n-1→n (bultos)']
+                                - fila[u'No volcado n→n+1 (bultos)'],
+                                fila[u'No volcado n-1→n (m²)']
+                                - fila[u'No volcado n→n+1 (m²)'],
+                                fila[u'No volcado n-1→n (kg)']
+                                - fila[u'No volcado n→n+1 (kg'])
                 except KeyError:
                     # Versión antigua. No tenemos lo pendiente por A, B y C.
                     en_curso = (0, 0.0, 0.0)    # Habrá que hacerlo a mano.
@@ -1602,9 +1602,9 @@ def do_resumen(producto, resumen,
                          iniciales[2] + producidos[2]
                          - vendidos[2] - consumidos[2]
                          + ajustes[2] + en_curso[2])
-                en_murano = (desviaciones['Fin. (bultos)'][0],
-                             desviaciones['Fin. (m²)'][0],
-                             desviaciones['Fin. (kg)'][0])
+                en_murano = (fila['Fin. (bultos)'],
+                             fila['Fin. (m²)'],
+                             fila['Fin. (kg)'])
                 delta = (en_murano[0] - total[0],
                          en_murano[1] - total[1],
                          en_murano[2] - total[2])
