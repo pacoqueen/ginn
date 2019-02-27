@@ -160,9 +160,14 @@ def cuentalavieja(producto_ginn, data_inventario, data_pendiente,
     # 2.- Cabecera del informe de resultados:
     if not dev:
         # pylint: disable=no-member
+        if calidad is None:
+            strcalidad = ""
+        else:
+            strcalidad = " ({})".format(calidad)
         try:
-            report.write("{}: {}\n".format(producto_murano.CodigoArticulo,
-                                           producto_ginn.descripcion))
+            report.write("{}: {}{}\n".format(producto_murano.CodigoArticulo,
+                                             producto_ginn.descripcion,
+                                             strcalidad))
         except AttributeError:
             report.write("{}: _({}) {}_\n".format(
                 "***¡Producto no encontrado en Murano!***",
