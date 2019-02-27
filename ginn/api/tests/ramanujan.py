@@ -272,7 +272,7 @@ def find_pendiente_mes_pasado(producto_ginn, dev=False, calidad=None):
     De la hoja de cálculo del mes pasado extrae lo que estaba pendiente
     de volcar entonces para agregarlo a la producción de este mes.
     """
-    # TODO
+    # TODO: De momento copio y pego. Ya haré que lo saque automáticamente de las columnas correspondientes en la hoja del mes pasado.
     res = [0, 0, 0]
     return res
 
@@ -295,6 +295,52 @@ def find_produccion_en_curso(producto_ginn, dev=False, calidad=None):
 
 
 @memoized
+def _buscar_partes_no_bloqueados():
+    """
+    Busca los partes pendientes de validar en el momento de ejecutar el script.
+    """
+    res = []
+    no_bloqueados = pclases.ParteDeProduccion.selectBy(bloqueado=False)
+    for pdp in no_bloqueados:
+        res.append(pdp)
+    return res
+
+
+@memoized
+def _buscar_partidas_carga_no_volcadas():
+    """
+    Devuelve las partidas de carga con consumos pendientes de volcar en el
+    momento de lanzar el script.
+    """
+    pcargas = set()     # Porque una misma partida de carga ha podido ser
+    # consumida en varios partes de producción tengo que quedarme con un
+    # conjunto donde no se repitan para no contarlos varias veces.
+    no_bloqueados = _buscar_partes_no_bloqueados()
+    for pdp in no_bloqueados:
+        if pdp.es_de_geotextiles():
+            pcarga = pdp.partidaCarga
+            if pcarga and not pcarga.api:
+                pcargas.add(pcarga)
+    return pcargas
+
+
+@memoized
+def _buscar_bigbags_pendientes_consumir():
+    """
+    Devuelve los bigbags asociados a los consumos de los partes de embolsado
+    que no han sido todavía volcados como consumo a Murano.
+    """
+    bigbags = []
+    no_bloqueados = _buscar_partes_no_bloqueados()
+    for pdp in no_bloqueados:
+        if pdp.es_de_bolsas():
+            for bigbag in pdp.bigbags:
+                if not bigbag.api:
+                    bigbags.append(bigbag)
+    return bigbags
+
+
+@memoized
 def get_produccion_en_curso(producto_ginn, dev=False):
     """
     Devuelve la producción y los consumos pendientes de volcar a Murano
@@ -310,12 +356,11 @@ def get_produccion_en_curso(producto_ginn, dev=False):
            'C': {'#': 0,
                  'kg': 0.0,
                  'm2': 0.0}}
-    pcargas = set()     # Porque una misma partida de carga ha podido ser
-    # consumida en varios partes de producción tengo que quedarme con un
-    # conjunto donde no se repitan para no contarlos varias veces.
-    no_bloqueados = pclases.ParteDeProduccion.selectBy(bloqueado=False)
+    no_bloqueados = _buscar_partes_no_bloqueados()
+    pcargas = _buscar_partidas_carga_no_volcadas()
+    bigbags = _buscar_bigbags_pendientes_consumir()
+    # PRODUCCIÓN
     for pdp in no_bloqueados:
-        # PRODUCCIÓN
         for a in pdp.articulos:
             if a.productoVenta == producto_ginn:
                 calidad = a.get_str_calidad()
@@ -325,21 +370,16 @@ def get_produccion_en_curso(producto_ginn, dev=False):
                 except TypeError:
                     pass        # No tiene superficie. Sumo 0.
                 res[calidad]['kg'] += a.peso_neto
-        # CONSUMOS
-        if pdp.es_de_bolsas():
-            for bigbag in pdp.bigbags:
-                if not bigbag.api:
-                    pv = bigbag.productoVenta
-                    if pv == producto_ginn:
-                        calidad = a.get_str_calidad()
-                        res[calidad]['#'] -= 1  # Consumos entran en negativo
-                        # Es bigbag. No tiene superficie
-                        res[calidad]['kg'] -= a.peso_neto
-        elif pdp.es_de_geotextiles():
-            pcarga = pdp.partidaCarga
-            if not pcarga.api:
-                pcargas.add(pcarga)
-    # Suma de los consumos de fibra en partidas de carga no validadas:
+    # CONSUMOS
+    # Suma de bigbags del producto no volcados como consumo todavía.
+    for bigbag in bigbags:
+        pv = bigbag.productoVenta
+        if pv == producto_ginn:
+            calidad = a.get_str_calidad()
+            res[calidad]['#'] -= 1  # Consumos entran en negativo
+            # Es bigbag. No tiene superficie
+            res[calidad]['kg'] -= a.peso_neto
+    # Suma de los consumos de fibra en partidas de carga no validadas.
     for pcarga in pcargas:
         for bala in pcarga.balas:
             pv = bala.productoVenta
@@ -566,7 +606,6 @@ def get_ventas(producto_murano, fini, ffin, calidad=None):
     except AttributeError:   # Calidad es None.
         pass
     assert calidad in (None, 'A', 'B', 'C'), "Calidad debe ser None o A/B/C."
-    almacen = "GTX"
     fini = fini.strftime("%Y-%m-%d")
     ffin = ffin.strftime("%Y-%m-%d")
     try:
@@ -576,22 +615,7 @@ def get_ventas(producto_murano, fini, ffin, calidad=None):
     bultos = {'A': 0, 'B': 0, 'C': 0, '': 0}
     metros = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
     kilos = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
-    sql = """USE GEOTEXAN;
-             SELECT SerieAlbaran, NumeroAlbaran, FechaAlbaran, FechaRegistro,
-                    CodigoArticulo, DescripcionArticulo, UnidadMedida1_,
-                    UnidadMedida2_, CodigoTalla01_, UnidadesServidas,
-                    Unidades, Unidades2_, Bultos, MetrosCuadrados,
-                    PesoNeto_, PesoBruto_
-               FROM LineasAlbaranCliente
-              WHERE CodigoEmpresa = {}
-                AND FechaAlbaran >= '{}'
-                AND FechaAlbaran < '{}'
-                AND CodigoArticulo = '{}'
-                AND CodigoAlmacen = '{}'
-              ORDER BY FechaRegistro;""".format(CODEMPRESA, fini, ffin, codigo,
-                                                almacen)
-    conn = connection.Connection()
-    totales = conn.run_sql(sql)
+    totales = _get_ventas(codigo, fini, ffin)
     for total in totales:
         quality = total['CodigoTalla01_']
         unidad = total['UnidadMedida1_']
@@ -619,6 +643,35 @@ def get_ventas(producto_murano, fini, ffin, calidad=None):
     return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
 
 
+@memoized
+def _get_ventas(codigo, fini, ffin):
+    """
+    Devuelve las ventas del almacén principal en todas las calidades del
+    producto correspondiente al código de Murano recibido.
+    """
+    res = []
+    if codigo:
+        almacen = "GTX"
+        sql = """USE GEOTEXAN;
+             SELECT SerieAlbaran, NumeroAlbaran, FechaAlbaran, FechaRegistro,
+                    CodigoArticulo, DescripcionArticulo, UnidadMedida1_,
+                    UnidadMedida2_, CodigoTalla01_, UnidadesServidas,
+                    Unidades, Unidades2_, Bultos, MetrosCuadrados,
+                    PesoNeto_, PesoBruto_
+               FROM LineasAlbaranCliente
+              WHERE CodigoEmpresa = {}
+                AND FechaAlbaran >= '{}'
+                AND FechaAlbaran < '{}'
+                AND CodigoArticulo = '{}'
+                AND CodigoAlmacen = '{}'
+              ORDER BY FechaRegistro;""".format(CODEMPRESA, fini, ffin, codigo,
+                                                almacen)
+        conn = connection.Connection()
+        res = conn.run_sql(sql)
+    return res
+
+
+@memoized
 def get_registros_movimientostock(fini, ffin, codigo, almacen, tipo_movimiento,
                                   origen_movimiento, codigo_canal, serie):
     """
@@ -712,7 +765,6 @@ def get_volcados(producto_murano, fini, ffin, tipo_movimiento,
     except AttributeError:   # Calidad es None.
         pass
     assert calidad in (None, 'A', 'B', 'C'), "Calidad debe ser None o A/B/C."
-    almacen = "GTX"
     fini = fini.strftime("%Y-%m-%d")
     ffin = ffin.strftime("%Y-%m-%d")
     try:
@@ -723,6 +775,7 @@ def get_volcados(producto_murano, fini, ffin, tipo_movimiento,
     metros = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
     kilos = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
     # Primero se obtiene la dimensión principal de una tabla (MovimientoStock):
+    almacen = "GTX"
     totales = get_registros_movimientostock(fini, ffin, codigo, almacen,
                                             tipo_movimiento, origen_movimiento,
                                             codigo_canal, serie)
