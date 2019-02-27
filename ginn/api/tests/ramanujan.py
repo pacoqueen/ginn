@@ -213,7 +213,10 @@ def cuentalavieja(producto_ginn, data_inventario, data_pendiente,
     report.write("\n")
     # 5.- Guardo los resultados en el Dataset para exportarlos después.
     if not dev:
-        familia = producto_murano['CodigoFamilia']
+        try:
+            familia = producto_murano['CodigoFamilia']
+        except TypeError:   # Producto no encontrado en Murano.
+            familia = "N/A"
     else:
         familia = "TEST"
     cuadra = res and "OK" or "KO"
