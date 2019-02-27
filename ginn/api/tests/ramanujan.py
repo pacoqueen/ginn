@@ -1590,12 +1590,11 @@ def do_resumen(producto, resumen,
                                 desviaciones[u'No volcado n→n+1 (m²)'][0],
                                 desviaciones[u'No volcado n-1→n (kg)'][0] -
                                 desviaciones[u'No volcado n→n+1 (kg'][0])
-                except KeyError as keyerror:
-                    print(keyerror, " ==============> Unicode no")
+                except KeyError:
                     # Versión antigua. No tenemos lo pendiente por A, B y C.
                     en_curso = (0, 0.0, 0.0)    # Habrá que hacerlo a mano.
-                    sys.exit(100)
-                total = (iniciales[0] + producidos[0]
+                try:
+                    total = (iniciales[0] + producidos[0]
                          - vendidos[0] - consumidos[0]
                          + ajustes[0] + en_curso[0],
                          iniciales[1] + producidos[1]
@@ -1604,6 +1603,8 @@ def do_resumen(producto, resumen,
                          iniciales[2] + producidos[2]
                          - vendidos[2] - consumidos[2]
                          + ajustes[2] + en_curso[2])
+                except TypeError:
+                    print(iniciales, "+", producidos, "-", vendidos, "-", consumidos, "+", ajustes, "+", en_curso)
                 en_murano = (desviaciones['Fin. (bultos)'],
                              desviaciones['Fin. (m²)'],
                              desviaciones['Fin. (kg)'])
