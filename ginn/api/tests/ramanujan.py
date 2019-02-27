@@ -1564,35 +1564,37 @@ def do_resumen(producto, resumen,
         calidad = "Calidad {}".format(qlty)
         for fila in desviaciones.dict:
             try:
-                codigo = fila[u'Código']
-            except KeyError:
                 codigo = fila['Código']     # Errores unicode en Windows.
+            except KeyError:
+                codigo = fila[u'Código']
             if codigo == 'PV{}'.format(producto.id):
-                iniciales = (desviaciones[u'Ini. (bultos)'],
-                             desviaciones[u'Ini. (m²)'],
-                             desviaciones[u'Ini. (kg)'])
-                producidos = (desviaciones[u'Prod. (bultos)'],
-                              desviaciones[u'Prod. (m²)'],
-                              desviaciones[u'Prod. (kg)'])
-                vendidos = (desviaciones[u'Ventas (bultos)'],
-                            desviaciones[u'Ventas (m²)'],
-                            desviaciones[u'Ventas (kg)'])
-                consumidos = (desviaciones[u'Cons. (bultos)'],
-                              desviaciones[u'Cons. (m²)'],
-                              desviaciones[u'Cons. (kg)'])
-                ajustes = (desviaciones[u'Ajustes (bultos)'],
-                           desviaciones[u'Ajustes (m²)'],
-                           desviaciones[u'Ajustes (kg)'])
+                iniciales = (desviaciones[u'Ini. (bultos)'][0],
+                             desviaciones[u'Ini. (m²)'][0],
+                             desviaciones[u'Ini. (kg)'][0])
+                producidos = (desviaciones[u'Prod. (bultos)'][0],
+                              desviaciones[u'Prod. (m²)'][0],
+                              desviaciones[u'Prod. (kg)'][0])
+                vendidos = (desviaciones[u'Ventas (bultos)'][0],
+                            desviaciones[u'Ventas (m²)'][0],
+                            desviaciones[u'Ventas (kg)'][0])
+                consumidos = (desviaciones[u'Cons. (bultos)'][0],
+                              desviaciones[u'Cons. (m²)'][0],
+                              desviaciones[u'Cons. (kg)'][0])
+                ajustes = (desviaciones[u'Ajustes (bultos)'][0],
+                           desviaciones[u'Ajustes (m²)'][0],
+                           desviaciones[u'Ajustes (kg)'][0])
                 try:
-                    en_curso = (desviaciones[u'No volcado n-1→n (bultos)']
-                                - desviaciones[u'No volcado n→n+1 (bultos)'],
-                                desviaciones[u'No volcado n-1→n (m²)']
-                                - desviaciones[u'No volcado n→n+1 (m²)'],
-                                desviaciones[u'No volcado n-1→n (kg)']
-                                - desviaciones[u'No volcado n→n+1 (kg'])
-                except KeyError:
+                    en_curso = (desviaciones[u'No volcado n-1→n (bultos)'][0] -
+                                desviaciones[u'No volcado n→n+1 (bultos)'][0],
+                                desviaciones[u'No volcado n-1→n (m²)'][0] -
+                                desviaciones[u'No volcado n→n+1 (m²)'][0],
+                                desviaciones[u'No volcado n-1→n (kg)'][0] -
+                                desviaciones[u'No volcado n→n+1 (kg'][0])
+                except KeyError as keyerror:
+                    print(keyerror, " ==============> Unicode no")
                     # Versión antigua. No tenemos lo pendiente por A, B y C.
                     en_curso = (0, 0.0, 0.0)    # Habrá que hacerlo a mano.
+                    sys.exit(100)
                 total = (iniciales[0] + producidos[0]
                          - vendidos[0] - consumidos[0]
                          + ajustes[0] + en_curso[0],
