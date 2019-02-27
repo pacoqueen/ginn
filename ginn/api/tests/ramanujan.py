@@ -472,6 +472,33 @@ def get_existencias_murano(producto_murano, calidad=None):
     assert calidad in (None, 'A', 'B', 'C'), "Calidad debe ser None o A/B/C."
     # TODO: También podría recibir un fichero de inventario para calcular
     # desviaciones entre dos .xls.
+    totales = _get_existencias_murano(producto_murano)
+    #  No debería haber series sin calidad (''), pero por si acaso las cuento:
+    bultos = {'A': 0, 'B': 0, 'C': 0, '': 0}
+    metros = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
+    kilos = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
+    for total in totales:
+        quality = total['calidad']
+        bultos[quality] += total['bultos']
+        metros[quality] += float(total['metros_cuadrados'])
+        kilos[quality] += float(total['peso_neto'])
+    if calidad is None:
+        sumbultos = sum([bultos[qlty] for qlty in bultos])
+        summetros = sum([metros[qlty] for qlty in metros])
+        sumkilos = sum([kilos[qlty] for qlty in kilos])
+    else:
+        sumbultos = bultos[calidad]
+        summetros = metros[calidad]
+        sumkilos = kilos[calidad]
+    return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
+
+
+@memoized
+def _get_existencias_murano(producto_murano):
+    """
+    Lanza la consulta para obtener las existencias del producto recibido
+    devolviendo la lista de series en Murano de todas las calidades.
+    """
     almacen = "GTX"
     try:
         codigo = producto_murano.CodigoArticulo
@@ -511,24 +538,7 @@ def get_existencias_murano(producto_murano, calidad=None):
           ArticulosSeries.CodigoTalla01_;""".format(codigo, almacen)
     conn = connection.Connection()
     totales = conn.run_sql(sql)
-    #  No debería haber series sin calidad (''), pero por si acaso las cuento:
-    bultos = {'A': 0, 'B': 0, 'C': 0, '': 0}
-    metros = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
-    kilos = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
-    for total in totales:
-        quality = total['calidad']
-        bultos[quality] += total['bultos']
-        metros[quality] += float(total['metros_cuadrados'])
-        kilos[quality] += float(total['peso_neto'])
-    if calidad is None:
-        sumbultos = sum([bultos[qlty] for qlty in bultos])
-        summetros = sum([metros[qlty] for qlty in metros])
-        sumkilos = sum([kilos[qlty] for qlty in kilos])
-    else:
-        sumbultos = bultos[calidad]
-        summetros = metros[calidad]
-        sumkilos = kilos[calidad]
-    return (round(sumbultos, 2), round(summetros, 2), round(sumkilos, 2))
+    return totales
 
 
 def get_ventas(producto_murano, fini, ffin, calidad=None):
