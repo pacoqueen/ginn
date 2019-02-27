@@ -1563,7 +1563,10 @@ def do_resumen(producto, resumen,
                                ("C", desviaciones_c)):
         calidad = "Calidad {}".format(qlty)
         for fila in desviaciones.dict:
-            codigo = fila[u'Código']
+            try:
+                codigo = fila[u'Código']
+            except KeyError:
+                codigo = fila['Código']     # Errores unicode en Windows.
             if codigo == 'PV{}'.format(producto.id):
                 iniciales = (desviaciones[u'Ini. (bultos)'],
                              desviaciones[u'Ini. (m²)'],
