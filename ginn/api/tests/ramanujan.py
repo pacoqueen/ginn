@@ -475,7 +475,11 @@ def get_existencias_murano(producto_murano, calidad=None):
     assert calidad in (None, 'A', 'B', 'C'), "Calidad debe ser None o A/B/C."
     # TODO: También podría recibir un fichero de inventario para calcular
     # desviaciones entre dos .xls.
-    totales = _get_existencias_murano(producto_murano)
+    try:
+        codigo = producto_murano.CodigoArticulo
+    except AttributeError:
+        codigo = None   # Producto no existe en Murano.
+    totales = _get_existencias_murano(codigo)
     #  No debería haber series sin calidad (''), pero por si acaso las cuento:
     bultos = {'A': 0, 'B': 0, 'C': 0, '': 0}
     metros = {'A': 0.0, 'B': 0.0, 'C': 0.0, '': 0.0}
@@ -497,50 +501,49 @@ def get_existencias_murano(producto_murano, calidad=None):
 
 
 @memoized
-def _get_existencias_murano(producto_murano):
+def _get_existencias_murano(codigo):
     """
     Lanza la consulta para obtener las existencias del producto recibido
     devolviendo la lista de series en Murano de todas las calidades.
     """
-    almacen = "GTX"
-    try:
-        codigo = producto_murano.CodigoArticulo
-    except AttributeError:
-        codigo = None   # Producto no existe en Murano.
-    sql = """USE GEOTEXAN;
-        SELECT
-           ArticulosSeries.CodigoAlmacen,
-           Articulos.CodigoFamilia as familia,
-           ArticulosSeries.CodigoArticulo,
-           Articulos.DescripcionArticulo,
-           ArticulosSeries.Partida,
-           ArticulosSeries.CodigoTalla01_ AS calidad,
-           COUNT(ArticulosSeries.UnidadesSerie) AS bultos,
-           CAST(SUM(ArticulosSeries.PesoNeto_)
-                                        AS NUMERIC(36,2)) AS peso_neto,
-           CAST(SUM(ArticulosSeries.PesoBruto_)
-                                        AS NUMERIC(36,2)) AS peso_bruto,
-           CAST(SUM(ArticulosSeries.MetrosCuadrados)
-                                        AS NUMERIC(36,2)) AS metros_cuadrados
-        FROM ArticulosSeries LEFT OUTER JOIN Articulos
-            ON ArticulosSeries.CodigoArticulo = Articulos.CodigoArticulo
-                AND Articulos.CodigoEmpresa = '10200'
-        WHERE ArticulosSeries.CodigoEmpresa = '10200'
-          AND ArticulosSeries.CodigoArticulo = '{}'
-          AND ArticulosSeries.CodigoAlmacen = '{}'
-          AND ArticulosSeries.UnidadesSerie > 0
-        GROUP BY ArticulosSeries.CodigoArticulo,
-          Articulos.DescripcionArticulo,
-          ArticulosSeries.CodigoAlmacen,
-          ArticulosSeries.CodigoTalla01_,
-          ArticulosSeries.Partida,
-          Articulos.CodigoFamilia
-        ORDER BY Articulos.CodigoFamilia,
-          Articulos.DescripcionArticulo,
-          ArticulosSeries.Partida,
-          ArticulosSeries.CodigoTalla01_;""".format(codigo, almacen)
-    conn = connection.Connection()
-    totales = conn.run_sql(sql)
+    if codigo:
+        almacen = "GTX"
+        sql = """USE GEOTEXAN;
+            SELECT
+               ArticulosSeries.CodigoAlmacen,
+               Articulos.CodigoFamilia as familia,
+               ArticulosSeries.CodigoArticulo,
+               Articulos.DescripcionArticulo,
+               ArticulosSeries.Partida,
+               ArticulosSeries.CodigoTalla01_ AS calidad,
+               COUNT(ArticulosSeries.UnidadesSerie) AS bultos,
+               CAST(SUM(ArticulosSeries.PesoNeto_)
+                                            AS NUMERIC(36,2)) AS peso_neto,
+               CAST(SUM(ArticulosSeries.PesoBruto_)
+                                            AS NUMERIC(36,2)) AS peso_bruto,
+               CAST(SUM(ArticulosSeries.MetrosCuadrados)
+                                            AS NUMERIC(36,2)) AS metros_cuadrados
+            FROM ArticulosSeries LEFT OUTER JOIN Articulos
+                ON ArticulosSeries.CodigoArticulo = Articulos.CodigoArticulo
+                    AND Articulos.CodigoEmpresa = '10200'
+            WHERE ArticulosSeries.CodigoEmpresa = '10200'
+              AND ArticulosSeries.CodigoArticulo = '{}'
+              AND ArticulosSeries.CodigoAlmacen = '{}'
+              AND ArticulosSeries.UnidadesSerie > 0
+            GROUP BY ArticulosSeries.CodigoArticulo,
+              Articulos.DescripcionArticulo,
+              ArticulosSeries.CodigoAlmacen,
+              ArticulosSeries.CodigoTalla01_,
+              ArticulosSeries.Partida,
+              Articulos.CodigoFamilia
+            ORDER BY Articulos.CodigoFamilia,
+              Articulos.DescripcionArticulo,
+              ArticulosSeries.Partida,
+              ArticulosSeries.CodigoTalla01_;""".format(codigo, almacen)
+        conn = connection.Connection()
+        totales = conn.run_sql(sql)
+    else:
+        totales = []
     return totales
 
 
