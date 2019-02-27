@@ -1563,30 +1563,30 @@ def do_resumen(producto, resumen,
                                ("C", desviaciones_c)):
         calidad = "Calidad {}".format(qlty)
         for fila in desviaciones.dict:
-            codigo = fila['Código']
+            codigo = fila[u'Código']
             if codigo == 'PV{}'.format(producto.id):
-                iniciales = (desviaciones['Ini. (bultos)'][0],
-                             desviaciones['Ini. (m²)'][0],
-                             desviaciones['Ini. (kg)'][0])
-                producidos = (desviaciones['Prod. (bultos)'][0],
-                              desviaciones['Prod. (m²)'][0],
-                              desviaciones['Prod. (kg)'][0])
-                vendidos = (desviaciones['Ventas (bultos)'][0],
-                            desviaciones['Ventas (m²)'][0],
-                            desviaciones['Ventas (kg)'][0])
-                consumidos = (desviaciones['Cons. (bultos)'][0],
-                              desviaciones['Cons. (m²)'][0],
-                              desviaciones['Cons. (kg)'][0])
-                ajustes = (desviaciones['Ajustes (bultos)'][0],
-                           desviaciones['Ajustes (m²)'][0],
-                           desviaciones['Ajustes (kg)'][0])
+                iniciales = (desviaciones[u'Ini. (bultos)'],
+                             desviaciones[u'Ini. (m²)'],
+                             desviaciones[u'Ini. (kg)'])
+                producidos = (desviaciones[u'Prod. (bultos)'],
+                              desviaciones[u'Prod. (m²)'],
+                              desviaciones[u'Prod. (kg)'])
+                vendidos = (desviaciones[u'Ventas (bultos)'],
+                            desviaciones[u'Ventas (m²)'],
+                            desviaciones[u'Ventas (kg)'])
+                consumidos = (desviaciones[u'Cons. (bultos)'],
+                              desviaciones[u'Cons. (m²)'],
+                              desviaciones[u'Cons. (kg)'])
+                ajustes = (desviaciones[u'Ajustes (bultos)'],
+                           desviaciones[u'Ajustes (m²)'],
+                           desviaciones[u'Ajustes (kg)'])
                 try:
-                    en_curso = (desviaciones['No volcado n-1→n (bultos)'][0]
-                                - desviaciones['No volcado n→n+1 (bultos)'][0],
-                                desviaciones['No volcado n-1→n (m²)'][0]
-                                - desviaciones['No volcado n→n+1 (m²)'][0],
-                                desviaciones['No volcado n-1→n (kg)'][0]
-                                - desviaciones['No volcado n→n+1 (kg'][0])
+                    en_curso = (desviaciones[u'No volcado n-1→n (bultos)']
+                                - desviaciones[u'No volcado n→n+1 (bultos)'],
+                                desviaciones[u'No volcado n-1→n (m²)']
+                                - desviaciones[u'No volcado n→n+1 (m²)'],
+                                desviaciones[u'No volcado n-1→n (kg)']
+                                - desviaciones[u'No volcado n→n+1 (kg'])
                 except KeyError:
                     # Versión antigua. No tenemos lo pendiente por A, B y C.
                     en_curso = (0, 0.0, 0.0)    # Habrá que hacerlo a mano.
@@ -1599,22 +1599,22 @@ def do_resumen(producto, resumen,
                          iniciales[2] + producidos[2]
                          - vendidos[2] - consumidos[2]
                          + ajustes[2] + en_curso[2])
-                en_murano = (desviaciones['Fin. (bultos)'][0],
-                             desviaciones['Fin. (m²)'][0],
-                             desviaciones['Fin. (kg)'][0])
+                en_murano = (desviaciones['Fin. (bultos)'],
+                             desviaciones['Fin. (m²)'],
+                             desviaciones['Fin. (kg)'])
                 delta = (en_murano[0] - total[0],
                          en_murano[1] - total[1],
                          en_murano[2] - total[2])
                 fila = [linea, calidad,                                 # 0, 1
-                        iniciales[0], iniciales[1], iniciales[2],
+                        iniciales[0],  iniciales[1],  iniciales[2],
                         producidos[0], producidos[1], producidos[2],
-                        vendidos[0], vendidos[1], vendidos[2],          # 8..10
+                        vendidos[0],   vendidos[1],   vendidos[2],      # 8..10
                         consumidos[0], consumidos[1], consumidos[2],
-                        ajustes[0], ajustes[1], ajustes[2],
-                        en_curso[0], en_curso[1], en_curso[2],
-                        total[0], total[1], total[2],                   # ..22
-                        en_murano[0], en_murano[1], en_murano[2],
-                        delta[0], delta[1], delta[2], '']               # ..29
+                        ajustes[0],    ajustes[1],    ajustes[2],
+                        en_curso[0],   en_curso[1],   en_curso[2],
+                        total[0],      total[1],      total[2],         # ..22
+                        en_murano[0],  en_murano[1],  en_murano[2],
+                        delta[0],      delta[1],      delta[2], '']     # ..29
                 # Busco la fila de la línea que acabo de calcular.
                 found = False
                 for i in range(len(resumen)):
