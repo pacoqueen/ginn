@@ -1403,9 +1403,9 @@ def load_pendiente_mes_pasado(fich_inventario):
                     codigo_sheet = fila[fila.keys()[1]]
                 codigo = codigo_sheet
                 try:
-                    bultos = int(fila[u'No volcado n→n+1 (bultos)'])
-                    metros = float(fila[u'No volcado n→n+1 (m²)'])
-                    kilos = float(fila[u'No volcado n→n+1 (kg)'])
+                    bultos = int(fila['No volcado n→n+1 (bultos)'])
+                    metros = float(fila['No volcado n→n+1 (m²)'])
+                    kilos = float(fila['No volcado n→n+1 (kg)'])
                 except KeyError:    # No existe la fila. Inventario antiguo.
                     bultos = 0
                     metros = 0.0
@@ -1568,28 +1568,28 @@ def do_resumen(producto, resumen,
             except KeyError:
                 codigo = fila[u'Código']
             if codigo == 'PV{}'.format(producto.id):
-                iniciales = (fila[u'Ini. (bultos)'],
-                             fila[u'Ini. (m²)'],
-                             fila[u'Ini. (kg)'])
-                producidos = (fila[u'Prod. (bultos)'],
-                              fila[u'Prod. (m²)'],
-                              fila[u'Prod. (kg)'])
-                vendidos = (fila[u'Ventas (bultos)'],
-                            fila[u'Ventas (m²)'],
-                            fila[u'Ventas (kg)'])
-                consumidos = (fila[u'Cons. (bultos)'],
-                              fila[u'Cons. (m²)'],
-                              fila[u'Cons. (kg)'])
-                ajustes = (fila[u'Ajustes (bultos)'],
-                           fila[u'Ajustes (m²)'],
-                           fila[u'Ajustes (kg)'])
+                iniciales = (fila['Ini. (bultos)'],
+                             fila['Ini. (m²)'],
+                             fila['Ini. (kg)'])
+                producidos = (fila['Prod. (bultos)'],
+                              fila['Prod. (m²)'],
+                              fila['Prod. (kg)'])
+                vendidos = (fila['Ventas (bultos)'],
+                            fila['Ventas (m²)'],
+                            fila['Ventas (kg)'])
+                consumidos = (fila['Cons. (bultos)'],
+                              fila['Cons. (m²)'],
+                              fila['Cons. (kg)'])
+                ajustes = (fila['Ajustes (bultos)'],
+                           fila['Ajustes (m²)'],
+                           fila['Ajustes (kg)'])
                 try:
-                    en_curso = (fila[u'No volcado n-1→n (bultos)']
-                                - fila[u'No volcado n→n+1 (bultos)'],
-                                fila[u'No volcado n-1→n (m²)']
-                                - fila[u'No volcado n→n+1 (m²)'],
-                                fila[u'No volcado n-1→n (kg)']
-                                - fila[u'No volcado n→n+1 (kg'])
+                    en_curso = (fila['No volcado n-1→n (bultos)']
+                                - fila['No volcado n→n+1 (bultos)'],
+                                fila['No volcado n-1→n (m²)']
+                                - fila['No volcado n→n+1 (m²)'],
+                                fila['No volcado n-1→n (kg)']
+                                - fila['No volcado n→n+1 (kg'])
                 except KeyError:
                     # Versión antigua. No tenemos lo pendiente por A, B y C.
                     en_curso = (0, 0.0, 0.0)    # Habrá que hacerlo a mano.
