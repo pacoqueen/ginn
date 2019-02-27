@@ -1609,15 +1609,17 @@ def do_resumen(producto, resumen,
                          en_murano[1] - total[1],
                          en_murano[2] - total[2])
                 filaresumen = [linea, calidad,                          # 0, 1
-                        iniciales[0],  iniciales[1],  iniciales[2],
-                        producidos[0], producidos[1], producidos[2],
-                        vendidos[0],   vendidos[1],   vendidos[2],      # 8..10
-                        consumidos[0], consumidos[1], consumidos[2],
-                        ajustes[0],    ajustes[1],    ajustes[2],
-                        en_curso[0],   en_curso[1],   en_curso[2],
-                        total[0],      total[1],      total[2],         # ..22
-                        en_murano[0],  en_murano[1],  en_murano[2],
-                        delta[0],      delta[1],      delta[2], '']     # ..29
+                               iniciales[0],  iniciales[1],  iniciales[2],
+                               producidos[0], producidos[1], producidos[2],
+                               vendidos[0],   vendidos[1],
+                               vendidos[2],      # 8..10
+                               consumidos[0], consumidos[1], consumidos[2],
+                               ajustes[0],    ajustes[1],    ajustes[2],
+                               en_curso[0],   en_curso[1],   en_curso[2],
+                               total[0],      total[1],      total[2],  # ..22
+                               en_murano[0],  en_murano[1],  en_murano[2],
+                               delta[0],      delta[1],      delta[2],
+                               '']     # ..29
                 # Busco la fila de la línea que acabo de calcular.
                 found = False
                 for i in range(len(resumen)):
