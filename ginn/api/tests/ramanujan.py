@@ -1504,7 +1504,7 @@ def do_resumen(producto, resumen,
                         resumen[i] = [linea, calidad] + map(
                                 lambda x, y: x+y,
                                 resumen[i][2:-1],
-                                fila[2:-1])
+                                fila[2:-1]) + ['']
                         found = True
                         break
                 if not found:
