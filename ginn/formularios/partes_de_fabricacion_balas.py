@@ -2351,7 +2351,7 @@ class PartesDeFabricacionBalas(Ventana):
                     pclases.ProductoVenta.q.descripcion.contains(a_buscar),
                     pclases.ProductoVenta.q.nombre.contains(a_buscar),
                     pclases.ProductoVenta.q.id == ida_buscar)
-            no_obsoleto = not pclases.ProductoVenta.q.obsoleto
+            no_obsoleto = pclases.ProductoVenta.q.obsoleto == False     # noqa
             criterio = pclases.AND(criterio, criterio_lineas, no_obsoleto)
             resultados = pclases.ProductoVenta.select(criterio)
             if resultados.count() > 1:

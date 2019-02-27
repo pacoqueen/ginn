@@ -9,6 +9,7 @@ https://wiki.python.org/moin/PythonDecoratorLibrary#Memoize
 import collections
 import functools
 
+
 class memoized(object):
     '''Decorator. Caches a function's return value each time it is called.
     If called later with the same arguments, the cached value is returned
@@ -38,4 +39,3 @@ class memoized(object):
     def __get__(self, obj, objtype):
         '''Support instance methods.'''
         return functools.partial(self.__call__, obj)
-

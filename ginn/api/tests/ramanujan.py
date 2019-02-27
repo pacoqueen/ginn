@@ -518,11 +518,11 @@ def _get_existencias_murano(codigo):
                ArticulosSeries.CodigoTalla01_ AS calidad,
                COUNT(ArticulosSeries.UnidadesSerie) AS bultos,
                CAST(SUM(ArticulosSeries.PesoNeto_)
-                                            AS NUMERIC(36,2)) AS peso_neto,
+                                        AS NUMERIC(36,2)) AS peso_neto,
                CAST(SUM(ArticulosSeries.PesoBruto_)
-                                            AS NUMERIC(36,2)) AS peso_bruto,
+                                        AS NUMERIC(36,2)) AS peso_bruto,
                CAST(SUM(ArticulosSeries.MetrosCuadrados)
-                                            AS NUMERIC(36,2)) AS metros_cuadrados
+                                        AS NUMERIC(36,2)) AS metros_cuadrados
             FROM ArticulosSeries LEFT OUTER JOIN Articulos
                 ON ArticulosSeries.CodigoArticulo = Articulos.CodigoArticulo
                     AND Articulos.CodigoEmpresa = '10200'
