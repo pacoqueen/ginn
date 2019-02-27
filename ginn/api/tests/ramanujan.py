@@ -1445,10 +1445,15 @@ def determine_linea(producto, dev=False):
         linea = "Test"
     else:
         pvmurano = murano.ops.get_producto_murano(producto)
-        familia = pvmurano['CodigoFamilia']
-        for linea in lineas:
-            if familia in lineas[linea]:
-                break
+        try:
+            familia = pvmurano['CodigoFamilia']
+        except TypeError:
+            # pvmurano es None. El producto de ginn no existe en Murano.
+            linea = "N/A"
+        else:
+            for linea in lineas:
+                if familia in lineas[linea]:
+                    break
     return linea
 
 
