@@ -1602,17 +1602,9 @@ def do_resumen(producto, resumen,
                          iniciales[2] + producidos[2]
                          - vendidos[2] - consumidos[2]
                          + ajustes[2] + en_curso[2])
-                print("---")
-                print("---")
-                print("---")
-                print("---")
-                print(" -------->", iniciales, "+", producidos, "-", vendidos, "-", consumidos, "+", ajustes, "+", en_curso)
-                print("---")
-                print("---")
-                print(" -------->", iniciales, "+", producidos, "-", vendidos, "-", consumidos, "+", ajustes, "+", en_curso)
-                en_murano = (desviaciones['Fin. (bultos)'],
-                             desviaciones['Fin. (m²)'],
-                             desviaciones['Fin. (kg)'])
+                en_murano = (desviaciones['Fin. (bultos)'][0],
+                             desviaciones['Fin. (m²)'][0],
+                             desviaciones['Fin. (kg)'][0])
                 delta = (en_murano[0] - total[0],
                          en_murano[1] - total[1],
                          en_murano[2] - total[2])
@@ -1637,10 +1629,14 @@ def do_resumen(producto, resumen,
                                 resumen[i][2:-1],
                                 fila[2:-1]) + ['']
                         found = True
+                        print(i, resumen[i])
+                        sys.exit(100)
                         break
                 if not found:
                     # O la creo nueva
                     resumen.append(fila)
+                    print(" --->", fila)
+                    sys.exit(101)
 
 
 def main():
