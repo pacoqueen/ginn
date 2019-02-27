@@ -1178,43 +1178,65 @@ def get_articulos_consumidos_ginn(producto, fini, ffin):
     Devuelve una lista de artículos del producto de ginn recibido consumido en
     los partes de producción entre las fechas fini (incluida) y ffin (no incl.)
     """
+    todos_los_articulos_consumidos = _get_articulos_consumidos_ginn(fini, ffin)
+    try:
+        articulos = todos_los_articulos_consumidos[producto][:]
+    except KeyError:    # No se ha consumido nada de ese producto
+        articulos = []
+    return articulos
+
+
+@memoized
+def _get_articulos_consumidos_ginn(fini, ffin):
+    """
+    Analiza todos los partes de producción entre las fechas recibidas
+    (verificados o no, ya que la producción siempre la medimos completa —han
+    corrido ríos de tinta y saliva con esto—, la producción en curso es
+    producción) y devuelve un diccionario organizado por producto de venta con
+    todos los artículos consumidos de cada uno de ellos.
+    Para los productos no consumidos hoy hay entrada en el diccionario.
+    """
+    res = {}
     # A todos los efectos el día comienza en el turno de las 6:
     fhoraini = datetime.datetime(fini.year, fini.month, fini.day, 6)
     fhorafin = datetime.datetime(ffin.year, ffin.month, ffin.day, 6)
-    res = []
     PDP = pclases.ParteDeProduccion
     # pylint: disable=no-member
     pdps = PDP.select(pclases.AND(PDP.q.fechahorainicio >= fhoraini,
                                   PDP.q.fechahorafin < fhorafin))
     # pylint: disable=too-many-nested-blocks
     pcs_tratadas = []
-    for pdp in tqdm(pdps, desc="Consumos {}".format(producto.descripcion)):
+    for pdp in tqdm(pdps, desc="Analizando consumos"):
         # Si estamos buscando consumos de bigbags miro directamente en los
         # partes los bigbags asociados.
-        if producto.es_bigbag():
-            for bb in pdp.bigbags:
-                articulo = bb.articulo
-                if articulo.productoVenta == producto:
-                    res.append(articulo)
+        for bb in pdp.bigbags:
+            articulo = bb.articulo
+            producto = articulo.productoVenta
+            try:
+                res[producto].append(articulo)
+            except KeyError:
+                res[producto] = [articulo]
         # Pero si lo que estamos buscando son consumos de fibra, miro las
         # partidas de carga. Como dos partes pueden estar asociados a la
         # misma partida de carga, llevo el control de los ya tratados.
-        elif producto.es_bala():
-            try:
-                pc = pdp.partidaCarga
-                if not pc:  # El parte no ha consumido nada.
-                    continue
-                if pc in pcs_tratadas:  # La partida de carga ya la he contado.
-                    continue
-            except ValueError:
-                # No es un parte de geotextiles.
-                pass
-            else:
-                pcs_tratadas.append(pc)
-                for bala in pc.balas:
-                    articulo = bala.articulo
-                    if articulo.productoVenta == producto:
-                        res.append(articulo)
+        try:
+            pc = pdp.partidaCarga
+            if not pc:  # Es parte de geotextiles pero no ha consumido nada.
+                continue
+            if pc in pcs_tratadas:  # La partida de carga ya la he contado.
+                continue
+        except ValueError:
+            # No es un parte de geotextiles.
+            pass
+        else:
+            pcs_tratadas.append(pc)
+            for bala in pc.balas:
+                articulo = bala.articulo
+                producto = articulo.productoVenta
+                try:
+                    res[producto].append(articulo)
+                except KeyError:
+                    res[producto] = [articulo]
     return res
 
 
