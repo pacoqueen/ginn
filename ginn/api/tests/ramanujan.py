@@ -1608,7 +1608,7 @@ def do_resumen(producto, resumen,
                 delta = (en_murano[0] - total[0],
                          en_murano[1] - total[1],
                          en_murano[2] - total[2])
-                fila = [linea, calidad,                                 # 0, 1
+                filaresumen = [linea, calidad,                          # 0, 1
                         iniciales[0],  iniciales[1],  iniciales[2],
                         producidos[0], producidos[1], producidos[2],
                         vendidos[0],   vendidos[1],   vendidos[2],      # 8..10
@@ -1627,12 +1627,12 @@ def do_resumen(producto, resumen,
                         resumen[i] = [linea, calidad] + map(
                                 lambda x, y: x+y,
                                 resumen[i][2:-1],
-                                fila[2:-1]) + ['']
+                                filaresumen[2:-1]) + ['']
                         found = True
                         break
                 if not found:
                     # O la creo nueva
-                    resumen.append(fila)
+                    resumen.append(filaresumen)
 
 
 def main():
