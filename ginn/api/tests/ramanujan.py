@@ -1069,10 +1069,27 @@ def query_articulos(producto, fini, ffin):
     recibidas. Los artículos en sí no guardan la fecha y hora de fabricación.
     Son los rollo/bala/bala_cable/rollo_c/etc. los que lo hacen.
     """
+    todos_los_articulos = _query_articulos(fini, ffin)
+    try:
+        articulos = todos_los_articulos[producto][:]
+    except KeyError:
+        articulos = []
+    return articulos
+
+
+@memoized
+def _query_articulos(fini, ffin):
+    """
+    Devuelve una lista de todos los artículos de _ginn_ cuya fecha de
+    fabricación (que se guarda en la tabla relacionada a `articulo`)
+    está entre las fechas recibidas.
+    Organiza los artículos en un diccionario cuyas claves son el producto
+    de venta al que pertenecen.
+    """
+    articulos = {}
     # A todos los efectos el día comienza en el turno de las 6:
     fhoraini = datetime.datetime(fini.year, fini.month, fini.day, 6)
     fhorafin = datetime.datetime(ffin.year, ffin.month, ffin.day, 6)
-    articulos = []
     tablas = (pclases.Bala, pclases.BalaCable, pclases.Caja, pclases.Bigbag,
               pclases.Rollo, pclases.RolloC)
     # PLAN: Esto se podría optimizar. Es tontería recorrer todos los artículos
@@ -1094,8 +1111,10 @@ def query_articulos(producto, fini, ffin):
                 print("Artículo sin producto venta {})".format(
                     articulo.get_info()))
                 sys.exit(5)
-            if producto_articulo == producto:
-                articulos.append(item.articulo)
+            try:
+                articulos[producto_articulo].append(item.articulo)
+            except KeyError:
+                articulos[producto_articulo] = [item.articulo]
     return articulos
 
 
@@ -1635,7 +1654,9 @@ def main():
             producto = murano.ops.get_producto_ginn(codigo)
             productos.append(producto)
     else:
-        for pv in tqdm(pclases.ProductoVenta.select(orderBy="id"),
+        for pv in tqdm(pclases.ProductoVenta.select(
+                            pclases.ProductoVenta.q.obsoleto == False,  # noqa
+                            orderBy="id"),
                        desc="Buscando productos ginn"):
             productos.append(pv)
     fich_inventario = find_fich_inventario(args.fich_inventario)
