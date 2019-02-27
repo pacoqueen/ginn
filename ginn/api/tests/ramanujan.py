@@ -1629,14 +1629,10 @@ def do_resumen(producto, resumen,
                                 resumen[i][2:-1],
                                 fila[2:-1]) + ['']
                         found = True
-                        print(i, resumen[i])
-                        sys.exit(100)
                         break
                 if not found:
                     # O la creo nueva
                     resumen.append(fila)
-                    print(" --->", fila)
-                    sys.exit(101)
 
 
 def main():
