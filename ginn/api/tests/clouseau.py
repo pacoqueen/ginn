@@ -42,16 +42,16 @@ ruta_ginn = os.path.abspath(os.path.join(
     os.path.dirname(__file__), "..", "..", "..", "ginn"))
 sys.path.append(ruta_ginn)
 # pylint: disable=import-error,wrong-import-position
-from framework import pclases
-from api import murano
-from api.murano import connection
+from framework import pclases                                           # noqa
+from api import murano                                                  # noqa
+from api.murano import connection                                       # noqa
 # from api.murano.extra import get_peso_neto, get_superficie
-from api.tests.ramanujan import find_fich_inventario, parse_fecha_xls
-from api.tests.ramanujan import load_inventario
-from api.tests.ramanujan import get_articulos_consumidos_ginn
-from api.tests.ramanujan import get_registros_movimientoarticuloserie
-from api.tests.ramanujan import query_articulos_from_partes
-from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.
+from api.tests.ramanujan import find_fich_inventario, parse_fecha_xls   # noqa
+from api.tests.ramanujan import load_inventario                         # noqa
+from api.tests.ramanujan import get_articulos_consumidos_ginn           # noqa
+from api.tests.ramanujan import get_registros_movimientoarticuloserie   # noqa
+from api.tests.ramanujan import query_articulos_from_partes             # noqa
+from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.         # noqa
 sys.argv = _argv
 
 
@@ -88,7 +88,7 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
                 fallbackdata[u'Fecha importación a Murano']).strftime(
                     "%d/%m/%Y %H:%M")
             codigo_producto_murano = fallbackdata[u'Código producto']
-        else:   # Es un artículo fabricado y borrado en ERP. No hay fallbackdata
+        else:   # Es artículo fabricado y borrado en ERP. No hay fallbackdata
             calidad = "N/D"
             codigo_articulo = articulo
             descripcion_producto = "N/D"
@@ -100,17 +100,19 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
         codigo_partida_carga = "N/D"
         fecha_consumo_ginn = "N/D"
         fecha_fabricacion_ginn = "N/D"
-        origen = "INV"  # de "INVentario". No es una serie real de Murano.
+        origen = "RAM"  # de "RAManujan". No es una serie real de Murano.
         ultimo_movarticulo = murano.ops.get_ultimo_movimiento_articulo_serie(
             murano.connection.Connection(), codigo_articulo)
         if ultimo_movarticulo:
             if ultimo_movarticulo['OrigenDocumento'] == 11:     # Salida
-                fecha_salida_murano = ultimo_movarticulo['FechaRegistro'].strftime(
-                    "%d/%m/%Y %H:%M")
+                fecha_salida_murano = ultimo_movarticulo[
+                        'FechaRegistro'].strftime("%d/%m/%Y %H:%M")
                 if murano.ops.es_movimiento_salida_albaran(ultimo_movarticulo):
-                    fecha_venta = ultimo_movarticulo['Fecha'].strftime("%d/%m/%Y")
-                    albaran = "{}{}".format(ultimo_movarticulo['SerieDocumento'],
-                                            ultimo_movarticulo['Documento'])
+                    fecha_venta = ultimo_movarticulo[
+                            'Fecha'].strftime("%d/%m/%Y")
+                    albaran = "{}{}".format(
+                            ultimo_movarticulo['SerieDocumento'],
+                            ultimo_movarticulo['Documento'])
                 else:
                     fecha_venta = ""
                     albaran = ""
@@ -119,7 +121,7 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
             fecha_venta = "N/D"
             albaran = "N/D"
     else:
-        if not isinstance(articulo, pclases.Articulo):  # He recibido un código.
+        if not isinstance(articulo, pclases.Articulo):  # He recibido código.
             # Obtengo los datos de ginn. Si está en Murano, debe estar en ginn.
             articulo = pclases.Articulo.get_articulo(articulo)
         producto_ginn = articulo.productoVenta
@@ -131,7 +133,8 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
         # ¿Cuándo se fabricó?
         inicio_parte_produccion = (
             articulo.parteDeProduccion
-            and articulo.parteDeProduccion.fechahorainicio.strftime("%d/%m/%Y %H:%M")
+            and articulo.parteDeProduccion.fechahorainicio.strftime(
+                "%d/%m/%Y %H:%M")
             or "")
         # ¿Cuándo se consumió, si es que se consumió?
         if articulo.es_bigbag():
@@ -140,15 +143,17 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
                 codigo_partida_carga = "{} {}".format(
                     pdp.fechahorainicio.strftime("%d/%m/%Y %H:%M"),
                     pdp.bloqueado and '✔' or '✘')
-                fecha_consumo_ginn = pdp.fechahorainicio.strftime("%d/%m/%Y %H:%M")
+                fecha_consumo_ginn = pdp.fechahorainicio.strftime(
+                        "%d/%m/%Y %H:%M")
             else:
                 codigo_partida_carga = ""
                 fecha_consumo_ginn = ""
         elif articulo.es_bala():
             pcarga = articulo.bala.partidaCarga
             if pcarga:
-                codigo_partida_carga = "{} {}".format(pcarga.codigo,
-                                                      pcarga.api and '✔' or '✘')
+                codigo_partida_carga = "{} {}".format(
+                        pcarga.codigo,
+                        pcarga.api and '✔' or '✘')
                 # FIXME: Ojo porque la fecha de la partida de carga es
                 # la **fecha de creación de la partida**, no la fecha del
                 # consumo. Eso hay que sacarlo de los partes de producción.
@@ -164,14 +169,17 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
         fecha_entrada_murano = murano.ops.get_fecha_entrada(articulo)
         origen = ""
         if fecha_entrada_murano:
-            fecha_entrada_murano = fecha_entrada_murano.strftime("%d/%m/%Y %H:%M")
+            fecha_entrada_murano = fecha_entrada_murano.strftime(
+                    "%d/%m/%Y %H:%M")
             origen = murano.ops.get_fecha_entrada(articulo, "SerieDocumento")
         fecha_salida_murano = murano.ops.esta_consumido(articulo)
         if fecha_salida_murano:
-            fecha_salida_murano = fecha_salida_murano.strftime("%d/%m/%Y %H:%M")
+            fecha_salida_murano = fecha_salida_murano.strftime(
+                    "%d/%m/%Y %H:%M")
         fecha_venta = murano.ops.esta_vendido(articulo)
         if fecha_venta:
-            ultimo_movarticulo = murano.ops.get_ultimo_movimiento_articulo_serie(
+            murops = murano.ops
+            ultimo_movarticulo = murops.get_ultimo_movimiento_articulo_serie(
                 murano.connection.Connection(), articulo)
             albaran = "{}{}".format(ultimo_movarticulo['SerieDocumento'],
                                     ultimo_movarticulo['Documento'])
@@ -186,20 +194,20 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
     if codigo_articulo not in data_full['Serie']:
         # ['Código', 'Producto', 'Serie', 'Calidad', 'Bultos', 'm²', 'kg',
         #  'Prod. ginn', 'Prod. Murano', 'Origen', 'Fabricado en',
-        # 'Cons. ginn', 'Cons. Murano', 'Consumido en',
-        # 'Venta', 'Vendido en']
+        #  'Cons. ginn', 'Cons. Murano', 'Consumido en',
+        #  'Venta', 'Vendido en']
         fila = [codigo_producto_murano,
                 descripcion_producto, codigo_articulo, calidad,
                 1, superficie, peso_neto,
                 fecha_fabricacion_ginn, fecha_entrada_murano, origen,
                 inicio_parte_produccion,
                 fecha_consumo_ginn, fecha_salida_murano, codigo_partida_carga,
-                fecha_venta, albaran
-               ]
+                fecha_venta, albaran]
         data_full.append(fila)
 
 
-# pylint: disable=too-many-arguments,too-many-locals,too-many-branches,too-many-statements
+# pylint: disable=too-many-arguments,too-many-locals,too-many-branches,
+# pylint: disable=too-many-statements
 def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
                data_inventario, dev=False):
     """
@@ -212,8 +220,10 @@ def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
     res = True
     # 0.- Localizo los consumos y producciones por calidad.
     consumos_ginn = buscar_bultos_consumidos_ginn(producto_ginn, fini, ffin)
-    consumos_murano = buscar_bultos_consumidos_murano(producto_ginn, fini, ffin)
-    producciones_ginn = buscar_bultos_producidos_ginn(producto_ginn, fini, ffin)
+    consumos_murano = buscar_bultos_consumidos_murano(
+            producto_ginn, fini, ffin)
+    producciones_ginn = buscar_bultos_producidos_ginn(
+            producto_ginn, fini, ffin)
     producciones_murano = buscar_bultos_producidos_murano(producto_ginn, fini,
                                                           ffin)
     # 1,- La investigasió
@@ -238,7 +248,8 @@ def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
                 if (calidad not in dic_murano
                         or articulo.codigo not in dic_murano[calidad]):
                     try:
-                        ginn_no_murano[category][calidad].append(articulo.codigo)
+                        ginn_no_murano[category][calidad].append(
+                                articulo.codigo)
                     except KeyError:
                         ginn_no_murano[category][calidad] = [articulo.codigo]
     # 1.2.- Los que se han consumido/fabricado en Murano pero no en ginn
@@ -247,7 +258,8 @@ def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
                                desc="Artículos solo en Murano"):
                 add_to_datafull(codigo, data_full)
                 if (calidad not in dic_ginn
-                        or codigo not in [a.codigo for a in dic_ginn[calidad]]):
+                        or codigo not in [a.codigo for a
+                                          in dic_ginn[calidad]]):
                     try:
                         murano_no_ginn[category][calidad].append(codigo)
                     except KeyError:
@@ -276,11 +288,13 @@ def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
             articulo = pclases.Articulo.get_articulo(codigo)
             if articulo.es_bala():
                 parte_o_partidacarga = articulo.bala.partidaCarga.codigo
-                fecha_consumo = articulo.bala.partidaCarga.fecha.strftime("%d/%m/%Y %H:%M")
+                fecha_consumo = articulo.bala.partidaCarga.fecha.strftime(
+                        "%d/%m/%Y %H:%M")
             elif articulo.es_bigbag():
                 bigbag = articulo.bigbag
                 parte_o_partidacarga = bigbag.parteDeProduccion.id
-                fecha_consumo = bigbag.parteDeProduccion.fechahorainicio.strftime(
+                bbpdp = bigbag.parteDeProduccion
+                fecha_consumo = bbpdp.fechahorainicio.strftime(
                     "%d/%m/%Y %H:%M")
             else:
                 parte_o_partidacarga = "¿?"
@@ -288,8 +302,9 @@ def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
             report.write(" * {} (Consumido el {} en {})\n".format(
                 articulo.codigo, fecha_consumo, parte_o_partidacarga))
             # 5.- Guardo los resultados en el Dataset para exportarlos después.
-            # ['Código', 'Producto', 'Serie', 'Calidad', 'Cons. ginn', 'Cons. Murano',
-            #  'Prod. ginn', 'Prod. Murano', 'Bultos', 'm²', 'kg']
+            # ['Código', 'Producto', 'Serie', 'Calidad', 'Cons. ginn',
+            #  'Cons. Murano', 'Prod. ginn', 'Prod. Murano', 'Bultos', 'm²',
+            #  'kg']
             data_res.append(['PV{}'.format(producto_ginn.id),
                              producto_ginn.descripcion,
                              articulo.codigo,
@@ -300,23 +315,23 @@ def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
                              "",
                              1,
                              articulo.get_superficie(),
-                             articulo.peso_neto
-                            ])
+                             articulo.peso_neto])
     # 3.2.- Consumos en Murano pero no en ginn.
     report.write("## Artículos consumidos en Murano pero no en ginn\n")
     for calidad in murano_no_ginn["consumos"]:
         report.write("### Calidad {}:\n".format(calidad))
         for codigo in murano_no_ginn["consumos"][calidad]:
             # 5.- Guardo los resultados en el Dataset para exportarlos después.
-            # ['Código', 'Producto', 'Serie', 'Calidad', 'Cons. ginn', 'Cons. Murano',
-            #  'Prod. ginn', 'Prod. Murano', 'Bultos', 'm²', 'kg']
+            # ['Código', 'Producto', 'Serie', 'Calidad', 'Cons. ginn',
+            #  'Cons. Murano', 'Prod. ginn', 'Prod. Murano', 'Bultos', 'm²',
+            #  'kg']
             articulo = pclases.Articulo.get_articulo(codigo)
             fecha_consumo = murano.ops.esta_consumido(articulo)
             if fecha_consumo:
                 # pylint: disable=no-member
                 fecha_consumo = fecha_consumo.strftime("%d/%m/%Y %H:%M")
-            report.write(" * {} (Volcado como consumo el {})\n".format(codigo,
-                                                                       fecha_consumo))
+            report.write(" * {} (Volcado como consumo el {})\n".format(
+                codigo, fecha_consumo))
             # pylint: disable=protected-access
             superficie = murano.ops._get_superficie_murano(articulo)
             peso_neto = murano.ops._get_peso_neto_murano(articulo)
@@ -331,8 +346,7 @@ def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
                                  fecha_consumo,
                                  1,
                                  superficie,
-                                 peso_neto
-                                ])
+                                 peso_neto])
             else:
                 index = data_res['Serie'].index(codigo)
                 row = list(data_res[index])
@@ -363,8 +377,7 @@ def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
                                  "",
                                  1,
                                  superficie,
-                                 peso_neto
-                                ])
+                                 peso_neto])
             else:
                 index = data_res['Serie'].index(codigo)
                 row = list(data_res[index])
@@ -373,7 +386,8 @@ def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
                 row[10] = peso_neto
                 data_res[index] = row
     # 3.4.- Producciones en Murano pero no en ginn.
-    report.write("## Artículos con alta en Murano pero no fabricados en ginn\n")
+    report.write(
+            "## Artículos con alta en Murano pero no fabricados en ginn\n")
     for calidad in murano_no_ginn["producción"]:
         report.write("### Calidad {}:\n".format(calidad))
         for codigo in murano_no_ginn["producción"][calidad]:
@@ -382,8 +396,9 @@ def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
             report.write(" * {} (Volcada como producción en Murano el {})"
                          "\n".format(codigo, fecha_produccion))
             # 5.- Guardo los resultados en el Dataset para exportarlos después.
-            # ['Código', 'Producto', 'Serie', 'Calidad', 'Cons. ginn', 'Cons. Murano',
-            #  'Prod. ginn', 'Prod. Murano', 'Bultos', 'm²', 'kg']
+            # ['Código', 'Producto', 'Serie', 'Calidad', 'Cons. ginn',
+            #  'Cons. Murano', 'Prod. ginn', 'Prod. Murano', 'Bultos', 'm²',
+            #  'kg']
             # pylint: disable=protected-access
             if articulo:
                 superficie = murano.ops._get_superficie_murano(articulo)
@@ -398,14 +413,14 @@ def investigar(producto_ginn, fini, ffin, report, data_res, data_full,
                                  calidad,
                                  "",
                                  fecha_produccion
-                                    and fecha_produccion.strftime("%d/%m/%Y %H:%M")
-                                    or "N/D",
+                                 and fecha_produccion.strftime(
+                                     "%d/%m/%Y %H:%M")
+                                 or "N/D",
                                  "",
                                  "",
                                  1,
                                  superficie,
-                                 peso_neto
-                                ])
+                                 peso_neto])
             else:
                 index = data_res['Serie'].index(codigo)
                 row = list(data_res[index])
@@ -629,9 +644,9 @@ def main():
                         'Bultos', 'm²', 'kg']
     data_full.headers = ['Código', 'Producto', 'Serie', 'Calidad',
                          'Bultos', 'm²', 'kg',
-                         'Prod. ginn', 'Prod. Murano', 'Origen', 'Fabricado en',
-                         'Cons. ginn', 'Cons. Murano', 'Consumido en',
-                         'Venta', 'Vendido en']
+                         'Prod. ginn', 'Prod. Murano', 'Origen',
+                         'Fabricado en', 'Cons. ginn', 'Cons. Murano',
+                         'Consumido en', 'Venta', 'Vendido en']
     for producto in tqdm(productos, desc="Productos"):
         res = investigar(producto, fini, ffin, report, data_res, data_full,
                          data_inventario, args.debug)

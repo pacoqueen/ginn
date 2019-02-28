@@ -1,6 +1,6 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim:
 " Vim session script.
-" Created by session.vim 2.13.1 on 22 febrero 2019 at 16:24:46.
+" Created by session.vim 2.13.1 on 28 febrero 2019 at 13:08:21.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -13,7 +13,7 @@ if &background != 'light'
 	set background=light
 endif
 if !exists('g:colors_name') || g:colors_name != 'summerfruit256' | colorscheme summerfruit256 | endif
-call setqflist([])
+call setqflist([{'lnum': 193, 'col': 80, 'pattern': '', 'valid': 1, 'vcol': 0, 'nr': -1, 'type': 'E', 'module': '', 'filename': 'api/tests/clouseau.py', 'text': 'E501: line too long (80 > 79 characters)'}, {'lnum': 275, 'col': 80, 'pattern': '', 'valid': 1, 'vcol': 0, 'nr': -1, 'type': 'E', 'module': '', 'filename': 'api/tests/ramanujan.py', 'text': 'E501: line too long (133 > 79 characters)'}])
 let SessionLoad = 1
 if &cp | set nocp | endif
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
@@ -38,16 +38,7 @@ wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
-wincmd _ | wincmd |
-split
-wincmd _ | wincmd |
-split
-wincmd _ | wincmd |
-split
-5wincmd k
-wincmd w
-wincmd w
-wincmd w
+2wincmd k
 wincmd w
 wincmd w
 set nosplitbelow
@@ -58,93 +49,47 @@ set winheight=1
 set winminwidth=0
 set winwidth=1
 exe 'vert 1resize ' . ((&columns * 25 + 57) / 115)
-exe '2resize ' . ((&lines * 6 + 28) / 57)
+exe '2resize ' . ((&lines * 7 + 28) / 57)
 exe 'vert 2resize ' . ((&columns * 89 + 57) / 115)
-exe '3resize ' . ((&lines * 5 + 28) / 57)
+exe '3resize ' . ((&lines * 42 + 28) / 57)
 exe 'vert 3resize ' . ((&columns * 89 + 57) / 115)
-exe '4resize ' . ((&lines * 1 + 28) / 57)
+exe '4resize ' . ((&lines * 4 + 28) / 57)
 exe 'vert 4resize ' . ((&columns * 89 + 57) / 115)
-exe '5resize ' . ((&lines * 34 + 28) / 57)
-exe 'vert 5resize ' . ((&columns * 89 + 57) / 115)
-exe '6resize ' . ((&lines * 1 + 28) / 57)
-exe 'vert 6resize ' . ((&columns * 89 + 57) / 115)
-exe '7resize ' . ((&lines * 3 + 28) / 57)
-exe 'vert 7resize ' . ((&columns * 89 + 57) / 115)
 argglobal
 enew
 file __Tagbar__.1
 wincmd w
 argglobal
-let s:l = 841 - ((4 * winheight(0) + 3) / 6)
+let s:l = 1176 - ((3 * winheight(0) + 3) / 7)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-841
-normal! 09|
-wincmd w
-argglobal
-if bufexists("formularios/partes_de_fabricacion_balas.py") | buffer formularios/partes_de_fabricacion_balas.py | else | edit formularios/partes_de_fabricacion_balas.py | endif
-let s:l = 5287 - ((3 * winheight(0) + 2) / 5)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-5287
-normal! 030|
-wincmd w
-argglobal
-if bufexists("framework/metrics/core.py") | buffer framework/metrics/core.py | else | edit framework/metrics/core.py | endif
-let s:l = 342 - ((2 * winheight(0) + 0) / 1)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-342
-normal! 045|
-wincmd w
-argglobal
-if bufexists("api/murano/ops.py") | buffer api/murano/ops.py | else | edit api/murano/ops.py | endif
-let s:l = 1950 - ((1 * winheight(0) + 17) / 34)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-1950
+1176
 normal! 05|
 wincmd w
 argglobal
-if bufexists("~/Geotexan/src/Geotex-INN/extra/scripts/20190131_regularizacion_2018.py") | buffer ~/Geotexan/src/Geotex-INN/extra/scripts/20190131_regularizacion_2018.py | else | edit ~/Geotexan/src/Geotex-INN/extra/scripts/20190131_regularizacion_2018.py | endif
-let s:l = 161 - ((1 * winheight(0) + 0) / 1)
+if bufexists("api/tests/clouseau.py") | buffer api/tests/clouseau.py | else | edit api/tests/clouseau.py | endif
+let s:l = 256 - ((10 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-161
-normal! 043|
+256
+normal! 020|
 wincmd w
 argglobal
 enew
 wincmd w
-5wincmd w
+3wincmd w
 exe 'vert 1resize ' . ((&columns * 25 + 57) / 115)
-exe '2resize ' . ((&lines * 6 + 28) / 57)
+exe '2resize ' . ((&lines * 7 + 28) / 57)
 exe 'vert 2resize ' . ((&columns * 89 + 57) / 115)
-exe '3resize ' . ((&lines * 5 + 28) / 57)
+exe '3resize ' . ((&lines * 42 + 28) / 57)
 exe 'vert 3resize ' . ((&columns * 89 + 57) / 115)
-exe '4resize ' . ((&lines * 1 + 28) / 57)
+exe '4resize ' . ((&lines * 4 + 28) / 57)
 exe 'vert 4resize ' . ((&columns * 89 + 57) / 115)
-exe '5resize ' . ((&lines * 34 + 28) / 57)
-exe 'vert 5resize ' . ((&columns * 89 + 57) / 115)
-exe '6resize ' . ((&lines * 1 + 28) / 57)
-exe 'vert 6resize ' . ((&columns * 89 + 57) / 115)
-exe '7resize ' . ((&lines * 3 + 28) / 57)
-exe 'vert 7resize ' . ((&columns * 89 + 57) / 115)
 tabnext 1
-badd +1 formularios/partes_de_fabricacion_balas.py
-badd +1 ~/Geotexan/src/Geotex-INN/geotexan.vim
-badd +1 framework/metrics/core.py
-badd +0 api/murano/ops.py
-badd +1 ~/Geotexan/src/Geotex-INN/extra/scripts/20190131_regularizacion_2018.py
-badd +947 formularios/menu.py
-badd +282 api/tests/sr_lobo.py
-badd +393 formularios/consulta_producido.py
-badd +0 api/tests/ramanujan.py
+badd +211 api/tests/clouseau.py
+badd +282 api/tests/ramanujan.py
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0
 "   silent exe 'bwipe ' . s:wipebuf
 endif
@@ -161,7 +106,7 @@ let &so = s:so_save | let &siso = s:siso_save
 " Everything down here is generated by vim-session (not supported
 " by :mksession out of the box).
 
-7wincmd w
+4wincmd w
 tabnext 1
 let s:bufnr_save = bufnr("%")
 let s:cwd_save = getcwd()
@@ -173,8 +118,8 @@ if !getbufvar(s:bufnr_save, '&modified')
   endif
 endif
 execute "cd" fnameescape(s:cwd_save)
-1resize 55|vert 1resize 25|2resize 6|vert 2resize 89|3resize 5|vert 3resize 89|4resize 1|vert 4resize 89|5resize 34|vert 5resize 89|6resize 1|vert 6resize 89|7resize 3|vert 7resize 89|
-5wincmd w
+1resize 55|vert 1resize 25|2resize 7|vert 2resize 89|3resize 42|vert 3resize 89|4resize 4|vert 4resize 89|
+3wincmd w
 tabnext 1
 if exists('s:wipebuf')
   if empty(bufname(s:wipebuf))
