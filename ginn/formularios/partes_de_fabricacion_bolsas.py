@@ -761,10 +761,10 @@ class PartesDeFabricacionBolsas(Ventana):
         Si ya tiene producción, cambia el producto de toda la producción
         de la partida completa.
         """
-        a_buscar = utils.dialogo_entrada(titulo = "BUSCAR PRODUCTO",
-                    texto = "Introduzca el texto a buscar:",
-                    padre = self.wids['ventana'])
-        if a_buscar != None:
+        a_buscar = utils.dialogo_entrada(titulo="BUSCAR PRODUCTO",
+                                         texto="Introduzca el texto a buscar:",
+                                         padre=self.wids['ventana'])
+        if a_buscar is not None:
             pvs = utils.buscar_productos_venta(a_buscar)
             pvs = [p for p in pvs if p.es_bolsa()]
             if len(pvs):
@@ -778,28 +778,53 @@ class PartesDeFabricacionBolsas(Ventana):
                         pv = None
                 if pv:
                     try:
-                        producto_anterior = self.objeto.partidaCem.pales[0].productoVenta
+                        pcem = self.objeto.partidaCem
+                        producto_anterior = pcem.pales[0].productoVenta
                     except IndexError:
-                        producto_anterior = pv  # Total, no se va a ver.
+                        producto_anterior = None
+                    if producto_anterior == pv:
+                        return
+                    if not producto_anterior:
+                        producto_anterior = pv
+                    if (producto_anterior.camposEspecificosBala.bolsasCaja !=
+                            pv.camposEspecificosBala.bolsasCaja or
+                        producto_anterior.camposEspecificosBala.cajasPale !=
+                            pv.camposEspecificosBala.cajasPale):
+                        utils.dialogo_info(
+                                titulo="PRODUCTO INCOMPATIBLE",
+                                texto="Seleccione un producto con el mismo"
+                                "número de bolsas por caja\no elimine primero"
+                                " la producción actual, cree una nueva "
+                                "partida\n y vuelva a crearla con el nuevo "
+                                "producto.",
+                                padre=self.wids['ventana'])
+                        return
                     titulo = "¿CAMBIAR PRODUCTO AL LOTE COMPLETO?"
                     texto = "Va a cambiar la producción del lote completo de"\
-                    " %s a %s. ¿Está seguro?" % (
-                        producto_anterior and producto_anterior.descripcion
-                            or "",
-                        pv.descripcion)
+                            " %s\na %s. ¿Está seguro?\n\n"\
+                            "(Puede durar bastante. "\
+                            "No interrumpa el proceso)" % (
+                                    producto_anterior
+                                    and producto_anterior.descripcion or "",
+                                    pv.descripcion)
                     padre = self.wids['ventana']
                     if (not self.objeto.partidaCem.pales
-                        or utils.dialogo(texto, titulo, padre)):
+                            or utils.dialogo(texto, titulo, padre)):
+                        ceb = pv.camposEspecificosBala
                         for pale in self.objeto.partidaCem.pales:
+                            pale.numcajas = ceb.cajasPale
+                            pale.sync()
                             for caja in pale.cajas:
+                                caja.peso = (ceb.bolsasCaja
+                                             * ceb.gramosBolsa / 1000)
                                 a = caja.articulo
-                                # FIXME: ¿Estoy cambiando el producto sin
-                                # cambiar el peso de las cajas? ¿Y qué opina
-                                # Murano de esto?
+                                a.pesoReal = (caja.peso
+                                              + pclases.PESO_EMBALAJE_CAJAS)
                                 a.productoVenta = pv
                                 a.syncUpdate()
                         self.producto = pv
                         self.rellenar_datos_producto(pv)
+                        self.actualizar_ventana()
 
     def rellenar_datos_producto(self, producto):
         """
@@ -850,16 +875,16 @@ class PartesDeFabricacionBolsas(Ventana):
                 defecto = pclases.Pale.NUMBOLSAS
         texto = "Introduzca el número de bolsas de la primera caja:"
         if self.usuario and self.usuario.nivel <= self.NIVEL_POR_LOTES:
-            texto += "\n\n<small>Si introduce un rango de números se\n"\
+            texto += "\n\n<small>Si introduce una serie de números se\n"\
                      "crearán tantos palés como números haya tecleado;\n"\
                      "cada uno de ellos con las bolsas por caja indicadas."\
                      "</small>"
             numbolsas = utils.dialogo_pedir_rango(
-                titulo = "¿NÚMERO DE BOLSAS?",
-                texto = texto,
-                padre = self.wids['ventana'],
-                valor_por_defecto = defecto,
-                permitir_repetidos = True)
+                titulo="¿NÚMERO DE BOLSAS?",
+                texto=texto,
+                padre=self.wids['ventana'],
+                valor_por_defecto=defecto,
+                permitir_repetidos=True)
         else:
             numbolsas = utils.dialogo_entrada(titulo = "¿NÚMERO DE BOLSAS?",
                     texto = texto,
@@ -885,17 +910,21 @@ class PartesDeFabricacionBolsas(Ventana):
             vpro = VentanaProgreso(padre=self.wids['ventana'])
             vpro.mostrar()
             icont = 0.0
-            #numcajasdefecto = pclases.Pale.NUMCAJAS
+            # numcajasdefecto = pclases.Pale.NUMCAJAS
             numcajasdefecto = productoVenta.camposEspecificosBala.cajasPale
             # 1.- Creo el palé.
             numpale, codigo = pclases.Pale.get_next_numpale(numbolsas)
-            pale = pclases.Pale(partidaCem = partidaCem,
-                    numpale = numpale,
-                    codigo = codigo,
-                    fechahora = mx.DateTime.localtime(),
-                    numbolsas = numbolsas,
-                    numcajas = numcajasdefecto
-                    )
+            ahora = mx.DateTime.localtime()
+            pale = pclases.Pale(partidaCem=partidaCem,
+                                numpale=numpale,
+                                codigo=codigo,
+                                fechahora=None,
+                                numbolsas=numbolsas,
+                                numcajas=numcajasdefecto)
+            try:
+                pale.fechahora = ahora
+            except:     # noqa
+                pale.fechahora = datetime.datetime.now()
             pclases.Auditoria.nuevo(pale, self.usuario, __file__)
             # 2.- Creo las cajas.
             tot = pale.numcajas
@@ -907,13 +936,17 @@ class PartesDeFabricacionBolsas(Ventana):
                 except AttributeError:
                     gramos = 0
                 peso_neto = (gramos * numbolsas) / 1000.0
-                #peso = peso_bruto = peso_neto + 0.150 + 0.100  # Palé + cartón
-                caja = pclases.Caja(pale = pale,
-                                    numcaja = numcaja,
-                                    codigo = codigo,
-                                    fechahora = mx.DateTime.localtime(),
-                                    peso = peso_neto,
-                                    numbolsas = numbolsas)
+                # peso = peso_bruto = peso_neto + 0.150 + 0.100  # Palé+cartón
+                caja = pclases.Caja(pale=pale,
+                                    numcaja=numcaja,
+                                    codigo=codigo,
+                                    fechahora=None,
+                                    peso=peso_neto,
+                                    numbolsas=numbolsas)
+                try:
+                    caja.fechahora = mx.DateTime.localtime()
+                except:     # noqa
+                    caja.fechahora = datetime.datetime.now()
                 pclases.Auditoria.nuevo(caja, self.usuario, __file__)
                 articulo = pclases.Articulo(parteDeProduccion=self.objeto,
                             caja = caja,
