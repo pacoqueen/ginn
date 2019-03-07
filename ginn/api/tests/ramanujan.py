@@ -280,9 +280,12 @@ def find_pendiente_mes_pasado(data_pendiente, producto_ginn, dev=False,
         pass
     assert calidad in (None, 'A', 'B', 'C'), "Calidad debe ser None o A/B/C."
     codigo = "PV{}".format(producto_ginn.id)
-    bultos = data_pendiente[codigo][calidad]['#']
-    metros = data_pendiente[codigo][calidad]['m2']
-    kilos = data_pendiente[codigo][calidad]['kg']
+    try:
+        bultos = data_pendiente[codigo][calidad]['#']
+        metros = data_pendiente[codigo][calidad]['m2']
+        kilos = data_pendiente[codigo][calidad]['kg']
+    except KeyError:    # Producto nuevo. No hay nada pendiente del mes pasado.
+        bultos, metros, kilos = 0, 0.0, 0.0
     return bultos, metros, kilos
 
 

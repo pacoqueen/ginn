@@ -1,6 +1,6 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim:
 " Vim session script.
-" Created by session.vim 2.13.1 on 06 marzo 2019 at 21:38:36.
+" Created by session.vim 2.13.1 on 07 marzo 2019 at 20:13:22.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -13,7 +13,7 @@ if &background != 'light'
 	set background=light
 endif
 if !exists('g:colors_name') || g:colors_name != 'summerfruit256' | colorscheme summerfruit256 | endif
-call setqflist([{'lnum': 275, 'col': 80, 'pattern': '', 'valid': 1, 'vcol': 0, 'nr': -1, 'type': 'E', 'module': '', 'filename': 'api/tests/ramanujan.py', 'text': 'E501: line too long (133 > 79 characters)'}, {'lnum': 193, 'col': 80, 'pattern': '', 'valid': 1, 'vcol': 0, 'nr': -1, 'type': 'E', 'module': '', 'filename': 'api/tests/clouseau.py', 'text': 'E501: line too long (80 > 79 characters)'}])
+call setqflist([{'lnum': 193, 'col': 80, 'pattern': '', 'valid': 1, 'vcol': 0, 'nr': -1, 'type': 'E', 'module': '', 'filename': 'api/tests/clouseau.py', 'text': 'E501: line too long (80 > 79 characters)'}])
 let SessionLoad = 1
 if &cp | set nocp | endif
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
@@ -48,28 +48,28 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 25 + 57) / 115)
-exe '2resize ' . ((&lines * 25 + 28) / 57)
-exe 'vert 2resize ' . ((&columns * 89 + 57) / 115)
-exe '3resize ' . ((&lines * 24 + 28) / 57)
-exe 'vert 3resize ' . ((&columns * 89 + 57) / 115)
+exe 'vert 1resize ' . ((&columns * 22 + 57) / 115)
+exe '2resize ' . ((&lines * 41 + 28) / 57)
+exe 'vert 2resize ' . ((&columns * 92 + 57) / 115)
+exe '3resize ' . ((&lines * 8 + 28) / 57)
+exe 'vert 3resize ' . ((&columns * 92 + 57) / 115)
 exe '4resize ' . ((&lines * 4 + 28) / 57)
-exe 'vert 4resize ' . ((&columns * 89 + 57) / 115)
+exe 'vert 4resize ' . ((&columns * 92 + 57) / 115)
 argglobal
 enew
 file __Tagbar__.1
 wincmd w
 argglobal
-let s:l = 351 - ((5 * winheight(0) + 12) / 25)
+let s:l = 1392 - ((1 * winheight(0) + 20) / 41)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-351
+1392
 normal! 05|
 wincmd w
 argglobal
 if bufexists("api/tests/clouseau.py") | buffer api/tests/clouseau.py | else | edit api/tests/clouseau.py | endif
-let s:l = 285 - ((1 * winheight(0) + 12) / 24)
+let s:l = 285 - ((1 * winheight(0) + 4) / 8)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -80,13 +80,13 @@ argglobal
 enew
 wincmd w
 2wincmd w
-exe 'vert 1resize ' . ((&columns * 25 + 57) / 115)
-exe '2resize ' . ((&lines * 25 + 28) / 57)
-exe 'vert 2resize ' . ((&columns * 89 + 57) / 115)
-exe '3resize ' . ((&lines * 24 + 28) / 57)
-exe 'vert 3resize ' . ((&columns * 89 + 57) / 115)
+exe 'vert 1resize ' . ((&columns * 22 + 57) / 115)
+exe '2resize ' . ((&lines * 41 + 28) / 57)
+exe 'vert 2resize ' . ((&columns * 92 + 57) / 115)
+exe '3resize ' . ((&lines * 8 + 28) / 57)
+exe 'vert 3resize ' . ((&columns * 92 + 57) / 115)
 exe '4resize ' . ((&lines * 4 + 28) / 57)
-exe 'vert 4resize ' . ((&columns * 89 + 57) / 115)
+exe 'vert 4resize ' . ((&columns * 92 + 57) / 115)
 tabnext 1
 badd +1 api/tests/ramanujan.py
 badd +1 ~/Geotexan/src/Geotex-INN/geotexan.vim
@@ -119,7 +119,7 @@ if !getbufvar(s:bufnr_save, '&modified')
   endif
 endif
 execute "cd" fnameescape(s:cwd_save)
-1resize 55|vert 1resize 25|2resize 25|vert 2resize 89|3resize 24|vert 3resize 89|4resize 4|vert 4resize 89|
+1resize 55|vert 1resize 22|2resize 41|vert 2resize 92|3resize 8|vert 3resize 92|4resize 4|vert 4resize 92|
 2wincmd w
 tabnext 1
 if exists('s:wipebuf')
