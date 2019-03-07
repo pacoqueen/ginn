@@ -1358,7 +1358,7 @@ def load_inventario(fich_inventario, hoja="Totales"):
     found = False
     data = None
     for data in sheets:
-        if hoja.lower() in data.__repr__().lower():
+        if "<"+hoja.lower()+" " in data.__repr__().lower():
             found = True
             break
     if not found:
@@ -1395,7 +1395,7 @@ def load_pendiente_mes_pasado(fich_inventario):
         found = False
         data = None
         for data in sheets:
-            if hoja.lower() in data.__repr__().lower():
+            if "<"+hoja.lower()+" " in data.__repr__().lower():
                 found = True
                 break
         if not found:
@@ -1415,13 +1415,13 @@ def load_pendiente_mes_pasado(fich_inventario):
                     codigo_sheet = fila[fila.keys()[1]]
                 codigo = codigo_sheet
                 try:
-                    bultos = int(fila['No volcado n→n+1 (bultos)'])
-                    metros = float(fila['No volcado n→n+1 (m²)'])
-                    kilos = float(fila['No volcado n→n+1 (kg)'])
+                    bultos = int(fila[u'No volcado n\u2192n+1 (bultos)'])
+                    metros = float(fila[u'No volcado n\u2192n+1 (m²)'])
+                    kilos = float(fila[u'No volcado n\u2192n+1 (kg)'])
                 except KeyError:    # No existe la fila. Inventario antiguo.
-                    bultos = 0
-                    metros = 0.0
-                    kilos = 0.0
+                    bultos = int(fila[fila.keys()[24]])
+                    metros = float(fila[fila.keys()[25]])
+                    kilos = float(fila[fila.keys()[26]])
                     # Uso ceros y ya completaré a mano.
                 if codigo not in res:
                     res[codigo] = {}
