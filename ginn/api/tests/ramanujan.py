@@ -220,7 +220,8 @@ def cuentalavieja(producto_ginn, data_inventario, data_pendiente,
     else:
         familia = "TEST"
     cuadra = res and "OK" or "KO"
-    pendiente = find_pendiente_mes_pasado(producto_ginn, dev, calidad)
+    pendiente = find_pendiente_mes_pasado(data_pendiente, producto_ginn,
+                                          dev, calidad)
     en_curso = find_produccion_en_curso(producto_ginn, dev, calidad)
     suma = ("=", "=", "=")      # =D2+G2-J2-M2+P2+Y2-AB2
     delta = ("=", "=", "=")     # =S2-AH2
@@ -267,14 +268,22 @@ def cuentalavieja(producto_ginn, data_inventario, data_pendiente,
     return res
 
 
-def find_pendiente_mes_pasado(producto_ginn, dev=False, calidad=None):
+def find_pendiente_mes_pasado(data_pendiente, producto_ginn, dev=False,
+                              calidad=None):
     """
     De la hoja de cálculo del mes pasado extrae lo que estaba pendiente
     de volcar entonces para agregarlo a la producción de este mes.
     """
-    # TODO: De momento copio y pego. Ya haré que lo saque automáticamente de las columnas correspondientes en la hoja del mes pasado.
-    res = [0, 0, 0]
-    return res
+    try:
+        calidad = calidad.upper()
+    except AttributeError:   # Calidad es None.
+        pass
+    assert calidad in (None, 'A', 'B', 'C'), "Calidad debe ser None o A/B/C."
+    codigo = "PV{}".format(producto_ginn.id)
+    bultos = data_pendiente[codigo][calidad]['#']
+    metros = data_pendiente[codigo][calidad]['m2']
+    kilos = data_pendiente[codigo][calidad]['kg']
+    return bultos, metros, kilos
 
 
 def find_produccion_en_curso(producto_ginn, dev=False, calidad=None):
