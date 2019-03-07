@@ -1415,14 +1415,18 @@ def load_pendiente_mes_pasado(fich_inventario):
                     codigo_sheet = fila[fila.keys()[1]]
                 codigo = codigo_sheet
                 try:
-                    bultos = int(fila[u'No volcado n\u2192n+1 (bultos)'])
-                    metros = float(fila[u'No volcado n\u2192n+1 (m²)'])
-                    kilos = float(fila[u'No volcado n\u2192n+1 (kg)'])
-                except KeyError:    # No existe la fila. Inventario antiguo.
-                    bultos = int(fila[fila.keys()[24]])
-                    metros = float(fila[fila.keys()[25]])
-                    kilos = float(fila[fila.keys()[26]])
-                    # Uso ceros y ya completaré a mano.
+                    bultos = int(fila[u'En curso n\u2192n+1 (bultos)'])
+                    metros = float(fila[u'En curso n\u2192n+1 (m²)'])
+                    kilos = float(fila[u'En curso n\u2192n+1 (kg)'])
+                except KeyError:
+                    if (fila.keys()[29].startswith("En curso n") and
+                            fila.keys()[29].split("(")[0].endswith("n+1 ")):
+                        bultos = int(fila[fila.keys()[27]])
+                        metros = float(fila[fila.keys()[28]])
+                        kilos = float(fila[fila.keys()[29]])
+                    else:       # No existe la columna. Inventario antiguo.
+                        # Uso ceros y ya completaré a mano.
+                        bultos, metros, kilos = 0, 0.0, 0.0
                 if codigo not in res:
                     res[codigo] = {}
                 res[codigo][calidad] = {'#': bultos,
