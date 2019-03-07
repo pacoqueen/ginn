@@ -813,8 +813,10 @@ class PartesDeFabricacionBolsas(Ventana):
                         ceb = pv.camposEspecificosBala
                         for pale in self.objeto.partidaCem.pales:
                             pale.numcajas = ceb.cajasPale
+                            pale.numbolsas = ceb.bolsasCaja
                             pale.sync()
                             for caja in pale.cajas:
+                                caja.numbolsas = ceb.bolsasCaja
                                 caja.peso = (ceb.bolsasCaja
                                              * ceb.gramosBolsa / 1000)
                                 a = caja.articulo
