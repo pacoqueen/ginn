@@ -189,13 +189,16 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
     # De una sentada me saco todos los datos de un artículo. De modo que si
     # vuelven a pedirme que lo agregue al data_full, lo ignoro. Ya está metido
     # y no hay información nueva que actualizar.
-    # TODO: ¡A no ser que venga con otros datos! Si hay cambio de producto, por
-    # ejemplo, deberían aparecer 2 filas, una por cada PV al que ha pertenecido.
-    if codigo_articulo not in data_full['Serie']:
-        # ['Código', 'Producto', 'Serie', 'Calidad', 'Bultos', 'm²', 'kg',
-        #  'Prod. ginn', 'Prod. Murano', 'Origen', 'Fabricado en',
-        #  'Cons. ginn', 'Cons. Murano', 'Consumido en',
-        #  'Venta', 'Vendido en']
+    # ¡A no ser que venga con otros datos! Si hay cambio de producto, por
+    # ejemplo, deberían aparecer 2 filas, una por cada PV al que ha
+    # pertenecido. Así que miro en el data_full si el código de producto para
+    # esa serie es el mismo que el que estoy tratando ahora.
+    no_esta = codigo_articulo not in data_full['Serie']
+    esta_repetido = articulo_en_data(data_full, codigo_articulo,
+                                     codigo_producto_murano)
+    # No está indica que no está en absoluto ese código de serie.
+    # Está repetido es True si la serie ya existe con ese código de producto.
+    if no_esta or not esta_repetido:
         fila = [codigo_producto_murano,
                 descripcion_producto, codigo_articulo, calidad,
                 1, superficie, peso_neto,
@@ -203,7 +206,37 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
                 inicio_parte_produccion,
                 fecha_consumo_ginn, fecha_salida_murano, codigo_partida_carga,
                 fecha_venta, albaran]
+        # ['Código', 'Producto', 'Serie', 'Calidad', 'Bultos', 'm²', 'kg',
+        #  'Prod. ginn', 'Prod. Murano', 'Origen', 'Fabricado en',
+        #  'Cons. ginn', 'Cons. Murano', 'Consumido en',
+        #  'Venta', 'Vendido en']
         data_full.append(fila)
+
+
+def articulo_en_data(data_full, codigo_articulo, codigo_producto_murano):
+    """
+    Devuelve True si la serie `codigo_articulo` está en el data con el
+    mismo codigo_producto_murano.
+    """
+    columna_serie = data_full['Serie']
+    columna_codigo = data_full['Código']
+    if columna_serie.count(codigo_articulo) == 0:
+        # No está.
+        res = False
+    elif columna_serie.count(codigo_articulo) == 1:
+        # Optimización: si solo existe una fila con esa serie,solo hago una
+        # comparación.
+        indice_serie = columna_serie.index(codigo_articulo)
+        res = columna_codigo[indice_serie] == codigo_producto_murano
+    else:
+        # No me queda más remedio que recorrer toda la lista.
+        res = False
+        for i in range(len(columna_serie)):
+            if (columna_serie[i] == codigo_articulo
+                    and columna_codigo[i] == codigo_producto_murano):
+                res = True
+                break
+    return res
 
 
 # pylint: disable=too-many-arguments,too-many-locals,too-many-branches,

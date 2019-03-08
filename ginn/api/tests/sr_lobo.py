@@ -420,14 +420,18 @@ def sync_articulo(codigo, fsalida, simulate=True, force=True, cachedb=None):
         else:
             report.write("Artículo no encontrado en ginn.")
             res = False
-    if res:
-        if not simulate:
-            cachedb.inc_success(codigo)     # Y si no existe, lo crea.
-        report.write(" [OK]\n")
-    else:
-        if not simulate:
-            cachedb.reset_success(codigo)
-        report.write(" [KO]\n")
+    try:
+        if res:
+            if not simulate:
+                cachedb.inc_success(codigo)     # Y si no existe, lo crea.
+            report.write(" [OK]\n")
+        else:
+            if not simulate:
+                cachedb.reset_success(codigo)
+            report.write(" [KO]\n")
+    except IOError:     # Log rotado, lleno o lo que sea.
+        cachedb.close()
+        sys.exit(1)
     if close_after:
         cachedb.close()
     report.close()
