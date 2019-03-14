@@ -124,7 +124,8 @@ class Connection(object):
                 raise exception
         for sentence_sql in sql:
             # logging.info("SQL a ejecutar:")
-            logging.info(str_clean(sentence_sql))
+            if VERBOSE:
+                logging.info(str_clean(sentence_sql))
             if DEBUG:
                 strlog = " ==> SQLServer --> %s" % (str_clean(sentence_sql))
                 print(strlog)
@@ -147,7 +148,8 @@ class Connection(object):
                         except AttributeError:
                             res = cursor.fetchall()
                         strlog = "\t\t\t\t[OK]"
-                        logging.info(strlog)
+                        if VERBOSE:
+                            logging.info(strlog)
                         if VERBOSE and DEBUG:
                             print(strlog)
                     else:
@@ -158,7 +160,8 @@ class Connection(object):
                         self.conn.commit()
                         res = True
                         strlog = "\t\t\t\t[OK]"
-                        logging.info(strlog)
+                        if VERBOSE:
+                            logging.info(strlog)
                         if VERBOSE and DEBUG:
                             print(strlog)
                 # pylint: disable=broad-except

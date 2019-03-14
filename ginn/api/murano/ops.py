@@ -2709,7 +2709,8 @@ def espera_activa(funcion, parametros, res=None, timeout=30, tick=5):
     Devuelve lo que devuelva la función `funcion`.
     """
     antes = time.time()
-    logging.warning("Iniciando espera activa...")
+    if VERBOSE:
+        logging.warning("Iniciando espera activa...")
     tries = 0
     max_tries = timeout/tick
     while timeout > 0:
@@ -2726,7 +2727,8 @@ def espera_activa(funcion, parametros, res=None, timeout=30, tick=5):
     tiempo = time.time() - antes
     strlog = "[{}] Espera activa finalizada en {}/{} intentos ({:.2f} s)"\
              ".".format(success and '✔' or '✘', tries, max_tries, tiempo)
-    logging.warning(strlog)
+    if VERBOSE:
+        logging.warning(strlog)
     return res
 
 
@@ -2751,7 +2753,8 @@ def fire(guid_proceso, ignore_errors=False,
                "plataforma donde se encuentre instalado Sage Murano."
     if not LCOEM:
         raise NotImplementedError(strerror)
-    logging.info("Inicializando OEM...")
+    if VERBOSE:
+        logging.info("Inicializando OEM...")
     burano = win32com.client.Dispatch("LogicControlOEM.OEM_EjecutaOEM")
     burano.InicializaOEM(CODEMPRESA,
                          "OEM",
@@ -2762,12 +2765,14 @@ def fire(guid_proceso, ignore_errors=False,
     ahora = time.time()
     tiempo_inicializacion = ahora - antes
     str_tiempo_inicializacion = _str_time(tiempo_inicializacion)
-    logging.info("OEM inicializada en %s", str_tiempo_inicializacion)
+    if VERBOSE:
+        logging.info("OEM inicializada en %s", str_tiempo_inicializacion)
     retCode = None
     operacion = "ImportaIME"
     strverbose = "Lanzando proceso de importación `%s` con GUID `%s`..." % (
         operacion, guid_proceso)
-    logging.info(strverbose)
+    if VERBOSE:
+        logging.info(strverbose)
     if VERBOSE and DEBUG:
         print(strverbose)
     retCode = burano.EjecutaOEM("LCCImExP.LcImExProceso", operacion,
@@ -2797,7 +2802,8 @@ def fire(guid_proceso, ignore_errors=False,
     # ### EOEspera_activa
     strverbose = "Importación `%s` concluida con código de retorno: %s" % (
         guid_proceso, retCode)
-    logging.info(strverbose)
+    if VERBOSE:
+        logging.info(strverbose)
     if VERBOSE and DEBUG:
         print(strverbose)
     # Si retcode es 1: cagada. Si es 0: éxito
@@ -2815,7 +2821,8 @@ def fire(guid_proceso, ignore_errors=False,
     # [2016/08/30] UPDATE: En la versión 2016.70.000 se corrige el bug de
     # Murano. Ya no es necesario usar el canal DIV.
     if retCode is None:    # Solo ocurre si se alcanza timeout en espera_activa
-        logging.warning("Se cambia el valor None por 1 (FAIL).")
+        if VERBOSE:
+            logging.warning("Se cambia el valor None por 1 (FAIL).")
         retCode = 1
     if retCode and not ignore_errors:
         strerr = "¡PROCESO DE IMPORTACIÓN %s CON ERRORES!"\
@@ -2839,13 +2846,15 @@ def fire(guid_proceso, ignore_errors=False,
             # acumular nada.
             strverbose = "Se ignora script `%s` con GUID `%s`..." % (
                 nombrescript, guid_proceso)
-            logging.info(strverbose)
+            if VERBOSE:
+                logging.info(strverbose)
             if VERBOSE and DEBUG:
                 print(strverbose)
         else:
             strverbose = "Lanzando script `%s` con GUID `%s`..." % (
                 nombrescript, guid_proceso)
-            logging.info(strverbose)
+            if VERBOSE:
+                logging.info(strverbose)
             if VERBOSE and DEBUG:
                 print(strverbose)
             retCode = burano.EjecutaScript(nombrescript, paramsscript)
@@ -2863,7 +2872,8 @@ def fire(guid_proceso, ignore_errors=False,
             strverbose = "Ejecución `%s` (GUID `%s`) "\
                          "concluida con código de retorno: %s" % (
                              nombrescript, guid_proceso, retCode)
-            logging.info(strverbose)
+            if VERBOSE:
+                logging.info(strverbose)
             if VERBOSE and DEBUG:
                 print(strverbose)
         # ## Ya no es necesario el script del canal DIV. Sage solucionó el bug.
@@ -2910,8 +2920,9 @@ def fire(guid_proceso, ignore_errors=False,
     ahora = time.time()
     tiempo_fire = ahora - antes
     str_tiempo_fire = _str_time(tiempo_fire)
-    logging.info("Proceso de importación `%s` finalizado en %s",
-                 guid_proceso, str_tiempo_fire)
+    if VERBOSE:
+        logging.info("Proceso de importación `%s` finalizado en %s",
+                     guid_proceso, str_tiempo_fire)
     return res
 
 
