@@ -920,8 +920,7 @@ def main():
     parser.add_argument("-p", "--productos", dest="codigos_productos",
                         help="Códigos de productos a comprobar. Si no se "
                         "especifica ningún código, se comprobarán todos.",
-                        # nargs="+", default=[])
-                        default=[])
+                        nargs="*", default=[])
     parser.add_argument("-n", "--dry-run", dest="simulate",
                         help="Simular. No hace cambios en la base de datos.",
                         default=False, action='store_true')
