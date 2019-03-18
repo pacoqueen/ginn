@@ -894,6 +894,7 @@ def _todos_los_codigos_de_producto():
     Devuelve todos los códigos de producto de Murano, incluidos los obsoletos
     (se marcarán como obsoletos en ginn al sincronizar).
     """
+    print("Sincronizando todos los productos de Murano...")
     conn = murano.connection.Connection()
     sql = """SELECT CodigoArticulo FROM {}.dbo.Articulos
               WHERE CodigoArticulo LIKE 'PV%'
@@ -901,6 +902,7 @@ def _todos_los_codigos_de_producto():
                   conn.get_database(), murano.connection.CODEMPRESA)
     codigos = conn.run_sql(sql)
     res = [i['CodigoArticulo'] for i in codigos]
+    print("{} productos encontrados.".format(len(res)))
     return res
 
 
@@ -916,7 +918,8 @@ def main():
                         help="Códigos de artículos a comprobar.",
                         nargs="+", default=[])
     parser.add_argument("-p", "--productos", dest="codigos_productos",
-                        help="Códigos de productos a comprobar.",
+                        help="Códigos de productos a comprobar. Si no se "
+                        "especifica ningún código, se comprobarán todos.",
                         # nargs="+", default=[])
                         default=[])
     parser.add_argument("-n", "--dry-run", dest="simulate",
@@ -955,9 +958,11 @@ def main():
         make_consumos(args.fsalida, args.simulate)
     if args.codigos_productos == []:
         # Todos los productos.
-        args.codigos_productos = _todos_los_codigos_de_producto()
-    if args.codigos_productos:
-        for codigo in tqdm(args.codigos_productos, desc="Productos"):
+        codigos_productos = _todos_los_codigos_de_producto()
+    else:
+        args.codigos_productos = codigos_productos
+    if codigos_productos:
+        for codigo in tqdm(codigos_productos, desc="Productos"):
             sync_producto(codigo, args.fsalida, args.simulate)
     if args.codigos_articulos:
         cachedb = CacheDB()
