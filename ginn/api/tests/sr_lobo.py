@@ -889,6 +889,21 @@ def check_unidades_series_positivas():
             [a['NumeroSerieLc'] for a in articulos]))
 
 
+def _todos_los_codigos_de_producto():
+    """
+    Devuelve todos los códigos de producto de Murano, incluidos los obsoletos
+    (se marcarán como obsoletos en ginn al sincronizar).
+    """
+    conn = murano.connection.Connection()
+    sql = """SELECT CodigoArticulo FROM {}.dbo.Articulos
+              WHERE CodigoArticulo LIKE 'PV%'
+                AND CodigoEmpresa = {};""".format(
+                  conn.get_database(), murano.connection.CODEMPRESA)
+    codigos = conn.run_sql(sql)
+    res = [i['CodigoArticulo'] for i in codigos]
+    return res
+
+
 def main():
     """
     Rutina principal.
@@ -902,7 +917,8 @@ def main():
                         nargs="+", default=[])
     parser.add_argument("-p", "--productos", dest="codigos_productos",
                         help="Códigos de productos a comprobar.",
-                        nargs="+", default=[])
+                        # nargs="+", default=[])
+                        default=[])
     parser.add_argument("-n", "--dry-run", dest="simulate",
                         help="Simular. No hace cambios en la base de datos.",
                         default=False, action='store_true')
@@ -937,6 +953,9 @@ def main():
     # ## Consumos
     if args.consumos:
         make_consumos(args.fsalida, args.simulate)
+    if args.codigos_productos == []:
+        # Todos los productos.
+        args.codigos_productos = _todos_los_codigos_de_producto()
     if args.codigos_productos:
         for codigo in tqdm(args.codigos_productos, desc="Productos"):
             sync_producto(codigo, args.fsalida, args.simulate)
