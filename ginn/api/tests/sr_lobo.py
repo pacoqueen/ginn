@@ -959,7 +959,7 @@ def main():
         # Todos los productos.
         codigos_productos = _todos_los_codigos_de_producto()
     else:
-        args.codigos_productos = codigos_productos
+        codigos_productos = args.codigos_productos
     if codigos_productos:
         for codigo in tqdm(codigos_productos, desc="Productos"):
             sync_producto(codigo, args.fsalida, args.simulate)
