@@ -954,6 +954,7 @@ def main():
     if (not args.codigos_articulos and not args.codigos_productos and
             not args.consumos):
         # Si no recibo argumentos, compruebo todos los artículos y productos.
+        print("Comprobando TODOS los artículos y productos...")
         args.codigos_articulos, args.codigos_productos = check_everything(
             args.fsalida)
         # Y los consumos
