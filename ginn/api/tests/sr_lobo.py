@@ -939,6 +939,14 @@ def main():
         if not os.path.exists(args.fsalida):
             open(args.fsalida, 'a').close()
         subprocess.Popen('gvim "{}"'.format(args.fsalida))
+    # # Pruebas
+    check_unidades_series_positivas()
+    # ¿Todos los productos?
+    if args.codigos_productos == []:
+        # Todos los productos.
+        codigos_productos = _todos_los_codigos_de_producto()
+    else:
+        codigos_productos = args.codigos_productos
     # Primero termino de procesar todas las posibles imortaciones pendientes:
     finish_pendientes(args.fsalida, args.simulate)
     # Y corrijo las posibles dimensiones nulas:
@@ -950,19 +958,13 @@ def main():
             args.fsalida)
         # Y los consumos
         args.consumos = True
-    # # Pruebas
-    check_unidades_series_positivas()
-    # ## Consumos
-    if args.consumos:
-        make_consumos(args.fsalida, args.simulate)
-    if args.codigos_productos == []:
-        # Todos los productos.
-        codigos_productos = _todos_los_codigos_de_producto()
-    else:
-        codigos_productos = args.codigos_productos
+    # ## Productos
     if codigos_productos:
         for codigo in tqdm(codigos_productos, desc="Productos"):
             sync_producto(codigo, args.fsalida, args.simulate)
+    # ## Consumos
+    if args.consumos:
+        make_consumos(args.fsalida, args.simulate)
     if args.codigos_articulos:
         cachedb = CacheDB()
         for codigo in tqdm(args.codigos_articulos, desc="Artículos"):
