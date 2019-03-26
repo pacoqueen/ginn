@@ -33,6 +33,7 @@ sys.path.append(ruta_ginn)
 # pylint: disable=import-error,wrong-import-position
 # from framework import pclases
 from api import murano                                                  # noqa
+from sr_lobo import _todos_los_codigos_de_producto
 from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.         # noqa
 sys.argv = _argv
 
@@ -204,6 +205,9 @@ def main():
     parser.add_argument("-p", "--productos", dest="codigos_productos",
                         help="Códigos de productos a comprobar.",
                         nargs="+", default=[])
+    parser.add_argument("-a", "--all", dest="todos",
+                        help="Comprueba todos los productos.",
+                        default=False, action='store_true')
     parser.add_argument("-n", "--dry-run", dest="simulate",
                         help="Simular. No hace cambios en la base de datos.",
                         default=False, action='store_true')
@@ -214,14 +218,17 @@ def main():
     parser.add_argument("-v", "--view", dest="ver_salida",
                         help="Abre el fichero de salida en un editor externo.",
                         default=False, action='store_true')
-    # TODO: Agregar opción para corregir todos los PV con existencias.
     args = parser.parse_args()
     if args.ver_salida:
         if not os.path.exists(args.fsalida):
             open(args.fsalida, 'a').close()
         subprocess.Popen('gvim "{}"'.format(args.fsalida))
     # # Pruebas
-    if args.codigos_productos:
+    if args.todos:
+        codigos_productos = _todos_los_codigos_de_producto()
+    else:
+        codigos_productos = args.codigos_productos
+    if codigos_productos:
         for codigo in tqdm(args.codigos_productos, desc="Productos"):
             fix_stock_producto(codigo, args.fsalida, args.simulate)
 
