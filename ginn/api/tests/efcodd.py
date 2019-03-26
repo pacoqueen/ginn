@@ -229,7 +229,7 @@ def main():
     else:
         codigos_productos = args.codigos_productos
     if codigos_productos:
-        for codigo in tqdm(args.codigos_productos, desc="Productos"):
+        for codigo in tqdm(codigos_productos, desc="Productos"):
             fix_stock_producto(codigo, args.fsalida, args.simulate)
 
 

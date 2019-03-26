@@ -894,7 +894,7 @@ def _todos_los_codigos_de_producto():
     Devuelve todos los códigos de producto de Murano, incluidos los obsoletos
     (se marcarán como obsoletos en ginn al sincronizar).
     """
-    print("Sincronizando todos los productos de Murano...")
+    print("Buscando todos los productos de Murano...")
     conn = murano.connection.Connection()
     sql = """SELECT CodigoArticulo FROM {}.dbo.Articulos
               WHERE CodigoArticulo LIKE 'PV%'
