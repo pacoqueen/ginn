@@ -934,6 +934,9 @@ def main():
     parser.add_argument("-c", "--consumos", dest="consumos",
                         help="Realiza los consumos atrasados",
                         default=False, action='store_true')
+    parser.add_argument("-t", "--todo", dest="todo",
+                        help="Ejecuta todos los chequeos.",
+                        default=False, action="store_true")
     args = parser.parse_args()
     if args.ver_salida:
         if not os.path.exists(args.fsalida):
@@ -943,7 +946,8 @@ def main():
     check_unidades_series_positivas()
     # ¿Todos los productos?
     if args.codigos_productos == []:
-        # Todos los productos.
+        # Todos los productos si no `-p PV*...` o si `-p` solamente.
+        # (Es decir, siempre).
         codigos_productos = _todos_los_codigos_de_producto()
     else:
         codigos_productos = args.codigos_productos
@@ -951,10 +955,8 @@ def main():
     finish_pendientes(args.fsalida, args.simulate)
     # Y corrijo las posibles dimensiones nulas:
     corregir_dimensiones_nulas(args.fsalida, args.simulate)
-    if (not args.codigos_articulos and not codigos_productos and
-            not args.consumos):
-        # TODO: Esto no funciona. Tanto si pongo "-p" a secas como nada, solo se hace el test de todos los productos, pero no el de todos los artículos.
-        # Si no recibo argumentos, compruebo todos los artículos y productos.
+    if args.todo:
+        # Si `--todo` Compruebo todos los artículos y productos.
         print("Comprobando TODOS los artículos y productos...")
         args.codigos_articulos, args.codigos_productos = check_everything(
             args.fsalida)
