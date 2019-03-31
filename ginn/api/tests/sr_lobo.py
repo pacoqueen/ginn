@@ -951,8 +951,9 @@ def main():
     finish_pendientes(args.fsalida, args.simulate)
     # Y corrijo las posibles dimensiones nulas:
     corregir_dimensiones_nulas(args.fsalida, args.simulate)
-    if (not args.codigos_articulos and not args.codigos_productos and
+    if (not args.codigos_articulos and not codigos_productos and
             not args.consumos):
+        # TODO: Esto no funciona. Tanto si pongo "-p" a secas como nada, solo se hace el test de todos los productos, pero no el de todos los artículos.
         # Si no recibo argumentos, compruebo todos los artículos y productos.
         print("Comprobando TODOS los artículos y productos...")
         args.codigos_articulos, args.codigos_productos = check_everything(
