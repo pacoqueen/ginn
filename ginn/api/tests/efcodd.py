@@ -33,7 +33,7 @@ sys.path.append(ruta_ginn)
 # pylint: disable=import-error,wrong-import-position
 # from framework import pclases
 from api import murano                                                  # noqa
-from sr_lobo import _todos_los_codigos_de_producto
+from sr_lobo import _todos_los_codigos_de_producto                      # noqa
 from lib.tqdm.tqdm import tqdm  # Barra de progreso modo texto.         # noqa
 sys.argv = _argv
 

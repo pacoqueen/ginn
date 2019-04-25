@@ -12204,13 +12204,13 @@ if __name__=='__main__':
     # consumoPartida(pclases.Partida.select(
     #   pclases.Partida.q.numpartida == 1148)[0])
     #pruebines2()
-    # probar_fuentes_disponibles()
+    probar_fuentes_disponibles()
     #pruebines_nuevas_etiquetas_domenech()
     #pruebines5()
     #prueba_cmr()
     #pruebines_pales_guaje()
     #pruebines_cajas_guaje()
-    pclases.VERBOSE = True
-    print existencias_no_nulas()
+    # pclases.VERBOSE = True
+    # print existencias_no_nulas()
 
 

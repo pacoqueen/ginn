@@ -1609,6 +1609,7 @@ def do_resumen(producto, resumen,
                 except KeyError:
                     # Versión antigua. No tenemos lo pendiente por A, B y C.
                     en_curso = (0, 0.0, 0.0)    # Habrá que hacerlo a mano.
+                # TODO: ¿Funciona la producción en curso en la pestaña resumen? En el cierre de marzo he tenido que escribirlo a mano.
                 total = (iniciales[0] + producidos[0]
                          - vendidos[0] - consumidos[0]
                          + ajustes[0] + en_curso[0],
