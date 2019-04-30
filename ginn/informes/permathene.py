@@ -260,8 +260,9 @@ def crear_etiquetas_rollos(rollos, mostrar_marcado=True, lang="es"):
         #######################################################################
         canvas.showPage()
         # Y ahora la etiqueta adicional por si se pierde la otra y para cargar.
-        create_etiqueta_backup(canvas, rollo)
-        canvas.showPage()
+        # create_etiqueta_backup(canvas, rollo)
+        # canvas.showPage()
+        # CWT: Que no. Que solo la del CE y la del cliente.
         create_etiqueta_custom(canvas, rollo)
         canvas.showPage()
     canvas.save()
@@ -385,10 +386,12 @@ def create_etiqueta_custom(canvas, rollo):
     # ## El código de partida:
     crd_x = alto * 2.0 / 3.0
     crd_y = -(ancho - 2*margen)
-    codpart = codigo_partida
+    # codpart = codigo_partida
+    codpart = "19762"   # CWT: Siempre, SIEMPRE, el mismo batch number.
     canvas.setFont("Helvetica", 9)
     canvas.drawString(crd_x, crd_y, "Batch number: {}".format(codpart))
-    canvas.drawString(1*cm, crd_y, codigo_rollo)
+    # CWT: Tampoco debe aparecer el número de rollo.
+    # canvas.drawString(1*cm, crd_y, codigo_rollo)
     canvas.rotate(-90)
     # ## Línea auxiliar por donde está el pin roto de la impresora:
     # ## Mejor la quito para que la pistola no la cofunda con otra barra.
