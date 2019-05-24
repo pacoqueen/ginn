@@ -1957,28 +1957,28 @@ class PartesDeFabricacionRollos(Ventana):
             y todas sus rollos fabricados pulse "Sí".
             ¿Desea cambiar el producto fabricado en el parte?
             """
-            if not utils.dialogo(titulo = '¿CAMBIAR LA PRODUCCIÓN?',
-                                 texto = txt,
-                                 padre = self.wids['ventana']):
+            if not utils.dialogo(titulo='¿CAMBIAR LA PRODUCCIÓN?',
+                                 texto=txt,
+                                 padre=self.wids['ventana']):
                 return
         idlineasrollos = pclases.LineaDeProduccion.select(pclases.OR(
-                pclases.LineaDeProduccion.q.nombre=='Línea de geotextiles',
-                pclases.LineaDeProduccion.q.nombre=='Línea de geocompuestos',
-                pclases.LineaDeProduccion.q.nombre=='Línea de comercializados'))
-            # OJO: Debe llamarse EXACTAMENTE Línea de xxxxxxxxxx en la BD.
+            pclases.LineaDeProduccion.q.nombre == 'Línea de geotextiles',
+            pclases.LineaDeProduccion.q.nombre == 'Línea de geocompuestos',
+            pclases.LineaDeProduccion.q.nombre == 'Línea de comercializados'))
+        # OJO: Debe llamarse EXACTAMENTE Línea de xxxxxxxxxx en la BD.
         if idlineasrollos.count() == 0:
             # No hay línea de rollos
             utils.dialogo_info('ERROR LÍNEAS DE ROLLOS',
                                'No hay líneas de geotextiles o geocompuestos/'
                                'comercializados en las bases de datos del '
                                'sistema.',
-                               padre = self.wids['ventana'])
+                               padre=self.wids['ventana'])
             return
         criterio = pclases.ProductoVenta.q.lineaDeProduccionID == idlineasrollos[0].id
         for i in xrange(1, idlineasrollos.count()):
             criterio = pclases.OR(criterio, pclases.ProductoVenta.q.lineaDeProduccionID == idlineasrollos[i].id)
         producto = self.buscar_producto(criterio)
-        if producto != None:
+        if producto is not None:
             self.wids['e_o11'].set_text(utils.float2str(producto.prodestandar))
             self.wids['e_fichaproduccion'].set_text(
                 producto.camposEspecificosRollo.fichaFabricacion)

@@ -527,6 +527,8 @@ def _get_uso_ginn(codigo_uso):
     - FP: Fibra de polipropileno virgen embolsada en papel hidrosoluble para
           su uso como aditivo del hormigón
     - FV: Fibra de polipropileno virgen
+    - FS: Filtración, separación
+    - FR: Filtración, separación, protección
     - '': ''
     Resto: None
     """
@@ -539,6 +541,10 @@ def _get_uso_ginn(codigo_uso):
               " para su uso como aditivo del hormigón"
     elif codigo_uso == 'FV':
         res = "Fibra de polipropileno virgen"
+    elif codigo_uso == 'FS':
+        res = "Filtración, separación"
+    elif codigo_uso == 'FR':
+        res = "Filtración, separación, protección"
     elif codigo_uso == '':
         res = ""
     else:
