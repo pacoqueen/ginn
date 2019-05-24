@@ -360,6 +360,9 @@ def helene_laanest(texto):
     translate_table["Partida: %d Rollo: %s"] = "Batch: %d Roll: %s"
     translate_table["Gramaje: %d g/m² Ancho: %s m Largo: %d m"
                    ] = "Mass per area: %d g/m² Width: %s m Length: %d m"
+    translate_table["Filtración, separación"] = "Filtration, separation"
+    translate_table["Filtración, separación, protección"] = "Filtration, "\
+            "separation, protection"
     return translate_table[texto]
 
 
