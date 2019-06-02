@@ -118,6 +118,8 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
                     albaran = ""
             else:  # Tiene movimiento en Murano, pero el último no es de salida
                 fecha_salida_murano = "N/A"
+                fecha_venta = "N/A"
+                albaran = "N/A"
         else:
             fecha_salida_murano = "N/D"
             fecha_venta = "N/D"
