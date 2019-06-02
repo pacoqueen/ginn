@@ -117,6 +117,9 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
                     fecha_venta = ""
                     albaran = ""
             else:  # Tiene movimiento en Murano, pero el último no es de salida
+                # Quizás un movimiento MAN de borrado y el artículo ya no
+                # existe en ginn. O quizás proviene del cierre del mes pasado
+                # y se ha borrado de ginn (serie "RAM").
                 fecha_salida_murano = "N/A"
                 fecha_venta = "N/A"
                 albaran = "N/A"
