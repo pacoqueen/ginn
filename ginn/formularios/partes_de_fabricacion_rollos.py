@@ -270,6 +270,18 @@ class PartesDeFabricacionRollos(Ventana):
         self.wids['sp_merma'].connect('output',
                                       self.actualizar_consumo_estimado)
         self.wids['sp_merma'].set_property("visible", False)
+        # Agrego campo calculado nuevo (NEW! 19/06/2019)
+        hbox = self.wids['e_consumo_estimado'].parent
+        label = gtk.Label('Producción teórica: ')
+        self.wids['e_prod_teorica'] = entry = gtk.Entry()
+        entry.set_property("editable", False)
+        entry.set_property("has-frame", False)
+        entry.set_tooltip_text("Tiempo real trabajado por producción estándar")
+        hbox.add(label)
+        hbox.add(entry)
+        hbox.reorder_child(label, 2)
+        hbox.reorder_child(entry, 3)
+        hbox.show_all()
         # XXX
         connections = {'b_salir/clicked': self._salir,
                        'ventana/delete_event' : self._salir,
@@ -1444,6 +1456,14 @@ class PartesDeFabricacionRollos(Ventana):
             # OJO: La densidad media no tiene en cuenta los rollos defectuosos.
         self.rellenar_pie_rollos_ab()
         self.colorear_pesos()
+        # NEW! 9/06/2019 +abahamonde
+        try:
+            prodteorica = self.objeto.prodestandar*(tiemporeal.seconds/(60*60))
+        except Exception as eprodteorica:
+            prodteorica = "ERROR {}".format(eprodteorica)
+        else:
+            prodteorica = utils.float2str(prodteorica)
+        self.wids['e_prod_teorica'].set_text(prodteorica)
 
     def rellenar_pie_rollos_ab(self):
         """
