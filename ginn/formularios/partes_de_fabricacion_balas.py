@@ -129,6 +129,18 @@ class PartesDeFabricacionBalas(Ventana):
         # Debe coincidir con el de todas las balas de "Detalles de producción"
         Ventana.__init__(self, 'partes_de_fabricacion_balas.glade', objeto,
                          usuario=usuario)
+        # Agrego campo calculado nuevo (NEW! 19/06/2019)
+        hbox = self.wids['e_productividad'].parent
+        label = gtk.Label('Producción teórica: ')
+        self.wids['e_prod_teorica'] = entry = gtk.Entry()
+        entry.set_property("editable", False)
+        entry.set_property("has-frame", False)
+        entry.set_tooltip_text("Tiempo real trabajado por producción estándar")
+        hbox.pack_start(label, expand=False, fill=False)
+        hbox.pack_start(entry, expand=False, fill=False)
+        hbox.reorder_child(label, 2)
+        hbox.reorder_child(entry, 3)
+        hbox.show_all()
         connections = {'b_salir/clicked': self._salir,
                        'ventana/delete_event': self._salir,
                        'b_nuevo/clicked': self.crear_nuevo_partedeproduccion,
@@ -1532,6 +1544,14 @@ class PartesDeFabricacionBalas(Ventana):
         self.rellenar_datos_lote()
         self.rellenar_tabla_consumos()
         self.rellenar_tabla_conf_silos()
+        # NEW! 9/06/2019 +abahamonde
+        try:
+            prodteorica = self.objeto.prodestandar*(tiemporeal.seconds/(60*60))
+        except Exception as eprodteorica:
+            prodteorica = "ERROR {}".format(eprodteorica)
+        else:
+            prodteorica = utils.float2str(prodteorica)
+        self.wids['e_prod_teorica'].set_text(prodteorica)
 
     def rellenar_tabla_consumos(self):
         """
