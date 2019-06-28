@@ -1,6 +1,6 @@
 " ~/Geotexan/src/Geotex-INN/geotexan.vim:
 " Vim session script.
-" Created by session.vim 2.13.1 on 20 junio 2019 at 13:25:06.
+" Created by session.vim 2.13.1 on 28 junio 2019 at 11:50:01.
 " Open this file in Vim and run :source % to restore your session.
 
 set guioptions=aegimrLtT
@@ -57,30 +57,30 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 26 + 57) / 115)
+exe 'vert 1resize ' . ((&columns * 22 + 57) / 115)
 exe '2resize ' . ((&lines * 9 + 29) / 58)
-exe 'vert 2resize ' . ((&columns * 88 + 57) / 115)
+exe 'vert 2resize ' . ((&columns * 92 + 57) / 115)
 exe '3resize ' . ((&lines * 9 + 29) / 58)
-exe 'vert 3resize ' . ((&columns * 88 + 57) / 115)
-exe '4resize ' . ((&lines * 10 + 29) / 58)
-exe 'vert 4resize ' . ((&columns * 88 + 57) / 115)
+exe 'vert 3resize ' . ((&columns * 92 + 57) / 115)
+exe '4resize ' . ((&lines * 9 + 29) / 58)
+exe 'vert 4resize ' . ((&columns * 92 + 57) / 115)
 exe '5resize ' . ((&lines * 9 + 29) / 58)
-exe 'vert 5resize ' . ((&columns * 88 + 57) / 115)
+exe 'vert 5resize ' . ((&columns * 92 + 57) / 115)
 exe '6resize ' . ((&lines * 10 + 29) / 58)
-exe 'vert 6resize ' . ((&columns * 88 + 57) / 115)
-exe '7resize ' . ((&lines * 4 + 29) / 58)
-exe 'vert 7resize ' . ((&columns * 88 + 57) / 115)
+exe 'vert 6resize ' . ((&columns * 92 + 57) / 115)
+exe '7resize ' . ((&lines * 5 + 29) / 58)
+exe 'vert 7resize ' . ((&columns * 92 + 57) / 115)
 argglobal
 enew
 file __Tagbar__.1
 wincmd w
 argglobal
-let s:l = 145 - ((0 * winheight(0) + 4) / 9)
+let s:l = 148 - ((0 * winheight(0) + 4) / 9)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-145
-normal! 011|
+148
+normal! 025|
 wincmd w
 argglobal
 if bufexists("api/murano/ops.py") | buffer api/murano/ops.py | else | edit api/murano/ops.py | endif
@@ -93,7 +93,7 @@ normal! 022|
 wincmd w
 argglobal
 if bufexists("api/tests/sr_lobo.py") | buffer api/tests/sr_lobo.py | else | edit api/tests/sr_lobo.py | endif
-let s:l = 968 - ((0 * winheight(0) + 5) / 10)
+let s:l = 968 - ((0 * winheight(0) + 4) / 9)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -102,7 +102,7 @@ normal! 046|
 wincmd w
 argglobal
 if bufexists("api/tests/ramanujan.py") | buffer api/tests/ramanujan.py | else | edit api/tests/ramanujan.py | endif
-let s:l = 1612 - ((0 * winheight(0) + 4) / 9)
+let s:l = 1612 - ((4 * winheight(0) + 4) / 9)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -111,37 +111,37 @@ normal! 077|
 wincmd w
 argglobal
 if bufexists("api/tests/clouseau.py") | buffer api/tests/clouseau.py | else | edit api/tests/clouseau.py | endif
-let s:l = 129 - ((6 * winheight(0) + 5) / 10)
+let s:l = 138 - ((1 * winheight(0) + 5) / 10)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-129
-normal! 027|
+138
+normal! 011|
 wincmd w
 argglobal
 enew
 wincmd w
 6wincmd w
-exe 'vert 1resize ' . ((&columns * 26 + 57) / 115)
+exe 'vert 1resize ' . ((&columns * 22 + 57) / 115)
 exe '2resize ' . ((&lines * 9 + 29) / 58)
-exe 'vert 2resize ' . ((&columns * 88 + 57) / 115)
+exe 'vert 2resize ' . ((&columns * 92 + 57) / 115)
 exe '3resize ' . ((&lines * 9 + 29) / 58)
-exe 'vert 3resize ' . ((&columns * 88 + 57) / 115)
-exe '4resize ' . ((&lines * 10 + 29) / 58)
-exe 'vert 4resize ' . ((&columns * 88 + 57) / 115)
+exe 'vert 3resize ' . ((&columns * 92 + 57) / 115)
+exe '4resize ' . ((&lines * 9 + 29) / 58)
+exe 'vert 4resize ' . ((&columns * 92 + 57) / 115)
 exe '5resize ' . ((&lines * 9 + 29) / 58)
-exe 'vert 5resize ' . ((&columns * 88 + 57) / 115)
+exe 'vert 5resize ' . ((&columns * 92 + 57) / 115)
 exe '6resize ' . ((&lines * 10 + 29) / 58)
-exe 'vert 6resize ' . ((&columns * 88 + 57) / 115)
-exe '7resize ' . ((&lines * 4 + 29) / 58)
-exe 'vert 7resize ' . ((&columns * 88 + 57) / 115)
+exe 'vert 6resize ' . ((&columns * 92 + 57) / 115)
+exe '7resize ' . ((&lines * 5 + 29) / 58)
+exe 'vert 7resize ' . ((&columns * 92 + 57) / 115)
 tabnext 1
 badd +1 api/tests/feynman.py
 badd +1 ~/Geotexan/src/Geotex-INN/geotexan.vim
 badd +1 api/murano/ops.py
 badd +1 api/tests/sr_lobo.py
 badd +1 api/tests/ramanujan.py
-badd +1 api/tests/clouseau.py
+badd +139 api/tests/clouseau.py
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0
 "   silent exe 'bwipe ' . s:wipebuf
 endif
@@ -170,7 +170,7 @@ if !getbufvar(s:bufnr_save, '&modified')
   endif
 endif
 execute "cd" fnameescape(s:cwd_save)
-1resize 56|vert 1resize 26|2resize 9|vert 2resize 88|3resize 9|vert 3resize 88|4resize 10|vert 4resize 88|5resize 9|vert 5resize 88|6resize 10|vert 6resize 88|7resize 4|vert 7resize 88|
+1resize 56|vert 1resize 22|2resize 9|vert 2resize 92|3resize 9|vert 3resize 92|4resize 9|vert 4resize 92|5resize 9|vert 5resize 92|6resize 10|vert 6resize 92|7resize 5|vert 7resize 92|
 6wincmd w
 tabnext 1
 if exists('s:wipebuf')

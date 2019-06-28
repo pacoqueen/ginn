@@ -51,7 +51,7 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
 
     # Datos fijos:
     # pylint: disable=bad-continuation
-    _data = {# "00 logo_marcado": None,
+    _data = {  # "00 logo_marcado": None,
              "01 texto_marcado": "1035",    # Fijo
              "02 fabricado_por": "Fabricado por: %s",
              "03 direccion1": None,
@@ -68,7 +68,7 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
              "11 blanco2": "",      # Separador
              "12 producto": None,
              "13 descripcion":
-                 "Geotextil no tejido de polipropileno 100% virgen",
+             "Geotextil no tejido de polipropileno 100% virgen",
              "14 uso": "Uso: %s",
              "15 blanco3": "",      # Separador
              "16 codigo": "Partida: %d Rollo: %s",
@@ -77,7 +77,7 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
     if lang == "en":
         for k in _data:
             _data[k] = helene_laanest(_data[k])
-    estilos = defaultdict(lambda: ("Helvetica", 9)) # Helvética a 9 por defecto
+    estilos = defaultdict(lambda: ("Helvetica", 9))  # Helvética 9 por defecto
     estilos["02 fabricado_por"] = ("Helvetica-Bold", 11)
     estilos["12 producto"] = ("Helvetica-Bold", 17)
     estilos["16 codigo"] = ("Helvetica-Bold", 17)
@@ -117,7 +117,8 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
                     data["02 fabricado_por"] = "Distribuido por: %s" % (
                                                         distribuidor.nombre)
                 dird = distribuidor.get_direccion_completa()
-                dircompleta = textwrap.wrap(dird,
+                dircompleta = textwrap.wrap(
+                        dird,
                         (len(dird) + max([len(w) for w in dird.split()])) / 2)
                 data["03 direccion1"] = dircompleta[0]
                 data["04 direccion2"] = dircompleta[1]
@@ -148,7 +149,7 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
             data["05 telefono"] = ""
     #   2.- Producto
         producto = producto_venta
-        if producto.annoCertificacion != None:
+        if producto.annoCertificacion is not None:
             data["06 año_certif"] = "%02d" % producto.annoCertificacion
         else:
             data["06 año_certif"] = ""
@@ -156,9 +157,6 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
         if len(producto.nombre) <= 50:
             data["12 producto"] = producto.nombre
         else:
-            #if "//" in producto.nombre: # Productos Intermas
-            #    data["11 blanco2"], data["12 producto"] = producto.nombre.split("//")
-            #else:
             data["11 blanco2"], data["12 producto"] = utils.dividir_cadena(
                     producto.nombre)
             data["11 blanco2"] = data["11 blanco2"].strip()
@@ -180,13 +178,12 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
                       autodec=True, separador_decimales="."),
             producto.camposEspecificosRollo.metrosLineales)
 
-        rectangulo(canvas, (margen, margen),
-                      (ancho - margen, alto - margen))
+        rectangulo(canvas, (margen, margen), (ancho - margen, alto - margen))
         if mostrar_marcado:
             canvas.drawImage(logo_marcado,
-                        marcado[0],
-                        marcado[1],
-                        width=logo[0], height=logo[1])
+                             marcado[0],
+                             marcado[1],
+                             width=logo[0], height=logo[1])
         else:
             data["01 texto_marcado"] = ""
         lineas = _data.keys()
@@ -195,7 +192,7 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
         tamfuente = estilos[lineas[0]][1]
         crd_y = alto - logo[1] - 0.1 * cm - tamfuente
         # ¿Cuánto me desplazaré de línea a línea?
-        offset_y = (crd_y - margen) / (len(lineas) + 3)   # 3 líneas para barcode
+        offset_y = (crd_y - margen) / (len(lineas) + 3)   # 3 líneas barcode
         for linea in lineas:
             try:
                 dato = data[linea]
@@ -205,9 +202,9 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
             if dato is None:
                 dato = ""
             canvas.setFont(*estilos[linea])
-            #canvas.drawCentredString((ancho / 2),
-            #                    crd_y,
-            #                    escribe(dato))
+            # canvas.drawCentredString((ancho / 2),
+            #                     crd_y,
+            #                     escribe(dato))
             el_encogedor_de_fuentes_de_doraemon(canvas,
                                                 fuente=estilos[linea][0],
                                                 tamannoini=estilos[linea][1],
@@ -229,22 +226,24 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
         ycode = 0.15*cm
         canvas.setFont("Courier-Bold", 9)
         try:
-            canvas.drawCentredString(xcode, ycode, codigo_rollo, charSpace=0.25*cm)
+            canvas.drawCentredString(xcode, ycode, codigo_rollo,
+                                     charSpace=0.25*cm)
         except TypeError:   # Versión antigua de ReportLab.
             canvas.drawCentredString(xcode, ycode, codigo_rollo)
         canvas.restoreState()
         # Y el QR de regalo
         # # De momento lo desactivo porque nuestras pistolas no lo reconocen.
-        #try:
+        # try:
         #    from lib.pyqrcode import pyqrcode
         #    bidicode = pyqrcode.create(codigo_rollo)
         #    nomfichbidi = os.path.join(gettempdir(),
-        #                               "bidi_%s.svg" % give_me_the_name_baby())
+        #                           "bidi_%s.svg" % give_me_the_name_baby())
         #    bidicode.svg(nomfichbidi, scale=3)
         #    from lib.svglib.svglib import svglib
         #    drawing = svglib.svg2rlg(nomfichbidi)
-        #    drawing.drawOn(canvas, margen - 0.25*cm, alto - margen - 3.0*cm + 0.25*cm)
-        #except ImportError:
+        #    drawing.drawOn(canvas, margen - 0.25*cm,
+        #                   alto - margen - 3.0*cm + 0.25*cm)
+        # except ImportError:
         #    pass    # No hay bidi porque no hay lxml instalado. Probablemente.
         #    print("No se generará código QR. Puede intentar lo siguiente:")
         #    print("C:\Python27\Scripts\easy_install.exe pip")
@@ -253,13 +252,13 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
         #######################################################################
         canvas.showPage()
         # Y ahora la etiqueta adicional por si se pierde la otra y para cargar.
-        create_etiqueta_backup(canvas, rollo)
+        create_etiqueta_backup_rollo(canvas, rollo)
         canvas.showPage()
     canvas.save()
     return nomarchivo
 
 
-def create_etiqueta_backup(canvas, rollo):
+def create_etiqueta_backup_rollo(canvas, rollo):
     """
     Genera en el canvas (pero hace el showPage) una etiqueta adicional
     principalmente con un código de barras enorme para poder leerla desde
@@ -301,8 +300,10 @@ def create_etiqueta_backup(canvas, rollo):
     canvas.drawCentredString(xprod, yprod, producto)
     # ## El rectángulo exterior
     canvas.rotate(90)
-    # ## El rectángulo exterior mejor lo quito para que la pistola no se confunda.
-    # canvas.rect(margen, -(ancho-margen), alto - 2*margen, ancho - 2*margen, stroke=1)
+    # ## El rectángulo exterior mejor lo quito para que la pistola no se
+    # ## confunda.
+    # canvas.rect(margen, -(ancho-margen), alto - 2*margen, ancho - 2*margen,
+    #             stroke=1)
     # ## El código de barras. Rotado para ganar anchura:
     crd_x = (-5.75*margen)-(0.2*cm)
     crd_y = -(ancho - 2*margen)
@@ -330,6 +331,224 @@ def create_etiqueta_backup(canvas, rollo):
     canvas.restoreState()
 
 
+def create_etiqueta_backup_bala(canvas, bala):
+    """
+    Genera en el canvas (pero hace el showPage) una etiqueta adicional
+    principalmente con un código de barras enorme para poder leerla desde
+    lejos a la hora de cargar el bala.
+    """
+    # Dimensiones estándar de la etiqueta.
+    ancho = 12.55 * cm
+    alto = 8.4 * cm
+    margen = 0.1 * cm
+    # Parámetros a pintar que obtener del objeto recibido.
+    try:
+        try:
+            producto = bala['productoVenta'].descripcion
+        except KeyError:
+            # Si no me lo mandan en el diccionario, tiene que traer
+            # el objeto bala. Los partes mandan producto en dicccionario
+            # porque a veces se genera etiqueta antes de crear el objeto
+            # en la BD. Si viene de la consulta del listado de rollos,
+            # como el bala ya existe, me viene en el objeto toda la info.
+            producto = bala['objeto'].productoVenta.descripcion
+        codigo_rollo = bala['codigo']
+    except TypeError:  # He recibido un objeto directamente.
+        producto = bala.productoVenta.descripcion
+        codigo_rollo = bala.codigo
+    # Dimensiones para pintar la información.
+    canvas.saveState()
+    xcode = ancho / 2.0
+    ycode = 0.2*cm
+    xprod = xcode
+    yprod = alto - margen - 0.3*cm
+    # ## El código de bala:
+    canvas.setFont("Courier-Bold", 9)
+    try:
+        canvas.drawCentredString(xcode, ycode, codigo_rollo, charSpace=0.25*cm)
+    except TypeError:   # Versión antigua de ReportLab.
+        canvas.drawCentredString(xcode, ycode, codigo_rollo)
+    # ## El producto:
+    canvas.setFont("Helvetica", 8)
+    canvas.drawCentredString(xprod, yprod, producto)
+    # ## El rectángulo exterior
+    # ## El rectángulo exterior mejor lo quito para que la pistola no se
+    # ## confunda.
+    # canvas.rect(margen, -(ancho-margen), alto - 2*margen, ancho - 2*margen,
+    #             stroke=1)
+    # ## El código de barras.
+    crd_x = 0.0*cm
+    crd_y = margen + 0.5*cm
+    mil = 0.001*inch    # Por definición.
+    # Con 40 debería llegar hasta a 9.7 metros de distancia la lectura o
+    # 37.5 m la versión Auto Range.
+    mils = 45*mil
+    anchobarcode = ancho - (2.0*margen)
+    # codigobarras1 = Extended39(codigo_rollo, xdim=mils, height=altobarcode)
+    codigobarras1 = Code128(codigo_rollo, xdim=mils, width=anchobarcode)
+    codigobarras1.drawOn(canvas, crd_x, crd_y)
+    # ## El otro código de barras.
+    canvas.rotate(90)
+    mils = 24*mil
+    altobarcode = alto + 2.9*cm
+    codigobarras2 = Code128(codigo_rollo, xdim=mils, height=altobarcode)
+    crd_x = 1.7*cm
+    crd_y = -alto - 3.5*cm
+    codigobarras2.drawOn(canvas, crd_x, crd_y)
+    # ## Línea auxiliar por donde está el pin roto de la impresora:
+    # ## Mejor la quito para que la pistola no la cofunda con otra barra.
+    # canvas.line(xlineablanca, margen, xlineablanca, alto - margen - 9)
+    canvas.rotate(-90)
+    canvas.restoreState()
+
+
+def create_etiqueta_backup_bigbag(canvas, bigbag):
+    """
+    Genera en el canvas (pero hace el showPage) una etiqueta adicional
+    principalmente con un código de barras enorme para poder leerla desde
+    lejos a la hora de cargar el bigbag.
+    """
+    # Dimensiones estándar de la etiqueta.
+    alto = 12.55 * cm
+    ancho = 8.4 * cm
+    margen = 0.1 * cm
+    # Parámetros a pintar que obtener del objeto recibido.
+    try:
+        try:
+            producto = bigbag['productoVenta'].descripcion
+        except KeyError:
+            # Si no me lo mandan en el diccionario, tiene que traer
+            # el objeto bigbag. Los partes mandan producto en dicccionario
+            # porque a veces se genera etiqueta antes de crear el objeto
+            # en la BD. Si viene de la consulta del listado de bigbags,
+            # como el bigbag ya existe, me viene en el objeto toda la info.
+            producto = bigbag['objeto'].productoVenta.descripcion
+        codigo_bigbag = bigbag['codigo39']
+    except TypeError:  # He recibido un objeto directamente.
+        producto = bigbag.productoVenta.descripcion
+        codigo_bigbag = bigbag.codigo
+    # Dimensiones para pintar la información.
+    canvas.saveState()
+    xcode = ancho / 2.0
+    ycode = 0.15*cm
+    xprod = xcode
+    yprod = alto - margen - 7
+    # ## El código de bigbag:
+    canvas.setFont("Courier-Bold", 9)
+    try:
+        canvas.drawCentredString(xcode, ycode, codigo_bigbag,
+                                 charSpace=0.25*cm)
+    except TypeError:   # Versión antigua de ReportLab.
+        canvas.drawCentredString(xcode, ycode, codigo_bigbag)
+    # ## El producto:
+    canvas.setFont("Helvetica", 8)
+    canvas.drawCentredString(xprod, yprod, producto)
+    # ## El rectángulo exterior
+    canvas.rotate(90)
+    # ## El rectángulo exterior mejor lo quito para que la pistola no se
+    # ## confunda.
+    # canvas.rect(margen, -(ancho-margen), alto - 2*margen, ancho - 2*margen,
+    #             stroke=1)
+    # ## El código de barras. Rotado para ganar anchura:
+    crd_x = (-5.75*margen)-(0.2*cm)
+    crd_y = -(ancho - 2*margen)
+    xlineablanca = 5.9*cm
+    mil = 0.001*inch    # Por definición.
+    # Con 40 debería llegar hasta a 9.7 metros de distancia la lectura o
+    # 37.5 m la versión Auto Range.
+    # altobarcodetotal = (ancho-4*margen)  # Ancho, en realidad. Está rotado.
+    mils = 50*mil
+    altobarcode = ancho - xlineablanca - 2*margen
+    # codigobarras1 = Extended39(codigo_bigbag, xdim=mils, height=altobarcode)
+    codigobarras1 = Code128(codigo_bigbag, xdim=mils, height=altobarcode)
+    codigobarras1.drawOn(canvas, crd_x, crd_y)
+    canvas.rotate(-90)
+    # ## El otro código de barras.
+    mils = 24*mil
+    altobarcode = alto - 2*margen - 2*9
+    codigobarras2 = Code128(codigo_bigbag, xdim=mils, height=altobarcode)
+    crd_x = -4.0 * margen
+    crd_y = margen + 9
+    codigobarras2.drawOn(canvas, crd_x, crd_y)
+    # ## Línea auxiliar por donde está el pin roto de la impresora:
+    # ## Mejor la quito para que la pistola no la cofunda con otra barra.
+    # canvas.line(xlineablanca, margen, xlineablanca, alto - margen - 9)
+    canvas.restoreState()
+
+
+def create_etiqueta_backup_pale(canvas, pale):
+    """
+    Genera en el canvas (pero hace el showPage) una etiqueta adicional
+    principalmente con un código de barras enorme para poder leerla desde
+    lejos a la hora de cargar el pale.
+    """
+    # Dimensiones estándar de la etiqueta.
+    alto = 12.55 * cm
+    ancho = 8.4 * cm
+    margen = 0.1 * cm
+    # Parámetros a pintar que obtener del objeto recibido.
+    try:
+        try:
+            producto = pale['productoVenta'].descripcion
+        except KeyError:
+            # Si no me lo mandan en el diccionario, tiene que traer
+            # el objeto pale. Los partes mandan producto en dicccionario
+            # porque a veces se genera etiqueta antes de crear el objeto
+            # en la BD. Si viene de la consulta del listado de pales,
+            # como el pale ya existe, me viene en el objeto toda la info.
+            producto = pale['objeto'].productoVenta.descripcion
+        codigo_pale = pale['codigo39']
+    except TypeError:  # He recibido un objeto directamente.
+        producto = pale.productoVenta.descripcion
+        codigo_pale = pale.codigo
+    # Dimensiones para pintar la información.
+    canvas.saveState()
+    xcode = ancho / 2.0
+    ycode = 0.15*cm
+    xprod = xcode
+    yprod = alto - margen - 7
+    # ## El código de pale:
+    canvas.setFont("Courier-Bold", 9)
+    try:
+        canvas.drawCentredString(xcode, ycode, codigo_pale,
+                                 charSpace=0.25*cm)
+    except TypeError:   # Versión antigua de ReportLab.
+        canvas.drawCentredString(xcode, ycode, codigo_pale)
+    # ## El producto:
+    canvas.setFont("Helvetica", 8)
+    canvas.drawCentredString(xprod, yprod, producto)
+    # ## El rectángulo exterior
+    canvas.rotate(90)
+    # ## El rectángulo exterior mejor lo quito para que la pistola no se
+    # ## confunda.
+    # canvas.rect(margen, -(ancho-margen), alto - 2*margen, ancho - 2*margen,
+    #             stroke=1)
+    # ## El código de barras. Rotado para ganar anchura:
+    crd_x = -0.7*cm
+    crd_y = -(ancho - 2*margen)
+    mil = 0.001*inch    # Por definición.
+    # Con 40 debería llegar hasta a 9.7 metros de distancia la lectura o
+    # 37.5 m la versión Auto Range.
+    # altobarcodetotal = (ancho-4*margen)  # Ancho, en realidad. Está rotado.
+    mils = 35*mil
+    altobarcode = 2*cm
+    # codigobarras1 = Extended39(codigo_pale, xdim=mils, height=altobarcode)
+    codigobarras1 = Code128(codigo_pale, xdim=mils, height=altobarcode)
+    codigobarras1.drawOn(canvas, crd_x, crd_y)
+    canvas.rotate(-90)
+    # ## El otro código de barras.
+    mils = 17*mil
+    altobarcode = alto - 2*margen - 2*9
+    codigobarras2 = Code128(codigo_pale, xdim=mils, height=altobarcode)
+    crd_x = -4.0 * margen
+    crd_y = margen + 9
+    codigobarras2.drawOn(canvas, crd_x, crd_y)
+    # ## Línea auxiliar por donde está el pin roto de la impresora:
+    # ## Mejor la quito para que la pistola no la cofunda con otra barra.
+    # canvas.line(xlineablanca, margen, xlineablanca, alto - margen - 9)
+    canvas.restoreState()
+
+
 def helene_laanest(texto):
     # En honor a la profe de inglés,
     """recibe el texto (solo hay dos o tres
@@ -338,31 +557,31 @@ def helene_laanest(texto):
     # han llegado tarde. Muy tarde.
     translate_table = defaultdict(lambda: texto)
     translate_table["Drenaje, filtración, refuerzo y separación"] \
-            = "Drainage, filtration, reinforcement and separation"
+        = "Drainage, filtration, reinforcement and separation"
     translate_table["Drenaje, filtración, refuerzo, separación"] \
-            = "Drainage, filtration, reinforcement, separation"
+        = "Drainage, filtration, reinforcement, separation"
     translate_table["Drenaje, filtración, refuerzo, separación y protección"]\
-            = "Drainage, filtration, reinforcement, separation and protection"
+        = "Drainage, filtration, reinforcement, separation and protection"
     translate_table["Drenaje, filtración, refuerzo, separación, protección"]\
-            = "Drainage, filtration, reinforcement, separation, protection"
+        = "Drainage, filtration, reinforcement, separation, protection"
     translate_table["Fibra de polipropileno virgen embolsada en papel "
                     "hidrosoluble para su uso como aditivo del hormigón"] \
-            = "100% polypropylene fibers in water-soluble paper bags used "\
-              "like an additive for concrete"
+        = "100% polypropylene fibers in water-soluble paper bags used "\
+          "like an additive for concrete"
     translate_table["Fabricado por: %s"] = "Manufactured by: %s"
     translate_table["Distribuido por: %s"] = "Distributed by: %s"
     translate_table["Tfno: %s, %s"] = "Phone: %s, %s"
     translate_table["De EN13249:2014 a EN13257:2014"] = "From EN13249:2014 "\
-                    "to EN13257:2014"
+        "to EN13257:2014"
     translate_table["Geotextil no tejido de polipropileno 100% virgen"
-                   ] = "Nonwoven geotextile of 100% polypropylene fibres."
+                    ] = "Nonwoven geotextile of 100% polypropylene fibres."
     translate_table["Uso: %s"] = "Use: %s"
     translate_table["Partida: %d Rollo: %s"] = "Batch: %d Roll: %s"
     translate_table["Gramaje: %d g/m² Ancho: %s m Largo: %d m"
-                   ] = "Mass per area: %d g/m² Width: %s m Length: %d m"
+                    ] = "Mass per area: %d g/m² Width: %s m Length: %d m"
     translate_table["Filtración, separación"] = "Filtration, separation"
     translate_table["Filtración, separación, protección"] = "Filtration, "\
-            "separation, protection"
+        "separation, protection"
     return translate_table[texto]
 
 
@@ -372,6 +591,7 @@ def etiqueta_rollos_norma13_en(rollos, mostrar_marcado=True):
     en un solo PDF. Etiqueta en inglés.
     """
     return etiqueta_rollos_norma13(rollos, mostrar_marcado, lang="en")
+
 
 def crear_etiquetas_pales(pales, mostrar_marcado=True, lang="es"):
     """
@@ -385,8 +605,9 @@ def crear_etiquetas_pales(pales, mostrar_marcado=True, lang="es"):
     ancho = 8.4 * cm
 
     # Creo la hoja
-    nomarchivo = os.path.join(
-        gettempdir(), "etiq_pale13_%s_%s.pdf" % (lang, give_me_the_name_baby()))
+    nomarchivo = os.path.join(gettempdir(),
+                              "etiq_pale13_%s_%s.pdf" % (
+                                  lang, give_me_the_name_baby()))
     canvas = reportlabcanvas.Canvas(nomarchivo, pagesize=(ancho, alto))
 
     # Medidas:
@@ -400,7 +621,7 @@ def crear_etiquetas_pales(pales, mostrar_marcado=True, lang="es"):
 
     # Datos fijos:
     # pylint: disable=bad-continuation
-    _data = {# "00 logo_marcado": None,
+    _data = {  # "00 logo_marcado": None,
              "01 texto_marcado": "1035",    # Fijo
              "02 fabricado_por": "Fabricado por: %s",
              "03 direccion1": None,
@@ -422,7 +643,7 @@ def crear_etiquetas_pales(pales, mostrar_marcado=True, lang="es"):
     if lang == "en":
         for k in _data:
             _data[k] = helene_laanest(_data[k])
-    estilos = defaultdict(lambda: ("Helvetica-Bold", 11)) # Helvética a 11 por defecto
+    estilos = defaultdict(lambda: ("Helvetica-Bold", 11))  # Helv. 11 defecto
     estilos["01 texto_marcado"] = ("Times-Bold", 9)
     estilos["02 fabricado_por"] = ("Helvetica-Bold", 13)
     estilos["12 producto"] = ("Courier-Bold", 17)
@@ -448,7 +669,8 @@ def crear_etiquetas_pales(pales, mostrar_marcado=True, lang="es"):
                     data["02 fabricado_por"] = "Distribuido por: %s" % (
                                                         distribuidor.nombre)
                 dird = distribuidor.get_direccion_completa()
-                dircompleta = textwrap.wrap(dird,
+                dircompleta = textwrap.wrap(
+                        dird,
                         (len(dird) + max([len(w) for w in dird.split()])) / 2)
                 data["03 direccion1"] = dircompleta[0]
                 data["04 direccion2"] = dircompleta[1]
@@ -479,7 +701,7 @@ def crear_etiquetas_pales(pales, mostrar_marcado=True, lang="es"):
             data["05 telefono"] = ""
     #   2.- Producto
         producto = producto_venta
-        if producto.annoCertificacion != None:
+        if producto.annoCertificacion is not None:
             data["06 año_certif"] = "%02d" % producto.annoCertificacion
         else:
             data["06 año_certif"] = ""
@@ -490,11 +712,12 @@ def crear_etiquetas_pales(pales, mostrar_marcado=True, lang="es"):
                 produso = helene_laanest(producto.uso)
             else:
                 produso = producto.uso
-            produso = textwrap.wrap(produso,
-                    (len(produso) + max([len(w) for w in produso.split()])) / 2)
+            produso = textwrap.wrap(
+                produso,
+                (len(produso) + max([len(w) for w in produso.split()])) / 2)
             data["14 uso"] = produso[0]
             data["15 blanco3"] = produso[1]     # Era un separador, pero
-                                                # necesito el espacio.
+            # necesito el espacio.
         else:
             data["14 uso"] = ""
     #   3.- Palé
@@ -503,12 +726,13 @@ def crear_etiquetas_pales(pales, mostrar_marcado=True, lang="es"):
         data["17 caracteristicas"] = producto.descripcion
 
         rectangulo(canvas, (margen, margen),
-                      (ancho - margen, alto - margen))
+                   (ancho - margen, alto - margen))
         if mostrar_marcado:
             canvas.drawImage(logo_marcado,
-                        marcado[0],
-                        marcado[1],
-                        width=logo[0], height=logo[1])
+                             marcado[0],
+                             marcado[1],
+                             width=logo[0],
+                             height=logo[1])
         else:
             data["01 texto_marcado"] = ""
         lineas = _data.keys()
@@ -527,9 +751,9 @@ def crear_etiquetas_pales(pales, mostrar_marcado=True, lang="es"):
             if dato is None:
                 dato = ""
             canvas.setFont(*estilos[linea])
-            #canvas.drawCentredString((ancho / 2),
-            #                    crd_y,
-            #                    escribe(dato))
+            # canvas.drawCentredString((ancho / 2),
+            #                     crd_y,
+            #                     escribe(dato))
             el_encogedor_de_fuentes_de_doraemon(canvas,
                                                 fuente=estilos[linea][0],
                                                 tamannoini=estilos[linea][1],
@@ -540,8 +764,12 @@ def crear_etiquetas_pales(pales, mostrar_marcado=True, lang="es"):
                                                 alineacion=0)
             crd_y -= offset_y
         canvas.showPage()
+        # Y ahora la etiqueta adicional por si se pierde la otra y para cargar.
+        create_etiqueta_backup_pale(canvas, pale)
+        canvas.showPage()
     canvas.save()
     return nomarchivo
+
 
 def crear_etiquetas_bigbags(bigbags, mostrar_marcado=True, lang="es"):
     """
@@ -556,7 +784,8 @@ def crear_etiquetas_bigbags(bigbags, mostrar_marcado=True, lang="es"):
 
     # Creo la hoja
     nomarchivo = os.path.join(
-        gettempdir(), "etiq_bigbag13_%s_%s.pdf" % (lang, give_me_the_name_baby()))
+        gettempdir(),
+        "etiq_bigbag13_%s_%s.pdf" % (lang, give_me_the_name_baby()))
     canvas = reportlabcanvas.Canvas(nomarchivo, pagesize=(ancho, alto))
 
     # Medidas:
@@ -570,7 +799,7 @@ def crear_etiquetas_bigbags(bigbags, mostrar_marcado=True, lang="es"):
 
     # Datos fijos:
     # pylint: disable=bad-continuation
-    _data = {# "00 logo_marcado": None,
+    _data = {  # "00 logo_marcado": None,
              "01 texto_marcado": "1035",    # Fijo
              "02 fabricado_por": "Fabricado por: %s",
              "03 direccion1": None,
@@ -586,13 +815,13 @@ def crear_etiquetas_bigbags(bigbags, mostrar_marcado=True, lang="es"):
              "14 uso": None,
              "15 blanco3": "",      # Separador
              # "16 1 separador": "",     # Fijo
-             "16 codigo": "Lote {} · Bigbag {}",  # Código bigbag y código lote.
-             "17 caracteristicas": "Corte: {} mm · Peso: {} kg/br"  # Corte y peso.
+             "16 codigo": "Lote {} · Bigbag {}",  # Código bigbag y cód. lote.
+             "17 caracteristicas": "Corte: {} mm · Peso: {} kg/br"  # Cort&Peso
             }
     if lang == "en":
         for k in _data:
             _data[k] = helene_laanest(_data[k])
-    estilos = defaultdict(lambda: ("Helvetica-Bold", 11)) # Helvética a 11 por defecto
+    estilos = defaultdict(lambda: ("Helvetica-Bold", 11))  # Helv. 11 defecto
     estilos["01 texto_marcado"] = ("Times-Bold", 9)
     estilos["02 fabricado_por"] = ("Helvetica-Bold", 13)
     estilos["12 producto"] = ("Courier-Bold", 17)
@@ -611,7 +840,8 @@ def crear_etiquetas_bigbags(bigbags, mostrar_marcado=True, lang="es"):
         #   1.- Empresa
         try:
             # Si hay distribuidor, este texto cambia.
-            distribuidor = bigbag.articulo.productoVenta.camposEspecificosBala.cliente
+            ceb = bigbag.articulo.productoVenta.camposEspecificosBala
+            distribuidor = ceb.cliente
             if distribuidor:
                 if lang == "en":
                     data["02 fabricado_por"] = helene_laanest(
@@ -620,8 +850,9 @@ def crear_etiquetas_bigbags(bigbags, mostrar_marcado=True, lang="es"):
                     data["02 fabricado_por"] = "Distribuido por: %s" % (
                                                         distribuidor.nombre)
                 dird = distribuidor.get_direccion_completa()
-                dircompleta = textwrap.wrap(dird,
-                        (len(dird) + max([len(w) for w in dird.split()])) / 2)
+                dircompleta = textwrap.wrap(
+                    dird,
+                    (len(dird) + max([len(w) for w in dird.split()])) / 2)
                 data["03 direccion1"] = dircompleta[0]
                 data["04 direccion2"] = dircompleta[1]
                 data["05 telefono"] = _data["05 telefono"] % (
@@ -651,7 +882,7 @@ def crear_etiquetas_bigbags(bigbags, mostrar_marcado=True, lang="es"):
             data["05 telefono"] = ""
     #   2.- Producto
         producto = producto_venta
-        if producto.annoCertificacion != None:
+        if producto.annoCertificacion is not None:
             data["06 año_certif"] = "%02d" % producto.annoCertificacion
         else:
             data["06 año_certif"] = ""
@@ -663,11 +894,12 @@ def crear_etiquetas_bigbags(bigbags, mostrar_marcado=True, lang="es"):
             else:
                 produso = producto.uso
             if len(produso) > 30:   # Wrap si el texto es largo.
-                produso = textwrap.wrap(produso,
-                    (len(produso) + max([len(w) for w in produso.split()])) / 2)
+                produso = textwrap.wrap(
+                    produso,
+                    (len(produso) + max([len(w) for w in produso.split()]))/2)
                 data["14 uso"] = produso[0]
                 data["15 blanco3"] = produso[1]     # Era un separador, pero
-                                                    # necesito el espacio.
+                # necesito el espacio.
             else:
                 data["14 uso"] = produso
         else:
@@ -681,12 +913,12 @@ def crear_etiquetas_bigbags(bigbags, mostrar_marcado=True, lang="es"):
         data["17 caracteristicas"] = corte_peso
 
         rectangulo(canvas, (margen, margen),
-                      (ancho - margen, alto - margen))
+                   (ancho - margen, alto - margen))
         if mostrar_marcado:
             canvas.drawImage(logo_marcado,
-                        marcado[0],
-                        marcado[1],
-                        width=logo[0], height=logo[1])
+                             marcado[0],
+                             marcado[1],
+                             width=logo[0], height=logo[1])
         else:
             data["01 texto_marcado"] = ""
         lineas = _data.keys()
@@ -705,9 +937,9 @@ def crear_etiquetas_bigbags(bigbags, mostrar_marcado=True, lang="es"):
             if dato is None:
                 dato = ""
             canvas.setFont(*estilos[linea])
-            #canvas.drawCentredString((ancho / 2),
-            #                    crd_y,
-            #                    escribe(dato))
+            # canvas.drawCentredString((ancho / 2),
+            #                     crd_y,
+            #                     escribe(dato))
             el_encogedor_de_fuentes_de_doraemon(canvas,
                                                 fuente=estilos[linea][0],
                                                 tamannoini=estilos[linea][1],
@@ -718,8 +950,12 @@ def crear_etiquetas_bigbags(bigbags, mostrar_marcado=True, lang="es"):
                                                 alineacion=0)
             crd_y -= offset_y
         canvas.showPage()
+        # Y ahora la etiqueta adicional por si se pierde la otra y para cargar.
+        create_etiqueta_backup_bigbag(canvas, bigbag)
+        canvas.showPage()
     canvas.save()
     return nomarchivo
+
 
 def _build_dict_etiqueta_articulo_bala(articulo):
     """
@@ -734,7 +970,8 @@ def _build_dict_etiqueta_articulo_bala(articulo):
                 'color': str(campos.color),
                 'peso': str(b.pesobala),
                 'lote': str(b.lote.numlote),
-                'tipo': campos.tipoMaterialBala and str(campos.tipoMaterialBala.descripcion) or "",
+                'tipo': campos.tipoMaterialBala and str(
+                    campos.tipoMaterialBala.descripcion) or "",
                 'longitud': str(campos.corte),
                 'nbala': str(b.numbala),
                 'dtex': str(campos.dtex),
@@ -743,6 +980,7 @@ def _build_dict_etiqueta_articulo_bala(articulo):
                 'codigoBarra': producto.codigo,
                 'objeto': articulo}
     return elemento
+
 
 def crear_etiquetas_balas(balas, mostrar_marcado=True, lang="es"):
     """
@@ -783,7 +1021,7 @@ def crear_etiquetas_balas(balas, mostrar_marcado=True, lang="es"):
     007337000000066000000000005739428650 Si no lleva serie ni pedido.
     """
     # TODO: De momento solo español. No hay inglés. Se ignora el parámetro.
-    from reportlab.pdfgen import canvas
+    from reportlab.pdfgen import canvas as pdfcanvas
     from informes.geninformes import escribe, _build_codigo_domenech
     try:
         import Image
@@ -793,16 +1031,16 @@ def crear_etiquetas_balas(balas, mostrar_marcado=True, lang="es"):
     height = 8.4 * cm
     # Creo la hoja
     nomarchivo = os.path.join(gettempdir(),
-                              "dh_etiqbala_%s.pdf"%give_me_the_name_baby())
-    c = canvas.Canvas(nomarchivo, pagesize = (width, height))
+                              "dh_etiqbala_%s.pdf" % give_me_the_name_baby())
+    canvas = pdfcanvas.Canvas(nomarchivo, pagesize=(width, height))
     ancho, alto = width, height
     # arribaArriba significa linea de "arriba" de los cuadros de "Arriba"
     # El 0 vertical es el borde de abajo
     # El 0 horizontal es el margen derecho
     arriba = alto - 1.45*cm
-    #arriba = alto - 5
+    # arriba = alto - 5
     abajo = 5
-    #abajo = 1.45*cm
+    # abajo = 1.45*cm
     izq = width - 5
     der = 5     # ¿Va a resultar al final que también soy disléxico?
     xLogo = der + 0.5 * cm
@@ -821,82 +1059,85 @@ def crear_etiquetas_balas(balas, mostrar_marcado=True, lang="es"):
             continue
         if isinstance(bala, pclases.Articulo):
             bala = _build_dict_etiqueta_articulo_bala(bala)
-        rectangulo(c, (izq, arriba), (der, abajo))
-        c.setFont("Helvetica-Bold", 28)
-        c.drawString(xLogo, yLogo, "GEOTEXAN S.A.")
-        c.setFont("Helvetica", 14)
-        c.drawString(xIzquierda,
-                     yPrimeraLinea,
-                     escribe("CÓDIGO: " + bala['codigo']))
+        rectangulo(canvas, (izq, arriba), (der, abajo))
+        canvas.setFont("Helvetica-Bold", 28)
+        canvas.drawString(xLogo, yLogo, "GEOTEXAN S.A.")
+        canvas.setFont("Helvetica", 14)
+        canvas.drawString(xIzquierda,
+                          yPrimeraLinea,
+                          escribe("CÓDIGO: " + bala['codigo']))
         from barcode import code39
-        codigobarras = code39.Extended39(bala['codigo'], xdim = .020*inch)
-        codigobarras.drawOn(c, xIzquierda - 0.5 * cm, yPrimeraLinea + 15)
-        c.drawString(xIzquierda,
-                     yQuintaLinea,
-                     escribe("COLOR: %s" % (bala['color'])))
-        c.drawString(xIzquierda,
-                     ySegundaLinea,
-                     escribe("LOTE: %s" % (bala['lote'])))
-        c.drawString(xDerecha,
-                     ySegundaLinea,
-                     escribe("PESO KG: %s" % (bala['peso'])))
-        c.drawString(xIzquierda,
-                     yTerceraLinea,
-                     escribe("TIPO: %s" % (bala['tipo'])))
-        c.drawString(xDerecha,
-                     yTerceraLinea,
-                     escribe("LONGITUD: %s" % (bala['longitud'])))
-        c.drawString(xIzquierda,
-                     yCuartaLinea,
-                     escribe("BALA Nº: %s" % (bala['nbala'])))
-        c.drawString(xDerecha,
-                     yCuartaLinea,
-                     escribe("DTEX: %s" % (bala['dtex'])))
-        c.drawString(xDerecha,
-                     yQuintaLinea,
-                     escribe("ACABADO: %s" % (bala['acabado'])))
+        codigobarras = code39.Extended39(bala['codigo'], xdim=.020*inch)
+        codigobarras.drawOn(canvas, xIzquierda - 0.5 * cm, yPrimeraLinea + 15)
+        canvas.drawString(xIzquierda,
+                          yQuintaLinea,
+                          escribe("COLOR: %s" % (bala['color'])))
+        canvas.drawString(xIzquierda,
+                          ySegundaLinea,
+                          escribe("LOTE: %s" % (bala['lote'])))
+        canvas.drawString(xDerecha,
+                          ySegundaLinea,
+                          escribe("PESO KG: %s" % (bala['peso'])))
+        canvas.drawString(xIzquierda,
+                          yTerceraLinea,
+                          escribe("TIPO: %s" % (bala['tipo'])))
+        canvas.drawString(xDerecha,
+                          yTerceraLinea,
+                          escribe("LONGITUD: %s" % (bala['longitud'])))
+        canvas.drawString(xIzquierda,
+                          yCuartaLinea,
+                          escribe("BALA Nº: %s" % (bala['nbala'])))
+        canvas.drawString(xDerecha,
+                          yCuartaLinea,
+                          escribe("DTEX: %s" % (bala['dtex'])))
+        canvas.drawString(xDerecha,
+                          yQuintaLinea,
+                          escribe("ACABADO: %s" % (bala['acabado'])))
         from barcode.EANBarCode import EanBarCode
         bar = EanBarCode()
         nombreficheroean13 = bar.getImage(bala['codigoBarra'])
         ean13rotado = Image.open(nombreficheroean13)
         ean13rotado = ean13rotado.rotate(90)
         ean13rotado.save(nombreficheroean13)
-        c.drawImage(nombreficheroean13, xCodigo, yCodigo)
+        canvas.drawImage(nombreficheroean13, xCodigo, yCodigo)
         # XXX: DOMENECH:
         from barcode import code128
-        seriep = None   # Esto ya no se usa. Es la serie del pedido para el cliente
-        numped = None   # Esto ya no se usa. Es el núm. del pedido para el cliente
+        seriep = None   # Esto ya no se usa. Serie del pedido para el cliente
+        numped = None   # Esto ya no se usa. Núm. del pedido para el cliente
         codigodomenech = _build_codigo_domenech(bala, seriep, numped)
         if codigodomenech:
             barcodedomenech = code128.Code128(codigodomenech,
-                                              #xdim = 0.015 * inch,
-                                              #height = 0.5 * cm)
-                                              xdim = 0.0205 * inch,
-                                              height = 0.95 * cm)
-            #barcodedomenech = code39.Extended39(codigodomenech,
+                                              # xdim = 0.015 * inch,
+                                              # height = 0.5 * cm)
+                                              xdim=0.0205 * inch,
+                                              height=0.95 * cm)
+            # barcodedomenech = code39.Extended39(codigodomenech,
             #                                  #xdim = 0.015 * inch,
             #                                  #height = 0.5 * cm)
             #                                  xdim = 0.0094 * inch,
             #                                  height = 0.95 * cm)
             ydom = alto - 1.2 * cm
-            #ydom = 0.4 * cm
+            # ydom = 0.4 * cm
             xdom = (width - barcodedomenech.width) / 2.0
-            barcodedomenech.drawOn(c, xdom, ydom)
-            c.saveState()
-            c.setFont("Courier-Bold", 8)
-            c.drawCentredString(xdom + (barcodedomenech.width / 2.0),
-                                ydom - 0.20 * cm,
-                                codigodomenech)
-            c.restoreState()
+            barcodedomenech.drawOn(canvas, xdom, ydom)
+            canvas.saveState()
+            canvas.setFont("Courier-Bold", 8)
+            canvas.drawCentredString(xdom + (barcodedomenech.width / 2.0),
+                                     ydom - 0.20 * cm,
+                                     codigodomenech)
+            canvas.restoreState()
         # XXX: EODOMENECH
         # XXX: Marca para identificar las nuevas.
-        c.saveState()
-        c.setFillColorRGB(0, 0, 0)
-        c.circle(izq - 0.3*cm, yQuintaLinea, 0.1*cm, fill=1)
-        c.restoreState()
+        canvas.saveState()
+        canvas.setFillColorRGB(0, 0, 0)
+        canvas.circle(izq - 0.3*cm, yQuintaLinea, 0.1*cm, fill=1)
+        canvas.restoreState()
         # XXX: EOMarca
-        c.showPage()
-    c.save()
+        canvas.showPage()
+        # Y ahora la etiqueta adicional por si se pierde la otra y para cargar.
+        create_etiqueta_backup_bala(canvas, bala)
+        canvas.showPage()
+    canvas.save()
     return nomarchivo
 
 
@@ -907,8 +1148,9 @@ def test_rollos():
     from random import randrange
     rollos = (todos[randrange(todos.count())],
               todos[randrange(todos.count())])
-    #abrir_pdf(etiqueta_rollos_norma13(rollos, False))
+    # abrir_pdf(etiqueta_rollos_norma13(rollos, False))
     abrir_pdf(etiqueta_rollos_norma13_en(rollos))
+
 
 def test_pales():
     """ Pruebas de impresión de etiquetas de palé. """
@@ -919,6 +1161,7 @@ def test_pales():
     time.sleep(1)
     abrir_pdf(crear_etiquetas_pales(pales, lang="en"))
 
+
 def test_bigbags():
     """ Pruebas de impresión de etiquetas de bigbag. """
     from formularios.reports import abrir_pdf
@@ -927,6 +1170,7 @@ def test_bigbags():
     import time
     time.sleep(1)
     abrir_pdf(crear_etiquetas_bigbags(bigbags, lang="en"))
+
 
 def test_balas():
     """ Pruebas de impresión de etiquetas de balas. """
@@ -940,6 +1184,6 @@ def test_balas():
 
 if __name__ == "__main__":
     test_rollos()
-    # test_pales()
-    # test_bigbags()
-    # test_balas()
+    test_pales()
+    test_bigbags()
+    test_balas()
