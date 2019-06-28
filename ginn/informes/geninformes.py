@@ -8226,15 +8226,17 @@ def generar_data_caja(caja, tipo = 0):
                 res['empresa'] = ""
     return res
 
+
 def etiquetasBalasEtiquetadora(balas, hook=None, *args, **kw):
-    #return domenech_v_etiquetasBalasEtiquetadora(*args, **kw)
+    # return domenech_v_etiquetasBalasEtiquetadora(*args, **kw)
     # Si tiene función especial para modelo de etiqueta personalizado:
+    print "etiquetasBalasEtiquetadora   ------>", hook
     if not hook:
         nomarchivo = domenech_h_etiquetasBalasEtiquetadora(balas, *args, **kw)
     else:
         nomarchivo = hook(balas)
     return nomarchivo
-    #return _DEPRECATED_etiquetasBalasEtiquetadora(*args, **kw)
+    # return _DEPRECATED_etiquetasBalasEtiquetadora(*args, **kw)
 
 def _DEPRECATED_etiquetasBalasEtiquetadora(balas):
     """

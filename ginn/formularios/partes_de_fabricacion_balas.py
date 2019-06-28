@@ -4372,7 +4372,7 @@ class PartesDeFabricacionBalas(Ventana):
                 # específico, lo uso. Si no, uso el código antiguo para el
                 # modelo por defecto.
                 _balas = []
-                balas_con_otro_modelo = {}
+                balas_etiqueta_personalizada = {}
                 for bala in balas:
                     pbala = pclases.Bala.selectBy(codigo=bala['codigo'])[0]
                     ceb = pbala.articulo.productoVenta.camposEspecificosBala
@@ -4380,18 +4380,18 @@ class PartesDeFabricacionBalas(Ventana):
                     if fetiqueta:
                         # Cada modelo de etiqueta con su lista de artículos
                         try:
-                            balas_con_otro_modelo[fetiqueta].append(bala)
+                            balas_etiqueta_personalizada[fetiqueta].append(bala)
                         except KeyError:
-                            balas_con_otro_modelo[fetiqueta] = [bala]
+                            balas_etiqueta_personalizada[fetiqueta] = [bala]
                     else:
                         _balas.append(bala)
                 balas = _balas
                 # Si hay artículos con etiqueta personalizada:
-                for fetiqueta in balas_con_otro_modelo:
-                    balas = balas_con_otro_modelo[fetiqueta]
+                for fetiqueta in balas_etiqueta_personalizada:
+                    balas_a_imprimir = balas_etiqueta_personalizada[fetiqueta]
                     reports.abrir_pdf(
                             geninformes.etiquetasBalasEtiquetadora(
-                                balas,
+                                balas_a_imprimir,
                                 hook=fetiqueta.get_func()))
                 # Si han quedado artículos con la etiqueta por defecto:
                 if balas:

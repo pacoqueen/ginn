@@ -1133,6 +1133,7 @@ def crear_etiquetas_balas(balas, mostrar_marcado=True, lang="es"):
         canvas.circle(izq - 0.3*cm, yQuintaLinea, 0.1*cm, fill=1)
         canvas.restoreState()
         # XXX: EOMarca
+        print "Imprimiendo segunda etiquetas..."
         canvas.showPage()
         # Y ahora la etiqueta adicional por si se pierde la otra y para cargar.
         create_etiqueta_backup_bala(canvas, bala)
