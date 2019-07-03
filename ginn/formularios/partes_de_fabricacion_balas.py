@@ -2217,7 +2217,7 @@ class PartesDeFabricacionBalas(Ventana):
             horafin = utils.str_hora_corta(self.objeto.horafin)
         prodestandar = self.wids['e_o80'].get_text()
         try:
-            prodestandar = float(prodestandar)
+            prodestandar = utils._float(prodestandar)
         except:                                                         # noqa
             prodestandar = 0
         observaciones = self.procesar_observaciones()
