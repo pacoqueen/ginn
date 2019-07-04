@@ -1140,7 +1140,14 @@ class PartesDeFabricacionBalas(Ventana):
         self.wids['e_hora_ini'].set_text(strhoraini)
         strhorafin = partedeproduccion.horafin.strftime('%H:%M')
         self.wids['e_hora_fin'].set_text(strhorafin)
-        self.wids['e_o80'].set_text(str(partedeproduccion.prodestandar))
+        # OJO: Corrijo los partes sin producción estándar automáticamente.
+        if (not partedeproduccion.prodestandar
+                and partedeproduccion.productoVenta):
+            pvprodestandar = partedeproduccion.productoVenta.prodestandar
+            partedeproduccion.prodestandar = pvprodestandar
+            partedeproduccion.syncUpdate()
+        self.wids['e_o80'].set_text(utils.float2str(
+            partedeproduccion.prodestandar))
         fichaprod = partedeproduccion.fichaproduccion
         self.wids['e_fichaproduccion'].set_text(fichaprod)
         obs = self.formatear_observaciones(partedeproduccion.observaciones)
@@ -1199,6 +1206,7 @@ class PartesDeFabricacionBalas(Ventana):
         # cuenta de que ha vuelto a los valores anteriores... caca. También
         # está pendiente lo de cargar la última configuración de silos al
         # abrir un parte.
+
 
     def check_permisos(self):
         if "w" in self.__permisos:  # Puede modificar los partes:
