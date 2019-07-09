@@ -4172,7 +4172,7 @@ class PartesDeFabricacionBalas(Ventana):
 
     def etiquetas(self, boton):
         """
-        Imprime las etiquetas de los
+        Imprime las etiquetas de las
         balas del parte seleccionados
         """
         entrada = utils.dialogo_entrada(
@@ -5010,8 +5010,16 @@ def imprimir_etiqueta(articulo, ventana_parte):
                 'codigoBarra': producto.codigo}
     balas = [elemento]
     # reports.abrir_pdf(geninformes.etiquetasBalasEtiquetadora(balas))
-    reports.mandar_a_imprimir_con_ghostscript(
-        geninformes.etiquetasBalasEtiquetadora(balas))
+    # Si tiene etiqueta personalizada, la uso:
+    ceb = articulo.productoVenta.camposEspecificosBala
+    fetiqueta = ceb.modeloEtiqueta
+    if fetiqueta:
+        reports.mandar_a_imprimir_con_ghostscript(
+                geninformes.etiquetasBalasEtiquetadora(balas,
+                    hook=fetiqueta.get_func()))
+    else:
+        reports.mandar_a_imprimir_con_ghostscript(
+                geninformes.etiquetasBalasEtiquetadora(balas))
     pclases.Auditoria.modificado(
             articulo, None, __file__,
             "Impresión de etiqueta para bala %s." % (articulo.get_info()))
