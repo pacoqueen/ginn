@@ -362,7 +362,7 @@ def create_etiqueta_backup_bala(canvas, bala):
     # Dimensiones para pintar la información.
     canvas.saveState()
     xcode = ancho / 2.0
-    ycode = 0.2*cm
+    ycode = 0.3*cm
     xprod = xcode
     yprod = alto - margen - 0.3*cm
     # ## El código de bala:
