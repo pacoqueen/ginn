@@ -25,18 +25,18 @@
 
 
 ###################################################################
-## informes.py - Ventana que lanza los informes en PDF. 
+## informes.py - Ventana que lanza los informes en PDF.
 ###################################################################
 ## NOTAS:
-##  
+##
 ###################################################################
 ## Changelog:
-## 29 de noviembre de 2005 -> Inicio 
+## 29 de noviembre de 2005 -> Inicio
 ## 30 de noviembre de 2005 -> 50% funcional
 ###################################################################
 ## TODO:
-## - Mostrar opciones de filtro de datos a imprimir 
-## 
+## - Mostrar opciones de filtro de datos a imprimir
+##
 ###################################################################
 
 import pygtk
@@ -56,9 +56,9 @@ def abrir_pdf(pdf):
     Ni que decir tiene que todo eso debe instalarse aparte.
     """
     if not pdf or pdf is None:
-        return 
-    # TODO: Problemón. Al ponerle el ampersand para mandarlo a segundo plano, 
-    # sh siempre devuelve 0 como salida del comando, así que no hay manera de 
+        return
+    # TODO: Problemón. Al ponerle el ampersand para mandarlo a segundo plano,
+    # sh siempre devuelve 0 como salida del comando, así que no hay manera de
     # saber cuándo se ha ejecutado bien y cuándo no.
     if os.name == 'posix':
         # OJO(Diego) Lo he cambiado por un problema de dependencias y el evince
@@ -67,7 +67,7 @@ def abrir_pdf(pdf):
                 (not os.system('xdg-open "%s" &' % pdf)) or \
                 (not os.system('gnome-open "%s" &' % pdf)) or \
                 (not os.system('xpdf "%s" &' % pdf))):
-            utils.dialogo_info(titulo = "VISOR PDF NO ENCONTRADO", 
+            utils.dialogo_info(titulo = "VISOR PDF NO ENCONTRADO",
                                texto = "No se encontró evince, acroread ni xpdf en el sistema.\nNo fue posible mostrar el archivo %s." % (pdf))
     else:
         # OJO: Esto no es independiente de la plataforma:
@@ -75,24 +75,24 @@ def abrir_pdf(pdf):
 
 def abrir_csv(csv, ventana_padre = None):
     """
-    Si la plataforma es MS-Windows abre el archivo con la aplicación 
-    predeterminada para los archivos CSV (por desgracia me imagino que 
+    Si la plataforma es MS-Windows abre el archivo con la aplicación
+    predeterminada para los archivos CSV (por desgracia me imagino que
     MS-Excel). Si no, intenta abrirlo con OpenOffice.org Calc.
     """
-    # TODO: Problemón. Al ponerle el ampersand para mandarlo a segundo plano, sh siempre devuelve 0 como salida del comando, 
+    # TODO: Problemón. Al ponerle el ampersand para mandarlo a segundo plano, sh siempre devuelve 0 como salida del comando,
     # así que no hay manera de saber cuándo se ha ejecutado bien y cuándo no.
-    if sys.platform != 'win32':     # Más general que os.name (que da "nt" en 
+    if sys.platform != 'win32':     # Más general que os.name (que da "nt" en
                                     # los windows 2000 de las oficinas).
         try:
             res = os.system('xdg-open "%s" &' % csv)
             assert res == 0
         except AssertionError:
             if not ( (not os.system('oocalc2 "%s" || oocalc "%s" &'%(csv,csv)))
-                    or (not os.system('oocalc "%s" &' % csv)) 
+                    or (not os.system('oocalc "%s" &' % csv))
                    ):
-                utils.dialogo_info(titulo = "OOO NO ENCONTRADO", 
-                                   texto = "No se encontró OpenOffice.org en el sistema.\nNo fue posible mostrar el archivo %s." % (csv), 
-                                   padre = ventana_padre) 
+                utils.dialogo_info(titulo = "OOO NO ENCONTRADO",
+                                   texto = "No se encontró OpenOffice.org en el sistema.\nNo fue posible mostrar el archivo %s." % (csv),
+                                   padre = ventana_padre)
     else:
         # OJO: Esto no es independiente de la plataforma:
         os.startfile(csv)  # @UndefinedVariable
@@ -100,20 +100,20 @@ def abrir_csv(csv, ventana_padre = None):
 def mandar_a_imprimir_con_ghostscript(fichero, rotate = False):
     """
     Lanza un trabajo de impresión a través de acrobat reader.
-    Usa parámetros no documentados y oficialmente no soportados 
-    por acrobat. Esta función es temporal, hasta que encuentre 
+    Usa parámetros no documentados y oficialmente no soportados
+    por acrobat. Esta función es temporal, hasta que encuentre
     un visor/impresor de PDF desde línea de comandos.
     Win-only. No funciona en posix ni aún teniendo el reader
     para esa plataforma (creo).
-    NO USAR CON ROLLOS: No cuadra bien la etiqueta y además deja abierta la 
+    NO USAR CON ROLLOS: No cuadra bien la etiqueta y además deja abierta la
     ventana después.
-    Impresora CAB harcoded (y además no es el nombre por defecto de la 
+    Impresora CAB harcoded (y además no es el nombre por defecto de la
     impresora).
     ¡MENTIRA COCHINA! Lo hace a través de Ghostscript.
     """
     if rotate:
         from lib.PyPDF2 import PyPDF2
-        fichrotado = os.path.join(tempfile.gettempdir(), 
+        fichrotado = os.path.join(tempfile.gettempdir(),
                                   "gs_rotated_%s.pdf" % give_me_the_name_baby()
                                  )
         rotado = PyPDF2.PdfFileWriter()
@@ -125,15 +125,19 @@ def mandar_a_imprimir_con_ghostscript(fichero, rotate = False):
     # OJO: Ruta al reader harcoded !!!
     #    comando = """"C:\\Archivos de programa\\Adobe\\Acrobat 6.0\\Reader\\AcroRd32.exe" /t "%s" GEMINI2 """ % (fichero)
     #    comando = """start /B AcroRd32 /t "%s" CAB """ % (fichero)
+    # ## OBSOLETO. Ahora usamos impresoras TSC
+    # comando = """gswin32c.exe -dQueryUser=3 -dNoCancel -dNOPAUSE -dBATCH"""\
+    #           """ -sDEVICE=mswinpr2 -sOutputFile="%%printer%%CAB" %s """ % (
+    #             fichero)
     comando = """gswin32c.exe -dQueryUser=3 -dNoCancel -dNOPAUSE -dBATCH"""\
-              """ -sDEVICE=mswinpr2 -sOutputFile="%%printer%%CAB" %s """ % (
-                fichero)
-    # NOTA: Necesita que: 
-    # 1.- La impresora CAB esté como predeterminada en la "carpeta" 
+              """ -sDEVICE=mswinpr2 """\
+              """-sOutputFile="%%printer%%TSC TTP-246M Pro" %s """ % (fichero)
+    # NOTA: Necesita que:
+    # 1.- La impresora CAB esté como predeterminada en la "carpeta"
     #     impresoras de Windows.
-    # 2.- Tenga la configuración adecuada por defecto (apaisado, tamaño de 
+    # 2.- Tenga la configuración adecuada por defecto (apaisado, tamaño de
     #     etiqueta, etc.
-    # 3.- gs esté en el PATH (añadiendo C:\Archivos de programa...\bin en la 
+    # 3.- gs esté en el PATH (añadiendo C:\Archivos de programa...\bin en la
     #     variable de entorno PATH desde las propiedades avanzadas de Mi PC.)
     if os.system(comando):
         print "No se pudo hacer la impresión directa. Lanzo el visor."
@@ -141,8 +145,8 @@ def mandar_a_imprimir_con_ghostscript(fichero, rotate = False):
 
 def mandar_a_imprimir_con_foxit(fichero):
     """
-    Lanza un trabajo de impresión a través de foxit reader o 
-    LPR si el sistema es UNIX. 
+    Lanza un trabajo de impresión a través de foxit reader o
+    LPR si el sistema es UNIX.
     OJO: Siempre manda a la impresora por defecto.
     """
     import time
@@ -183,8 +187,9 @@ def imprimir_con_gs(fichero, impresora = None, blanco_y_negro = False):
     else:
         # Anoto aquí las impresoras que hay rulando, aunque no se use.
         impresoras = {'oficina': ("RICOH Aficio 1224C PCL 5c", "OFICINA"),  # @UnusedVariable
-                      'etiquetas': ("CAB", "CAB MACH 4 200DPI", "GEMINI2")}
-        # XXX 
+                      'etiquetas': ("TSC TTP-246M Pro", "CAB",
+                                    "CAB MACH 4 200DPI", "GEMINI2")}
+        # XXX
         ruta_a_gs = get_ruta_ghostscript()
         if ruta_a_gs == None:
             print "informes.py (imprimir_con_gs): GhostScript no encontrado."
@@ -194,7 +199,7 @@ def imprimir_con_gs(fichero, impresora = None, blanco_y_negro = False):
                 por_defecto = " -dQueryUser=3 "
                 impresora = ""
             else:
-                por_defecto = "" 
+                por_defecto = ""
                 impresora = ' -sOutputFile="\\spool\%s" ' % (impresora)
             if blanco_y_negro:
                 blanco_y_negro = " -dBitsPerPixel=1 "
@@ -210,15 +215,15 @@ def imprimir_con_gs(fichero, impresora = None, blanco_y_negro = False):
                 print "informes.py (imprimir_con_gs): No se pudo imprimir. "\
                       "Lanzo el visor."
                 abrir_pdf(fichero)
-            if salida == 1:     # Si cancela la impresión a lo mejor quiere 
+            if salida == 1:     # Si cancela la impresión a lo mejor quiere
                                 # verlo en pantalla.
                 abrir_pdf(fichero)
 
 def que_simpatico_es_el_interprete_de_windows(comando, parametro):
     """
-    El os.system llama a cmd /C y/o /K, y el cmd.exe es muy simpático y se 
-    comporta como le da la gana. No sabe ni escapar los espacios de sus propias rutas, 
-    por lo que como intentes ejecutar algo dentro de Archivos de programa... total, 
+    El os.system llama a cmd /C y/o /K, y el cmd.exe es muy simpático y se
+    comporta como le da la gana. No sabe ni escapar los espacios de sus propias rutas,
+    por lo que como intentes ejecutar algo dentro de Archivos de programa... total,
     que hay que encerrar todo entre comillas y otra vez entre comillas.
     mi nota: PUTAMIERDA
     ver: http://jason.diamond.name/weblog/2005/04/14/dont-quote-me-on-this
@@ -236,35 +241,35 @@ if __name__=='__main__':
 
     from informes import geninformes
     informe = ' '.join(sys.argv[1:])
-    if informe == 'Clientes y consumo': 
+    if informe == 'Clientes y consumo':
         nombrepdf = geninformes.pedidosCliente()
-    elif informe == 'Albaranes por cliente': 
+    elif informe == 'Albaranes por cliente':
         nombrepdf = geninformes.albaranesCliente()
-    elif informe == 'Compras': 
+    elif informe == 'Compras':
         nombrepdf = geninformes.compras()
-    elif informe == 'Ventas': 
+    elif informe == 'Ventas':
         nombrepdf = geninformes.ventas()
-    elif informe == 'Vencimientos pendientes de pago': 
+    elif informe == 'Vencimientos pendientes de pago':
     #   nombrepdf = geninformes.vecimientosPendientesDePago()
         utils.dialogo_info('FUNCIONALIDAD NO IMPLEMENTADA', 'Este informe aún no se puede generar.')
         sys.exit(0)
-    elif informe == 'Vencimientos pendientes de pagar': 
+    elif informe == 'Vencimientos pendientes de pagar':
         utils.dialogo_info('FUNCIONALIDAD NO IMPLEMENTADA', 'Este informe aún no se puede generar.')
         sys.exit(0)
     #   nombrepdf = geninformes.()
     #===========================================================================
-    # elif informe == 'Productos bajo mínimo': 
+    # elif informe == 'Productos bajo mínimo':
     #     nombrepdf = geninformes.productosBajoMinimos()
-    # elif informe == 'Albaranes por facturar': 
+    # elif informe == 'Albaranes por facturar':
     #     nombrepdf = geninformes.albaranesPorFacturar()
     #===========================================================================
-    elif informe == 'Albaranes facturados': 
+    elif informe == 'Albaranes facturados':
         nombrepdf = geninformes.albaranesFacturados()
-    elif informe == 'Existencias': 
+    elif informe == 'Existencias':
         nombrepdf = geninformes.existencias()
     elif informe == 'Incidencias':
         nombrepdf = geninformes.incidencias()
-    elif informe == 'Informes de laboratorio': 
+    elif informe == 'Informes de laboratorio':
         utils.dialogo_info('FUNCIONALIDAD NO IMPLEMENTADA', 'Este informe aún no se puede generar.')
         sys.exit(0)
     #   nombrepdf = geninformes.()

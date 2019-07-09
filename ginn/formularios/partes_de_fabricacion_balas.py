@@ -4398,8 +4398,6 @@ class PartesDeFabricacionBalas(Ventana):
                     else:
                         _balas.append(bala)
                 balas = _balas
-                print "balas", balas
-                print "balas_etiqueta_personalizada", balas_etiqueta_personalizada
                 # Si hay artículos con etiqueta personalizada:
                 for fetiqueta in balas_etiqueta_personalizada:
                     balas_a_imprimir = balas_etiqueta_personalizada[fetiqueta]
