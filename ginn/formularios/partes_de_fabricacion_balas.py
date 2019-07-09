@@ -315,8 +315,12 @@ class PartesDeFabricacionBalas(Ventana):
             self.logger.error(txt)
             partedeproduccion.sync()
             condicion = False
-        condicion = (condicion and (str(partedeproduccion.prodestandar) ==
-                     self.wids['e_o80'].get_text()))
+        try:
+            prodestandar = utils._float(self.wids['e_o80'].get_text())
+        except:
+            prodestandar = 0.0
+        condicion = (condicion and (partedeproduccion.prodestandar ==
+                     prodestandar))
         # NOTA: Nada más a comparar. La info del artículo es la de alguno de
         # las balas introducidas y se elige mediante el botón correspondiente
         # (determinará las búsquedas y la información a pedir a la hora de
@@ -4394,6 +4398,8 @@ class PartesDeFabricacionBalas(Ventana):
                     else:
                         _balas.append(bala)
                 balas = _balas
+                print "balas", balas
+                print "balas_etiqueta_personalizada", balas_etiqueta_personalizada
                 # Si hay artículos con etiqueta personalizada:
                 for fetiqueta in balas_etiqueta_personalizada:
                     balas_a_imprimir = balas_etiqueta_personalizada[fetiqueta]
