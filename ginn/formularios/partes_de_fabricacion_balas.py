@@ -129,6 +129,18 @@ class PartesDeFabricacionBalas(Ventana):
         # Debe coincidir con el de todas las balas de "Detalles de producción"
         Ventana.__init__(self, 'partes_de_fabricacion_balas.glade', objeto,
                          usuario=usuario)
+        # Agrego campo calculado nuevo (NEW! 19/06/2019)
+        hbox = self.wids['e_productividad'].parent
+        label = gtk.Label('Producción teórica: ')
+        self.wids['e_prod_teorica'] = entry = gtk.Entry()
+        entry.set_property("editable", False)
+        entry.set_property("has-frame", False)
+        entry.set_tooltip_text("Tiempo real trabajado por producción estándar")
+        hbox.pack_start(label, expand=False, fill=False)
+        hbox.pack_start(entry, expand=False, fill=False)
+        hbox.reorder_child(label, 2)
+        hbox.reorder_child(entry, 3)
+        hbox.show_all()
         connections = {'b_salir/clicked': self._salir,
                        'ventana/delete_event': self._salir,
                        'b_nuevo/clicked': self.crear_nuevo_partedeproduccion,
@@ -1128,7 +1140,14 @@ class PartesDeFabricacionBalas(Ventana):
         self.wids['e_hora_ini'].set_text(strhoraini)
         strhorafin = partedeproduccion.horafin.strftime('%H:%M')
         self.wids['e_hora_fin'].set_text(strhorafin)
-        self.wids['e_o80'].set_text(str(partedeproduccion.prodestandar))
+        # OJO: Corrijo los partes sin producción estándar automáticamente.
+        if (not partedeproduccion.prodestandar
+                and partedeproduccion.productoVenta):
+            pvprodestandar = partedeproduccion.productoVenta.prodestandar
+            partedeproduccion.prodestandar = pvprodestandar
+            partedeproduccion.syncUpdate()
+        self.wids['e_o80'].set_text(utils.float2str(
+            partedeproduccion.prodestandar))
         fichaprod = partedeproduccion.fichaproduccion
         self.wids['e_fichaproduccion'].set_text(fichaprod)
         obs = self.formatear_observaciones(partedeproduccion.observaciones)
@@ -1187,6 +1206,7 @@ class PartesDeFabricacionBalas(Ventana):
         # cuenta de que ha vuelto a los valores anteriores... caca. También
         # está pendiente lo de cargar la última configuración de silos al
         # abrir un parte.
+
 
     def check_permisos(self):
         if "w" in self.__permisos:  # Puede modificar los partes:
@@ -1532,6 +1552,14 @@ class PartesDeFabricacionBalas(Ventana):
         self.rellenar_datos_lote()
         self.rellenar_tabla_consumos()
         self.rellenar_tabla_conf_silos()
+        # NEW! 9/06/2019 +abahamonde
+        try:
+            prodteorica = self.objeto.prodestandar*(tiemporeal.seconds/(60*60))
+        except Exception as eprodteorica:
+            prodteorica = "ERROR {}".format(eprodteorica)
+        else:
+            prodteorica = utils.float2str(prodteorica)
+        self.wids['e_prod_teorica'].set_text(prodteorica)
 
     def rellenar_tabla_consumos(self):
         """
@@ -2197,7 +2225,7 @@ class PartesDeFabricacionBalas(Ventana):
             horafin = utils.str_hora_corta(self.objeto.horafin)
         prodestandar = self.wids['e_o80'].get_text()
         try:
-            prodestandar = float(prodestandar)
+            prodestandar = utils._float(prodestandar)
         except:                                                         # noqa
             prodestandar = 0
         observaciones = self.procesar_observaciones()
@@ -4352,7 +4380,7 @@ class PartesDeFabricacionBalas(Ventana):
                 # específico, lo uso. Si no, uso el código antiguo para el
                 # modelo por defecto.
                 _balas = []
-                balas_con_otro_modelo = {}
+                balas_etiqueta_personalizada = {}
                 for bala in balas:
                     pbala = pclases.Bala.selectBy(codigo=bala['codigo'])[0]
                     ceb = pbala.articulo.productoVenta.camposEspecificosBala
@@ -4360,18 +4388,18 @@ class PartesDeFabricacionBalas(Ventana):
                     if fetiqueta:
                         # Cada modelo de etiqueta con su lista de artículos
                         try:
-                            balas_con_otro_modelo[fetiqueta].append(bala)
+                            balas_etiqueta_personalizada[fetiqueta].append(bala)
                         except KeyError:
-                            balas_con_otro_modelo[fetiqueta] = [bala]
+                            balas_etiqueta_personalizada[fetiqueta] = [bala]
                     else:
                         _balas.append(bala)
                 balas = _balas
                 # Si hay artículos con etiqueta personalizada:
-                for fetiqueta in balas_con_otro_modelo:
-                    balas = balas_con_otro_modelo[fetiqueta]
+                for fetiqueta in balas_etiqueta_personalizada:
+                    balas_a_imprimir = balas_etiqueta_personalizada[fetiqueta]
                     reports.abrir_pdf(
                             geninformes.etiquetasBalasEtiquetadora(
-                                balas,
+                                balas_a_imprimir,
                                 hook=fetiqueta.get_func()))
                 # Si han quedado artículos con la etiqueta por defecto:
                 if balas:

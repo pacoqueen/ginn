@@ -25,48 +25,48 @@
 
 
 ###################################################################
-## partes_de_fabricacion_rollos.py - Parte de producción para rollos.
+# # partes_de_fabricacion_rollos.py - Parte de producción para rollos.
 ###################################################################
-## NOTAS:
+# # NOTAS:
 ##
-## ----------------------------------------------------------------
-## TO-DO:
+# # ----------------------------------------------------------------
+# # TO-DO:
 ##
 ###################################################################
-## Changelog:
-## 15 de noviembre de 2005 -> Inicio
-## 16 de noviembre de 2005 -> 99% funcional
-## 23 de enero de 2006 -> Portado a clase.
-## 26 de enero de 2006 -> Funcional al 99% one more time.
-## 9 de mayo de 2006 -> Control de permisos. Para copiar a otras
-## ventanas, mirar: check_permisos(), rellenar_widgets,
-## self.__lecturaescritura, self.__permisos, activar_widgets y
-## la asignación de id en nuevo_.
-## 10 de mayo de 2006 -> Cambiado comportamiento de set_articulo.
-## 26 de julio de 2006 -> Añadidos empleados por defecto según
-##                        calendario laboral.
-## 8 de marzo de 2006 -> Añado rollos por defecto.
-## 31 de julio de 2007 -> Nueva casilla "versión de la ficha de
-##                        producción" usada (texto libre).
+# # Changelog:
+# # 15 de noviembre de 2005 -> Inicio
+# # 16 de noviembre de 2005 -> 99% funcional
+# # 23 de enero de 2006 -> Portado a clase.
+# # 26 de enero de 2006 -> Funcional al 99% one more time.
+# # 9 de mayo de 2006 -> Control de permisos. Para copiar a otras
+# # ventanas, mirar: check_permisos(), rellenar_widgets,
+# # self.__lecturaescritura, self.__permisos, activar_widgets y
+# # la asignación de id en nuevo_.
+# # 10 de mayo de 2006 -> Cambiado comportamiento de set_articulo.
+# # 26 de julio de 2006 -> Añadidos empleados por defecto según
+# #                        calendario laboral.
+# # 8 de marzo de 2006 -> Añado rollos por defecto.
+# # 31 de julio de 2007 -> Nueva casilla "versión de la ficha de
+# #                        producción" usada (texto libre).
 ###################################################################
-## DONE:
-## + Comprobar que se marca bien el consumo estimado en relación
-##   con el de balas _en todos los partes_ de la misma partida.
-## + No estaría de más un entry con el cálculo acumulado de consumo
-##   estimado (además facilitaría el consumo en relación con
-##   el consumo real de balas añadida. El cálculo de arriba,
-##   vamos.)
-## + Falta cálculo de rendimiento:
-##   nºtrabajadores * horas turno / nº trabajadores * horas reales.
-## + Comprobar que las horas del parte no pisan a otro parte de rollos.
-## + Al eliminar todos los rollos de un parte, los consumos deberían
-##   quedar a 0. Sin embargo no es así. Why? (por poner el parte a
-##   None antes de descontar el consumo).
+# # DONE:
+# # + Comprobar que se marca bien el consumo estimado en relación
+# #   con el de balas _en todos los partes_ de la misma partida.
+# # + No estaría de más un entry con el cálculo acumulado de consumo
+# #   estimado (además facilitaría el consumo en relación con
+# #   el consumo real de balas añadida. El cálculo de arriba,
+# #   vamos.)
+# # + Falta cálculo de rendimiento:
+# #   nºtrabajadores * horas turno / nº trabajadores * horas reales.
+# # + Comprobar que las horas del parte no pisan a otro parte de rollos.
+# # + Al eliminar todos los rollos de un parte, los consumos deberían
+# #   quedar a 0. Sin embargo no es así. Why? (por poner el parte a
+# #   None antes de descontar el consumo).
 ###################################################################
 
 
-#import sys, os
-#sys.stdout = open("salida_debug.txt", "a")
+# import sys, os
+# sys.stdout = open("salida_debug.txt", "a")
 
 import time
 import pygtk
@@ -424,7 +424,7 @@ class PartesDeFabricacionRollos(Ventana):
                 if numcol == 3:  # Columna de la densidad
                     cell.set_property("foreground", color)  # En windows GTK no es capaz de sombrear los colores. Directamente no se muestra.
                     cell.set_property("text", "%.1f" % model[itr][3])
-                ## Redondeo de decimales:
+                # # Redondeo de decimales:
                 if numcol == 2:
                     cell.set_property("text", "%.1f" % model[itr][2])
                 # Marco el color de fondo para las muestras:
@@ -1785,7 +1785,7 @@ class PartesDeFabricacionRollos(Ventana):
             except:
                 len_resultados = resultados.count()
             if len_resultados > 1:
-                ## Refinar los resultados
+                # # Refinar los resultados
                 idpartedeproduccion = self.refinar_resultados_busqueda(resultados)
                 if idpartedeproduccion == None:
                     return
@@ -1794,10 +1794,10 @@ class PartesDeFabricacionRollos(Ventana):
                 # Me quedo con una lista de resultados de un único objeto ocupando la primera posición.
                 # (Más abajo será cuando se cambie realmente el objeto actual por este resultado.)
             elif len_resultados < 1:
-                ## Sin resultados de búsqueda
+                # # Sin resultados de búsqueda
                 utils.dialogo_info('SIN RESULTADOS', 'La búsqueda no produjo resultados.\nPruebe a cambiar el texto buscado o déjelo en blanco para ver una lista completa.\n(Atención: Ver la lista completa puede resultar lento si el número de elementos es muy alto)', padre = self.wids['ventana'])
                 return
-            ## Un único resultado
+            # # Un único resultado
             # Primero anulo la función de actualización
             if partedeproduccion != None:
                 partedeproduccion.notificador.desactivar()
@@ -2041,17 +2041,17 @@ class PartesDeFabricacionRollos(Ventana):
             criterio = pclases.AND(criterio, criterio_lineas, no_obsoleto)
             resultados = pclases.ProductoVenta.select(criterio)
             if resultados.count() > 1:
-                    ## Refinar los resultados
+                    # # Refinar los resultados
                     idproducto = self.refinar_resultados_busqueda_producto(resultados)
                     if idproducto == None:
                         return None
                     resultados = [pclases.ProductoVenta.get(idproducto)]
             elif resultados.count() < 1:
-                    ## Sin resultados de búsqueda
+                    # # Sin resultados de búsqueda
                     utils.dialogo_info('SIN RESULTADOS', 'La búsqueda no produjo resultados.\nPruebe a cambiar el texto buscado o déjelo en blanco para ver una lista completa.\n(Atención: Ver la lista completa puede resultar lento si el número de elementos es muy alto)',
                                        padre = self.wids['ventana'])
                     return None
-            ## Un único resultado
+            # # Un único resultado
             # Primero anulo la función de actualización
             if producto != None:
                 producto.notificador.desactivar()
@@ -2628,7 +2628,7 @@ class PartesDeFabricacionRollos(Ventana):
         #        model.append((bala.codigo, bala.pesobala, porcion_consumida, bala.id))
         #        cantidad += bala.pesobala
         #self.wids['e_total_balas'].set_text('%s' % (utils.float2str(round(cantidad, 2))))
-        ### self.wids['e_consumo_real'].set_text('%.2f' % round(cantidad, 2))
+        ## # self.wids['e_consumo_real'].set_text('%.2f' % round(cantidad, 2))
         #self.colorear_pesos()
 
     def get_partida(self):
@@ -3237,7 +3237,7 @@ class PartesDeFabricacionRollos(Ventana):
         Si pwd == True, es un diálogo para pedir contraseña
         y ocultará lo que se introduzca.
         """
-        ## HACK: Los enteros son inmutables, usaré una lista
+        # # HACK: Los enteros son inmutables, usaré una lista
         res = [None]
         de = gtk.Dialog(titulo,
                         padre,
