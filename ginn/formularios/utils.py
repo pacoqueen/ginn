@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2019  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -3237,13 +3237,14 @@ def buscar_puerto_serie():
             except:
                 com = None
     else:
-        try:
-            com = serial.Serial("COM1")
-        except:
+        for numpuerto in (1, 2, 6, 5, 3, 4, 7, 8, 9):
+            nompuerto = "COM{}".format(numpuerto)
             try:
-                com = serial.Serial("COM2")
+                com = serial.Serial(nompuerto)
             except:
-                com = None
+                com = None  # Y probamos el siguiente
+            else:
+                break
     return com
 
 def leer_raw_data(puerto = "COM1", timeout = 30):
