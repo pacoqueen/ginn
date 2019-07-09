@@ -5007,7 +5007,8 @@ def imprimir_etiqueta(articulo, ventana_parte):
                 'dtex': str(campos.dtex),
                 'dia': utils.str_fecha(b.fechahora),
                 'acabado': acabado,
-                'codigoBarra': producto.codigo}
+                'codigoBarra': producto.codigo,
+                'objeto': articulo}
     balas = [elemento]
     # reports.abrir_pdf(geninformes.etiquetasBalasEtiquetadora(balas))
     # Si tiene etiqueta personalizada, la uso:
