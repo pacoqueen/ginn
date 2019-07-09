@@ -97,7 +97,10 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
                 # en la BD. Si viene de la consulta del listado de rollos,
                 # como el rollo ya existe, me viene en el objeto toda la info.
                 producto_venta = rollo['objeto'].productoVenta
-            numpartida = utils.parse_numero(rollo['partida'])
+            try:
+                numpartida = utils.parse_numero(rollo['partida'])
+            except KeyError:
+                numpartida = utils.parse_numero(rollo['lote'])
             numrollo = rollo['nrollo']
             barcode39 = rollo['codigo39']
         else:
@@ -1133,7 +1136,7 @@ def crear_etiquetas_balas(balas, mostrar_marcado=True, lang="es"):
         canvas.circle(izq - 0.3*cm, yQuintaLinea, 0.1*cm, fill=1)
         canvas.restoreState()
         # XXX: EOMarca
-        print "Imprimiendo segunda etiquetas..."
+        # print "Imprimiendo segunda etiquetas..."
         canvas.showPage()
         # Y ahora la etiqueta adicional por si se pierde la otra y para cargar.
         create_etiqueta_backup_bala(canvas, bala)
