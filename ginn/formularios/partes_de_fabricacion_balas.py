@@ -1432,7 +1432,11 @@ class PartesDeFabricacionBalas(Ventana):
                 if i != 3:
                     # i == 3 es el CellRendererToggle, que no acepta color
                     # "de frente".
-                    cell.set_property("foreground", None)
+                    try:
+                        cell.set_property("foreground", None)
+                    except TypeError:
+                        pass    # ¿? No sé por qué, pero está entrando aquí
+                        # con el CellRendererToggle. Evito el error.
             elif model[itr][4].strip() != "":
                 if i != 3:
                     # i == 3 es el CellRendererToggle, que no acepta color
