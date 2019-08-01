@@ -246,7 +246,11 @@ def get_campos_from_tv(tv):
     """
     cols = []
     for column in tv.get_columns():
-        dato = ("%s" % (column.get_title())).replace(";", ",").encode("iso-8859-15")
+        try:
+            dato = ("%s" % (column.get_title())).replace(";", ",").encode("iso-8859-15")
+        except UnicodeEncodeError:
+            coltitle = column.get_title()
+            dato = ("%s" % (coltitle)).replace(";", ",").encode("iso-8859-15", "replace")
         cols.append(dato)
     return cols
 
