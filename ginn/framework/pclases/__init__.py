@@ -17407,9 +17407,11 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         res = None
         pdps = ParteDeProduccion.select(
                 ParteDeProduccion.q.fechahorainicio > self.fechahorainicio,
-                orderBy = "fechahorainicio")
+                orderBy="fechahorainicio")
         for pdp in pdps:
-            if self._es_del_mismo_tipo(pdp):
+            if self._es_del_mismo_tipo(pdp) and self != pdp:
+                # No sé por qué pero el "mayor estricto" del select no es
+                # tan estricto. A veces me devolvía a mí mismo.
                 res = pdp
                 break
         return res
