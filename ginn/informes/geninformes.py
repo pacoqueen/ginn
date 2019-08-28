@@ -62,8 +62,8 @@ import re
 # Un par de fuentes TrueType con soporte casi completo para UTF-8.
 import reportlab.rl_config  # @UnusedImport
 reportlab.rl_config.warnOnMissingFontGlyphs = 0
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont, TTFError
+from reportlab.pdfbase import pdfmetrics                    # noqa
+from reportlab.pdfbase.ttfonts import TTFont, TTFError      # noqa
 
 fuentes_personalizadas = (('FedraSans', 'fedrasansstdmedium.ttf'),
                           ('FiraMono', 'firamonoregular.ttf'),
@@ -144,12 +144,13 @@ def cursiva(c,              # Canvas
 def give_me_the_name_baby():
     return time.strftime("%Y%m%d%H%M%S")
 
+
 def sanitize_unicode(cadena):
     """
     Convierte los caracteres unicode ✔ y ✘ por caracteres ascii para contentar
     a los Windows XP que siguen usando codificaciones del siglo pasado.
     """
-    badchars =  ['✔', '✘']
+    badchars = ['✔', '✘']
     goodchars = ['+', 'x']
     mapeo = zip(badchars, goodchars)
     for malo, bueno in mapeo:
@@ -5219,7 +5220,7 @@ def facturacion_por_cliente_y_fechas(titulo, fechaini, fechafin, datos):
     return imprimir2(archivo, titulo, campos, datos, fecha = str_fecha,
                      cols_a_derecha = (3, 5))
 
-def trazabilidad(texto):
+def trazabilidad(texto, borrador=False):
     """
     Simplemente vuelca el texto recibido en un PDF.
     """
@@ -5236,18 +5237,19 @@ def trazabilidad(texto):
         cabecera(c, 'Informe de trazabilidad',
                  utils.str_fecha(mx.DateTime.localtime()))
         # Marca "borrador"
-        c.saveState()
-        c.setFont("Courier-BoldOblique", 42)
-        ancho = c.stringWidth("BORRADOR", "Courier-BoldOblique", 42)
-        c.translate(A4[0] / 2.0, A4[1] / 2.0)
-        c.rotate(45)
-        c.setLineWidth(3)
-        c.setStrokeColorRGB(1.0, 0.7, 0.7)
-        c.setFillColorRGB(1.0, 0.7, 0.7)
-        c.rect((-ancho - 10) / 2.0, -5, (ancho + 10), 37, fill = False)
-        c.drawCentredString(0, 0, "BORRADOR")
-        c.rotate(-45)
-        c.restoreState()
+        if borrador:
+            c.saveState()
+            c.setFont("Courier-BoldOblique", 42)
+            ancho = c.stringWidth("BORRADOR", "Courier-BoldOblique", 42)
+            c.translate(A4[0] / 2.0, A4[1] / 2.0)
+            c.rotate(45)
+            c.setLineWidth(3)
+            c.setStrokeColorRGB(1.0, 0.7, 0.7)
+            c.setFillColorRGB(1.0, 0.7, 0.7)
+            c.rect((-ancho - 10) / 2.0, -5, (ancho + 10), 37, fill = False)
+            c.drawCentredString(0, 0, "BORRADOR")
+            c.rotate(-45)
+            c.restoreState()
         # EOMarca "borrador"
         x, y = lm, tm + 2.5 * cm
         while y >= bm and lineas:
