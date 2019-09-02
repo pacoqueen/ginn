@@ -31,14 +31,14 @@
 import pygtk
 from formularios import utils
 pygtk.require('2.0')
-import gtk
-import gobject
-import pango
-import sys
-import os
-from widgets import Widgets
-from formularios import gtkexcepthook
-from lib.myprint import myprint
+import gtk                              # noqa
+import gobject                          # noqa
+import pango                            # noqa
+import sys                              # noqa
+import os                               # noqa
+from widgets import Widgets             # noqa
+from formularios import gtkexcepthook   # noqa
+from lib.myprint import myprint         # noqa
 
 
 def refrescar_cache_sqlobject():
@@ -59,7 +59,7 @@ def refrescar_cache_sqlobject():
             try:
                 objeto.sync()
                 # oks += 1
-            except Exception, e:  # @UnusedVariable
+            except Exception as e:  # @UnusedVariable
                 # print "Objeto %s no se pudo actualizar:\n%s" % (objeto, e)
                 # raise e
                 pass
@@ -149,7 +149,7 @@ class Ventana:
                 objeto = self.objeto = pclases.getObjetoPUID(objeto)
             except (TypeError, ValueError):     # No es un puid. Lo dejo como
                 self.objeto = objeto            # estaba y que la ventana en
-                                                # cuestión haga lo que pueda.
+                # cuestión haga lo que pueda.
         elif isinstance(objeto, pclases.SQLObject):
             self.objeto = objeto
         self._is_fullscreen = False
@@ -174,7 +174,7 @@ class Ventana:
             try:
                 icono = determine_ico_from_filename(fichero, clase)
                 self.wids['ventana'].set_icon_from_file(icono)
-            except:     # Icono por defecto "de toa la vida de Elvis".
+            except:     # noqa # Icono por defecto "de toa la vida de Elvis".
                 logo_xpm = gtk.gdk.pixbuf_new_from_file(
                     os.path.join(
                         os.path.dirname(os.path.realpath(__file__)),
@@ -184,12 +184,13 @@ class Ventana:
             try:
                 label_statusbar = barrastado.get_children(
                 )[0].child.get_children()[0]
-            except:
+            except:     # noqa
                 label_statusbar = barrastado.get_children()[0].child
             font = pango.FontDescription("Monospace oblique 7")
             label_statusbar.modify_font(font)
-            label_statusbar.modify_fg(gtk.STATE_NORMAL,
-                                      label_statusbar.get_colormap().alloc_color("darkgray"))
+            label_statusbar.modify_fg(
+                    gtk.STATE_NORMAL,
+                    label_statusbar.get_colormap().alloc_color("darkgray"))
             if self.usuario and self.usuario.nivel == 0:
                 self.add_debug_admin_controls(barrastado)
             contenido_anterior = self.wids['ventana'].get_child()
@@ -219,7 +220,7 @@ class Ventana:
             utils.escribir_barra_estado(self.wids['barra_estado'],
                                         "Conectado a %s.%s" % (info_conexion,
                                                                info_usuario))
-        except Exception, msg:
+        except Exception as msg:
             txt = "ventana.py::__init__ -> No se pudo establecer ancho de "\
                   "borde, icono de ventana o barra de estado. Excepción: %s."\
                 % (msg)
@@ -253,9 +254,11 @@ class Ventana:
                         and event.state & gtk.gdk.MOD1_MASK:
                     # print "CONTROL+ALT+q"
                     from formularios import trazabilidad
-                    t = trazabilidad.Trazabilidad(self.objeto,  # @UnusedVariable
-                                                  ventana_padre=self)
-                elif event.keyval == gtk.gdk.keyval_from_name(tecla_fullscreen):
+                    t = trazabilidad.Trazabilidad(
+                            self.objeto,  # @UnusedVariable
+                            ventana_padre=self)
+                elif (event.keyval
+                        == gtk.gdk.keyval_from_name(tecla_fullscreen)):
                     self._full_unfull()
                 elif event.keyval == gtk.gdk.keyval_from_name("Escape"):
                     # Very ugly dirty hack: Si es ventana de TPV, no cierro.
@@ -294,10 +297,10 @@ class Ventana:
                 self.handlers_id['ventana']["key_press_event"].append(h_id)
             except KeyError:
                 self.handlers_id['ventana']["key_press_event"] = [h_id]
-        except Exception, msg:
+        except Exception as msg:
             txtexcp = "ventana.py::__init__ -> Mnemonics no añadidos. %s" % msg
             myprint(txtexcp)
-            # FIXME: Logger no es "picakble"
+            # FIXME: Logger no es "pickable"
             self.logger.warning(txtexcp)
         # Mejor al final, que esto también provocaba falsos positivos al
         # argar ventanas con objetos inicializados en self.objeto.
@@ -385,9 +388,11 @@ class Ventana:
         """
         res = ""
         ventanas = [
-            p.ventana for p in self.__usuario.permisos if p.permiso and p.ventana.modulo == modulo]
-        ventanas.sort(lambda s1, s2: (s1.descripcion > s2.descripcion and 1) or (
-            s1.descripcion < s2.descripcion and -1) or 0)
+            p.ventana for p in self.__usuario.permisos
+            if p.permiso and p.ventana.modulo == modulo]
+        ventanas.sort(
+                lambda s1, s2: (s1.descripcion > s2.descripcion and 1) or (
+                                s1.descripcion < s2.descripcion and -1) or 0)
         for ventana in ventanas:
             res += """<menuitem name="%s" action="V%d"/>""" % (
                 ventana.descripcion, ventana.id)
@@ -479,7 +484,7 @@ class Ventana:
             ventanas = utils.unificar(ventanas)
             for ventana in ventanas:
                 pixbuf = None   # Tiene que ser un gtk_stock por fuerza,
-                                # no admite pixbufs
+                # no admite pixbufs
                 acciones.append(("V%d" % (ventana.id),
                                  pixbuf,
                                  "_%s" % (ventana.descripcion),
@@ -488,10 +493,13 @@ class Ventana:
                                  self._abrir))
         # Acciones especiales:
         acciones.append(("Salir", gtk.STOCK_QUIT, "_Salir"))
-        acciones.append(("Cerrarventana", None, "_Cerrar ventana",
-                         "<Control>q", "Cierra la ventana actual.", self._cerrar_ventana))
-        acciones.append(("Cerrartodo", None, "_Cerrar todo", None,
-                         "Cierra todas las ventanas abiertas.", self._cerrar_todo))
+        acciones.append(
+                ("Cerrarventana", None, "_Cerrar ventana",
+                 "<Control>q", "Cierra la ventana actual.",
+                 self._cerrar_ventana))
+        acciones.append(
+                ("Cerrartodo", None, "_Cerrar todo", None,
+                 "Cierra todas las ventanas abiertas.", self._cerrar_todo))
         return acciones
 
     def _cerrar_ventana(self, boton):
@@ -537,7 +545,7 @@ class Ventana:
                                         "Cargar: %s.py" % archivo,
                                         self.logger,
                                         self.__usuario.usuario)
-            exec "import %s" % archivo
+            exec("import %s" % archivo)
             v = None
             gobject.timeout_add(100, self.volver_a_cursor_original)
             if archivo == "usuarios":
@@ -556,16 +564,17 @@ class Ventana:
                 while gtk.events_pending():
                     gtk.main_iteration(False)
                 try:
-                    exec "reload(%s)" % archivo
+                    exec("reload(%s)" % archivo)
                 except NameError:
-                    exec "import %s" % archivo
+                    exec("import %s" % archivo)
                 v = None
                 gobject.timeout_add(100, self.volver_a_cursor_original)
                 # NOTA: OJO: TODO: Usuario harcoded. Cambiar en cuanto sea
                 # posible.
-                if (self.__usuario.usuario == "geotextil" or
-                        self.__usuario.usuario == "fibra" or
-                        self.__usuario.nivel >= 3) and "partes_de_fabricacion" in archivo:
+                if ((self.__usuario.usuario == "geotextil" or
+                     self.__usuario.usuario == "fibra" or
+                     self.__usuario.nivel >= 3)
+                        and "partes_de_fabricacion" in archivo):
                     v = eval('%s.%s' % (archivo, clase))
                     v(permisos="rx", usuario=self.__usuario)
                 else:
@@ -573,13 +582,15 @@ class Ventana:
                     # It's not a bug. It's a feature! (sí, ya :P)
                     v = eval('%s.%s' % (archivo, clase))
                     v(usuario=self.__usuario)
-            except Exception, msg:
-                self.logger.error("ventana.py::_abrir -> "
-                                  "Excepción importando fichero ventana: %s" % msg)
+            except Exception as msg:
+                self.logger.error(
+                        "ventana.py::_abrir -> "
+                        "Excepción importando fichero ventana: %s" % msg)
                 self.wids['ventana'].window.set_cursor(None)
-                utils.escribir_barra_estado(self.wids['barra_estado'],
-                                            "Error detectado. Iniciando informe por correo.",
-                                            self.logger, self.__usuario.usuario)
+                utils.escribir_barra_estado(
+                        self.wids['barra_estado'],
+                        "Error detectado. Iniciando informe por correo.",
+                        self.logger, self.__usuario.usuario)
                 myprint("Se ha detectado un error")
                 texto = ''
                 for e in sys.exc_info():
@@ -595,7 +606,8 @@ class Ventana:
 
     def volver_a_cursor_original(self):
         """
-        Calcado de menu.py. Sólo lleva las modificaciones necesarias para hacerlo funcionar desde aquí.
+        Calcado de menu.py. Sólo lleva las modificaciones necesarias para
+        hacerlo funcionar desde aquí.
         """
         self.wids['ventana'].window.set_cursor(None)
         return False
@@ -610,7 +622,8 @@ class Ventana:
         vacerca.set_version(__version__)
         vacerca.set_comments('Software ERP para Geotexan')
         vacerca.set_authors(
-            ['Francisco José Rodríguez Bogado <rodriguez.bogado@gmail.com>', 'Diego Muñoz Escalante <escalant3@gmail.com>'])
+            ['Francisco José Rodríguez Bogado <rodriguez.bogado@gmail.com>',
+             'Diego Muñoz Escalante <escalant3@gmail.com>'])
         logo = gtk.gdk.pixbuf_new_from_file(os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
             '..', 'imagenes', 'logo.jpg'))
@@ -622,12 +635,13 @@ class Ventana:
         vacerca.set_artists(
             ['Iconos gartoon por Kuswanto (a.k.a. Zeus) <zeussama@gmail.com>'])
         vacerca.set_copyright(
-            'Copyright 2005-2014  Francisco José Rodríguez Bogado, Diego Muñoz Escalante.')
+            'Copyright 2005-2019  Francisco José Rodríguez Bogado,'
+            ' Diego Muñoz Escalante.')
         vacerca.run()
         vacerca.destroy()
 
     def actualizar_objeto_y_enlaces(self, actualizar_ventana_tambien=True):
-        if self.objeto != None:
+        if self.objeto is not None:
             try:
                 self.objeto.sync()
                 try:
@@ -639,13 +653,13 @@ class Ventana:
                 for ajena in ajenas:
                     reg_ajena = ajena[:-2]
                     obj_d = getattr(self.objeto, reg_ajena)
-                    if obj_d != None:
+                    if obj_d is not None:
                         obj_d.sync()
                         # print obj_d
                 multiples = self.objeto.sqlmeta.joins
                 for multiple in multiples:
                     lista_objs = getattr(self.objeto, multiple.joinMethodName)
-                    for obj_d in [l for l in lista_objs if l != None]:
+                    for obj_d in [l for l in lista_objs if l is not None]:
                         # PLAN: Actualizar en profundidad también estos
                         # objetos con un nivel máximo de profundidad, porque
                         # hay ventanas donde se muestran datos dependiendo de
@@ -656,9 +670,10 @@ class Ventana:
                         # print obj_d
                 if actualizar_ventana_tambien:
                     self.actualizar_ventana()
-            except:
-                self.logger.warning("ventana.py::actualizar_objeto_y_enlaces"
-                                    " -> No se pudo forzar la actualización completa.")
+            except:     # noqa
+                self.logger.warning(
+                        "ventana.py::actualizar_objeto_y_enlaces"
+                        " -> No se pudo forzar la actualización completa.")
 
     def ir_a(self, objeto, deep_refresh=True):
         from framework.pclases import DEBUG
@@ -670,12 +685,12 @@ class Ventana:
         try:
             # Anulo el aviso de actualización del objeto que deja de ser
             # activo.
-            if self.objeto != None:
+            if self.objeto is not None:
                 self.objeto.notificador.desactivar()
             self.objeto = objeto
             # Activo la notificación
             self.objeto.notificador.activar(self.aviso_actualizacion)
-        except:
+        except:         # noqa
             self.objeto = None
         if DEBUG:
             myprint("1.- ventana.py::ir_a ->", time.time() - antes)
@@ -691,7 +706,7 @@ class Ventana:
         atender al objeto lo antes posible en caso de
         notificación.
         """
-        if self.objeto != None:
+        if self.objeto is not None:
             self.objeto.chequear_cambios()
         return True
 
@@ -710,7 +725,7 @@ class Ventana:
             boton_guardar = self.wids['b_guardar']
         except KeyError:
             boton_guardar = None
-        if boton_guardar != None:
+        if boton_guardar is not None:
             boton_guardar.set_sensitive(bool(self.es_diferente()))
         return True
 
@@ -737,14 +752,14 @@ class Ventana:
         Tal vez se me ocurra una mejor forma más adelante.
         """
         try:
-            return (not "b_guardar" in self.wids.keys()
+            return ("b_guardar" not in self.wids.keys()
                     and "consulta" in self.wids['ventana'].title.lower())
         except AttributeError:
             return False
         except KeyError:    # 'ventana' ya no existe. O es un ciclo
-                # "encasquillado" de gtk mientras se estaba cerrando la
-                # ventana, o definitivamente soy cualquier cosa menos una
-                # consulta del programa.
+            # "encasquillado" de gtk mientras se estaba cerrando la
+            # ventana, o definitivamente soy cualquier cosa menos una
+            # consulta del programa.
             return None
 
     def actualizar_ventana(self, widget=None, objeto_anterior=None,
@@ -774,7 +789,7 @@ class Ventana:
             import time
             antes = time.time()
             myprint("0.- ventana.py::actualizar_ventana -> Back in black!")
-        if "ventana" in self.wids.keys() and self.wids['ventana'] != None:
+        if "ventana" in self.wids.keys() and self.wids['ventana'] is not None:
             cursor_reloj = gtk.gdk.Cursor(gtk.gdk.WATCH)
             self.wids['ventana'].window.set_cursor(cursor_reloj)
             utils.set_unset_urgency_hint(self.wids['ventana'], False)
@@ -791,16 +806,16 @@ class Ventana:
         if DEBUG:
             myprint("2.- ventana.py::actualizar_ventana->", time.time()-antes)
         if seguir:
-            if self.objeto != None:
+            if self.objeto is not None:
                 try:
                     # Empiezo a probar actualización profunda de cachés y demás
                     # para evitar errores de concurrencia (espero que no
                     # sobrecargue mucho la red)
                     # refrescar_cache_sqlobject()
-                        # Actualiza (sync) _todos_ los objetos de pclases
-                        # en memoria.
+                    # Actualiza (sync) _todos_ los objetos de pclases
+                    # en memoria.
                     if DEBUG:
-                        myprint("3.- ventana.py::actualizar_ventana->", \
+                        myprint("3.- ventana.py::actualizar_ventana->",
                                 time.time() - antes)
                     if deep_refresh:
                         self.actualizar_objeto_y_enlaces(
@@ -813,15 +828,17 @@ class Ventana:
                     if DEBUG:
                         myprint("4.- ventana.py::actualizar_ventana->",
                                 time.time() - antes)
-                    self.rellenar_widgets() # Delegado a la clase que me herede
+                    self.rellenar_widgets()  # Delegado a clase que me herede
                     self.objeto.make_swap()
                     if DEBUG:
                         myprint("5.- ventana.py::actualizar_ventana->",
                                 time.time() - antes)
                 except SQLObjectNotFound:
-                    utils.dialogo_info(titulo='REGISTRO ELIMINADO',
-                        texto='El registro ha sido borrado desde otro puesto.',
-                        padre=self.wids['ventana'])
+                    utils.dialogo_info(
+                            titulo='REGISTRO ELIMINADO',
+                            texto='El registro '
+                                  'ha sido borrado desde otro puesto.',
+                            padre=self.wids['ventana'])
                     self.objeto = None
                 try:
                     self.wids['b_actualizar'].set_sensitive(False)
@@ -832,15 +849,15 @@ class Ventana:
                 myprint("6.- ventana.py::actualizar_ventana->",
                         time.time() - antes)
             try:
-                self.activar_widgets(self.objeto != None)
+                self.activar_widgets(self.objeto is not None)
             except AttributeError:
                 pass
-            except Exception, msg:
+            except Exception as msg:
                 myprint("ventana.py::actualizar_ventana -> "
                         "Excepción al activar_widgets.", msg)
             # print "Guardo mi primer bigote en la cartera."
         # Vuelvo a cursor normal pase lo que pase.
-        if "ventana" in self.wids.keys() and self.wids['ventana'] != None:
+        if "ventana" in self.wids.keys() and self.wids['ventana'] is not None:
             self.wids['ventana'].window.set_cursor(None)
         if DEBUG:
             myprint("7.- ventana.py::actualizar_ventana->", time.time()-antes)
@@ -868,9 +885,9 @@ class Ventana:
             # Necesitaría parchear mucho las ventanas ya escritas.
             # Tengo que buscar algo mejor.
             if ("b_guardar" in self.wids.keys()
-                    and self.wids['b_guardar'] != None
+                    and self.wids['b_guardar'] is not None
                     and self.wids['b_guardar'].get_property("sensitive")
-                    and objeto_anterior != None
+                    and objeto_anterior is not None
                     and objeto_anterior != self.objeto):  # Importantísimo esto
                 # último. A veces se da al abrir ventanas lentas desde otras.
                 myprint("Cambios pendientes de guardar... ¡PERO EL OBJETO YA "
@@ -894,12 +911,13 @@ class Ventana:
                         self.wids['b_guardar'].clicked()
                         objeto_anterior = self.objeto
                         self.objeto = tmp
-                    except:
-                        utils.dialogo_info(titulo='NO SE PUDO GUARDAR',
-                            texto='Los cambios no se pudieron guardar '
-                                  'automáticamente.\nDebe hacerlo de '
-                                  'forma manual',
-                            padre=self.wids['ventana'])
+                    except:     # noqa
+                        utils.dialogo_info(
+                                titulo='NO SE PUDO GUARDAR',
+                                texto='Los cambios no se pudieron guardar '
+                                      'automáticamente.\nDebe hacerlo de '
+                                      'forma manual',
+                                padre=self.wids['ventana'])
                 elif respuesta == gtk.RESPONSE_CANCEL:
                     # Cancelará el resto de eventos siempre que sea posible.
                     # No va a poder cancelar una cadena de acciones
@@ -931,11 +949,12 @@ class Ventana:
         # except.
         try:
             self.wids['b_actualizar'].set_sensitive(True)
-            utils.dialogo_info(titulo='ACTUALIZAR',
-                texto='Los datos han sido modificados remotamente.\nDebe '
-                      'actualizar la información mostrada en pantalla.\n'
-                      'Pulse el botón «Actualizar»',
-                padre=self.wids['ventana'])
+            utils.dialogo_info(
+                    titulo='ACTUALIZAR',
+                    texto='Los datos han sido modificados remotamente.\nDebe '
+                          'actualizar la información mostrada en pantalla.\n'
+                          'Pulse el botón «Actualizar»',
+                    padre=self.wids['ventana'])
         except Exception:
             pass
             # DEBUG: print """WARNING: Botón «Actualizar» o
@@ -951,7 +970,7 @@ class Ventana:
             b_guardar = self.wids['b_guardar']
         except KeyError:
             b_guardar = None
-        if b_guardar != None and b_guardar.get_property('sensitive'):
+        if b_guardar is not None and b_guardar.get_property('sensitive'):
             # Hay cambios pendientes de guardar.
             if utils.dialogo('Hay cambios pendientes de guardar.\n¿Desea hace'
                              'rlo ahora?',
@@ -961,17 +980,17 @@ class Ventana:
                              defecto="Sí"):
                 try:
                     self.guardar(None)
-                except:
+                except:     # noqa
                     utils.dialogo_info(titulo='NO SE PUDO GUARDAR',
                                        texto='Los cambios no se pudieron gua'
                                        'rdar automáticamente.\nDebe ha'
                                        'cerlo de forma manual',
                                        padre=self.wids['ventana'])
                     return True  # Si devuelvo False, None, etc... continúa la
-                                # cadena de eventos y destruye la ventana.
-                                # Devuelvo True para cancelar el cierre de la
-                                # ventana.
-        if event == None:
+                    # cadena de eventos y destruye la ventana.
+                    # Devuelvo True para cancelar el cierre de la
+                    # ventana.
+        if event is None:
             # Me ha invocado el botón
             if not mostrar_ventana or \
                utils.dialogo('¿Desea salir de la ventana actual?',
@@ -1024,12 +1043,12 @@ class Ventana:
         permisos del usuario.
         """
         VENTANA = nombre_fichero_ventana
-        if self.usuario != None and self.usuario.nivel > 0:
+        if self.usuario is not None and self.usuario.nivel > 0:
             from framework import pclases
             ventanas = pclases.Ventana.selectBy(fichero=VENTANA)
             if ventanas.count() == 1:   # Siempre debería ser 1.
                 permiso = self.usuario.get_permiso(ventanas[0])
-                if permiso == None:
+                if permiso is None:
                     permiso = MetaPermiso()
                 if permiso.escritura:
                     if self.usuario.nivel <= 2:
@@ -1040,20 +1059,21 @@ class Ventana:
                         # print "Activo widgets porque permiso de escritura y
                         # objeto no bloqueado o recién creado."
                         if hasattr(self.objeto, "bloqueado"):
-                            condicion_bloqueo = self.objeto != None and (
+                            condicion_bloqueo = self.objeto is not None and (
                                 not self.objeto.bloqueado
                                 or self._objetoreciencreado == self.objeto)
                         else:
                             # and (not False or self._objetoreciencreado ==
                             # self.objeto) = self.objeto != None and True =
                             # self.objeto != None
-                            condicion_bloqueo = self.objeto != None
+                            condicion_bloqueo = self.objeto is not None
                         self.activar_widgets(condicion_bloqueo,
                                              chequear_permisos=False)
                 # No tiene permiso de escritura. Sólo puede modificar el objeto
                 # que acaba de crear.
                 else:
-                    if hasattr(self, "_objetoreciencreado") and self._objetoreciencreado == self.objeto:
+                    if (hasattr(self, "_objetoreciencreado")
+                            and self._objetoreciencreado == self.objeto):
                         # print "Activo widgets porque objeto recién creado
                         # aunque no tiene permiso de escritura."
                         self.activar_widgets(True, chequear_permisos=False)
@@ -1105,7 +1125,7 @@ class Ventana:
 
 def get_ginn_logger():
     import logging
-    #from logging import handlers
+    # from logging import handlers
     logger = logging.getLogger('GINN')
     logger.DEBUG = 0
     logger.ERROR = 1

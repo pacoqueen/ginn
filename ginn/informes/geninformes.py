@@ -1212,25 +1212,26 @@ def buscar_datos_existencias(p, hasta):
             pedidos_pendientes)
 
 
-def _existencias(hasta = None):
+def _existencias(hasta=None):
     """
     Crea un informe relativo a los materiales bajo mínimos
     """
-
     global linea, tm, lm, rm, bm
     x, y = lm, tm  # @UnusedVariable
-
     # Creo la hoja
-    if hasta == None:
-        nomarchivo = os.path.join(gettempdir(),
-            "existencias_simple_%s.pdf" % give_me_the_name_baby())
+    if hasta is None:
+        nomarchivo = os.path.join(
+                gettempdir(),
+                "existencias_simple_%s.pdf" % give_me_the_name_baby())
     else:
-        nomarchivo = os.path.join(gettempdir(),
-            "existencias_simple_a_%s_%s.pdf" % (hasta.strftime("%Y_%m_%d"),
-                                                give_me_the_name_baby()))
+        nomarchivo = os.path.join(
+                gettempdir(),
+                "existencias_simple_a_%s_%s.pdf" % (
+                    hasta.strftime("%Y_%m_%d"),
+                    give_me_the_name_baby()))
     c = canvas.Canvas(nomarchivo)
     # Ponemos la cabecera
-    if hasta != None:
+    if hasta is not None:
         fecha_limite = " a %s" % (utils.str_fecha(hasta))
     else:
         fecha_limite = " - %s" % (utils.str_fecha(mx.DateTime.localtime()))
@@ -1248,10 +1249,9 @@ def _existencias(hasta = None):
 
     c.line(lm, linea-2, rm, linea-2)
     c.setFont("Helvetica", 10)
-    productos = pclases.ProductoCompra.select(orderBy = "descripcion")
-
+    productos = pclases.ProductoCompra.select(orderBy="descripcion")
     # 41 es el número máximo de líneas en el área de impresión
-    paginas = (productos.count() / MAXLINEAS) +1
+    paginas = (productos.count() / MAXLINEAS) + 1
     x = lm
     y = linea  # @UnusedVariable
     # contLinea se va incrementando con cada elemento y llegado al tope de
@@ -1260,47 +1260,45 @@ def _existencias(hasta = None):
     actualPagina = 1
     linea = sigLinea()
     for item in productos:
-
-            c.drawString(x, linea, escribe(item.codigo))
-            el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 10, 25 * 4,
-                                                75*5, linea, item.descripcion)
-            c.drawString(75*5, linea, escribe(utils.float2str(item.minimo, 2)))
-            if hasta != None:
-                existencias = item.get_existencias_historico(hasta)
-            else:
-                existencias = item.existencias
-            # En rojo si está por debajo del mínimo
-            if existencias < item.minimo:
-                c.setFillColorRGB(255, 0, 0)
-            c.drawRightString(100*5, linea, escribe("%s" % (
-                utils.float2str(existencias, 2))))
-            c.drawString(101*5, linea, escribe(" %s" % (item.unidad)))
-            c.setFillColorRGB(0, 0, 0)
-            contLinea += 1
-            if contLinea == MAXLINEAS:
-                pie(c, actualPagina, paginas)
-                c.showPage()
-                contLinea = 0
-                actualPagina += 1
-                cabecera(c, 'Inventario de materiales%s' % (fecha_limite))
-                linea = tm + inch
-                # El cuerpo
-                x, y = lm, tm + inch  # @UnusedVariable
-                c.setFont("Helvetica-Bold", 10)
-                c.drawString(x, linea, escribe('Codigo'))
-                c.drawString(25*5, linea, escribe('Descripción'))
-                c.drawString(75*5, linea, escribe('Mínimo'))
-                c.drawString(90*5, linea, escribe('Stock'))
-                c.line(lm, linea-2, rm, linea-2)
-                c.setFont("Helvetica", 10)
-                x = lm
-                y = tm + inch  # @UnusedVariable
-                linea = sigLinea()
-            else:
-                linea = sigLinea()
-                y = linea  # @UnusedVariable
-                x = lm
-
+        c.drawString(x, linea, escribe(item.codigo))
+        el_encogedor_de_fuentes_de_doraemon(c, "Helvetica", 10, 25 * 4,
+                                            75*5, linea, item.descripcion)
+        c.drawString(75*5, linea, escribe(utils.float2str(item.minimo, 2)))
+        if hasta is not None:
+            existencias = item.get_existencias_historico(hasta)
+        else:
+            existencias = item.existencias
+        # En rojo si está por debajo del mínimo
+        if existencias < item.minimo:
+            c.setFillColorRGB(255, 0, 0)
+        c.drawRightString(100*5, linea, escribe("%s" % (
+            utils.float2str(existencias, 2))))
+        c.drawString(101*5, linea, escribe(" %s" % (item.unidad)))
+        c.setFillColorRGB(0, 0, 0)
+        contLinea += 1
+        if contLinea == MAXLINEAS:
+            pie(c, actualPagina, paginas)
+            c.showPage()
+            contLinea = 0
+            actualPagina += 1
+            cabecera(c, 'Inventario de materiales%s' % (fecha_limite))
+            linea = tm + inch
+            # El cuerpo
+            x, y = lm, tm + inch  # @UnusedVariable
+            c.setFont("Helvetica-Bold", 10)
+            c.drawString(x, linea, escribe('Codigo'))
+            c.drawString(25*5, linea, escribe('Descripción'))
+            c.drawString(75*5, linea, escribe('Mínimo'))
+            c.drawString(90*5, linea, escribe('Stock'))
+            c.line(lm, linea-2, rm, linea-2)
+            c.setFont("Helvetica", 10)
+            x = lm
+            y = tm + inch  # @UnusedVariable
+            linea = sigLinea()
+        else:
+            linea = sigLinea()
+            y = linea  # @UnusedVariable
+            x = lm
     # Ponemos el pie
     pie(c, actualPagina, paginas)
     # Salvamos la página
@@ -1311,8 +1309,8 @@ def _existencias(hasta = None):
     return nomarchivo
 
 
-def existencias_productos(informe, fecha, hasta = None, almacen = None,
-                          ruta_csv = None):
+def existencias_productos(informe, fecha, hasta=None, almacen=None,
+                          ruta_csv=None):
     """
     Crea un informe relativo a los geotextiles o balas bajo mínimos.
     El parametro informe puede valer 'rollos' o 'balas'.
@@ -1327,8 +1325,9 @@ def existencias_productos(informe, fecha, hasta = None, almacen = None,
     csv_data = []
 
     # Creo la hoja
-    nomarchivo = os.path.join(gettempdir(),
-        "existencias_productos%s.pdf" % give_me_the_name_baby())
+    nomarchivo = os.path.join(
+            gettempdir(),
+            "existencias_productos%s.pdf" % give_me_the_name_baby())
     c = canvas.Canvas(nomarchivo)
 
     # Campos
@@ -1339,21 +1338,23 @@ def existencias_productos(informe, fecha, hasta = None, almacen = None,
 
     if informe == 'rollos':
         productos = [p for p in
-                     pclases.ProductoVenta.select(orderBy = "descripcion")
+                     pclases.ProductoVenta.select(orderBy="descripcion")
                      if p.es_rollo()] \
                     + ["total"] \
                     + [p for p in
-                       pclases.ProductoVenta.select(orderBy = "descripcion")
+                       pclases.ProductoVenta.select(orderBy="descripcion")
                        if p.es_rolloC()] \
                     + ["gtxb"]  # gtxb = rollos defectuosos.
         unidad = "m²"
     elif informe == 'balas':
         productos = [p for p in
-                     pclases.ProductoVenta.select(orderBy = "descripcion")
-                     if p.es_bala() or p.es_bigbag() or p.es_bala_cable()
-                         or p.es_bolsa()]
+                     pclases.ProductoVenta.select(orderBy="descripcion")
+                     if p.es_bala()
+                     or p.es_bigbag()
+                     or p.es_bala_cable()
+                     or p.es_bolsa()]
         productos.sort(lambda p1, p2:
-            int(p1.lineaDeProduccionID - p2.lineaDeProduccionID))
+                       int(p1.lineaDeProduccionID - p2.lineaDeProduccionID))
         productos += ["total"]
         unidad = "kg"
     else:
@@ -1390,8 +1391,7 @@ def existencias_productos(informe, fecha, hasta = None, almacen = None,
                         ("Mínimo", 0),
                         ("Existencias", 0),
                         ("Bultos", 0))
-
-        linea = linea -2
+        linea = linea - 2
         c.saveState()
         c.setStrokeColorRGB(*VERDE_GTX)
         c.line(lm, linea, rm, linea)
@@ -1414,8 +1414,9 @@ def existencias_productos(informe, fecha, hasta = None, almacen = None,
                 linea = sigLinea()
                 c.drawRightString(xMinimo, linea, escribe("TOTAL: "))
                 c.drawRightString(xStock, linea,
-                    escribe("%s %s" % (utils.float2str(total_stock, 1),
-                                       unidad)))
+                                  escribe("%s %s" % (
+                                      utils.float2str(total_stock, 1), unidad))
+                                  )
                 c.drawRightString(xExist, linea, escribe(total_bultos))
                 if hay_prods_en_cursiva:
                     c.setFont("Helvetica-BoldOblique", 7)

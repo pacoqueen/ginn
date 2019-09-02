@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+Partes de producción pendientes de validar.
+"""
+
 ###############################################################################
 # Copyright (C) 2005-2018  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
@@ -40,17 +44,22 @@
 ###################################################################
 
 from __future__ import print_function
-from framework import pclases
-from ventana import Ventana
-import gtk
+from framework import pclases   # noqa
+from ventana import Ventana     # noqa
+import gtk                      # noqa
 import pygtk
 import sys
-from formularios import utils
-from formularios import ventana_progreso
+from formularios import utils               # noqa
+from formularios import ventana_progreso    # noqa
+from informes import treeview2csv           # noqa
+from formularios.reports import abrir_csv   # noqa
 pygtk.require('2.0')
 
 
 class PartesNoBloqueados(Ventana):
+    """
+    Ventana de partes no bloqueados.
+    """
     def __init__(self, objeto=None, usuario=None):
         self.usuario = usuario
         Ventana.__init__(self, 'partes_no_bloqueados.glade', objeto,
@@ -107,6 +116,15 @@ class PartesNoBloqueados(Ventana):
                 self.wids['rb_bolsas'].set_active(True)
                 tiene_al_menos_un_permiso = True
         if tiene_al_menos_un_permiso:
+            padre = self.wids['b_salir'].parent
+            padre.remove(self.wids['b_salir'])
+            bcsv = gtk.Button("Exportar a CSV")
+            padre.add(bcsv)
+            padre.add(self.wids['b_salir'])
+            bcsv.connect("clicked",
+                         lambda button: abrir_csv(treeview2csv.treeview2csv(
+                             self.wids['tv_partes'])))
+            padre.show_all()
             self.rellenar_partes()
             gtk.main()
         else:
