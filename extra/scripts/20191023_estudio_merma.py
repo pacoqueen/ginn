@@ -24,6 +24,7 @@ from __future__ import print_function
 import sys
 import os
 import datetime
+import tempfile
 # Determino dónde estoy para importar pclases y utils
 DIRACTUAL = os.path.split(os.path.abspath(os.path.curdir))[-1]
 if DIRACTUAL != "ginn":
@@ -182,7 +183,7 @@ def get_fabricado_c(partida):
     return bultos, kg
 
 
-# pylint: disable=too-many-locals
+# pylint: disable=too-many-locals, too-many-statements
 def main():
     """
     Rutina principal.
@@ -230,6 +231,7 @@ def main():
                            "# rollos partida",
                            "# rollos partida + C"])))
     fout.write("\n")
+    gdata = []
     for partida in tqdm(partidas, total=partidas.count()):
         kg_consumidos = calcular_kg_consumidos_por_partida(partida)
         kg_fabricados = get_kg_fabricados(partida, C=False)
@@ -239,6 +241,9 @@ def main():
         pcarga = partida.partidaCarga
         if pcarga:
             lotes = get_lotes_pcarga_partida(pcarga, partida)
+            gdata.append("[ '{}', '{}', {} ]".format(pcarga.codigo,
+                                                     partida.codigo,
+                                                     round(kg_consumidos, 2)))
         else:
             lotes = []
         if lotes:   # Con partida de carga y partida de carga no vacía.
@@ -251,6 +256,10 @@ def main():
                 kg_proporcional = calcular_kg_fabricados_por_lote(partida,
                                                                   lote)
                 merma = kg_cargados - kg_proporcional   # Así es sumable
+                gdata.append("[ '{}', '{}', {} ]".format(
+                    lote.codigo,
+                    pcarga.codigo,
+                    round(kg_cargados, 2)))
                 fout.write("\t".join(
                     [lote.codigo,
                      str(kg_cargados).replace(".", ","),
@@ -295,6 +304,44 @@ def main():
                  ]))
             fout.write("\n")
     fout.close()
+    html = build_html(gdata)
+    fhtml = build_file_html(html)
+    open_html(fhtml)
+
+
+def build_html(gdata):
+    """
+    Construye el HTML con el gráfico y los datos.
+    """
+    # from lib.google_visualization_python import gviz_api    # noqa
+    TEMPLATE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                                "..", "..", "ginn",
+                                                "informes"))
+    tmpl = open(os.path.join(TEMPLATE_DIR, "sankey_template.html"))
+    page_template = "".join(tmpl.readlines())
+    tmpl.close()
+    json = ", ".join(gdata)     # noqa pylint:disable=unused-variable
+    html = page_template % vars()
+    return html
+
+
+def build_file_html(html):
+    """
+    Crea un fichero temporal con el HTML recibido como contenido.
+    """
+    tfile = tempfile.NamedTemporaryFile(suffix=".html", delete=False)
+    fname = tfile.name
+    tfile.write(html)
+    tfile.close()
+    return fname
+
+
+def open_html(fhtml):
+    """
+    Abre el fichero html en el navegador.
+    """
+    from formularios import multi_open
+    multi_open.webbrowser.open(fhtml)
 
 
 if __name__ == "__main__":

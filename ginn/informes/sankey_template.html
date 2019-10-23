@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1.1", {packages:["sankey"]});
+      google.setOnLoadCallback(drawChart);
+
+   function drawChart() {
+       var dataTable = new google.visualization.DataTable();
+       dataTable.addColumn({ type: 'string', id: 'Origen' });
+       dataTable.addColumn({ type: 'string', id: 'Destino' });
+       dataTable.addColumn({ type: 'number', id: 'kg' });
+       dataTable.addRows([ %(json)s ]);
+
+       var options = {
+         title: "Sankey diagram: kg consumidos",
+         width: 1000,
+       };
+
+       var chart = new google.visualization.Sankey(document.getElementById('sankey_multiple'));
+       chart.draw(dataTable, options);
+   }
+    </script>
+  </head>
+  <body>
+    <!-- <div id="calendar_basic" style="width: 1000px; height: 350px;"></div> -->
+    <div id="sankey_multiple" style="width: 1000px; height: 1000px;"></div>
+  </body>
+</html>

@@ -83,3 +83,4 @@ extra/scripts/*.xlsx
 
 # Datos temporales
 ginn/api/tests/sr_lobo.db
+extra/scripts/estudio_de_merma*.txt
