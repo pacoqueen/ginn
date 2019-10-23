@@ -196,16 +196,8 @@ def main():
         print("Indica año o nada para el año actual.")
         sys.exit(2)
     fout = open("estudio_de_merma_{}.txt".format(anno), "w")
-    fini = datetime.datetime(anno, 1, 1)
-    ffin = datetime.datetime(anno+1, 1, 1)
-    primerabala = pclases.Bala.select(pclases.Bala.q.fechahora >= fini,
-                                      orderBy="fechahora")[0]
-    ultimabala = pclases.Bala.select(pclases.Bala.q.fechahora < ffin,
-                                     orderBy="-fechahora")[0]
-    lotes = pclases.Lote.select(
-        pclases.AND(pclases.Lote.q.numlote >= primerabala.lote.numlote,
-                    pclases.Lote.q.numlote <= ultimabala.lote.numlote),
-        orderBy="numlote")
+    fini = datetime.datetime(anno, 1, 1, 6)
+    ffin = datetime.datetime(anno+1, 1, 1, 6)
     primerrollo = pclases.Rollo.select(pclases.Rollo.q.fechahora >= fini,
                                        orderBy="fechahora")[0]
     ultimorollo = pclases.Rollo.select(pclases.Rollo.q.fechahora < ffin,
