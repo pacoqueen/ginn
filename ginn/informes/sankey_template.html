@@ -1,5 +1,6 @@
 <html>
   <head>
+    <meta charset="utf-8">
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
       google.load("visualization", "1.1", {packages:["sankey"]});
@@ -15,6 +16,11 @@
        var options = {
          title: "Sankey diagram: kg consumidos",
          width: 1000,
+         sankey: {
+           link: {
+             colorMode: 'gradient'
+           }
+         }
        };
 
        var chart = new google.visualization.Sankey(document.getElementById('sankey_multiple'));
@@ -24,6 +30,6 @@
   </head>
   <body>
     <!-- <div id="calendar_basic" style="width: 1000px; height: 350px;"></div> -->
-    <div id="sankey_multiple" style="width: 1000px; height: 1000px;"></div>
+    <div id="sankey_multiple" style="width: 1000px; height: 10000px"></div>
   </body>
 </html>
