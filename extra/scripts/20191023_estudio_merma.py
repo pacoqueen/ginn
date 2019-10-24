@@ -306,6 +306,8 @@ def build_html(gdata):
     Construye el HTML con el gráfico y los datos.
     https://developers-dot-devsite-v2-prod.appspot.com/chart/interactive/docs/gallery/sankey
     """
+    # TODO: Tengo que hacer algo para mostrar menos datos a la vez y dejar
+    # en el propio html avanzar o retroceder, mostrar más o menos partidas.
     # from lib.google_visualization_python import gviz_api    # noqa
     TEMPLATE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                 "..", "..", "ginn",
