@@ -1292,7 +1292,7 @@ def parse_fecha(cadfecha):
 def parse_fecha_xls(ruta):
     """
     Devuelve la fecha correspondiente a la ruta del fichero recibido.
-    Si el fichero se llama, por ejemplo: 20161223*.xls, la fecha se
+    Si el fichero se llama, por ejemplo: 20161223*.xls?, la fecha se
     correspondería a 23/12/2016.
     Si no se puede encontrar una cadena de números equivalente, entonces
     devolverá la fecha de creación del fichero.
@@ -1318,14 +1318,16 @@ def parse_fecha_xls(ruta):
 
 def buscar_ultimo_fichero_inventario(ruta="."):
     """
-    Busca el último fichero acabado en .xls del directorio y devuelve su ruta.
+    Busca el último fichero acabado en .xls o .xlsx del directorio y devuelve
+    su ruta.
     None si no se encontró ninguno **acabado en `.xls`**.
     """
     try:
         res = max([os.path.join(ruta, f) for f in os.listdir(ruta)
-                   if f.endswith('ramanujan.xls')], key=os.path.getctime)
+                   if f.endswith('ramanujan.xls')
+                    or f.endswith('ramanujan.xlsx'], key=os.path.getctime)
     except ValueError:
-        print("Fichero YYYYMMDD_HH_ramanujan.xls no encontrado en "
+        print("Fichero YYYYMMDD_HH_ramanujan.xls[x] no encontrado en "
               "`{}`.".format(ruta))
         sys.exit(2)
     return res
@@ -1333,9 +1335,9 @@ def buscar_ultimo_fichero_inventario(ruta="."):
 
 def find_fich_inventario(ruta):
     """
-    Si ruta es un directorio, devuelve el último .xls del directorio.
-    Si es una ruta a un fichero, comprueba que sea .xls, .ods o .csv y devuelve
-    la ruta completa al mismo.
+    Si ruta es un directorio, devuelve el último .xls[x] del directorio.
+    Si es una ruta a un fichero, comprueba que sea .xls, .xlsx, .ods o .csv y
+    devuelve la ruta completa al mismo.
     """
     if os.path.isdir(ruta):
         res = buscar_ultimo_fichero_inventario(ruta)
@@ -1797,7 +1799,7 @@ def main():
         int(hours), int(minutes), seconds))
     report.write("\n\n___\n\n")
     report.close()
-    fout = args.fsalida.replace(".md", ".xls")
+    fout = args.fsalida.replace(".md", ".xlsx")
     book = tablib.Databook((data_res, inventario, desglose,
                             desviaciones_a, desviaciones_b, desviaciones_c,
                             resumen))
