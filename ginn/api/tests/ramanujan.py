@@ -526,7 +526,7 @@ def get_existencias_murano(producto_murano, calidad=None):
         pass
     assert calidad in (None, 'A', 'B', 'C'), "Calidad debe ser None o A/B/C."
     # TODO: También podría recibir un fichero de inventario para calcular
-    # desviaciones entre dos .ods.
+    # desviaciones entre dos .xls.
     try:
         codigo = producto_murano.CodigoArticulo
     except AttributeError:
@@ -1289,10 +1289,10 @@ def parse_fecha(cadfecha):
     return res
 
 
-def parse_fecha_ods(ruta):
+def parse_fecha_xls(ruta):
     """
     Devuelve la fecha correspondiente a la ruta del fichero recibido.
-    Si el fichero se llama, por ejemplo: 20161223*.ods, la fecha se
+    Si el fichero se llama, por ejemplo: 20161223*.xls, la fecha se
     correspondería a 23/12/2016.
     Si no se puede encontrar una cadena de números equivalente, entonces
     devolverá la fecha de creación del fichero.
@@ -1318,14 +1318,14 @@ def parse_fecha_ods(ruta):
 
 def buscar_ultimo_fichero_inventario(ruta="."):
     """
-    Busca el último fichero acabado en .ods del directorio y devuelve su ruta.
-    None si no se encontró ninguno **acabado en `.ods`**.
+    Busca el último fichero acabado en .xls del directorio y devuelve su ruta.
+    None si no se encontró ninguno **acabado en `.xls`**.
     """
     try:
         res = max([os.path.join(ruta, f) for f in os.listdir(ruta)
-                   if f.endswith('ramanujan.ods')], key=os.path.getctime)
+                   if f.endswith('ramanujan.xls')], key=os.path.getctime)
     except ValueError:
-        print("Fichero YYYYMMDD_HH_ramanujan.ods no encontrado en "
+        print("Fichero YYYYMMDD_HH_ramanujan.xls no encontrado en "
               "`{}`.".format(ruta))
         sys.exit(2)
     return res
@@ -1333,8 +1333,8 @@ def buscar_ultimo_fichero_inventario(ruta="."):
 
 def find_fich_inventario(ruta):
     """
-    Si ruta es un directorio, devuelve el último .ods del directorio.
-    Si es una ruta a un fichero, comprueba que sea .ods, .ods o .csv y devuelve
+    Si ruta es un directorio, devuelve el último .xls del directorio.
+    Si es una ruta a un fichero, comprueba que sea .xls, .ods o .csv y devuelve
     la ruta completa al mismo.
     """
     if os.path.isdir(ruta):
@@ -1704,7 +1704,7 @@ def main():
                        desc="Buscando productos ginn"):
             productos.append(pv)
     fich_inventario = find_fich_inventario(args.fich_inventario)
-    fini = parse_fecha_ods(fich_inventario)
+    fini = parse_fecha_xls(fich_inventario)
     today = datetime.datetime.today()
     # Para evitar problemas con las fechas que incluyen horas, y para que
     # éstas entren en el intervalo, agrego un día a la fecha final y hago
@@ -1797,13 +1797,13 @@ def main():
         int(hours), int(minutes), seconds))
     report.write("\n\n___\n\n")
     report.close()
-    fout = args.fsalida.replace(".md", ".ods")
+    fout = args.fsalida.replace(".md", ".xls")
     book = tablib.Databook((data_res, inventario, desglose,
                             desviaciones_a, desviaciones_b, desviaciones_c,
                             resumen))
     with open(fout, 'wb') as f:
         # pylint: disable=no-member
-        f.write(book.ods)
+        f.write(book.xls)
 
 
 if __name__ == "__main__":
