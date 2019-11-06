@@ -46,7 +46,7 @@ from framework import pclases                                           # noqa
 from api import murano                                                  # noqa
 from api.murano import connection                                       # noqa
 # from api.murano.extra import get_peso_neto, get_superficie
-from api.tests.ramanujan import find_fich_inventario, parse_fecha_xls   # noqa
+from api.tests.ramanujan import find_fich_inventario, parse_fecha_ods   # noqa
 from api.tests.ramanujan import load_inventario                         # noqa
 from api.tests.ramanujan import get_articulos_consumidos_ginn           # noqa
 from api.tests.ramanujan import get_registros_movimientoarticuloserie   # noqa
@@ -651,7 +651,7 @@ def main():
                        desc="Buscando productos ginn"):
             productos.append(pv)
     fich_inventario = find_fich_inventario(args.fich_inventario)
-    fini = parse_fecha_xls(fich_inventario)
+    fini = parse_fecha_ods(fich_inventario)
     today = datetime.date.today()
     # Para evitar problemas con las fechas que incluyen horas, y para que
     # éstas entren en el intervalo, agrego un día a la fecha final y hago
@@ -703,11 +703,11 @@ def main():
         int(hours), int(minutes), seconds))
     report.write("\n\n___\n\n")
     report.close()
-    fout = args.fsalida.replace(".md", ".xls")
+    fout = args.fsalida.replace(".md", ".ods")
     book = tablib.Databook((data_res, data_full))
     with open(fout, 'wb') as f:
         # pylint: disable=no-member
-        f.write(book.xls)
+        f.write(book.ods)
 
 
 if __name__ == "__main__":
