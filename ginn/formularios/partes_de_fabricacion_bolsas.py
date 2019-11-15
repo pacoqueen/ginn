@@ -671,10 +671,12 @@ class PartesDeFabricacionBolsas(Ventana):
                               "%s %s" % (utils.float2str(c.cantidad), unidad),
                               c.id))
             for bb in parte.bigbags:    # Consumos de fibra de cemento:
-                model.append(("%s (%s)" % (bb.codigo,
-                                           bb.articulo.productoVenta.nombre),
-                              utils.float2str(bb.pesobigbag) + " kg",
-                              -bb.id))
+                model.append(
+                        ("{} ({}) {}".format(bb.codigo,
+                                             bb.articulo.productoVenta.nombre,
+                                             bb.api and "✔" or "✘"),
+                         utils.float2str(bb.pesobigbag) + " kg",
+                         -bb.id))
             self.wids['tv_consumos'].set_model(model)
 
     def check_permisos(self):
