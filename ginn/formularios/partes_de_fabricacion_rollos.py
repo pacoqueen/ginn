@@ -1742,7 +1742,7 @@ class PartesDeFabricacionRollos(Ventana):
                     resultados = [r for r in resultados if r.es_de_geotextiles()]
                 else:
                     resultados = pclases.ParteDeProduccion.select(
-                        """partida_cem_id IS NOT NULL
+                        """partida_cem_id IS NULL
                            AND NOT observaciones LIKE '%;%;%;%;%;%'""")
             except:
                 producto = pclases.ProductoVenta.select(pclases.AND(
