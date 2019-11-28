@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2018  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2019  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -71,28 +71,28 @@
 import time
 import pygtk
 pygtk.require('2.0')
-import gtk
-import mx.DateTime
-from ventana import Ventana
-from formularios import utils
-from formularios import reports
-from framework import pclases
-from informes import geninformes
-from utils import _float as float
+import gtk                          # noqa
+import mx.DateTime                  # noqa
+from ventana import Ventana         # noqa
+from formularios import utils       # noqa
+from formularios import reports     # noqa
+from framework import pclases       # noqa
+from informes import geninformes    # noqa
+from utils import _float as float   # noqa
 try:
     import psycopg
 except ImportError:
     import psycopg2 as psycopg  # @UnusedImport
-from ventana_progreso import VentanaActividad, VentanaProgreso
-import re, os
+from ventana_progreso import VentanaActividad, VentanaProgreso  # noqa
+import re, os                                                   # noqa
 from formularios.partes_de_fabricacion_balas import verificar_solapamiento, \
                                                     entran_en_turno
 try:
     from psycopg import ProgrammingError as psycopg_ProgrammingError
 except ImportError:
     from psycopg2 import ProgrammingError as psycopg_ProgrammingError
-import datetime
-from lib.myprint import myprint
+import datetime                                                 # noqa
+from lib.myprint import myprint                                 # noqa
 try:
     from api import murano
     MURANO = True
@@ -114,6 +114,7 @@ try:
         claruki = incidencia.horainicio + UNDIA
 except TypeError:
     UNDIA = mx.DateTime.oneDay
+
 
 def build_etiqueta(rollo):
     """
@@ -141,9 +142,9 @@ def build_etiqueta(rollo):
                'm2': "%s m²" % (utils.float2str(
                                     rollo.ancho * rollo.metrosLineales, 1)),
                'mlin': "%s m" % (utils.float2str(rollo.metrosLineales)),
-               #'nrollo': str(rollo.numrollo),
+               # 'nrollo': str(rollo.numrollo),
                'nrollo': rollo.codigo,     # Para diferenciarlos mejor en la
-                    # etiqueta desde lejos (aunque lleven otras marcas y tal)
+               # etiqueta desde lejos (aunque lleven otras marcas y tal)
                'partida': rollo.partida.codigo,
                'codigo': producto.codigo,
                'codigo39': rollo.codigo,
