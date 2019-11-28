@@ -1743,7 +1743,7 @@ class PartesDeFabricacionRollos(Ventana):
                 else:
                     resultados = pclases.ParteDeProduccion.select(pclases.AND(
                         """NOT observaciones LIKE '%;%;%;%;%;%'""",
-                        pclases.ParteDeProduccion.q.partidaCemID!=None)
+                        pclases.ParteDeProduccion.q.partidaCemID!=None))
             except:
                 producto = pclases.ProductoVenta.select(pclases.AND(
                     pclases.ProductoVenta.q.nombre.contains(a_buscar),
