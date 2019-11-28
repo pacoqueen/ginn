@@ -1741,7 +1741,9 @@ class PartesDeFabricacionRollos(Ventana):
                     resultados = pclases.ParteDeProduccion.select(pclases.ParteDeProduccion.q.fecha == fecha)
                     resultados = [r for r in resultados if r.es_de_geotextiles()]
                 else:
-                    resultados = pclases.ParteDeProduccion.select("""NOT observaciones LIKE '%;%;%;%;%;%'""")
+                    resultados = pclases.ParteDeProduccion.select(pclases.AND(
+                        """NOT observaciones LIKE '%;%;%;%;%;%'""",
+                        pclases.ParteDeProduccion.q.partidaCemID!=None)
             except:
                 producto = pclases.ProductoVenta.select(pclases.AND(
                     pclases.ProductoVenta.q.nombre.contains(a_buscar),
