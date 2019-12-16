@@ -8233,7 +8233,7 @@ def generar_data_caja(caja, tipo = 0):
 def etiquetasBalasEtiquetadora(balas, hook=None, *args, **kw):
     # return domenech_v_etiquetasBalasEtiquetadora(*args, **kw)
     # Si tiene función especial para modelo de etiqueta personalizado:
-    print "etiquetasBalasEtiquetadora   ------>", hook
+    # print "etiquetasBalasEtiquetadora   ------>", hook
     if not hook:
         nomarchivo = domenech_h_etiquetasBalasEtiquetadora(balas, *args, **kw)
     else:
