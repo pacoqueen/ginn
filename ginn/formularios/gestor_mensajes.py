@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2019  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -28,21 +28,21 @@
 ## gestor_mensajes.py -- Gestor de mensajes y alertas de usuarios.
 ###################################################################
 ## NOTAS:
-##  
+##
 ## ----------------------------------------------------------------
-##  
+##
 ###################################################################
 ## Changelog:
 ## 27 de abril de 2006 -> Inicio
-## 
+##
 ##
 ###################################################################
 ## FIXME:
-## OJO: Hay un BUG en SQLObject 0.6.1 que ignora los DEFAULTs en 
-## los campos BOOLEAN de la base de datos y usa siempre True como 
-## valor por defecto aunque en la tabla se haya especificado 
+## OJO: Hay un BUG en SQLObject 0.6.1 que ignora los DEFAULTs en
+## los campos BOOLEAN de la base de datos y usa siempre True como
+## valor por defecto aunque en la tabla se haya especificado
 ## BOOLEAN DEFAULT False.
-## La clase Widget también debería hacer saltar una excepción 
+## La clase Widget también debería hacer saltar una excepción
 ## cuando se accede a un widget que no existe, en lugar de devolver
 ## None. Opino. <-- Esto ya está hecho.
 ###################################################################
@@ -55,8 +55,8 @@ from formularios.widgets import Widgets
 
 def eliminar_temporales():
     """
-    Trata de eliminar todos los archivos temporales del usuario para evitar 
-    que al generar una etiqueta, código de barras, etc. se quede pillado 
+    Trata de eliminar todos los archivos temporales del usuario para evitar
+    que al generar una etiqueta, código de barras, etc. se quede pillado
     el programa y pete.
     """
     from tempfile import gettempdir
@@ -66,10 +66,10 @@ def eliminar_temporales():
                 #print os.path.join(root, fich)
                 os.unlink(os.path.join(root, fich))
                 # ¿Realmente necesito borrar solo los de ayer y anteriores?
-                # Se acaba de abrir el menú principal. No puede haber 
-                # etiquetas recién creadas y no impresas. Y si las hay, 
-                # el visor de PDF ya las tiene en memoria y no pasa nada por 
-                # borrar el archivo... a no ser que esté en Winmerde y no 
+                # Se acaba de abrir el menú principal. No puede haber
+                # etiquetas recién creadas y no impresas. Y si las hay,
+                # el visor de PDF ya las tiene en memoria y no pasa nada por
+                # borrar el archivo... a no ser que esté en Winmerde y no
                 # me deje. Exception powah!
             except (OSError, IOError):
                 pass    # Protegido, bloqueado... da igual. Sigo borrando.
@@ -106,8 +106,8 @@ class GestorMensajes:
     def mostrar_alerta(self, a):
         """
         a es un objeto Alerta.
-        Muestra una ventana con el mensaje de la alerta y 
-        modifica la recepción si se marca la casilla 
+        Muestra una ventana con el mensaje de la alerta y
+        modifica la recepción si se marca la casilla
         correspondiente.
         Devuelve la longitud de alertas pendientes que quedan
         por mostrar.
@@ -144,9 +144,9 @@ class GestorMensajes:
     def cambiar_contador_pendientes(self, togglebutton, label_pendientes, res):
         if togglebutton.get_active():
             p = len(self.__pendientes) - 1
-            # La alerta actual está pendiente hasta que cierre la ventana. 
-            # Así que resto uno al total de pendientes para que se muestre 
-            # en el resto de pendientes el mensaje actual como leído (aunque 
+            # La alerta actual está pendiente hasta que cierre la ventana.
+            # Así que resto uno al total de pendientes para que se muestre
+            # en el resto de pendientes el mensaje actual como leído (aunque
             # realmente no quede leído hasta que cierre).
             res[0] = True
         else:
@@ -158,7 +158,7 @@ class GestorMensajes:
     def aceptar(self, boton, ventana, alerta):
         if ventana['ch_todos'].get_active():
             for a in [a for a in self.__pendientes if a != alerta]:
-                # La alerta original se eliminará después, por eso la respeto 
+                # La alerta original se eliminará después, por eso la respeto
                 # en este for.
                 a.entregado = True
                 self.__pendientes.remove(a)
@@ -171,7 +171,7 @@ class GestorMensajes:
         """
         res = [True]
         ventana['b_aceptar'].connect("clicked", self.aceptar, ventana, alerta)
-        ventana['confirmado'].connect("toggled", 
+        ventana['confirmado'].connect("toggled",
                 self.cambiar_contador_pendientes, ventana['no_leidos'], res)
         ventana['ventana'].connect("destroy", gtk.main_quit)
         gtk.main()  # Saldrá de aquí con el main_quit
@@ -183,17 +183,18 @@ class GestorMensajes:
     def run(self):
         """
         Realiza una nueva "pasada" del gestor de mensajes en
-        busca de mensajes sin confirmar. Si hay, inicia la 
+        busca de mensajes sin confirmar. Si hay, inicia la
         rutina gráfica de Gtk y los muestra.
         """
         self.__pendientes = self.comprobar_pendientes()
-        for a in self.__pendientes[:]:  
-            # Hago una copia de la lista de pendientes porque 
+        for a in self.__pendientes[:]:
+            # Hago una copia de la lista de pendientes porque
             # probablemente se modificará durante el recorrido.
             if self.mostrar_alerta(a) == 0:
                 break
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     gm = GestorMensajes()
             #pclases.Usuario.select(pclases.Usuario.q.usuario=='admin')[0])
 #    gm.nueva_alerta('Esto es una alerta de prueba')
@@ -202,5 +203,5 @@ if __name__=='__main__':
 #    I'm taking a ride with my best friend.
 #    Never let me down... again""")
 #    gm.run()
-    
-    
+
+

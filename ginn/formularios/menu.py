@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # #############################################################################
-# Copyright (C) 2005-2016  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2020  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -188,7 +188,8 @@ class Menu:
         # Continúo con el gestor de mensajes y resto de ventana menú.
         if pclases.VERBOSE:
             myprint("Cargando gestor de mensajes...")
-        self.__gm = gestor_mensajes.GestorMensajes(self.usuario)
+        # Nadie los lee. Ni llevamos las existencias ya por aquí.
+        # self.__gm = gestor_mensajes.GestorMensajes(self.usuario)
         # DONE: Dividir la ventana en expansores con los módulos del programa
         # (categorías) y dentro de ellos un IconView con los iconos de cada
         # ventana. Poner también en lo alto del VBox el icono de la aplicación.
@@ -371,9 +372,9 @@ class Menu:
         contenedor.add(icon_view)
         self.content_box = gtk.HBox(False)
         self.content_box.pack_start(contenedor, fill=True, expand=False)
-        #icon_view.select_path((0,))
+        # icon_view.select_path((0,))
         icon_view.select_path(model.get_path(iterfav))
-            # Al seleccionar una categoría se creará el frame
+        # Al seleccionar una categoría se creará el frame.
         # Sanity check.
         if hasattr(icon_view, "scroll_to_path"):    # Si pygtk >= 2.8
             icon_view.scroll_to_path(model.get_path(iterfav), False, 0, 0)
@@ -384,7 +385,8 @@ class Menu:
 
     def on_select(self, icon_view, model=None):
         selected = icon_view.get_selected_items()
-        if len(selected) == 0: return
+        if len(selected) == 0:
+            return
         i = selected[0][0]
         category = model[i][0]
         if self.current_frame is not None:
@@ -406,28 +408,28 @@ class Menu:
         if modulo != "Favoritos":
             frame = gtk.Frame(modulo.descripcion)
             frame.add(self.construir_modulo(modulo.descripcion,
-                            [p.ventana for p in self.get_usuario().permisos
-                             if p.permiso and p.ventana.modulo == modulo]))
+                      [p.ventana for p in self.get_usuario().permisos
+                       if p.permiso and p.ventana.modulo == modulo]))
         else:
             frame = gtk.Frame("Ventanas más usadas")
             usuario = self.get_usuario()
             stats = pclases.Estadistica.select(
-             pclases.Estadistica.q.usuarioID == usuario.id, orderBy = "-veces")
+             pclases.Estadistica.q.usuarioID == usuario.id, orderBy="-veces")
             # Se filtran las ventanas en las que ya no tiene permisos aunque
             # estén en favoritos.
             stats = [s for s in stats
                      if usuario.get_permiso(s.ventana)
-                         and usuario.get_permiso(s.ventana).permiso][:9]
+                     and usuario.get_permiso(s.ventana).permiso][:9]
             stats.sort(lambda s1, s2: (s1.ultimaVez > s2.ultimaVez and -1)
-                                      or (s1.ultimaVez < s2.ultimaVez and 1)
-                                      or 0)
+                       or (s1.ultimaVez < s2.ultimaVez and 1)
+                       or 0)
             ventanas = [s.ventana for s in stats]
             frame.add(self.construir_modulo("Ventanas más usadas",
                                             ventanas,
                                             False))
         return frame
 
-    def cutmaister(self, texto, MAX = 20):
+    def cutmaister(self, texto, MAX=20):
         """
         Si el texto tiene una longitud superior a 20 caracteres de ancho lo
         corta en varias líneas.
@@ -456,7 +458,7 @@ class Menu:
         res = "\n".join([s.center(MAX) for s in res.split("\n")])
         return res
 
-    def construir_modulo(self, nombre, ventanas, ordenar = True):
+    def construir_modulo(self, nombre, ventanas, ordenar=True):
         """
         Crea un IconView con las
         ventanas que contiene el módulo.
@@ -470,8 +472,8 @@ class Menu:
         # la clave de ordenación.
         if ordenar:
             ventanas.sort(lambda s1, s2:
-                            (s1.descripcion>s2.descripcion and 1) or
-                            (s1.descripcion<s2.descripcion and -1) or 0)
+                          (s1.descripcion > s2.descripcion and 1) or
+                          (s1.descripcion < s2.descripcion and -1) or 0)
         for ventana in ventanas:
             try:
                 pixbuf = gtk.gdk.pixbuf_new_from_file(
@@ -498,19 +500,22 @@ class Menu:
         iview.connect('selection-changed', self.mostrar_item_seleccionado,
                       model)
         contenedor.add(iview)
-        #iview.connect('item-activated', self.abrir, model)
+        # iview.connect('item-activated', self.abrir, model)
         # HACK: PyGTK 2.28 en Windows con python 2.7 no reconoce el
         # gtk.gdk._2BUTTON_PRESS y se pierde el doble clic que abre las
         # ventanas. No llega a lanzarse nunca la señal "item-activated".
         # Esto es un pequeño apaño muy chapu.
+
         def button_press(widget, event):
             try:
                 widget.clics += 1
             except AttributeError:
                 widget.clics = 1
+
         def motion(widget, event):
             widget.clics = 0
             return True
+
         def button_release(widget, event):
             if hasattr(widget, "clics") and widget.clics >= 2:
                 # Este es el segundo. Lanzo el item-activated
@@ -524,6 +529,7 @@ class Menu:
                     self.abrir(widget, path, model)
                     widget.clics = 0
             return True
+
         def key_pressed(widget, event):
             # Abro ventanas también con espacio y ENTER porque he desactivado
             # el item-activated.
