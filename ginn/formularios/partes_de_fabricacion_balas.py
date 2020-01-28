@@ -1264,6 +1264,7 @@ class PartesDeFabricacionBalas(Ventana):
             volcado = " ✘"
         try:
             res = "{}{}".format(a.codigo_interno, volcado)
+            res = geninformes.sanitize_unicode(res)
         except:                                                         # noqa
             res = ''
         return res
@@ -1461,10 +1462,14 @@ class PartesDeFabricacionBalas(Ventana):
             cell.set_property("cell-background", color)
             numcol = i
             if numcol == 1:     # Columna de número de bala.
-                if "✔" in model[itr][numcol]:
+                if ("✔" in model[itr][numcol]
+                        or geninformes.sanitize_unicode("✔")
+                        in model[itr][numcol]):
                     cell.set_property("cell-background", "black")
                     cell.set_property("foreground", "white")
-                elif "✘" in model[itr][numcol]:
+                elif ("✘" in model[itr][numcol]
+                      or geninformes.sanitize_unicode("✘")
+                      in model[itr][numcol]):
                     cell.set_property("cell-background", "black")
                     cell.set_property("foreground", "red")
                 # Y si es None no se ha intentado volcar todavía. Colores por
@@ -1472,7 +1477,7 @@ class PartesDeFabricacionBalas(Ventana):
             if numcol == 2 and articulo and articulo.es_bala():  # Columna de
                 # peso. En NARANJA CHILLÓN si está fuera de lo "normal". A ver
                 # si así el "interfecto" está más atento.
-                if not (250 <= articulo.peso_real <= 350):
+                if not 250 <= articulo.peso_real <= 350:
                     cell.set_property("cell-background", "orange")
             utils.redondear_flotante_en_cell_cuando_sea_posible(column,
                                                                 cell,

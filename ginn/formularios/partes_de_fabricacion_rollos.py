@@ -451,10 +451,14 @@ class PartesDeFabricacionRollos(Ventana):
                 cell.set_property("text", model[itr][numcol])
                 cell.set_property("foreground", None)
             if numcol == 1:     # Columna de número de rollo.
-                if "✔" in model[itr][numcol]:
+                if ("✔" in model[itr][numcol]
+                        or geninformes.sanitize_unicode("✔")
+                        in model[itr][numcol]):
                     cell.set_property("cell-background", "black")
                     cell.set_property("foreground", "white")
-                elif "✘" in model[itr][numcol]:
+                elif ("✘" in model[itr][numcol]
+                        or geninformes.sanitize_unicode("✘")
+                        in model[itr][numcol]):
                     cell.set_property("cell-background", "black")
                     cell.set_property("foreground", "red")
                 # Y si es None no se ha intentado volcar todavía. Colores por defecto
@@ -1200,6 +1204,7 @@ class PartesDeFabricacionRollos(Ventana):
             volcado = " ✘"
         try:
             res = "{}{}".format(d.codigo, volcado)
+            res = geninformes.sanitize_unicode(res)
         except AttributeError:
             res = ''
         return res

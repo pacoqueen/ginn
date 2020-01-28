@@ -304,8 +304,9 @@ class ConsumoBalasPartida(Ventana):
                                            parte.bloqueado))
                 partes = "; ".join(["{}{}".format(utils.str_fechahora(f),
                                                   v and "✔" or "✘")
-                                    for f,v in sorted(fechas_partes,
-                                                      key=lambda t: t[0])])
+                                    for f, v in sorted(fechas_partes,
+                                                       key=lambda t: t[0])])
+                partes = geninformes.sanitize_unicode(partes)
             else:
                 producto = "SIN PRODUCCIÓN"
                 partes = ""

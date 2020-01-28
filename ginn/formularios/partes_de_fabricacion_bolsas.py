@@ -671,12 +671,13 @@ class PartesDeFabricacionBolsas(Ventana):
                               "%s %s" % (utils.float2str(c.cantidad), unidad),
                               c.id))
             for bb in parte.bigbags:    # Consumos de fibra de cemento:
-                model.append(
-                        ("{} ({}) {}".format(bb.codigo,
+                str_bb = "{} ({}) {}".format(bb.codigo,
                                              bb.articulo.productoVenta.nombre,
-                                             bb.api and "✔" or "✘"),
-                         utils.float2str(bb.pesobigbag) + " kg",
-                         -bb.id))
+                                             bb.api and "✔" or "✘")
+                str_bb = geninformes.sanitize_unicode(str_bb)
+                model.append((str_bb,
+                              utils.float2str(bb.pesobigbag) + " kg",
+                              -bb.id))
             self.wids['tv_consumos'].set_model(model)
 
     def check_permisos(self):
@@ -720,6 +721,7 @@ class PartesDeFabricacionBolsas(Ventana):
                     volcado = " ✔"
                 else:
                     volcado = " ✘"
+                volcado = geninformes.sanitize_unicode(volcado)
                 peso_neto = sum([c.articulo.peso_neto for c in pale.cajas])
                 numcajas = len(pale.cajas)  # = pale.numcajas
                 pales[pale] = model.append(None, ("Palé " + pale.codigo + volcado,
@@ -739,6 +741,7 @@ class PartesDeFabricacionBolsas(Ventana):
                     volcado = " ✔"
                 else:
                     volcado = " ✘"
+                volcado = geninformes.sanitize_unicode(volcado)
                 cajas[caja] = model.append(pales[pale], ("Caja " + caja.codigo + volcado,
                                                          1,  # 1 caja por caja:)
                                                          caja.numbolsas,
