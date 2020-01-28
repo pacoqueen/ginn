@@ -4293,7 +4293,7 @@ class PartesDeFabricacionBalas(Ventana):
         else:
             balas_defecto = []
             for path in paths:
-                balas_defecto.append(model[path][1].upper().replace("B", ""))
+                balas_defecto.append(model[path][1].upper().replace("B", "").replace("✔", "").replace("✘", "").replace("+", "").replace("x", "").strip())
             balas_defecto.sort()
             balas_defecto = ', '.join(balas_defecto)
 

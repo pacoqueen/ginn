@@ -3294,7 +3294,7 @@ class PartesDeFabricacionRollos(Ventana):
         for path in paths:
             rollos_defecto.append(
                     model[path][1].replace("✔", "").replace("✘", "").replace("+", "").replace("x", "").strip())
-            rollos_defecto.sort()
+        rollos_defecto.sort()
         rollos_defecto = ', '.join(rollos_defecto)
         entrada, mostrar_marcado = self._dialogo_entrada(
             titulo='ETIQUETAS',
