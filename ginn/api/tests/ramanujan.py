@@ -1949,7 +1949,7 @@ def main():
     fout = args.fsalida.replace(".md", ".xls")
     book = tablib.Databook((data_res, inventario, desglose,
                             desviaciones_a, desviaciones_b, desviaciones_c,
-                            resumen, valoracion))
+                            resumen, valoracion, agrupado))
     with open(fout, 'wb') as f:
         # pylint: disable=no-member
         f.write(book.xls)
