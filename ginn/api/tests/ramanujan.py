@@ -1786,7 +1786,8 @@ def build_fila_valoracion(fila, agrupacion):
         agrupacion[almacen][familia][calidad][fecha] = {}
     if proyecto not in agrupacion[almacen][familia][calidad][fecha]:
         agrupacion[almacen][familia][calidad][fecha][proyecto] = {'kg': 0.0,
-                                                                  'valor': 0.0}
+                                                                  'valor': 0.0,
+                                                                  'bultos': 0}
     agrupacion[almacen][familia][calidad][fecha][proyecto]['bultos'] += 1
     agrupacion[almacen][familia][calidad][fecha][proyecto]['kg'] += peso_neto
     agrupacion[almacen][familia][calidad][fecha][proyecto]['valor'] += (
