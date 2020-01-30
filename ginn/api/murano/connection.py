@@ -29,6 +29,12 @@ CODEMPRESA = 10200  # Empresa de pruebas: 800. Cambiar a la 10200 en producción
 CANALES = {'100': FIBRA, '101': RESIDUOS_FIBRA,
            '200': GEOTEXTIL, '201': RESIDUOS_GEOTEXTIL,
            '300': GEOCEM, '400': COMERCIALIZADO}
+(DANOSA, GEOSYNTHETICS, INTERMAS) = range(1, 4)
+PROYECTOS = {'DANOSA': DANOSA,
+             'GEOSYN': GEOSYNTHETICS,
+             'INTERM': INTERMAS,
+             '      ': 0  # Sin informar
+             }
 
 
 class Connection(object):

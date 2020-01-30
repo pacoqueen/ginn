@@ -51,6 +51,12 @@ sys.argv = _argv
 # DONE: Hacer un chequeo por A, B y C antes de los totales para detectar
 # errores al importar un bulto como A siendo B y cosas así.
 
+# Pestañas: Desviaciones, Totales, Desglose, A, B, C, Resumen, Valoración
+# Posible nueva pestaña (por eso 9): Agrupación por proyecto para valoración.
+# Los primeros ficheros tenían solo 2 pestañas.
+MINTABS = 2
+MAXTABS = 9
+
 
 # pylint: disable=too-many-arguments
 def calcular_desviacion(existencias_ini, produccion, ventas, consumos, ajustes,
@@ -1021,7 +1027,7 @@ def get_produccion(producto_ginn, fini, ffin, strict=False, calidad=None):
     if not strict:
         articulos = query_articulos_from_partes(producto_ginn, fhoraini, ffin)
     else:   # En vez de por partes, filtro por fecha de registro **real** en
-            # la base de datos de cada artículo.
+        # la base de datos de cada artículo.
         articulos = query_articulos(producto_ginn, fhoraini, ffin)
     for a in articulos:
         if a.es_clase_a():
@@ -1353,8 +1359,8 @@ def load_inventario(fich_inventario, hoja="Totales"):
     """
     book = tablib.Databook().load(None, open(fich_inventario, "r+b").read())
     sheets = book.sheets()
-    assert 2 <= len(sheets) <= 7, "El fichero '{}' no parece ser "\
-                                  "válido.".format(fich_inventario)
+    assert MINTABS <= len(sheets) <= MAXTABS, "El fichero '{}' no parece ser "\
+                                              "válido.".format(fich_inventario)
     found = False
     data = None
     for data in sheets:
@@ -1382,8 +1388,8 @@ def load_pendiente_mes_pasado(fich_inventario):
     res = {}
     book = tablib.Databook().load(None, open(fich_inventario, "r+b").read())
     sheets = book.sheets()
-    assert 2 <= len(sheets) <= 7, "El fichero '{}' no parece ser "\
-                                  "válido.".format(fich_inventario)
+    assert MINTABS <= len(sheets) <= MAXTABS, "El fichero '{}' no parece ser "\
+                                              "válido.".format(fich_inventario)
     for hoja in ("Desviaciones",    # Pendiente volcar totales
                  "A",               # Pendiente volcar calidad A
                  "B",               # Pendiente volcar calidad B
@@ -1654,6 +1660,84 @@ def do_resumen(producto, resumen,
                     resumen.append(filaresumen)
 
 
+def do_valoracion(valoracion, desglose, dev=False):
+    """
+    Devuelve una pestaña de la hoja de cálculo conteniendo el listado de
+    existencias con las columnas:
+    Almacén, Familia, Proyecto, Código producto, Descripción, Código de
+    trazabilidad, calidad, peso_neto, fecha de fabricación, palé, precio
+    de coste de fabricación por kg de esa unidad y coste total de la unidad.
+    La fecha de fabricación se obtiene del parte de producción (ginn).
+    El precio de valoración y el proyecto se extrae de Murano.
+    El resto de datos se aprovecha de data_inventario.
+    """
+    if dev:
+        valoracion.apppend(('GTX', 'VTA GTX', '      ', 'PV0000',
+                            'Descripción', 'R000000', 'A', 100.0,
+                            datetime.datetime.now(), None, 0.5,
+                            100.0 * 0.5))
+    else:
+        for fila in tqdm(desglose.dict, desc="Valorando existencias",
+                         total=len(desglose)):
+            try:
+                almacen = fila[u'Almacén']
+            except KeyError:  # El orden siempre es el mismo...
+                almacen = fila[fila.keys()[0]]
+            try:
+                familia = fila[u'Familia']
+            except KeyError:  # ... hasta que deje de serlo
+                familia = fila[fila.keys()[1]]
+            try:
+                codigo_producto = fila[u'Código producto']
+            except KeyError:
+                codigo_producto = fila[fila.keys()[2]]
+            try:
+                descripcion = fila[u'Descripción']
+            except KeyError:
+                descripcion = fila[fila.keys()[3]]
+            try:
+                codigo_trazabilidad = fila[u'Código trazabilidad']
+            except KeyError:
+                codigo_trazabilidad = fila[fila.keys()[4]]
+            try:
+                calidad = fila[u'Calidad']
+            except KeyError:
+                calidad = fila[fila.keys()[6]]
+            try:
+                peso_neto = fila[u'Peso neto']
+            except KeyError:
+                peso_neto = fila[fila.keys()[8]]
+            try:
+                pale = fila[u'Palé']
+            except KeyError:
+                pale = fila[fila.keys()[12]]
+            pv = murano.ops.get_producto_ginn(codigo_producto)
+            articulo = pclases.Articulo.get_articulo(codigo_trazabilidad)
+            proyecto = murano.ops.get_proyecto(pv)
+            precio = murano.ops.get_precio_coste(articulo)
+            coste = precio * peso_neto
+            # Asumimos la fecha del parte como fecha de fabricación de todos
+            # los artículos. Se toma la fecha lógica del parte (si antes de las
+            # 6:00, es del día anterior) no la fecha natural. Es con intención
+            # de que cuadre con las producciones y demás, que también toman
+            # las 6:00 como pivote de cambio de día.
+            # Si por lo que sea no tiene parte, se devuelve la fecha y hora
+            # de creación del artículo, que no tiene por qué coincidir si
+            # se ha dado de alta más tarde por problemas en la línea.
+            try:
+                fhora_fabricacion = articulo.parteDeProduccion.fechahorainicio
+            except AttributeError:
+                fhora_fabricacion = articulo.fechahora
+            fecha_fabricacion = datetime.date.fromordinal(
+                fhora_fabricacion.toordinal())
+            if fhora_fabricacion.hour < 6:
+                fecha_fabricacion -= datetime.timedelta(days=1)
+            valoracion.append((almacen, familia, proyecto, codigo_producto,
+                               descripcion, codigo_trazabilidad, calidad,
+                               peso_neto, fecha_fabricacion, pale, precio,
+                               coste))
+
+
 def main():
     """
     Rutina principal.
@@ -1724,6 +1808,7 @@ def main():
     inventario = tablib.Dataset(title="Totales")
     desglose = tablib.Dataset(title="Desglose")
     resumen = tablib.Dataset(title="Resumen")
+    valoracion = tablib.Dataset(title="Valoración")
     desviaciones_a = tablib.Dataset(title="A")
     desviaciones_b = tablib.Dataset(title="B")
     desviaciones_c = tablib.Dataset(title="C")
@@ -1767,6 +1852,10 @@ def main():
                        'Murano (#)',        'Murano (m²)',  'Murano (kg)',
                        'Δ (bultos)',        'Δ (m²)',       'Δ (kg)',
                        'ℹ']
+    valoracion.headers = ['Almacén', 'Familia', 'Proyecto', 'Código producto',
+                          'Descripción', 'Código trazabilidad', 'Calidad',
+                          'Peso neto', 'Fecha de fabricación', 'Palé',
+                          'Precio valoración', 'Coste fabricación']
     for producto in tqdm(productos, desc="Productos"):
         res = cuentalavieja(producto, data_inventario, data_pendiente,
                             fini, ffin, report,
@@ -1785,6 +1874,7 @@ def main():
         do_resumen(producto, resumen,
                    desviaciones_a, desviaciones_b, desviaciones_c,
                    args.debug)
+    do_valoracion(valoracion, desglose, args.debug)
     fallos = [p for p in results if not p[1]]
     report.write("Encontradas {} desviaciones: {}".format(
         len(fallos), "; ".join(['PV{}'.format(p[0].id) for p in fallos])))
@@ -1800,7 +1890,7 @@ def main():
     fout = args.fsalida.replace(".md", ".xls")
     book = tablib.Databook((data_res, inventario, desglose,
                             desviaciones_a, desviaciones_b, desviaciones_c,
-                            resumen))
+                            resumen, valoracion))
     with open(fout, 'wb') as f:
         # pylint: disable=no-member
         f.write(book.xls)

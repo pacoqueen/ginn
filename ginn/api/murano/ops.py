@@ -9,7 +9,8 @@ Operaciones.
 # TODO: No sincroniza el campo que indica que el geotextil es C en los
 # productos de venta de tipo Geotextil.
 
-# pylint: disable=too-many-lines, wrong-import-position, relative-import
+# pylint: disable=too-many-lines, wrong-import-position
+# pylint: relative-import
 
 from __future__ import print_function
 import os
@@ -2095,6 +2096,38 @@ def esta_en_almacen(articulo):
     return res
 
 
+def get_precio_coste(articulo):
+    """
+    Devuelve el precio de coste por kg según Murano del artículo de ginn
+    recibido.
+    Se supone que debe coincidir con el que estaba definido para su familia
+    en el mes en que se dio de alta.
+    Es diferente al get_precio_coste para Murano, que devuelve el mismo valor
+    pero desde la tabla Familias directamente.
+    """
+    if not isinstance(articulo, pclases.Articulo):
+        # Por error o por pruebas he recibido directamente el código del
+        # artículo.
+        articulo = pclases.Articulo.get_articulo(articulo)
+    c = Connection()
+    sql = """SELECT CodigoAlmacen
+               FROM {}.dbo.ArticulosSeries
+              WHERE CodigoEmpresa = {}
+                AND UnidadesSerie > 0
+                AND NumeroSerieLc = '{}'
+           ORDER BY FechaInicial;""".format(c.get_database(), CODEMPRESA,
+                                            articulo.codigo)
+    articulos_serie = c.run_sql(sql)
+    try:
+        precio_coste = articulos_serie[-1]['GEO_CosteUnidadEspecifica']
+    except IndexError:
+        precio_coste = None
+    if not precio_coste:
+        res = 0.0
+    else:
+        res = precio_coste
+    return res
+
 def es_movimiento_de_salida(movserie):
     """
     Recibe un registro MovimientoArticuloSerie de Murano (diccionario) y
@@ -3142,21 +3175,20 @@ def producto_murano2ginn(codigo, sync=False):
     Si el ID ya existe, machaca la información de ginn con la de Murano si
     el flag «sync» está activo. En otro caso, lanza una excepción.
     """
-    # pylint: disable=redefined-variable-type
+    # p y l i n t: disable=redefined-variable-type
     prod_murano = get_producto_murano(codigo)
     if not prod_murano:
         strerr = "El código %s no existe en Murano." % (codigo)
         raise ValueError(strerr)
+    try:
+        prod_ginn = get_producto_ginn(codigo)
+    except pclases.SQLObjectNotFound:
+        res = _create_producto_ginn(prod_murano)
     else:
-        try:
-            prod_ginn = get_producto_ginn(codigo)
-        except pclases.SQLObjectNotFound:
-            res = _create_producto_ginn(prod_murano)
+        if sync:
+            res = _update_producto_ginn(prod_ginn, prod_murano)
         else:
-            if sync:
-                res = _update_producto_ginn(prod_ginn, prod_murano)
-            else:
-                res = None
+            res = None
     return res
 
 
@@ -3167,7 +3199,7 @@ def _create_producto_ginn(prod_murano):
     Crea un producto en ginn con el ID de Murano y devuelve el objeto
     recién creado.
     """
-    # pylint: disable=redefined-variable-type
+    # p y l i n t: disable=redefined-variable-type
     id_murano = prod_murano['CodigoArticulo']
     if "PV" in id_murano:
         res = _create_producto_venta_ginn(prod_murano)
@@ -3495,6 +3527,28 @@ def get_canal(producto):
     except KeyError:
         cod_canal = None
     return cod_canal
+
+
+def get_proyecto(producto):
+    """
+    Busca el proyecto del producto en Murano y devuelve el código de proyecto
+    (HARCODED en `connection`) correspondiente. Cero si en Murano no tiene
+    proyecto informado («Sin informar»).
+    Acepta objeto de pclases o código (como cadena) directamente.
+    Si el producto no existe, lanza una excepción.
+    """
+    if isinstance(producto, pclases.ProductoCompra):
+        codigo = "PC" + str(producto.id)
+    elif isinstance(producto, pclases.ProductoVenta):
+        codigo = "PV" + str(producto.id)
+    elif isinstance(producto, str):
+        codigo = producto
+    else:
+        raise TypeError("ops::get_proyecto -> producto debe ser un "
+                        "pclases.ProductoCompra o pclases.ProductoVenta")
+    pmurano = get_producto_murano(codigo)
+    cod_proyecto = pmurano.CodigoProyecto     # pylint: disable=no-member
+    return cod_proyecto
 
 
 def get_stock_murano(producto, _almacen=None, _calidad=None, _unidad=None):

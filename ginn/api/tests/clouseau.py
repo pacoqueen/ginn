@@ -159,8 +159,8 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
             pcarga = articulo.bala.partidaCarga
             if pcarga:
                 codigo_partida_carga = "{} {}".format(
-                        pcarga.codigo,
-                        pcarga.api and '✔' or '✘')
+                    pcarga.codigo,
+                    pcarga.api and '✔' or '✘')
                 # FIXME: Ojo porque la fecha de la partida de carga es
                 # la **fecha de creación de la partida**, no la fecha del
                 # consumo. Eso hay que sacarlo de los partes de producción.
