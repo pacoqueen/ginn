@@ -52,7 +52,7 @@ sys.argv = _argv
 # errores al importar un bulto como A siendo B y cosas así.
 
 # Pestañas: Desviaciones, Totales, Desglose, A, B, C, Resumen, Valoración
-# Posible nueva pestaña (por eso 9): Agrupación por proyecto para valoración.
+# y Agrupación, que agrupa por fecha de fabricación y proyecto para valoración.
 # Los primeros ficheros tenían solo 2 pestañas.
 MINTABS = 2
 MAXTABS = 9
@@ -1660,9 +1660,9 @@ def do_resumen(producto, resumen,
                     resumen.append(filaresumen)
 
 
-def do_valoracion(valoracion, desglose, dev=False):
+def do_valoracion(valoracion, agrupado, desglose, dev=False):
     """
-    Devuelve una pestaña de la hoja de cálculo conteniendo el listado de
+    Rellena la pestaña de la hoja de cálculo conteniendo el listado de
     existencias con las columnas:
     Almacén, Familia, Proyecto, Código producto, Descripción, Código de
     trazabilidad, calidad, peso_neto, fecha de fabricación, palé, precio
@@ -1670,69 +1670,128 @@ def do_valoracion(valoracion, desglose, dev=False):
     La fecha de fabricación se obtiene del parte de producción (ginn).
     El precio de valoración y el proyecto se extrae de Murano.
     El resto de datos se aprovecha de data_inventario.
+    Rellena también la pestaña de totales (`agrupado`) con la valoración
+    total agrupada por almacén, familia, calidad, fecha de fabricación y
+    proyecto. En la fecha de fabricación agrupa por mes en el año corriente
+    y anterior. En los anteriores, por año únicamente.
     """
+    agrupacion = {}
     if dev:
         valoracion.apppend(('GTX', 'VTA GTX', '      ', 'PV0000',
                             'Descripción', 'R000000', 'A', 100.0,
                             datetime.datetime.now(), None, 0.5,
-                            100.0 * 0.5))
+                            100.0*0.5))
+        agrupado.append(('GTX', 'VTA GTX', 'A', '2020/01', '      ',
+                         100.0, 0.5, 100*0.5))
     else:
         for fila in tqdm(desglose.dict, desc="Valorando existencias",
                          total=len(desglose)):
-            try:
-                almacen = fila[u'Almacén']
-            except KeyError:  # El orden siempre es el mismo...
-                almacen = fila[fila.keys()[0]]
-            try:
-                familia = fila[u'Familia']
-            except KeyError:  # ... hasta que deje de serlo
-                familia = fila[fila.keys()[1]]
-            try:
-                codigo_producto = fila[u'Código producto']
-            except KeyError:
-                codigo_producto = fila[fila.keys()[2]]
-            try:
-                descripcion = fila[u'Descripción']
-            except KeyError:
-                descripcion = fila[fila.keys()[3]]
-            try:
-                codigo_trazabilidad = fila[u'Código trazabilidad']
-            except KeyError:
-                codigo_trazabilidad = fila[fila.keys()[4]]
-            try:
-                calidad = fila[u'Calidad']
-            except KeyError:
-                calidad = fila[fila.keys()[6]]
-            try:
-                pale = fila[u'Palé']
-            except KeyError:
-                pale = fila[fila.keys()[12]]
-            pv = murano.ops.get_producto_ginn(codigo_producto)
-            articulo = pclases.Articulo.get_articulo(codigo_trazabilidad)
-            proyecto = murano.ops.get_proyecto(pv)
-            precio = murano.ops.get_precio_coste(articulo)
-            peso_neto = articulo.peso_neto
-            coste = precio * peso_neto
-            # Asumimos la fecha del parte como fecha de fabricación de todos
-            # los artículos. Se toma la fecha lógica del parte (si antes de las
-            # 6:00, es del día anterior) no la fecha natural. Es con intención
-            # de que cuadre con las producciones y demás, que también toman
-            # las 6:00 como pivote de cambio de día.
-            # Si por lo que sea no tiene parte, se devuelve la fecha y hora
-            # de creación del artículo, que no tiene por qué coincidir si
-            # se ha dado de alta más tarde por problemas en la línea.
-            try:
-                fhora_fabricacion = articulo.parteDeProduccion.fechahorainicio
-            except AttributeError:
-                fhora_fabricacion = articulo.fechahora
-            fecha_fabricacion = datetime.date.fromordinal(
-                fhora_fabricacion.toordinal())
-            if fhora_fabricacion.hour < 6:
-                fecha_fabricacion -= datetime.timedelta(days=1)
-            valoracion.append((almacen, familia, proyecto, codigo_producto,
-                               descripcion, codigo_trazabilidad, calidad,
-                               peso_neto, fecha_fabricacion, pale, precio,
-                               coste))
+            fila_valoracion = build_fila_valoracion(fila, agrupacion)
+            valoracion.append(fila_valoracion)
+        for almacen in agrupacion:
+            for familia in agrupacion[almacen]:
+                for calidad in agrupacion[almacen][familia]:
+                    for fecha in agrupacion[almacen][familia][calidad]:
+                        for proyecto in agrupacion[almacen][familia][calidad][fecha]:
+                            kg = agrupacion[almacen][familia][calidad][fecha]['kg']
+                            valor_total = agrupacion[almacen][familia][calidad][fecha]['valor']
+                            try:
+                                precio_medio = valor_total / kg
+                            except ZeroDivisionError:
+                                precio_medio = 0.0
+                            agrupado.append(
+                                    (almacen, familia, calidad, fecha,
+                                     proyecto, kg, precio_medio, valor_total))
+
+
+def build_fila_valoracion(fila, agrupacion):
+    """
+    Consulta de Murano y de ginn los datos no encontrados en la fila del
+    datalib de desglose recibido.
+    """
+    try:
+        almacen = fila[u'Almacén']
+    except KeyError:  # El orden siempre es el mismo...
+        almacen = fila[fila.keys()[0]]
+    try:
+        familia = fila[u'Familia']
+    except KeyError:  # ... hasta que deje de serlo
+        familia = fila[fila.keys()[1]]
+    try:
+        codigo_producto = fila[u'Código producto']
+    except KeyError:
+        codigo_producto = fila[fila.keys()[2]]
+    try:
+        descripcion = fila[u'Descripción']
+    except KeyError:
+        descripcion = fila[fila.keys()[3]]
+    try:
+        codigo_trazabilidad = fila[u'Código trazabilidad']
+    except KeyError:
+        codigo_trazabilidad = fila[fila.keys()[4]]
+    try:
+        calidad = fila[u'Calidad']
+    except KeyError:
+        calidad = fila[fila.keys()[6]]
+    try:
+        pale = fila[u'Palé']
+    except KeyError:
+        pale = fila[fila.keys()[12]]
+    pv = murano.ops.get_producto_ginn(codigo_producto)
+    articulo = pclases.Articulo.get_articulo(codigo_trazabilidad)
+    proyecto = murano.ops.get_proyecto(pv)
+    precio = murano.ops.get_precio_coste(articulo)
+    # Malo sería que cambie el peso entre que genero el datalib de
+    # desglose y monto este. Así me evito el error float*Decimal:
+    peso_neto = articulo.peso_neto
+    coste = precio * peso_neto
+    # Asumimos la fecha del parte como fecha de fabricación de todos
+    # los artículos. Se toma la fecha lógica del parte (si antes de las
+    # 6:00, es del día anterior) no la fecha natural. Es con intención
+    # de que cuadre con las producciones y demás, que también toman
+    # las 6:00 como pivote de cambio de día.
+    # Si por lo que sea no tiene parte, se devuelve la fecha y hora
+    # de creación del artículo, que no tiene por qué coincidir si
+    # se ha dado de alta más tarde por problemas en la línea.
+    try:
+        fhora_fabricacion = articulo.parteDeProduccion.fechahorainicio
+    except AttributeError:
+        fhora_fabricacion = articulo.fechahora
+    fecha_fabricacion = datetime.date.fromordinal(
+        fhora_fabricacion.toordinal())
+    if fhora_fabricacion.hour < 6:
+        fecha_fabricacion -= datetime.timedelta(days=1)
+    res = (almacen, familia, proyecto, codigo_producto,
+           descripcion, codigo_trazabilidad, calidad,
+           peso_neto, fecha_fabricacion, pale, precio,
+           coste)
+    # Antes de devolver la fila, actualizo las agrupaciones
+    if almacen not in agrupacion:
+        agrupacion[almacen] = {}
+    else:
+        if familia not in agrupacion[almacen]:
+            agrupacion[almacen][familia] = {}
+        else:
+            if calidad not in agrupacion[almacen][familia]:
+                agrupacion[almacen][familia][calidad] = {}
+            else:
+                anno = fecha_fabricacion.year
+                anno_corriente = datetime.date.today().year
+                # Se agrupa el año completo si es anterior a dos años atrás.
+                if anno <= anno_corriente-2:
+                    mes = fecha_fabricacion.month
+                    fecha = "{}/{}".format(anno, mes)
+                else:
+                    fecha = "{}".format(anno)
+                if fecha not in agrupacion[almacen][familia][calidad]:
+                    agrupacion[almacen][familia][calidad][fecha] = {}
+                else:
+                    if proyecto not in agrupacion[almacen][familia][calidad][fecha][proyecto]:
+                        agrupacion[almacen][familia][calidad][fecha][proyecto] = {'kg': 0.0, 'valor': 0.0}
+                    else:
+                        agrupacion[almacen][familia][calidad][fecha][proyecto]['kg'] += peso_neto
+                        agrupacion[almacen][familia][calidad][fecha][proyecto]['valor'] += peso_neto * precio
+    return res
 
 
 def main():
@@ -1806,6 +1865,7 @@ def main():
     desglose = tablib.Dataset(title="Desglose")
     resumen = tablib.Dataset(title="Resumen")
     valoracion = tablib.Dataset(title="Valoración")
+    agrupado = tablib.Dataset(title="Agrupado")
     desviaciones_a = tablib.Dataset(title="A")
     desviaciones_b = tablib.Dataset(title="B")
     desviaciones_c = tablib.Dataset(title="C")
@@ -1851,8 +1911,10 @@ def main():
                        'ℹ']
     valoracion.headers = ['Almacén', 'Familia', 'Proyecto', 'Código producto',
                           'Descripción', 'Código trazabilidad', 'Calidad',
-                          'Peso neto', 'Fecha de fabricación', 'Palé',
+                          'Peso neto', 'Fecha fabricación', 'Palé',
                           'Precio valoración', 'Coste fabricación']
+    agrupado.headers = ['Almacén', 'Familia', 'Calidad', 'Fecha fabricación',
+                        'Proyecto', '∑ peso neto', 'Precio kg', 'Valoración']
     for producto in tqdm(productos, desc="Productos"):
         res = cuentalavieja(producto, data_inventario, data_pendiente,
                             fini, ffin, report,
@@ -1871,7 +1933,7 @@ def main():
         do_resumen(producto, resumen,
                    desviaciones_a, desviaciones_b, desviaciones_c,
                    args.debug)
-    do_valoracion(valoracion, desglose, args.debug)
+    do_valoracion(valoracion, agrupado, desglose, args.debug)
     fallos = [p for p in results if not p[1]]
     report.write("Encontradas {} desviaciones: {}".format(
         len(fallos), "; ".join(['PV{}'.format(p[0].id) for p in fallos])))
