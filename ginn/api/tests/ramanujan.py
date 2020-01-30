@@ -1695,7 +1695,7 @@ def do_valoracion(valoracion, agrupado, desglose, dev=False):
                         for proyecto in agrupacion[almacen][familia][calidad][fecha]:
                             kg = agrupacion[almacen][familia][calidad][fecha][proyecto]['kg']
                             valor_total = agrupacion[almacen][familia][calidad][fecha][proyecto]['valor']
-                            bultos = = agrupacion[almacen][familia][calidad][fecha][proyecto]['bultos']
+                            bultos = agrupacion[almacen][familia][calidad][fecha][proyecto]['bultos']
                             try:
                                 precio_medio = valor_total / kg
                             except ZeroDivisionError:
