@@ -1704,10 +1704,6 @@ def do_valoracion(valoracion, desglose, dev=False):
             except KeyError:
                 calidad = fila[fila.keys()[6]]
             try:
-                peso_neto = fila[u'Peso neto']
-            except KeyError:
-                peso_neto = fila[fila.keys()[8]]
-            try:
                 pale = fila[u'Palé']
             except KeyError:
                 pale = fila[fila.keys()[12]]
@@ -1715,6 +1711,7 @@ def do_valoracion(valoracion, desglose, dev=False):
             articulo = pclases.Articulo.get_articulo(codigo_trazabilidad)
             proyecto = murano.ops.get_proyecto(pv)
             precio = murano.ops.get_precio_coste(articulo)
+            peso_neto = articulo.peso_neto
             coste = precio * peso_neto
             # Asumimos la fecha del parte como fecha de fabricación de todos
             # los artículos. Se toma la fecha lógica del parte (si antes de las
