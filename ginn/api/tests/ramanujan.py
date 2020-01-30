@@ -1688,11 +1688,11 @@ def do_valoracion(valoracion, agrupado, desglose, dev=False):
                          total=len(desglose)):
             fila_valoracion = build_fila_valoracion(fila, agrupacion)
             valoracion.append(fila_valoracion)
-        for almacen in agrupacion:
-            for familia in agrupacion[almacen]:
-                for calidad in agrupacion[almacen][familia]:
-                    for fecha in agrupacion[almacen][familia][calidad]:
-                        for proyecto in agrupacion[almacen][familia][calidad][fecha]:
+        for almacen in sorted(agrupacion):
+            for familia in sorted(agrupacion[almacen]):
+                for calidad in sorted(agrupacion[almacen][familia]):
+                    for fecha in sorted(agrupacion[almacen][familia][calidad]):
+                        for proyecto in sorted(agrupacion[almacen][familia][calidad][fecha]):
                             kg = agrupacion[almacen][familia][calidad][fecha][proyecto]['kg']
                             valor_total = agrupacion[almacen][familia][calidad][fecha][proyecto]['valor']
                             bultos = agrupacion[almacen][familia][calidad][fecha][proyecto]['bultos']
