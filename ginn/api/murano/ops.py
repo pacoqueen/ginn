@@ -2110,7 +2110,7 @@ def get_precio_coste(articulo):
         # artículo.
         articulo = pclases.Articulo.get_articulo(articulo)
     c = Connection()
-    sql = """SELECT CodigoAlmacen
+    sql = """SELECT GEO_CosteUnidadEspecifica
                FROM {}.dbo.ArticulosSeries
               WHERE CodigoEmpresa = {}
                 AND UnidadesSerie > 0
