@@ -1779,7 +1779,7 @@ def build_fila_valoracion(fila, agrupacion):
     # Se agrupa el año completo si es anterior a dos años atrás.
     if anno > anno_corriente-2:
         mes = fecha_fabricacion.month
-        fecha = "{}/{}".format(anno, mes)
+        fecha = "{}/{:02d}".format(anno, mes)
     else:
         fecha = "{}".format(anno)
     if fecha not in agrupacion[almacen][familia][calidad]:
