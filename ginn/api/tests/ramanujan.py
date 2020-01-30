@@ -1695,13 +1695,15 @@ def do_valoracion(valoracion, agrupado, desglose, dev=False):
                         for proyecto in agrupacion[almacen][familia][calidad][fecha]:
                             kg = agrupacion[almacen][familia][calidad][fecha][proyecto]['kg']
                             valor_total = agrupacion[almacen][familia][calidad][fecha][proyecto]['valor']
+                            bultos = = agrupacion[almacen][familia][calidad][fecha][proyecto]['bultos']
                             try:
                                 precio_medio = valor_total / kg
                             except ZeroDivisionError:
                                 precio_medio = 0.0
                             agrupado.append(
                                     (almacen, familia, calidad, fecha,
-                                     proyecto, kg, precio_medio, valor_total))
+                                     proyecto, bultos, kg, precio_medio,
+                                     valor_total))
 
 
 def build_fila_valoracion(fila, agrupacion):
@@ -1768,29 +1770,27 @@ def build_fila_valoracion(fila, agrupacion):
     # Antes de devolver la fila, actualizo las agrupaciones
     if almacen not in agrupacion:
         agrupacion[almacen] = {}
+    if familia not in agrupacion[almacen]:
+        agrupacion[almacen][familia] = {}
+    if calidad not in agrupacion[almacen][familia]:
+        agrupacion[almacen][familia][calidad] = {}
+    anno = fecha_fabricacion.year
+    anno_corriente = datetime.date.today().year
+    # Se agrupa el año completo si es anterior a dos años atrás.
+    if anno > anno_corriente-2:
+        mes = fecha_fabricacion.month
+        fecha = "{}/{}".format(anno, mes)
     else:
-        if familia not in agrupacion[almacen]:
-            agrupacion[almacen][familia] = {}
-        else:
-            if calidad not in agrupacion[almacen][familia]:
-                agrupacion[almacen][familia][calidad] = {}
-            else:
-                anno = fecha_fabricacion.year
-                anno_corriente = datetime.date.today().year
-                # Se agrupa el año completo si es anterior a dos años atrás.
-                if anno <= anno_corriente-2:
-                    mes = fecha_fabricacion.month
-                    fecha = "{}/{}".format(anno, mes)
-                else:
-                    fecha = "{}".format(anno)
-                if fecha not in agrupacion[almacen][familia][calidad]:
-                    agrupacion[almacen][familia][calidad][fecha] = {}
-                else:
-                    if proyecto not in agrupacion[almacen][familia][calidad][fecha]:
-                        agrupacion[almacen][familia][calidad][fecha][proyecto] = {'kg': 0.0, 'valor': 0.0}
-                    else:
-                        agrupacion[almacen][familia][calidad][fecha][proyecto]['kg'] += peso_neto
-                        agrupacion[almacen][familia][calidad][fecha][proyecto]['valor'] += peso_neto * precio
+        fecha = "{}".format(anno)
+    if fecha not in agrupacion[almacen][familia][calidad]:
+        agrupacion[almacen][familia][calidad][fecha] = {}
+    if proyecto not in agrupacion[almacen][familia][calidad][fecha]:
+        agrupacion[almacen][familia][calidad][fecha][proyecto] = {'kg': 0.0,
+                                                                  'valor': 0.0}
+    agrupacion[almacen][familia][calidad][fecha][proyecto]['bultos'] += 1
+    agrupacion[almacen][familia][calidad][fecha][proyecto]['kg'] += peso_neto
+    agrupacion[almacen][familia][calidad][fecha][proyecto]['valor'] += (
+        peso_neto * precio)
     return res
 
 
@@ -1914,7 +1914,8 @@ def main():
                           'Peso neto', 'Fecha fabricación', 'Palé',
                           'Precio valoración', 'Coste fabricación']
     agrupado.headers = ['Almacén', 'Familia', 'Calidad', 'Fecha fabricación',
-                        'Proyecto', '∑ peso neto', 'Precio kg', 'Valoración']
+                        'Proyecto', 'Bultos', '∑ peso neto', 'Precio kg',
+                        'Valoración']
     for producto in tqdm(productos, desc="Productos"):
         res = cuentalavieja(producto, data_inventario, data_pendiente,
                             fini, ffin, report,
