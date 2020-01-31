@@ -2133,7 +2133,7 @@ def get_precio_coste(articulo):
                   cod=articulo.codigo)
     articulos_serie = conn.run_sql(sql)
     try:
-        precio_coste = articulos_serie[-1]['GEO_CosteUnidadEspecifica']
+        precio_coste = articulos_serie[-1]['Precio']
     except IndexError:
         precio_coste = None
     if not precio_coste:
