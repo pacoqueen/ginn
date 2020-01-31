@@ -1547,16 +1547,36 @@ def do_inventario(producto, totales, desglose, dev=False):
                          datetime.datetime.now(), 'P-000'])
 
 
-def determine_linea(producto, dev=False):
+def determine_linea(familia):
+    """
+    A partir de una familia, devuelve una cadena de texto con la línea de
+    producción asociada. Se usa para un nivel más (sí, otro más) de agrupación.
+    """
+    # HARCODED: Se decició en una reunión.
+    fibra = 'Fibra'
+    geotextiles = 'Geotextiles'
+    geocem = 'Geocem'
+    comercializado = 'Comercializado'
+    lineas = {'VTA FIB': fibra,
+              'VTA RESFIB': fibra,
+              'VTA CEMFIB': fibra,
+              'VTA GTX': geotextiles,
+              'VTA RESGTX': geotextiles,
+              'VTA GEOCEM': geocem,
+              'VTA COMER': comercializado,
+              'EMBA': comercializado}
+    try:
+        res = lineas[familia]
+    except KeyError:
+        res = "N/A"
+    return res
+
+
+def determine_linea_from_producto(producto, dev=False):
     """
     Recibe un producto de ginn y a partir de su familia en Murano devuelve
     la línea de producción a la que pertenece.
     """
-    # HARCODED
-    lineas = {'Fibra': ('VTA FIB', 'VTA RESFIB', 'VTA CEMFIB'),
-              'Geotextiles': ('VTA GTX', 'VTA RESGTX'),
-              'Geocem': ('VTA GEOCEM', ),
-              'Comercializado': ('VTA COMER', 'EMBA')}
     if dev:
         linea = "Test"
     else:
@@ -1567,9 +1587,7 @@ def determine_linea(producto, dev=False):
             # pvmurano es None. El producto de ginn no existe en Murano.
             linea = "N/A"
         else:
-            for linea in lineas:
-                if familia in lineas[linea]:
-                    break
+            linea = determine_linea(familia)
     return linea
 
 
@@ -1579,7 +1597,7 @@ def do_resumen(producto, resumen,
     """
     Monta la pestaña resumen por línea de producción y calidad.
     """
-    linea = determine_linea(producto, dev)
+    linea = determine_linea_from_producto(producto, dev)
     for qlty, desviaciones in (("A", desviaciones_a),
                                ("B", desviaciones_b),
                                ("C", desviaciones_c)):
@@ -1770,10 +1788,11 @@ def build_fila_valoracion(fila, agrupacion):
     # Antes de devolver la fila, actualizo las agrupaciones
     if almacen not in agrupacion:
         agrupacion[almacen] = {}
-    if familia not in agrupacion[almacen]:
-        agrupacion[almacen][familia] = {}
-    if calidad not in agrupacion[almacen][familia]:
-        agrupacion[almacen][familia][calidad] = {}
+    linea = determine_linea(familia)
+    if linea not in agrupacion[almacen]:
+        agrupacion[almacen][linea] = {}
+    if calidad not in agrupacion[almacen][linea]:
+        agrupacion[almacen][linea][calidad] = {}
     anno = fecha_fabricacion.year
     anno_corriente = datetime.date.today().year
     # Se agrupa el año completo si es anterior a dos años atrás.
@@ -1782,15 +1801,15 @@ def build_fila_valoracion(fila, agrupacion):
         fecha = "{}/{:02d}".format(anno, mes)
     else:
         fecha = "{}".format(anno)
-    if fecha not in agrupacion[almacen][familia][calidad]:
-        agrupacion[almacen][familia][calidad][fecha] = {}
-    if proyecto not in agrupacion[almacen][familia][calidad][fecha]:
-        agrupacion[almacen][familia][calidad][fecha][proyecto] = {'kg': 0.0,
-                                                                  'valor': 0.0,
-                                                                  'bultos': 0}
-    agrupacion[almacen][familia][calidad][fecha][proyecto]['bultos'] += 1
-    agrupacion[almacen][familia][calidad][fecha][proyecto]['kg'] += peso_neto
-    agrupacion[almacen][familia][calidad][fecha][proyecto]['valor'] += (
+    if fecha not in agrupacion[almacen][linea][calidad]:
+        agrupacion[almacen][linea][calidad][fecha] = {}
+    if proyecto not in agrupacion[almacen][linea][calidad][fecha]:
+        agrupacion[almacen][linea][calidad][fecha][proyecto] = {'kg': 0.0,
+                                                                'valor': 0.0,
+                                                                'bultos': 0}
+    agrupacion[almacen][linea][calidad][fecha][proyecto]['bultos'] += 1
+    agrupacion[almacen][linea][calidad][fecha][proyecto]['kg'] += peso_neto
+    agrupacion[almacen][linea][calidad][fecha][proyecto]['valor'] += (
         peso_neto * precio)
     return res
 
