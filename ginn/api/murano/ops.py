@@ -2127,9 +2127,10 @@ def get_precio_coste(articulo):
                     = {DB}.dbo.MovimientoStock.MovPosicion
               WHERE {DB}.dbo.MovimientoStock.CodigoEmpresa = {CE}
                 AND {DB}.dbo.MovimientoArticuloSerie.NumeroSerieLc = '{cod}'
-              ORDER BY {DB}.dbo.Fecha;""".format(DB=conn.get_database(),
-                                                 CE=CODEMPRESA,
-                                                 cod=articulo.codigo)
+              ORDER BY {DB}.dbo.MovimientoStock.Fecha;""".format(
+                  DB=conn.get_database(),
+                  CE=CODEMPRESA,
+                  cod=articulo.codigo)
     articulos_serie = conn.run_sql(sql)
     try:
         precio_coste = articulos_serie[-1]['GEO_CosteUnidadEspecifica']
