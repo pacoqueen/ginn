@@ -2109,15 +2109,28 @@ def get_precio_coste(articulo):
         # Por error o por pruebas he recibido directamente el código del
         # artículo.
         articulo = pclases.Articulo.get_articulo(articulo)
-    c = Connection()
-    sql = """SELECT GEO_CosteUnidadEspecifica
-               FROM {}.dbo.ArticulosSeries
-              WHERE CodigoEmpresa = {}
-                AND UnidadesSerie > 0
-                AND NumeroSerieLc = '{}'
-           ORDER BY FechaInicial;""".format(c.get_database(), CODEMPRESA,
-                                            articulo.codigo)
-    articulos_serie = c.run_sql(sql)
+    conn = Connection()
+    # Esto sería si en Sage lo hubiesen hecho bien. Pero la realidad es otra.
+    # sql = """SELECT GEO_CosteUnidadEspecifica
+    #            FROM {}.dbo.ArticulosSeries
+    #           WHERE CodigoEmpresa = {}
+    #             AND UnidadesSerie > 0
+    #             AND NumeroSerieLc = '{}'
+    #        ORDER BY FechaInicial;""".format(conn.get_database(), CODEMPRESA,
+    #                                         articulo.codigo)
+    # Solo se han acordado de actualizar los movimientos de stock. Así que
+    # tenemos que dar un rodeo para conseguir el valor.
+    sql = """SELECT Precio
+               FROM {DB}.dbo.MovimientoArticuloSerie
+               JOIN {DB}.dbo.MovimientoStock
+                 ON {DB}.dbo.MovimientoArticuloSerie.MovPosicionOrigen
+                    = {DB}.dbo.MovimientoStock.MovPosicion
+              WHERE {DB}.dbo.MovimientoStock.CodigoEmpresa = {CE}
+                AND {DB}.dbo.MovimientoArticuloSerie.NumeroSerieLc = '{cod}'
+              ORDER BY {DB}.dbo.Fecha;""".format(DB=conn.get_database(),
+                                                 CE=CODEMPRESA,
+                                                 cod=articulo.codigo)
+    articulos_serie = conn.run_sql(sql)
     try:
         precio_coste = articulos_serie[-1]['GEO_CosteUnidadEspecifica']
     except IndexError:
