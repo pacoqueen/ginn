@@ -1764,7 +1764,10 @@ def build_fila_valoracion(fila, agrupacion):
     # Malo sería que cambie el peso entre que genero el datalib de
     # desglose y monto este. Así me evito el error float*Decimal:
     peso_neto = articulo.peso_neto
-    coste = precio * peso_neto
+    try:
+        coste = precio * peso_neto
+    except TypeError:   # Viene como Decimal de SQL
+        coste = float(precio) * peso_neto
     # Asumimos la fecha del parte como fecha de fabricación de todos
     # los artículos. Se toma la fecha lógica del parte (si antes de las
     # 6:00, es del día anterior) no la fecha natural. Es con intención
