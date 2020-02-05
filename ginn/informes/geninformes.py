@@ -9541,6 +9541,7 @@ def existencias_fibra_por_lote(fecha=None, external_api=None):
         balas = []
         for codigo in codigos:
             vpro.set_valor(i/tot, "[1/5] Cruzando datos balas (API)")
+            i+=1
             balas.append(pclases.Articulo.get_articulo(codigo['NumeroSerieLC']))
         codigos = external_api.run_sql(
                 sql.format(external_api.get_database(),
@@ -9551,6 +9552,7 @@ def existencias_fibra_por_lote(fecha=None, external_api=None):
         bigbags = []
         for codigo in codigos:
             vpro.set_valor(i/tot, "[2/5] Cruzando datos bigbags (API)")
+            i+=1
             bigbags.append(pclases.Articulo.get_articulo(codigo['NumeroSerieLC']))
         tot = len(balas) + len(bigbags)
     else:
