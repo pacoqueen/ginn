@@ -9535,13 +9535,13 @@ def existencias_fibra_por_lote(fecha=None, external_api=None):
                 sql.format(external_api.get_database(),
                            external_api.get_codempresa(),
                            'BALA'))
-        balas = [pclases.Articulo.get_articulo(codigo['numeroSerieLC'])
+        balas = [pclases.Articulo.get_articulo(codigo['NumeroSerieLC'])
                  for codigo in codigos]
         codigos = external_api.run_sql(
                 sql.format(external_api.get_database(),
                            external_api.get_codempresa(),
                            'BIGBAG'))
-        bigbags = [pclases.Articulo.get_articulo(codigo['numeroSerieLC'])
+        bigbags = [pclases.Articulo.get_articulo(codigo['NumeroSerieLC'])
                    for codigo in codigos]
         tot = len(balas) + len(bigbags)
     else:
@@ -9562,7 +9562,12 @@ def existencias_fibra_por_lote(fecha=None, external_api=None):
     for bala in balas:
         vpro.set_valor(i/tot, 'Contando fibra por lote...')
         i += 1
-        producto = bala.articulo.productoVenta
+        try:
+            producto = bala.articulo.productoVenta
+        except AttributeError:
+            articulo = bala
+            bala = articulo.bala
+            producto = articulo.productoVenta
         if producto not in productos:
             productos[producto] = {'bultos': 0, 'kilos': 0.0, 'lotes': {},
                                    'bultosb': 0, 'kilosb': 0.0}
@@ -9582,7 +9587,12 @@ def existencias_fibra_por_lote(fecha=None, external_api=None):
     for bigbag in bigbags:
         vpro.set_valor(i/tot, 'Contando fibra de cemento por lote...')
         i += 1
-        producto = bigbag.articulo.productoVenta
+        try:
+            producto = bigbag.articulo.productoVenta
+        except AttributeError:
+            articulo = bigbag
+            bigbag = articulo.bigbag
+            producto = articulo.productoVenta
         if producto not in productos:
             productos[producto] = {'bultos': 0, 'kilos': 0, 'lotes': {},
                                    'bultosb': 0, 'kilosb': 0.0}
