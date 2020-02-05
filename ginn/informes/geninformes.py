@@ -9665,8 +9665,8 @@ def existencias_fibra_por_lote(fecha=None, external_api=None):
             corte = producto.camposEspecificosBala.corte
             color = producto.camposEspecificosBala.color
             antiuv = producto.camposEspecificosBala.antiuv
-        datos.append((producto and "(PV{}) {}".format(producto.descripcion,
-                                                      producto.id)
+        datos.append((producto and "(PV{}) {}".format(producto.id,
+                                                      producto.descripcion)
                         or "PRODUCTO DESCONOCIDO (?)",
             "",
             "Material: %s - Dtex: %s - Corte: %s - Color: %s - Antiuv: %s" % (
