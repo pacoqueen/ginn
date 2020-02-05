@@ -9536,14 +9536,22 @@ def existencias_fibra_por_lote(fecha=None, external_api=None):
                 sql.format(external_api.get_database(),
                            external_api.get_codempresa(),
                            'BALA'))
-        balas = [pclases.Articulo.get_articulo(codigo['NumeroSerieLC'])
-                 for codigo in codigos]
+        i = 0
+        tot = len(codigos)
+        balas = []
+        for codigo in codigos:
+            vpro.set_valor(i/tot, "[1/5] Cruzando datos balas (API)")
+            balas.append(pclases.Articulo.get_articulo(codigo['NumeroSerieLC']))
         codigos = external_api.run_sql(
                 sql.format(external_api.get_database(),
                            external_api.get_codempresa(),
                            'BIGBAG'))
-        bigbags = [pclases.Articulo.get_articulo(codigo['NumeroSerieLC'])
-                   for codigo in codigos]
+        i = 0
+        tot = len(codigos)
+        bigbags = []
+        for codigo in codigos:
+            vpro.set_valor(i/tot, "[2/5] Cruzando datos bigbags (API)")
+            bigbags.append(pclases.Articulo.get_articulo(codigo['NumeroSerieLC']))
         tot = len(balas) + len(bigbags)
     else:
         balas = pclases.Bala.select("""
@@ -9561,7 +9569,7 @@ def existencias_fibra_por_lote(fecha=None, external_api=None):
     i = 0.0
     productos = {}
     for bala in balas:
-        vpro.set_valor(i/tot, 'Contando fibra por lote...')
+        vpro.set_valor(i/tot, '[3/5] Contando fibra por lote...')
         i += 1
         try:
             producto = bala.articulo.productoVenta
@@ -9586,7 +9594,7 @@ def existencias_fibra_por_lote(fecha=None, external_api=None):
             productos[producto]['bultosb'] += 1
             productos[producto]['kilosb'] += bala.pesobala
     for bigbag in bigbags:
-        vpro.set_valor(i/tot, 'Contando fibra de cemento por lote...')
+        vpro.set_valor(i/tot, '[4/5] Contando fibra de cemento por lote...')
         i += 1
         try:
             producto = bigbag.articulo.productoVenta
@@ -9639,7 +9647,7 @@ def existencias_fibra_por_lote(fecha=None, external_api=None):
     tot = len(productos_keys)
     i = 0.0
     for producto in productos_keys:
-        vpro.set_valor(i/tot, 'Analizando lotes...')
+        vpro.set_valor(i/tot, '[5/5] Analizando lotes...')
         i += 1
         if producto is None or producto.camposEspecificosBalaID is None:
             material = "?"
