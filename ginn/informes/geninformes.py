@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2017 Francisco José Rodríguez Bogado,                    #
+# Copyright (C) 2005-2020 Francisco José Rodríguez Bogado,                    #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -1500,7 +1500,7 @@ def existencias_productos(informe, fecha, hasta=None, almacen=None,
                                   escribe("%s" % utils.float2str(p.minimo, 1)))
                 # En rojo si está por debajo del mínimo
                 #stock = p.get_stock(hasta, almacen = almacen)
-                stock = p.get_stock_A(hasta, almacen = almacen) # Nada de
+                stock = p.get_stock_A(hasta, almacen=almacen) # Nada de
                     # rollos defectuosos (remember: rollos X, largo inferior,
                     # no los quiero).
                 if stock != None and stock < p.minimo:
@@ -9512,27 +9512,46 @@ def listado_rollos(datos, desc_producto, fecha = None):
              ]
     return imprimir2(archivo, titulo, campos, datos, fecha, (1, 2, 3, 4, 5))
 
-def existencias_fibra_por_lote(fecha = None):
+
+def existencias_fibra_por_lote(fecha=None, external_api=None):
     """
     Imprime las existencias de fibra en almacén desglosadas por lote.
     A y B. Nada de C aquí.
+    fecha es una cadena de texto con la fecha de informe.
+    external_api es un objeto conexión que representa y contiene los métodos
+    para abrir una conexión y lanzar una consulta SQL. De momento solo
+    compatible con Murano.
     """
     from formularios.ventana_progreso import VentanaProgreso
     vpro = VentanaProgreso()
     vpro.mostrar()
-    balas = pclases.Bala.select("""
-        bala.id IN (SELECT articulo.bala_id
-                    FROM articulo
-                    WHERE articulo.albaran_salida_id IS NULL
-                        AND articulo.bala_id IS NOT NULL)
-                        AND bala.partida_carga_id IS NULL """)
-    bigbags = pclases.Bigbag.select("""
-        bigbag.id IN (SELECT articulo.bigbag_id
-                      FROM articulo
-                      WHERE articulo.albaran_salida_id IS NULL
-                      AND articulo.bigbag_id IS NOT NULL) """)
+    if external_api:
+        sql = """SELECT NumeroSerieLC
+                   FROM [{}].dbo.ArticulosSeries
+                  WHERE CodigoEmpresa = {}
+                    AND UnidadesSerie > 0
+                    AND UnidadMedida1_='{}';"""
+        codigos = c.run_sql(sql.format(c.get_database(), c.get_codempresa(),
+                                       'BALA'))
+        balas = [pclases.Articulo.get_articulo(codigo) for codigo in codigos]
+        codigos = c.run_sql(sql.format(c.get_database(), c.get_codempresa(),
+                                       'BIGBAG'))
+        bigbags = [pclases.Articulo.get_articulo(codigo) for codigo in codigos]
+        tot = len(balas) + len(bigbags)
+    else:
+        balas = pclases.Bala.select("""
+            bala.id IN (SELECT articulo.bala_id
+                        FROM articulo
+                        WHERE articulo.albaran_salida_id IS NULL
+                            AND articulo.bala_id IS NOT NULL)
+                            AND bala.partida_carga_id IS NULL """)
+        bigbags = pclases.Bigbag.select("""
+            bigbag.id IN (SELECT articulo.bigbag_id
+                          FROM articulo
+                          WHERE articulo.albaran_salida_id IS NULL
+                          AND articulo.bigbag_id IS NOT NULL) """)
+        tot = balas.count() + bigbags.count()
     i = 0.0
-    tot = balas.count() + bigbags.count()
     productos = {}
     for bala in balas:
         vpro.set_valor(i/tot, 'Contando fibra por lote...')
@@ -9574,12 +9593,13 @@ def existencias_fibra_por_lote(fecha = None):
             productos[producto]['lotes'][loteCem]['kilosb']+=bigbag.pesobigbag
             productos[producto]['bultosb'] += 1
             productos[producto]['kilosb'] += bigbag.pesobigbag
+
     def cmp_prod(p1, p2):
-        if p1 == None:
+        if p1 is None:
             d1 = None
         else:
             d1 = p1.descripcion.upper()
-        if p2 == None:
+        if p2 is None:
             d2 = None
         else:
             d2 = p2.descripcion.upper()
@@ -9604,7 +9624,7 @@ def existencias_fibra_por_lote(fecha = None):
     for producto in productos_keys:
         vpro.set_valor(i/tot, 'Analizando lotes...')
         i += 1
-        if producto == None or producto.camposEspecificosBalaID == None:
+        if producto is None or producto.camposEspecificosBalaID is None:
             material = "?"
             dtex = "?"
             corte = "?"

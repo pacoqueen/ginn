@@ -183,16 +183,16 @@ def parse_porcentaje(strfloat, fraccion = False):
         res /= 100.0
     return res
 
-def dialogo(texto = '',
-            titulo = '',
-            padre = None,
-            icono = None,
-            cancelar = False,
-            defecto = None,
-            tiempo = None,
-            recordar = False,
-            res_recordar = [False],
-            bloq_temp = []):
+def dialogo(texto='',
+            titulo='',
+            padre=None,
+            icono=None,
+            cancelar=False,
+            defecto=None,
+            tiempo=None,
+            recordar=False,
+            res_recordar=[False],
+            bloq_temp=[]):
     """
     Muestra un diálogo SI/NO.
     Devuelve True si se pulsó SI y False si no.

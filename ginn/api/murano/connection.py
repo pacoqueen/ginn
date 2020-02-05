@@ -102,6 +102,13 @@ class Connection(object):
         """
         return self.__database
 
+    def get_codempresa(self):
+        """
+        Devuelve el código de empresa sobre el que estamos trabajando en
+        Murano.
+        """
+        return CODEMPRESA
+
     def disconnect(self):
         """
         Desconecta la sesión actual con MS-SQLServer.
