@@ -67,7 +67,7 @@ class ConsultaExistenciasBalas(Ventana):
                                          utils.str_fecha(time.localtime()),
                                          time.strftime("%H:%M")),
                     external_api=conexion))
-        except ZeroDivisionError:
+        except:
             # Si tengo conexión a Murano, me olvido de los informes obsoletos.
             # Si no, recurro a ellos. Nunca se sabe si volveremos al viejo ginn
             if utils.dialogo(titulo="¿EXPORTAR A CSV?",

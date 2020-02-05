@@ -9531,11 +9531,13 @@ def existencias_fibra_por_lote(fecha=None, external_api=None):
                   WHERE CodigoEmpresa = {}
                     AND UnidadesSerie > 0
                     AND UnidadMedida1_='{}';"""
-        codigos = c.run_sql(sql.format(c.get_database(), c.get_codempresa(),
-                                       'BALA'))
+        codigos = external_api.run_sql(sql.format(c.get_database(),
+                                                  c.get_codempresa(),
+                                                  'BALA'))
         balas = [pclases.Articulo.get_articulo(codigo) for codigo in codigos]
-        codigos = c.run_sql(sql.format(c.get_database(), c.get_codempresa(),
-                                       'BIGBAG'))
+        codigos = external_api.run_sql(sql.format(c.get_database(),
+                                                  c.get_codempresa(),
+                                                  'BIGBAG'))
         bigbags = [pclases.Articulo.get_articulo(codigo) for codigo in codigos]
         tot = len(balas) + len(bigbags)
     else:
