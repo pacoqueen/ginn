@@ -9535,12 +9535,14 @@ def existencias_fibra_por_lote(fecha=None, external_api=None):
                 sql.format(external_api.get_database(),
                            external_api.get_codempresa(),
                            'BALA'))
-        balas = [pclases.Articulo.get_articulo(codigo) for codigo in codigos]
+        balas = [pclases.Articulo.get_articulo(codigo['numeroSerieLC'])
+                 for codigo in codigos]
         codigos = external_api.run_sql(
                 sql.format(external_api.get_database(),
                            external_api.get_codempresa(),
                            'BIGBAG'))
-        bigbags = [pclases.Articulo.get_articulo(codigo) for codigo in codigos]
+        bigbags = [pclases.Articulo.get_articulo(codigo['numeroSerieLC'])
+                   for codigo in codigos]
         tot = len(balas) + len(bigbags)
     else:
         balas = pclases.Bala.select("""
