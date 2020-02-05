@@ -9536,23 +9536,23 @@ def existencias_fibra_por_lote(fecha=None, external_api=None):
                 sql.format(external_api.get_database(),
                            external_api.get_codempresa(),
                            'BALA'))
-        i = 0
+        i = 0.0
         tot = len(codigos)
         balas = []
         for codigo in codigos:
             vpro.set_valor(i/tot, "[1/5] Cruzando datos balas (API)")
-            i+=1
+            i += 1
             balas.append(pclases.Articulo.get_articulo(codigo['NumeroSerieLC']))
         codigos = external_api.run_sql(
                 sql.format(external_api.get_database(),
                            external_api.get_codempresa(),
                            'BIGBAG'))
-        i = 0
+        i = 0.0
         tot = len(codigos)
         bigbags = []
         for codigo in codigos:
             vpro.set_valor(i/tot, "[2/5] Cruzando datos bigbags (API)")
-            i+=1
+            i += 1
             bigbags.append(pclases.Articulo.get_articulo(codigo['NumeroSerieLC']))
         tot = len(balas) + len(bigbags)
     else:
@@ -9665,7 +9665,8 @@ def existencias_fibra_por_lote(fecha=None, external_api=None):
             corte = producto.camposEspecificosBala.corte
             color = producto.camposEspecificosBala.color
             antiuv = producto.camposEspecificosBala.antiuv
-        datos.append((producto and producto.descripcion
+        datos.append((producto and "(PV{}) {}".format(producto.descripcion,
+                                                      producto.id)
                         or "PRODUCTO DESCONOCIDO (?)",
             "",
             "Material: %s - Dtex: %s - Corte: %s - Color: %s - Antiuv: %s" % (
