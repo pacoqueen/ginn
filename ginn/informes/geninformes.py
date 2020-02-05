@@ -9530,7 +9530,8 @@ def existencias_fibra_por_lote(fecha=None, external_api=None):
                    FROM [{}].dbo.ArticulosSeries
                   WHERE CodigoEmpresa = {}
                     AND UnidadesSerie > 0
-                    AND UnidadMedida1_='{}';"""
+                    AND UnidadMedida1_='{}'
+                    AND (CodigoTalla01_='A' OR CodigoTalla01_='B');"""
         codigos = external_api.run_sql(
                 sql.format(external_api.get_database(),
                            external_api.get_codempresa(),
