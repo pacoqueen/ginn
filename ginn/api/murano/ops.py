@@ -2102,8 +2102,9 @@ def get_precio_coste(articulo):
     recibido.
     Se supone que debe coincidir con el que estaba definido para su familia
     en el mes en que se dio de alta.
-    Es diferente al get_precio_coste para Murano, que devuelve el mismo valor
-    pero desde la tabla Familias directamente.
+    Es diferente al buscar_precio_coste para Murano, que devuelve el mismo
+    valor pero desde la tabla Familias directamente. Sin tener en cuenta
+    la tabla de precios de coste por mes.
     """
     if not isinstance(articulo, pclases.Articulo):
         # Por error o por pruebas he recibido directamente el código del
@@ -2120,6 +2121,13 @@ def get_precio_coste(articulo):
     #                                         articulo.codigo)
     # Solo se han acordado de actualizar los movimientos de stock. Así que
     # tenemos que dar un rodeo para conseguir el valor.
+    # OJO: ¿El último es el que tiene el precio bien? ¿Y si es un movimiento
+    # de salida de stock y va el precio que le hemos dado al cliente? Bueno,
+    # entonces no estará en stock. Aparte, inexplicablemente, el JOIN siempre
+    # devuelve un único movimiento FAB. Para la salida de albarán de
+    # MovimientoArticuloSerie no hay MovimientoStock. Pero ojo con los borrados
+    # y nuevas creaciones. Ahí sí habrá más de un MovimientoStock. **Yo me
+    # quedo siempre con el más reciente.**
     sql = """SELECT Precio
                FROM {DB}.dbo.MovimientoArticuloSerie
                JOIN {DB}.dbo.MovimientoStock
@@ -2127,13 +2135,15 @@ def get_precio_coste(articulo):
                     = {DB}.dbo.MovimientoStock.MovPosicion
               WHERE {DB}.dbo.MovimientoStock.CodigoEmpresa = {CE}
                 AND {DB}.dbo.MovimientoArticuloSerie.NumeroSerieLc = '{cod}'
-              ORDER BY {DB}.dbo.MovimientoStock.Fecha;""".format(
+              ORDER BY {DB}.dbo.MovimientoStock.Fecha DESC;""".format(
                   DB=conn.get_database(),
                   CE=CODEMPRESA,
                   cod=articulo.codigo)
+    # DONE: ¿Y los cambios de producto, qué? Bueno, pues lo mismo. El más
+    # reciente es el último alta en la base de datos. El producto definitivo.
     articulos_serie = conn.run_sql(sql)
     try:
-        precio_coste = articulos_serie[-1]['Precio']
+        precio_coste = articulos_serie[0]['Precio']
     except IndexError:
         precio_coste = None
     if not precio_coste:
@@ -2225,7 +2235,8 @@ def es_movimiento_salida_albaran(movserie):
     return res
 
 
-def iter_create_articulos(articulos, simulate=False, serie='API', fecha=None):
+def iter_create_articulos(articulos, simulate=False, serie='API', fecha=None,
+                          cantidad=1):
     """
     Crea en Murano **en un solo proceso de importación** los artículos de
     _ginn_ recibidos en una lista.
@@ -2241,7 +2252,9 @@ def iter_create_articulos(articulos, simulate=False, serie='API', fecha=None):
     usuario.
     """
     i = 0
-    cantidad = 1    # Cantidad fija para todos. Esto es solo para dar de alta
+    # OJO: cantidad=-1 no está probado.
+    assert abs(cantidad) == 1,"Cantidad debe ser -1 o 1."
+    # Cantidad fija para todos. Esto es solo para dar de alta
     # productos con trazabilidad más rápidamente.
     guid_proceso = None     # El primer GUID es nulo. Hay que crearlo con el
     # primero de los artículos a volcar.
@@ -2496,7 +2509,8 @@ def update_stock(producto, delta, almacen, guid_proceso=None,
 
 
 def delete_articulo(articulo, codigo_almacen=None, observaciones=None,
-                    serie='API', fecha=None):
+                    serie='API', fecha=None, guid_proceso=None,
+                    simulate=False, procesar=True):
     """
     Elimina el artículo en Murano mediante la creación de un movimiento de
     stock negativo de ese código de producto.
@@ -2515,7 +2529,10 @@ def delete_articulo(articulo, codigo_almacen=None, observaciones=None,
                               producto=producto_anterior,
                               codigo_almacen=codigo_almacen,
                               observaciones=observaciones,
-                              serie=serie, fecha=fecha)
+                              serie=serie, fecha=fecha,
+                              guid_proceso=guid_proceso,
+                              procesar=procesar,
+                              simulate=simulate)
     else:
         logging.warning("El artículo %s no existe en Murano.", articulo.codigo)
     return res

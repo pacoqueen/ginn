@@ -9615,7 +9615,8 @@ class Articulo(SQLObject, PRPCTOO):
     def get_articulo(codigo):
         """
         Devuelve el objeto artículo correspondiente al código recibido o
-        None si no se encuentra.
+        None si no se encuentra. Si es un palé, devuelve el objeto
+        `pclases.Pale`.
         """
         mapping = {PREFIJO_ROLLO: Rollo,
                    PREFIJO_BALA: Bala,
@@ -9634,7 +9635,10 @@ class Articulo(SQLObject, PRPCTOO):
                 except IndexError:
                     objeto = None
                 else:
-                    objeto = objeto.articulo
+                    try:
+                        objeto = objeto.articulo
+                    except AttributeError:  # Es un palé.
+                        objeto = objeto
                     break
         return objeto
 
