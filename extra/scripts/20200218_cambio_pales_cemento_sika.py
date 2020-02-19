@@ -57,17 +57,10 @@ def cambiar_cajas_de_producto_murano(cajas, pv, simulate=True):
     # paras las 5 o 6 horas largas. guid_proceso se instanciará con la
     # primera caja y lo reutilizaré en las siguientes llamadas.
     guid_proceso = None
-    for a in tqdm.tqdm(cajas):
+    for a in tqdm.tqdm(cajas, desc="Bajas"):
         assert pv == a.productoVenta, "El artículo debe tener el producto "\
                                       "correcto en ginn."
         guid_proceso = murano.ops.delete_articulo(
-            a,
-            observaciones="Vuelta al prod. orig. +alorenzo +jmhurtado",
-            guid_proceso=guid_proceso,
-            procesar=False,
-            simulate=simulate,
-            serie="MAN")
-        guid_proceso = murano.ops.create_articulo(
             a,
             observaciones="Vuelta al prod. orig. +alorenzo +jmhurtado",
             guid_proceso=guid_proceso,
@@ -78,6 +71,19 @@ def cambiar_cajas_de_producto_murano(cajas, pv, simulate=True):
         res = murano.ops.fire(guid_proceso)
     else:
         res = guid_proceso
+    guid_proceso = None
+    for a in tqdm.tqdm(cajas, desc="Altas"):
+        guid_proceso = murano.ops.create_articulo(
+            a,
+            observaciones="Vuelta al prod. orig. +alorenzo +jmhurtado",
+            guid_proceso=guid_proceso,
+            procesar=False,
+            simulate=simulate,
+            serie="MAN")
+    if not simulate:
+        res = murano.ops.fire(guid_proceso) and res
+    else:
+        res += guid_proceso
     return res
 
 
