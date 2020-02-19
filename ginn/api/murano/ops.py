@@ -1936,14 +1936,14 @@ def consultar_producto(producto=None, nombre=None, ean=None):
                 res = []    # pylint: disable=redefined-variable-type
     elif ean:   # Busco por código EAN (CodigoAlternativo)
         sql = "SELECT * FROM %s.dbo.Articulos WHERE " % (c.get_database())
-        where = r"CodigoAlternativo = '%s';" % (ean)
+        where = r"CodigoAlternativo = '%s'" % (ean)
         where += r" AND CodigoEmpresa = '{}';".format(CODEMPRESA)
         sql += where
         res = c.run_sql(sql)
     else:   # Busco por el código de Murano: PC|PV + ID
         idmurano = get_codigo_articulo_murano(producto)
         sql = "SELECT * FROM %s.dbo.Articulos WHERE " % (c.get_database())
-        where = r"CodigoArticulo = '%s';" % (idmurano)
+        where = r"CodigoArticulo = '%s'" % (idmurano)
         where += r" AND CodigoEmpresa = '{}';".format(CODEMPRESA)
         sql += where
         res = c.run_sql(sql)
