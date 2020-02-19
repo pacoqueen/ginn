@@ -1914,8 +1914,10 @@ def consultar_producto(producto=None, nombre=None, ean=None):
     c = Connection()
     if nombre:
         try:
-            sql = "SELECT * FROM %s.dbo.Articulos WHERE " % (c.get_database())
-            where = r"DescripcionArticulo = '%s';" % (nombre)
+            sql = "SELECT * FROM {}.dbo.Articulos WHERE ".format(
+                c.get_database())
+            where = r"DescripcionArticulo = '{}'".format(nombre)
+            where += r" AND CodigoEmpresa = '{}';".format(CODEMPRESA)
             sql += where
             res = c.run_sql(sql)
             # Busco por descripción, y si no lo encuentro, busco por la
@@ -1923,8 +1925,10 @@ def consultar_producto(producto=None, nombre=None, ean=None):
             # pylint: disable=unused-variable
             record = res[0]     # NOQA
         except IndexError:
-            sql = "SELECT * FROM %s.dbo.Articulos WHERE " % (c.get_database())
-            where = r"Descripcion2Articulo = '%s';" % (nombre)
+            sql = "SELECT * FROM %s.dbo.Articulos WHERE ".format(
+                c.get_database())
+            where = r"Descripcion2Articulo = '{}'".format(nombre)
+            where += r" AND CodigoEmpresa = '{}';".format(CODEMPRESA)
             sql += where
             res = c.run_sql(sql)
         except TypeError:   # res es None. Error con la base de datos
@@ -1933,12 +1937,14 @@ def consultar_producto(producto=None, nombre=None, ean=None):
     elif ean:   # Busco por código EAN (CodigoAlternativo)
         sql = "SELECT * FROM %s.dbo.Articulos WHERE " % (c.get_database())
         where = r"CodigoAlternativo = '%s';" % (ean)
+        where += r" AND CodigoEmpresa = '{}';".format(CODEMPRESA)
         sql += where
         res = c.run_sql(sql)
     else:   # Busco por el código de Murano: PC|PV + ID
         idmurano = get_codigo_articulo_murano(producto)
         sql = "SELECT * FROM %s.dbo.Articulos WHERE " % (c.get_database())
         where = r"CodigoArticulo = '%s';" % (idmurano)
+        where += r" AND CodigoEmpresa = '{}';".format(CODEMPRESA)
         sql += where
         res = c.run_sql(sql)
     if DEBUG:
