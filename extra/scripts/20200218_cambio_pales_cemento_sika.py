@@ -65,13 +65,15 @@ def cambiar_cajas_de_producto_murano(cajas, pv, simulate=True):
             observaciones="Vuelta al prod. orig. +alorenzo +jmhurtado",
             guid_proceso=guid_proceso,
             procesar=False,
-            simulate=simulate)
+            simulate=simulate,
+            serie="MAN")
         guid_proceso = murano.ops.create_articulo(
             a,
             observaciones="Vuelta al prod. orig. +alorenzo +jmhurtado",
             guid_proceso=guid_proceso,
             procesar=False,
-            simulate=simulate)
+            simulate=simulate,
+            serie="MAN")
     if not simulate:
         res = murano.ops.fire(guid_proceso)
     else:
@@ -121,7 +123,7 @@ def main():
     cajas = cargar_articulos(codigos_pale)
     assert len(cajas) == NUMCAJAS, "Número de cajas cargadas incorrecta."
     pvdest = pclases.ProductoVenta.get(597)
-    res = cambiar_cajas_de_producto_murano(cajas, pvdest)
+    res = cambiar_cajas_de_producto_murano(cajas, pvdest, simulate=False)
     if res:
         print("OK")
     else:
