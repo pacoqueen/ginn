@@ -1416,7 +1416,9 @@ def consume_bigbag(bigbag, cantidad=-1, producto=None, guid_proceso=None,
                    simulate=False, procesar=True, fecha=None, check_api=True):
     """
     Crea un movimiento de salida de un bigbag en las tablas temporales de
-    Murano.
+    Murano. Si ya estaba consumido en el mismo parte que se está intentando
+    consumir de nuevo, no crea movimientos pero devuelve True para poder
+    validar el parte correctamente.
     Recibe un objeto bigbag de ginn.
     `cantidad` es un parámetro obsoleto que no se usa.
     Si simulate es True, devuelve las dos consultas SQL generadas. En otro
@@ -1435,7 +1437,9 @@ def consume_bigbag(bigbag, cantidad=-1, producto=None, guid_proceso=None,
     elif not esta_en_almacen(articulo):
         logging.warning("El bigbag %s no está en almacén en Murano."
                         " Se ignora.", bigbag.codigo)
-        res = False
+        # Será True si estoy intentando consumir otra vez al validar de nuevo
+        # un parte que se haya quedado a la mitad por lo que sea. Idempotente.
+        res = esta_consumido(bigbag, bigbag.parteDeProduccion)
     else:
         try:
             partida = bigbag.loteCem.codigo
