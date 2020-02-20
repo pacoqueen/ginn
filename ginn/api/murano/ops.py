@@ -1408,7 +1408,7 @@ def consume_partida_carga(partida_carga):
 
 # pylint: disable=too-many-arguments,too-many-statements
 def consume_bigbag(bigbag, cantidad=-1, producto=None, guid_proceso=None,
-                   simulate=False, procesar=True, fecha=None):
+                   simulate=False, procesar=True, fecha=None, check_api=True):
     """
     Crea un movimiento de salida de un bigbag en las tablas temporales de
     Murano.
@@ -1514,9 +1514,16 @@ def consume_bigbag(bigbag, cantidad=-1, producto=None, guid_proceso=None,
                 # intentar volver a consumir el mismo bigbag que creer que se
                 # ha consumido y no volverlo a intentar jamás dejando un
                 # descuadre entre ginn y Murano.
+                if check_api:
+                    # ¿Se ha consumido pero no tiene el valor `api` bien?
+                    lastmov = get_ultimo_movimiento_articulo_serie(
+                            c,
+                            bigbag.articulo)
+                    res = es_movimiento_salida_fabricacion(lastmov)
                 bigbag.api = res
+                bigbag.syncUpdate()
             else:   # No proceso la importación. Todo ha ido bien hasta ahora.
-                    # Devuelvo el guid, que me vale como True también.
+                # Devuelvo el guid, que me vale como True también.
                 res = id_proceso_IME
     return res
 
@@ -2187,7 +2194,7 @@ def get_producto_articulo_murano(articulo):
 def es_movimiento_salida_fabricacion(movserie):
     """
     True si el registro MovimientoArticuloSerie es de salida de fabricación
-    (borrado en partes).
+    (borrado en partes o consumo).
     OrigenDocumento es 2 para altas y 11 para bajas.
     """
     res = (movserie['OrigenDocumento'] == 11 and

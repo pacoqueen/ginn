@@ -1683,7 +1683,8 @@ class PartesDeFabricacionBolsas(Ventana):
         if self.objeto and ch.get_active() != self.objeto.bloqueado:
             # No es la propia ventana la que está marcando la casilla al mostrar
             # un parte bloqueado. El usuario el que ha hecho clic.
-            if self.usuario and self.usuario.nivel <= 3 and self.__permisos.escritura:
+            if (self.usuario and self.usuario.nivel <= 3
+                    and self.__permisos.escritura):
                 if self.objeto.bloqueado:
                     # Ya está bloqueado. **No se puede desbloquear.** Los rollos
                     # puede que incluso ya se hayan vendido en Murano.
@@ -1786,7 +1787,8 @@ class PartesDeFabricacionBolsas(Ventana):
             consumos = [c for c in self.objeto.consumos
                         if not c.api and c.actualizado]
             i = 0.0
-            tot = len(consumos)
+            tot = len(consumos) + len(self.objeto.bigbags)
+            # # consumos materiales
             for consumo in consumos:
                 i += 1
                 vpro.set_valor(i/tot, 'Consumiendo {} ({}/{})'.format(
@@ -1795,6 +1797,16 @@ class PartesDeFabricacionBolsas(Ventana):
                     consumido = murano.ops.consumir(consumo.productoCompra,
                                                     consumo.cantidad,
                                                     consumo=consumo)
+                    res = res and consumido
+                except:
+                    res = False
+            # # consumos materia prima (bigbags)
+            for bigbag in bigbags:
+                i += 1
+                vpro.set_valor(i/tot, 'Consumiendo materia prima ({})'.format(
+                    bigbag.codigo))
+                try:
+                    consumido = murano.ops.consume_bigbag(bigbag)
                     res = res and consumido
                 except:
                     res = False
@@ -1950,19 +1962,19 @@ class PartesDeFabricacionBolsas(Ventana):
                     pv_bb = bb.articulo.productoVenta
                     if pv_bb not in lineas_albaran:
                         linea_albaran = pclases.LineaDeVenta(
-                            ticket = None,
-                            pedidoVenta = None,
-                            facturaVenta = None,
-                            productoVenta = pv_bb,
-                            albaranSalida = albint,
-                            prefactura = None,
-                            productoCompra = None,
-                            fechahora = mx.DateTime.localtime(),
-                            cantidad = 0.0,
-                            precio = pv_bb.precioDefecto,
-                            descuento = 0.0,
-                            notas = "",
-                            descripcionComplementaria = "Reembolsado")
+                            ticket=None,
+                            pedidoVenta=None,
+                            facturaVenta=None,
+                            productoVenta=pv_bb,
+                            albaranSalida=albint,
+                            prefactura=None,
+                            productoCompra=None,
+                            fechahora=mx.DateTime.localtime(),
+                            cantidad=0.0,
+                            precio=pv_bb.precioDefecto,
+                            descuento=0.0,
+                            notas="",
+                            descripcionComplementaria="Reembolsado")
                         lineas_albaran[pv_bb] = [linea_albaran]
                         pclases.Auditoria.nuevo(linea_albaran,
                                                 self.usuario, __file__)
@@ -1980,11 +1992,11 @@ class PartesDeFabricacionBolsas(Ventana):
         if paths == None or paths == []:
             utils.dialogo_info('CONSUMOS NO SELECCIONADOS',
                 'Debe seleccionar uno o varios consumos a eliminar del parte.',
-                padre = self.wids['ventana'])
+                padre=self.wids['ventana'])
         else:
             if not utils.dialogo('¿Eliminar del parte?',
                                  'BORRAR CONSUMOS DEL CONTROL DE ENVASADO',
-                                 padre = self.wids['ventana']):
+                                 padre=self.wids['ventana']):
                 return
             for path in paths:
                 ide = model[path][-1]
@@ -1995,10 +2007,10 @@ class PartesDeFabricacionBolsas(Ventana):
                         consumo.anular_consumo()
                         #consumo.destroy(ventana = __file__)
                     except:
-                        utils.dialogo_info(titulo = 'INCIDENCIA NO ELIMINADA',
-                                    texto = 'Ocurrió un error al intentar '\
-                                            'eliminar la consumo.',
-                                    padre = self.wids['ventana'])
+                        utils.dialogo_info(titulo='INCIDENCIA NO ELIMINADA',
+                                    texto='Ocurrió un error al intentar '\
+                                          'eliminar la consumo.',
+                                    padre=self.wids['ventana'])
                 elif ide < 0:    # Es bigbag
                     ide = -ide
                     bb = pclases.Bigbag.get(ide)
