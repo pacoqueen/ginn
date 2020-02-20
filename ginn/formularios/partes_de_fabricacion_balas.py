@@ -474,9 +474,9 @@ class PartesDeFabricacionBalas(Ventana):
                 else:
                     carga_mas_antigua = murano.ops.get_carga_mas_antigua_silo(
                             silo)
-            except:                                                     # noqa
-                self.logger.error(
-                    "Error al leer silos de Murano. Fallback a ginn.")
+            except Exception as err:
+                self.logger.error("Error al leer silos de Murano."
+                                  " Fallback a ginn: {}".format(err))
                 carga_mas_antigua = silo.get_carga_mas_antigua()
             if carga_mas_antigua is None:
                 l_carga_silo = gtk.Label("vacío")
@@ -605,9 +605,9 @@ class PartesDeFabricacionBalas(Ventana):
                     try:
                         carga_mas_baja_en_silo = \
                                 murano.ops.get_carga_mas_antigua_silo(silo)
-                    except:                                             # noqa
-                        self.logger.error(
-                            "Error al leer silos de Murano. Fallback a ginn.")
+                    except Exception as err:
+                        self.logger.error("Error al leer silos de Murano."
+                                          " Fallback a ginn: {}".format(err))
                         carga_mas_baja_en_silo = silo.get_carga_mas_antigua()
                     producto = carga_mas_baja_en_silo.productoCompra
                     silo_key = silo
@@ -828,9 +828,9 @@ class PartesDeFabricacionBalas(Ventana):
             silo = pclases.Silo.get(idsilo)
             try:
                 ocupado = murano.ops.get_ocupado_silo(silo)
-            except:                                                     # noqa
-                self.logger.error(
-                    "No se pudo leer Silo en Murano. Fallback a ginn.")
+            except Exception as err:
+                self.logger.error("No se pudo leer Silo en Murano."
+                                  " Fallback a ginn: {}".format(err))
                 ocupado = silo.ocupado
             if ocupado <= 0:
                 ch.set_active(False)
@@ -2579,9 +2579,9 @@ class PartesDeFabricacionBalas(Ventana):
                          if self.wids['ch_silo_ID%d' % (s.id)].get_active()]:
                 try:
                     ocupado = murano.ops.get_ocupado_silo(silo)
-                except:                                                 # noqa
-                    self.logger.error(
-                        "No se pudo leer Silo en Murano. Fallback a ginn.")
+                except Exception as err:
+                    self.logger.error("No se pudo leer Silo en Murano."
+                                      " Fallback a ginn: {}".format(err))
                     ocupado = silo.ocupado
                 if ocupado <= 0:
                     utils.dialogo_info(titulo="NO PUEDE PRODUCIR",
@@ -4044,9 +4044,9 @@ class PartesDeFabricacionBalas(Ventana):
                             peso_sin_aditivos, porcentaje)
                 try:
                     ocupado = murano.ops.get_ocupado_silo(silo)
-                except:                                                 # noqa
-                    self.logger.error(
-                        "No se pudo leer Silo en Murano. Fallback a ginn.")
+                except Exception as err:
+                    self.logger.error("No se pudo leer Silo en Murano."
+                                      " Fallback a ginn: {}".format(err))
                     ocupado = silo.ocupado
                 self.logger.warning(
                         "CONSUMO LÍNEA FIBRA: Consumiendo %s de "
@@ -4062,9 +4062,9 @@ class PartesDeFabricacionBalas(Ventana):
                 try:
                     carga_mas_baja_en_silo \
                             = murano.ops.get_carga_mas_antigua_silo(silo)
-                except:                                                 # noqa
-                    self.logger.error(
-                        "Error al leer silos de Murano. Fallback a ginn.")
+                except Exception as err:
+                    self.logger.error("No se pudo leer Silo en Murano."
+                                      " Fallback a ginn: {}".format(err))
                     carga_mas_baja_en_silo = silo.get_carga_mas_antigua()
                 if carga_mas_baja_en_silo is not None:
                     producto_consumido = carga_mas_baja_en_silo.productoCompra
@@ -4080,9 +4080,9 @@ class PartesDeFabricacionBalas(Ventana):
                     pclases.Auditoria.nuevo(consumo, self.usuario, __file__)
                     try:
                         ocupado = murano.ops.get_ocupado_silo(silo)
-                    except:                                             # noqa
-                        self.logger.error(
-                            "No se pudo leer Silo en Murano. Fallback a ginn.")
+                    except Exception as err:
+                        self.logger.error("No se pudo leer Silo en Murano."
+                                          " Fallback a ginn: {}".format(err))
                         ocupado = silo.ocupado
                     self.logger.warning(
                             "CONSUMO LÍNEA FIBRA: "

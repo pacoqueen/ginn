@@ -96,7 +96,7 @@ def run(modulo, clase, usuario, fconfig, obj_puid=None,
         if verbose:
             args.append(" -v")
         # print comando, args
-        #subprocess.Popen([comando] + args, shell = True)
+        # subprocess.Popen([comando] + args, shell = True)
         # Ahora no sé por qué esto de arriba no va. Esto de abajo parece que sí
         subprocess.Popen(" ".join([comando] + args), shell=True)
         # OJO: Si no funciona y Windows dice que
@@ -106,11 +106,11 @@ def run(modulo, clase, usuario, fconfig, obj_puid=None,
         # ejecutes el launcher directamente. Sin menú. Tal que así:
         # Q:\ginn\formularios>C:\Python27\python.exe launcher.py -u admin -p
         # adadmin -w bancos.py
-    except Exception, msg:     # fallback @UnusedVariable
+    except Exception as msg:     # fallback @UnusedVariable
         # TODO: Esto debería ir al logger o algo:
         # print "launcher.py:", msg
-        exec "import %s" % modulo
-        v = eval('%s.%s' % (modulo, clase))
+        exec "import {}".format(modulo)
+        v = eval('{}.{}'.format(modulo, clase))
         if obj_puid:
             if isinstance(obj_puid, str):
                 from framework import pclases
