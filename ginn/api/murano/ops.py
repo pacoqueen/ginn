@@ -17,7 +17,7 @@ import os
 import sys
 import time
 import logging
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 from tempfile import gettempdir
 
 NOMFLOG = ".".join(os.path.basename(__file__).split(".")[:-1])
@@ -25,14 +25,14 @@ try:
     logging.basicConfig(filename="%s.log" % (NOMFLOG),
                         format="%(asctime)s %(levelname)-8s : %(message)s",
                         level=logging.DEBUG)
+# pylint:disable=bare-except
 except:     # Error de permisos. Fallback a temporal                     # noqa
-    nomflog = os.path.join(gettempdir(), "ops.tmp")
-    logging.basicConfig(filename="{}{}.log".format(nomflog, time.time()),
+    NOMFLOG = os.path.join(gettempdir(), "ops.tmp")
+    logging.basicConfig(filename="{}{}.log".format(NOMFLOG, time.time()),
                         format="%(asctime)s %(levelname)-8s : %(message)s",
                         level=logging.DEBUG)
 
 import datetime                                                          # noqa
-from collections import namedtuple                                       # noqa
 from connection import Connection, DEBUG, VERBOSE, CODEMPRESA, CANALES   # noqa
 from connection import FABRICACION, ENTRADA, SALIDA, INVENTARIO, VENTA   # noqa
 from export import determinar_familia_murano                             # noqa
@@ -220,8 +220,7 @@ def buscar_grupo_talla(producto_venta):
         logging.error(strlog)
         if not DEBUG:
             raise exception
-        else:
-            grupo_talla = 0
+        grupo_talla = 0
     return grupo_talla
 
 
@@ -305,8 +304,7 @@ def buscar_unidad_medida_basica_murano(producto):
         logging.error(strlog)
         if not DEBUG:
             raise exception
-        else:
-            unidad2 = "ROLLO|BALA|BIGBAG|CAJA"
+        unidad2 = "ROLLO|BALA|BIGBAG|CAJA"
     return unidad2
 
 
@@ -322,8 +320,9 @@ def buscar_marcado_ce(producto):
         logging.error(strerror)
         res = None
     else:
-        c = Connection()
+        c = Connection()    # pylint: disable=no-value-for-parameter
         try:
+            # pylint: disable=no-member
             sql = "SELECT * FROM %s.dbo.GEO_ArticulosMarcado"\
                   " WHERE " % (c.get_database())
             where = r"CodigoArticulo = '%s';" % (id_murano)
@@ -663,6 +662,7 @@ def buscar_precio_coste_familia_murano(cod_familia):
     Lanza ValueError si el código de familia no se encuentra o no tiene
     precio de coste.
     """
+    # pylint: disable=no-value-for-parameter,no-member
     c = Connection()
     # SQL = r"""SELECT TOP 1 PrecioPorUnidadEspecifica
     #          FROM [%s].[dbo].[Familias]
@@ -720,6 +720,7 @@ def buscar_precio_coste_murano(producto, ejercicio, codigo_almacen):
     de la tabla «AcumuladoStock», donde solo hay un registro por producto,
     año y periodo. El periodo 99 siempre guarda el más actualizado.
     """
+    # pylint: disable=no-value-for-parameter,no-member
     c = Connection()
     cod_articulo = get_codigo_articulo_murano(producto)
     SQL = r"""SELECT TOP 1 PrecioMedio
@@ -773,6 +774,7 @@ def buscar_codigo_almacen(almacen, articulo=None):
     Si el almacén recibido es None, entonces buscará el almacén actual donde
     dice Murano que está el artículo recibido como segundo parámetro.
     """
+    # pylint: disable=no-value-for-parameter,no-member
     c = Connection()
     if almacen:
         filas = c.run_sql("""SELECT CodigoAlmacen
@@ -970,6 +972,7 @@ def prepare_params_movstock(articulo, cantidad=1, producto=None,
     Cantidad debe ser 1 para incrementar o -1 para decrementar el almacén.
     """
     assert abs(cantidad) == 1
+    # pylint: disable=no-value-for-parameter,no-member
     c = Connection()
     database = c.get_database()
     if fecha is None or not isinstance(fecha, datetime.datetime):
@@ -1217,6 +1220,7 @@ def esta_consumido(articulo, parte_de_produccion=None):
     consumido en ese parte de producción. Se puede saber porque en el
     movimiento de Murano se guarda el ID del parte de producción.
     """
+    # pylint: disable=no-value-for-parameter,no-member
     conn = Connection()
     movserie = get_ultimo_movimiento_articulo_serie(conn, articulo)
     # HARDCODED
@@ -1241,6 +1245,7 @@ def esta_vendido(articulo):
     comentario del último registro de MovimientoArticuloSerie y deberían
     ser, si es un consumo: FAB, 11 y "Consumo (bala|bigbag) ginn.*".
     """
+    # pylint: disable=no-value-for-parameter,no-member
     conn = Connection()
     movserie = get_ultimo_movimiento_articulo_serie(conn, articulo)
     # HARDCODED
@@ -1269,6 +1274,7 @@ def get_fecha_entrada(articulo, campo="FechaRegistro"):
         codigo = articulo.codigo
     else:
         codigo = articulo
+    # pylint: disable=no-value-for-parameter,no-member
     conn = Connection()
     sql = """SELECT Fecha, FechaRegistro, SerieDocumento
                FROM {}.dbo.MovimientoArticuloSerie
@@ -1874,6 +1880,7 @@ def consulta_proveedor(nombre=None, cif=None):
     Devuelve una lista de proveedores coincidentes en forma de diccionarios
     campo:valor para cada registro.
     """
+    # pylint: disable=no-value-for-parameter,no-member
     c = Connection()
     sql = "SELECT * FROM %s.dbo.Proveedores WHERE " % (c.get_database())
     where = []
@@ -1882,7 +1889,7 @@ def consulta_proveedor(nombre=None, cif=None):
     if cif:
         where.append("CifDni = '%s'" % cif)
     if nombre and cif:
-        where = " AND ".join(where)  # pylint: disable=redefined-variable-type
+        where = " AND ".join(where)  # py lint: disable=redefined-variable-type
     else:
         where = where[0]
     where += ";"
@@ -1896,6 +1903,7 @@ def consulta_cliente(nombre=None, cif=None):
     Obtiene los datos de un cliente buscando por nombre, cif o ambas cosas.
     Devuelve una lista de clientes coincidentes.
     """
+    # pylint: disable=no-value-for-parameter,no-member
     c = Connection()
     sql = "SELECT * FROM %s.dbo.Clientes WHERE " % (c.get_database())
     where = []
@@ -1922,6 +1930,7 @@ def consultar_producto(producto=None, nombre=None, ean=None):
     Devuelve una lista de productos coincidentes.
     """
     assert not producto == nombre == ean == None    # NOQA
+    # pylint: disable=no-value-for-parameter,no-member
     c = Connection()
     if nombre:
         try:
@@ -2030,6 +2039,7 @@ def duplica_articulo(articulo, producto=None):
         articulo = pclases.Articulo.get_articulo(articulo)
     if not producto:
         producto = articulo.productoVenta
+    # pylint: disable=no-value-for-parameter,no-member
     conn = Connection()
     movserie = get_ultimo_movimiento_articulo_serie(conn, articulo)
     if (not movserie or
@@ -2061,6 +2071,7 @@ def existe_articulo(articulo, productoVenta=None):
         articulo = pclases.Articulo.get_articulo(articulo)
     if not productoVenta:
         productoVenta = articulo.productoVenta
+    # pylint: disable=no-value-for-parameter,no-member
     c = Connection()
     movserie = get_ultimo_movimiento_articulo_serie(c, articulo)
     if not movserie:
@@ -2083,6 +2094,7 @@ def esta_en_almacen(articulo):
         # Por error o por pruebas he recibido directamente el código del
         # artículo.
         articulo = pclases.Articulo.get_articulo(articulo)
+    # pylint: disable=no-value-for-parameter,no-member
     c = Connection()
     # movserie = get_ultimo_movimiento_articulo_serie(c, articulo)
     # if not movserie:
@@ -2127,6 +2139,7 @@ def get_precio_coste(articulo):
         # Por error o por pruebas he recibido directamente el código del
         # artículo.
         articulo = pclases.Articulo.get_articulo(articulo)
+    # pylint: disable=no-value-for-parameter,no-member
     conn = Connection()
     # Esto sería si en Sage lo hubiesen hecho bien. Pero la realidad es otra.
     # sql = """SELECT GEO_CosteUnidadEspecifica
@@ -2185,6 +2198,7 @@ def get_producto_articulo_murano(articulo):
     """
     Devuelve el pclases.ProductoVenta que tenga asignado el artículo en Murano.
     """
+    # pylint: disable=no-value-for-parameter,no-member
     conn = Connection()
     movserie = get_ultimo_movimiento_articulo_serie(conn, articulo)
     if movserie:
@@ -2462,6 +2476,7 @@ def update_stock(producto, delta, almacen, guid_proceso=None,
     serie = 'FAB'
     ubicacion = "Almacén general"[:15]
     numero_serie_lc = ""
+    # pylint: disable=no-value-for-parameter,no-member
     c = Connection()
     database = c.get_database()
     today = datetime.datetime.today()
@@ -2537,6 +2552,7 @@ def delete_articulo(articulo, codigo_almacen=None, observaciones=None,
     # asignado en ginn y fallará si intentamos crear el movimiento negativo
     # contra él.
     res = False
+    # pylint: disable=no-value-for-parameter,no-member
     conn = Connection()
     movserie = get_ultimo_movimiento_articulo_serie(conn, articulo)
     if movserie:
@@ -2596,6 +2612,7 @@ def get_existencias_silo(silo):
     4. Se devuelve ese diccionario.
     """
     res = {}
+    # pylint: disable=no-value-for-parameter,no-member
     conn = Connection()
     rs_ejercicio = conn.run_sql("""SELECT MAX(Ejercicio) AS ejercicio
                                    FROM {}.dbo.AcumuladoStock
@@ -2751,6 +2768,7 @@ def _get_fin_proceso_importacion_retcode(guid):
     Si en ese registro el valor del campo sysStatus es 0, el proceso ha
     terminado bien. Si es 2 (u otro valor, en general) ha habido algún error.
     """
+    # pylint: disable=no-value-for-parameter,no-member
     conn = Connection()
     sql = """SELECT sysStatus
      FROM {}.dbo.lsysTraceIME
@@ -2774,6 +2792,7 @@ def _get_fin_proceso_acumulacion_retcode(guid):
     Si en ese registro el valor del campo sysStatus es 0, el proceso ha
     acumulado bien. Si es 2 (u otro valor, en general) ha habido algún error.
     """
+    # pylint: disable=no-value-for-parameter,no-member
     conn = Connection()
     sql = """SELECT sysStatus
      FROM {}.dbo.LsysTraceIME
@@ -3029,6 +3048,7 @@ def corregir_dimensiones_articulo(articulo, peso_bruto=None, peso_neto=None,
         if metros_cuadrados is None:
             metros_cuadrados = 0
     codigo = articulo.codigo
+    # pylint: disable=no-value-for-parameter,no-member
     conn = Connection()
     tablas = ['ArticulosSeries', 'MovimientoArticuloSerie',
               'GEO_LineasSeriesCargadas', 'GEO_Pales']
@@ -3050,6 +3070,7 @@ def _get_peso_bruto_murano(articulo):
     """
     Devuelve el peso bruto que guarda Murano para el artículo de ginn recibido.
     """
+    # pylint: disable=no-value-for-parameter,no-member
     conn = Connection()
     SQL = r"""SELECT PesoBruto_ FROM %s.dbo.ArticulosSeries
                WHERE NumeroSerieLc = '%s'
@@ -3069,6 +3090,7 @@ def _get_peso_neto_murano(articulo):
     """
     Devuelve el peso bruto que guarda Murano para el artículo de ginn recibido.
     """
+    # pylint: disable=no-value-for-parameter,no-member
     conn = Connection()
     SQL = r"""SELECT PesoNeto_ FROM %s.dbo.ArticulosSeries
                WHERE NumeroSerieLc = '%s'
@@ -3088,6 +3110,7 @@ def _get_superficie_murano(articulo):
     """
     Devuelve el peso bruto que guarda Murano para el artículo de ginn recibido.
     """
+    # pylint: disable=no-value-for-parameter,no-member
     conn = Connection()
     SQL = r"""SELECT MetrosCuadrados FROM %s.dbo.ArticulosSeries
                WHERE NumeroSerieLc = '%s'
@@ -3108,6 +3131,7 @@ def _get_dimensiones_murano(articulo):
     Devuelve el peso bruto, neto y metros cuadrados que guarda Murano para el
     artículo de ginn recibido.
     """
+    # pylint: disable=no-value-for-parameter,no-member
     conn = Connection()
     SQL = r"""SELECT PesoBruto_, PesoNeto_, MetrosCuadrados
               FROM %s.dbo.ArticulosSeries
@@ -3136,6 +3160,7 @@ def _get_calidad_murano(articulo):
     Devuelve None si el artículo no existe, cadena vacía si no tiene calidad y
     la letra que tenga en Murano si la tiene.
     """
+    # pylint: disable=no-value-for-parameter,no-member
     conn = Connection()
     SQL = r"""SELECT CodigoTalla01_
               FROM %s.dbo.ArticulosSeries
@@ -3156,6 +3181,7 @@ def _get_codigo_pale(articulo):
     """
     Devuelve el código de palé que tiene el artículo de ginn en Murano.
     """
+    # pylint: disable=no-value-for-parameter,no-member
     conn = Connection()
     SQL = r"""SELECT CodigoPale FROM %s.dbo.ArticulosSeries
               WHERE NumeroSerieLc = '%s'
@@ -3179,6 +3205,7 @@ def corregir_pale(articulo, pale=None):
         codigo_pale = pale.codigo
     except AttributeError:
         codigo_pale = pale
+    # pylint: disable=no-value-for-parameter,no-member
     conn = Connection()
     SQL = r"""UPDATE %s.dbo.ArticulosSeries
                  SET CodigoPale = '%s'
@@ -3201,6 +3228,7 @@ def get_producto_murano(codigo):
         codigo = "PV{}".format(codigo.id)
     elif isinstance(codigo, pclases.ProductoCompra):
         codigo = "PC{}".format(codigo.id)
+    # pylint: disable=no-value-for-parameter,no-member
     conn = Connection()
     SQL = r"""SELECT * FROM %s.dbo.Articulos
               WHERE CodigoEmpresa = '%s'
@@ -3623,6 +3651,7 @@ def get_stock_murano(producto, _almacen=None, _calidad=None, _unidad=None):
                         "pclases.ProductoCompra o pclases.ProductoVenta")
     pmurano = get_producto_murano(codigo)
     res = {}
+    # pylint: disable=no-value-for-parameter,no-member
     conn = Connection()
     rs_ejercicio = conn.run_sql("""SELECT MAX(Ejercicio) AS ejercicio
                                    FROM {}.dbo.AcumuladoStock
