@@ -476,7 +476,7 @@ class PartesDeFabricacionBalas(Ventana):
                             silo)
             except Exception as err:
                 self.logger.error("Error al leer silos de Murano."
-                                  " Fallback a ginn: {}".format(err))
+                                  " Fallback a ginn (ERR1): {}".format(err))
                 carga_mas_antigua = silo.get_carga_mas_antigua()
             if carga_mas_antigua is None:
                 l_carga_silo = gtk.Label("vacío")
@@ -607,7 +607,8 @@ class PartesDeFabricacionBalas(Ventana):
                                 murano.ops.get_carga_mas_antigua_silo(silo)
                     except Exception as err:
                         self.logger.error("Error al leer silos de Murano."
-                                          " Fallback a ginn: {}".format(err))
+                                          " Fallback a ginn (ERR2): {}".format(
+                                              err))
                         carga_mas_baja_en_silo = silo.get_carga_mas_antigua()
                     producto = carga_mas_baja_en_silo.productoCompra
                     silo_key = silo
@@ -830,7 +831,7 @@ class PartesDeFabricacionBalas(Ventana):
                 ocupado = murano.ops.get_ocupado_silo(silo)
             except Exception as err:
                 self.logger.error("No se pudo leer Silo en Murano."
-                                  " Fallback a ginn: {}".format(err))
+                                  " Fallback a ginn (ERR3): {}".format(err))
                 ocupado = silo.ocupado
             if ocupado <= 0:
                 ch.set_active(False)
@@ -2581,7 +2582,8 @@ class PartesDeFabricacionBalas(Ventana):
                     ocupado = murano.ops.get_ocupado_silo(silo)
                 except Exception as err:
                     self.logger.error("No se pudo leer Silo en Murano."
-                                      " Fallback a ginn: {}".format(err))
+                                      " Fallback a ginn (ERR4): {}".format(
+                                          err))
                     ocupado = silo.ocupado
                 if ocupado <= 0:
                     utils.dialogo_info(titulo="NO PUEDE PRODUCIR",
@@ -4046,7 +4048,8 @@ class PartesDeFabricacionBalas(Ventana):
                     ocupado = murano.ops.get_ocupado_silo(silo)
                 except Exception as err:
                     self.logger.error("No se pudo leer Silo en Murano."
-                                      " Fallback a ginn: {}".format(err))
+                                      " Fallback a ginn (ERR5): {}".format(
+                                          err))
                     ocupado = silo.ocupado
                 self.logger.warning(
                         "CONSUMO LÍNEA FIBRA: Consumiendo %s de "
@@ -4064,7 +4067,8 @@ class PartesDeFabricacionBalas(Ventana):
                             = murano.ops.get_carga_mas_antigua_silo(silo)
                 except Exception as err:
                     self.logger.error("No se pudo leer Silo en Murano."
-                                      " Fallback a ginn: {}".format(err))
+                                      " Fallback a ginn (ERR6): {}".format(
+                                          err))
                     carga_mas_baja_en_silo = silo.get_carga_mas_antigua()
                 if carga_mas_baja_en_silo is not None:
                     producto_consumido = carga_mas_baja_en_silo.productoCompra
@@ -4082,7 +4086,8 @@ class PartesDeFabricacionBalas(Ventana):
                         ocupado = murano.ops.get_ocupado_silo(silo)
                     except Exception as err:
                         self.logger.error("No se pudo leer Silo en Murano."
-                                          " Fallback a ginn: {}".format(err))
+                                          " Fallback a ginn (ERR7): {}".format(
+                                              err))
                         ocupado = silo.ocupado
                     self.logger.warning(
                             "CONSUMO LÍNEA FIBRA: "
