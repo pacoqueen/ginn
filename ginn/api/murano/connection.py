@@ -35,6 +35,12 @@ PROYECTOS = {'DANOSA': DANOSA,
              'INTERM': INTERMAS,
              '      ': 0  # Sin informar
              }
+# Campo OrigenDocumento. Se usa para distinguir los tipos de movimientos serie
+VENTA = 1           # (Salida de albarán)
+FABRICACION = 2     # (Fabricación)
+ENTRADA = 10        # (entrada de stock)
+SALIDA = 11         # (salida de stock)
+INVENTARIO = 12     # (inventario)
 
 
 class Connection(object):

@@ -34,6 +34,7 @@ except:     # Error de permisos. Fallback a temporal                     # noqa
 import datetime                                                          # noqa
 from collections import namedtuple                                       # noqa
 from connection import Connection, DEBUG, VERBOSE, CODEMPRESA, CANALES   # noqa
+from connection import FABRICACION, ENTRADA, SALIDA, INVENTARIO, VENTA   # noqa
 from export import determinar_familia_murano                             # noqa
 from extra import get_peso_bruto, get_peso_neto, get_superficie          # noqa
 from extra import AttrDict                                               # noqa
@@ -1169,10 +1170,9 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
         else:
             c.run_sql(sql_movstock)
         if cantidad < 0:
-            origen_documento = 11
+            origen_documento = SALIDA
         else:
-            origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
-        # 11 (salida de stock), 12 (inventario), 1 (venta)
+            origen_documento = FABRICACION
         # mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
         mov_posicion_origen = guid_movposicion
         # En el movimiento de serie la UnidadMedida1_ es la básica:ROLLO,BALA..
@@ -1206,22 +1206,28 @@ def create_bala(bala, cantidad=1, producto=None, guid_proceso=None,
     return res
 
 
-def esta_consumido(articulo):
+def esta_consumido(articulo, parte_de_produccion=None):
     """
     Devuelve la fecha de consumo si el artículo se ha consumido. None en
     otro caso.
     Los valores a mirar si se ha consumido son la serie, origen documento y
     comentario del último registro de MovimientoArticuloSerie y deberían
     ser, si es un consumo: FAB, 11 y "Consumo (bala|bigbag) ginn.*".
+    Si `parte_de_produccion` es algo distinto de None, comprueba que se haya
+    consumido en ese parte de producción. Se puede saber porque en el
+    movimiento de Murano se guarda el ID del parte de producción.
     """
     conn = Connection()
     movserie = get_ultimo_movimiento_articulo_serie(conn, articulo)
     # HARDCODED
     if (movserie
             and movserie['SerieDocumento'] == 'FAB'
-            and movserie['OrigenDocumento'] == 11
+            and movserie['OrigenDocumento'] == SALIDA
             and movserie['Comentario'].startswith('Consumo')):
         res = movserie['Fecha']
+        if parte_de_produccion:
+            res = (res and
+                   str(parte_de_produccion.id) == str(movserie['Documento']))
     else:
         res = None
     return res
@@ -1238,7 +1244,7 @@ def esta_vendido(articulo):
     conn = Connection()
     movserie = get_ultimo_movimiento_articulo_serie(conn, articulo)
     # HARDCODED
-    if movserie and movserie['OrigenDocumento'] == 1:
+    if movserie and movserie['OrigenDocumento'] == VENTA:
         res = movserie['Fecha']
     else:
         res = None
@@ -1353,10 +1359,9 @@ def consume_bala(bala, cantidad=-1, producto=None, guid_proceso=None,
         else:
             c.run_sql(sql_movstock)
         if cantidad < 0:
-            origen_documento = 11
+            origen_documento = SALIDA
         else:
-            origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
-        # 11 (salida de stock), 12 (inventario)
+            origen_documento = FABRICACION
         # mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
         mov_posicion_origen = guid_movposicion
         # En el movimiento de serie la UnidadMedida1_ es la básica:ROLLO,BALA..
@@ -1478,10 +1483,9 @@ def consume_bigbag(bigbag, cantidad=-1, producto=None, guid_proceso=None,
         else:
             c.run_sql(sql_movstock)
         if cantidad < 0:
-            origen_documento = 11
+            origen_documento = SALIDA
         else:
-            origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
-        # 11 (salida de stock), 12 (inventario)
+            origen_documento = FABRICACION
         # mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
         mov_posicion_origen = guid_movposicion
         # En el movimiento de serie la UnidadMedida1_ es la básica:ROLLO,BALA..
@@ -1516,12 +1520,11 @@ def consume_bigbag(bigbag, cantidad=-1, producto=None, guid_proceso=None,
                 # descuadre entre ginn y Murano.
                 if check_api:
                     # ¿Se ha consumido pero no tiene el valor `api` bien?
-                    lastmov = get_ultimo_movimiento_articulo_serie(
-                            c,
-                            bigbag.articulo)
-                    res = es_movimiento_salida_fabricacion(lastmov)
+                    res = esta_consumido(bigbag.articulo,
+                                         bigbag.parteDeProduccion)
                 bigbag.api = res
                 bigbag.syncUpdate()
+                # bigbag.sync()
             else:   # No proceso la importación. Todo ha ido bien hasta ahora.
                 # Devuelvo el guid, que me vale como True también.
                 res = id_proceso_IME
@@ -1580,10 +1583,9 @@ def create_bigbag(bigbag, cantidad=1, producto=None, guid_proceso=None,
         else:
             c.run_sql(sql_movstock)
         if cantidad < 0:
-            origen_documento = 11
+            origen_documento = SALIDA
         else:
-            origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
-        # 11 (salida de stock), 12 (inventario)
+            origen_documento = FABRICACION
         # mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
         mov_posicion_origen = guid_movposicion
         # En movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
@@ -1672,10 +1674,9 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
         else:
             c.run_sql(sql_movstock)
         if cantidad < 0:
-            origen_documento = 11
+            origen_documento = SALIDA
         else:
-            origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
-        # 11 (salida de stock), 12 (inventario)
+            origen_documento = FABRICACION
         # mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
         mov_posicion_origen = guid_movposicion
         # En movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
@@ -1762,10 +1763,9 @@ def create_caja(caja, cantidad=1, producto=None, guid_proceso=None,
         else:
             c.run_sql(sql_movstock)
         if cantidad < 0:
-            origen_documento = 11
+            origen_documento = SALIDA
         else:
-            origen_documento = 2  # 2 (Fabricación), 10 (entrada de stock)
-        # 11 (salida de stock), 12 (inventario)
+            origen_documento = FABRICACION
         # mov_posicion_origen = get_mov_posicion(c, numero_serie_lc)
         mov_posicion_origen = guid_movposicion
         # En movimiento de serie la UnidadMedida1_ es la básica: ROLLO, BALA...
@@ -2197,7 +2197,7 @@ def es_movimiento_salida_fabricacion(movserie):
     (borrado en partes o consumo).
     OrigenDocumento es 2 para altas y 11 para bajas.
     """
-    res = (movserie['OrigenDocumento'] == 11 and
+    res = (movserie['OrigenDocumento'] == SALIDA and
            movserie['SerieDocumento'] == 'FAB')
     return res
 
@@ -2207,7 +2207,7 @@ def es_movimiento_ajuste_api(movserie):
     True si el registro MovimientoArticuloSerie es de salida de fabricación
     (borrado en partes).
     """
-    res = (movserie['OrigenDocumento'] == 11 and
+    res = (movserie['OrigenDocumento'] == SALIDA and
            movserie['SerieDocumento'] == 'API')
     return res
 
@@ -2218,7 +2218,7 @@ def es_movimiento_salida_manual(movserie):
     manual por entrada/salida de movimientos de Murano.
     OJO: Esos movimientos los debe marcar el usuario como "MAN" en la Serie.
     """
-    res = (movserie['OrigenDocumento'] == 11 and
+    res = (movserie['OrigenDocumento'] == SALIDA and
            movserie['SerieDocumento'] == 'MAN')
     return res
 
@@ -2229,7 +2229,7 @@ def es_movimiento_entrada_manual(movserie):
     manual por entrada/salida de movimientos de Murano.
     OJO: Esos movimientos los debe marcar el usuario como "MAN" en la Serie.
     """
-    res = (movserie['OrigenDocumento'] == 10 and
+    res = (movserie['OrigenDocumento'] == ENTRADA and
            movserie['SerieDocumento'] == 'MAN')
     return res
 
@@ -2239,7 +2239,7 @@ def es_movimiento_salida_albaran(movserie):
     Devuelve el número de albarán (evaluable como True) por el que ha salido
     el artículo indicado en el registro MovimientoArticuloSerie.
     """
-    if movserie['OrigenDocumento'] == 1:
+    if movserie['OrigenDocumento'] == VENTA:
         serie = movserie['SerieDocumento']
         documento = movserie['Documento']
         res = serie + str(documento)

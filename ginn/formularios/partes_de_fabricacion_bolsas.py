@@ -1731,7 +1731,7 @@ class PartesDeFabricacionBolsas(Ventana):
                             else:
                                 if mostrar_alerta:
                                     str_error = "No se pudo volcar toda la "\
-                                    "producción a Murano.\n\n"\
+                                    "producción y consumos a Murano.\n\n"\
                                     "Los artículos no volcados se han marcado"\
                                     " con el símbolo «✘».\n"\
                                     "Inténtelo más tarde o contacte con el "\
