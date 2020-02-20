@@ -1801,7 +1801,7 @@ class PartesDeFabricacionBolsas(Ventana):
                 except:
                     res = False
             # # consumos materia prima (bigbags)
-            for bigbag in bigbags:
+            for bigbag in self.objetos.bigbags:
                 i += 1
                 vpro.set_valor(i/tot, 'Consumiendo materia prima ({})'.format(
                     bigbag.codigo))
