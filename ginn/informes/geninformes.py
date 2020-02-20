@@ -9542,7 +9542,11 @@ def existencias_fibra_por_lote(fecha=None, external_api=None):
         for codigo in codigos:
             vpro.set_valor(i/tot, "[1/5] Cruzando datos balas (API)")
             i += 1
-            balas.append(pclases.Articulo.get_articulo(codigo['NumeroSerieLC']))
+            articulo = pclases.Articulo.get_articulo(codigo['NumeroSerieLC'])
+            if not articulo.bala.partidaCarga:   # Con esto, aparte de los
+                # consumos y ventas validadas, tenemos en cuenta también los
+                # consumos pendientes de validar en ginn.
+                balas.append(articulo)
         codigos = external_api.run_sql(
                 sql.format(external_api.get_database(),
                            external_api.get_codempresa(),
@@ -9553,7 +9557,13 @@ def existencias_fibra_por_lote(fecha=None, external_api=None):
         for codigo in codigos:
             vpro.set_valor(i/tot, "[2/5] Cruzando datos bigbags (API)")
             i += 1
-            bigbags.append(pclases.Articulo.get_articulo(codigo['NumeroSerieLC']))
+            articulo = pclases.Articulo.get_articulo(codigo['NumeroSerieLC'])
+            if not articulo.bigbag.parteDeProduccion:
+                # Cuento también como que no están en almacén los bigbag
+                # consumidos en partes de embolsado pendientes de validar.
+                # Los validados ya nos los saltamos directamente al consultar
+                # a Murano porque tienen el UnidadesSerie a 0.
+                bigbags.append(articulo)
         tot = len(balas) + len(bigbags)
     else:
         balas = pclases.Bala.select("""
