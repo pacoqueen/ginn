@@ -177,7 +177,7 @@ def add_to_datafull(articulo, data_full, fallbackdata=None):
         origen = ""
         if fecha_entrada_murano:
             fecha_entrada_murano = fecha_entrada_murano.strftime(
-                    "%d/%m/%Y %H:%M")
+                "%d/%m/%Y %H:%M")
             origen = murano.ops.get_fecha_entrada(articulo, "SerieDocumento")
         fecha_salida_murano = murano.ops.esta_consumido(articulo)
         if fecha_salida_murano:

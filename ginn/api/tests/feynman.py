@@ -34,6 +34,7 @@ import unittest
 import datetime
 
 
+# pylint:disable=too-many-arguments
 def check_existencias(iniciales, produccion, consumos, ventas, ajustes,
                       produccion_mes_pasado, consumos_mes_pasado,
                       produccion_en_curso, consumos_en_curso,
@@ -107,7 +108,7 @@ def main():
     Rutina principal.
     """
     parser = argparse.ArgumentParser(
-            description='Comprueba coherencia de existencias.')
+        description='Comprueba coherencia de existencias.')
     parser.add_argument('-d', '--debug', dest="debug", action="store_true",
                         help="Modo desarrollador con depuración.",
                         default=False)
@@ -149,7 +150,7 @@ class TestAnalyze(unittest.TestCase):
         ini = datetime.datetime(2019, 5, 1, 6, 0, 0)
         fin = datetime.datetime(2019, 6, 1, 6, 0, 0)
         res = analyze(producto, ini, fin, debug=True)
-        self.assertTrue(isinstance(res, float) or isinstance(res, int),
+        self.assertTrue(isinstance(res, (float, int)),
                         "Debe devolver un número (flotante o entero).")
 
     def test_check_existencias(self):

@@ -1864,13 +1864,17 @@ def create_pale(pale, cantidad=1, producto=None, guid_proceso=None,
             res = False
     else:
         res = guid_proceso
-    if not res:     # No se han insertado todas las cajas del palé.
-        if check_api:   # Puede que porque ya existan. Si es así, corrijo `api`
-            for caja in cajas:
-                articulo = caja.articulo
-                articulo.api = existe_articulo(articulo)
-                articulo.syncUpdate()
-            res = pale.api
+    # if not res:     # No se han insertado todas las cajas del palé.
+    if check_api:   # Puede que porque ya existan. Si es así, corrijo `api`
+        # Compruebo y actualizo API de todos modos porque por algún motivo
+        # que no tengo tiempo ahora de investigar, las cajas no se ponen
+        # a True aunque se vuelquen bien a Murano. check_api es True por defec.
+        for caja in cajas:
+            articulo = caja.articulo
+            articulo.api = existe_articulo(articulo)
+            articulo.syncUpdate()
+        # pale.api es propiedad. Será True si todas sus cajas son api=True.
+        res = pale.api
     return res
 
 
@@ -2284,7 +2288,7 @@ def iter_create_articulos(articulos, simulate=False, serie='API', fecha=None,
     """
     i = 0
     # OJO: cantidad=-1 no está probado.
-    assert abs(cantidad) == 1,"Cantidad debe ser -1 o 1."
+    assert abs(cantidad) == 1, "Cantidad debe ser -1 o 1."
     # Cantidad fija para todos. Esto es solo para dar de alta
     # productos con trazabilidad más rápidamente.
     guid_proceso = None     # El primer GUID es nulo. Hay que crearlo con el

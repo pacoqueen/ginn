@@ -49,6 +49,7 @@ class Connection(object):
     """
     def __init__(self):
         self.__database = ""    # Inicialización temporal hasta que conecte.
+        self.__codempresa = CODEMPRESA
         try:
             self.conn = self.__connect()
         # pylint: disable=no-member
@@ -113,7 +114,7 @@ class Connection(object):
         Devuelve el código de empresa sobre el que estamos trabajando en
         Murano.
         """
-        return CODEMPRESA
+        return self.__codempresa
 
     def disconnect(self):
         """
@@ -188,10 +189,9 @@ class Connection(object):
                     if not DEBUG:
                         logging.critical(exception)
                         raise exception
-                    else:
-                        strerror = "\t\t\t -- (!) [Excepción %s]" % exception
-                        print(strerror)
-                        logging.error(strerror)
+                    strerror = "\t\t\t -- (!) [Excepción %s]" % exception
+                    print(strerror)
+                    logging.error(strerror)
         return res
 
 
