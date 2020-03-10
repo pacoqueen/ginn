@@ -3434,6 +3434,12 @@ CREATE FUNCTION ultimo_codigo_rollo_defectuoso_mas_uno()
     AS 'SELECT ''X'' || COALESCE(MAX(numrollo), 0) + 1 FROM rollo_defectuoso;';
         -- NEW! 08/03/2007
 
+CREATE FUNCTION codigo_ultimo_rollo_defectuoso_mas_uno()
+    RETURNS TEXT
+    LANGUAGE SQL
+    AS 'SELECT ''X'' || COALESCE(numrollo, 0) + 1 FROM rollo_defectuoso ORDER BY id DESC LIMIT 1;';
+        -- NEW! 10/03/2020
+
 CREATE FUNCTION ultima_partida_cem_mas_uno()
     RETURNS INT8
     LANGUAGE SQL

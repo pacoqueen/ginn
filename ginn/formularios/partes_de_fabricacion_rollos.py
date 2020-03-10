@@ -404,7 +404,7 @@ class PartesDeFabricacionRollos(Ventana):
             condicion = condicion and (self.wids['sp_merma'].get_value() / 100.0 == partedeproduccion.merma)
             condicion = condicion and (partedeproduccion.horainicio.strftime('%H:%M') == self.wids['e_hora_ini'].get_text())
             condicion = condicion and (partedeproduccion.horafin.strftime('%H:%M') == self.wids['e_hora_fin'].get_text())
-        except AttributeError, msg:
+        except AttributeError as msg:
             txt = "%s: partes_de_fabricacion_rollos.py::es_diferente -> Devuelvo True; Excepción 'AttributeError': %s" % (self.usuario, msg)
             self.logger.error(txt)
             partedeproduccion.sync()  # Si la excepción es por lo que pienso, al sincronizar se actualizarán las horas como mx y no como str.
@@ -815,7 +815,7 @@ class PartesDeFabricacionRollos(Ventana):
                 return
             try:
                 ht.horas = newtext
-            except Exception, msg:
+            except Exception as msg:
                 # Seguramente un sqlobject.dberros.DataError por minutos > 60.
                 utils.dialogo_info(titulo = "ERROR",
                         texto = "No se pudo modificar el tiempo trabajado.\n"
@@ -1071,7 +1071,7 @@ class PartesDeFabricacionRollos(Ventana):
             desechos = parte.descuentosDeMaterial[:]
             try:
                 desechos.sort(lambda c1, c2: c1 != None and c2 != None and int(c1.id - c2.id) or 0)
-            except TypeError, msg:
+            except TypeError as msg:
                 self.logger.error("partes_de_fabricacion_rollos.py (rellenar_tabla_desechos): Error ordenando descuento de material (%s):\n%s" % (msg, desechos))
             for c in desechos:
                 if c.productoCompraID != None:
@@ -1098,7 +1098,7 @@ class PartesDeFabricacionRollos(Ventana):
             consumos = parte.consumos[:]
             try:
                 consumos.sort(lambda c1, c2: c1 != None and c2 != None and int(c1.id - c2.id) or 0)
-            except TypeError, msg:
+            except TypeError as msg:
                 self.logger.error("partes_de_fabricacion_rollos.py (rellenar_tabla_consumos): Error ordenando consumos (%s):\n%s" % (msg, consumos))
             for c in parte.consumos:
                 if c.productoCompraID != None:
@@ -1512,8 +1512,8 @@ class PartesDeFabricacionRollos(Ventana):
             mlina = metrosLineales * numrollosa
         if metrosCuadrados != None:
             metrosa = metrosCuadrados * numrollosa
-        self.wids['e_num_a'].set_text(`numrollosa`)
-        self.wids['e_num_b'].set_text(`numrollosb`)
+        self.wids['e_num_a'].set_text(str(numrollosa))
+        self.wids['e_num_b'].set_text(str(numrollosb))
         self.wids['e_peso_a'].set_text(utils.float2str(pesoa))
         self.wids['e_peso_b'].set_text(utils.float2str(pesob))
         self.wids['e_peso_sin_a'].set_text(utils.float2str(peso_sina))
@@ -1913,7 +1913,7 @@ class PartesDeFabricacionRollos(Ventana):
                 return
             else:
                 partedeproduccion.destroy(ventana = __file__)
-        except Exception, msg:
+        except Exception as msg:
             utils.dialogo_info('PARTE NO BORRADO',
                     'El parte no se eliminó.\nSi tiene rollos o empleados '
                     'asociados, trate primero de eliminarlos y vuelva a '
@@ -2306,7 +2306,7 @@ class PartesDeFabricacionRollos(Ventana):
                         rollo.destroy(ventana = __file__)
                     if rolloDefectuoso != None:
                         rolloDefectuoso.destroy(ventana = __file__)
-                except Exception, e:
+                except Exception as e:
                     utils.dialogo_info(titulo = 'ERROR: ROLLO NO BORRADO',
                         texto = 'El rollo no ha sido eliminado completamente.'
                                 '\nVerifique que no haya sido vendido ya.\n'
@@ -2512,7 +2512,7 @@ class PartesDeFabricacionRollos(Ventana):
             codigo = int(codigo.upper().replace("P-", ""))
             partida = pclases.Partida.select(
                         pclases.Partida.q.numpartida == codigo)[0]
-        except (TypeError, ValueError), msg:
+        except (TypeError, ValueError) as msg:
             self.logger.error("partes_de_fabricacion_rollos::cambiar_partida "\
                               "-> Código partida: %s. Excepción capturada: %s"
                               % (codigo, msg))
@@ -2851,7 +2851,7 @@ class PartesDeFabricacionRollos(Ventana):
                     if motivo != None:
                         largo = utils.dialogo_entrada(titulo = "LARGO",
                                                       texto = "Introduzca la longitud del rollo defectuoso:",
-                                                      valor_por_defecto = `rollo.productoVenta.camposEspecificosRollo.metrosLineales`,
+                                                      valor_por_defecto = str(rollo.productoVenta.camposEspecificosRollo.metrosLineales),
                                                       padre = self.wids['ventana'])
                         if largo != None:
                             try:
@@ -3341,7 +3341,7 @@ class PartesDeFabricacionRollos(Ventana):
                         try:
                             temp.append(pclases.Rollo.select(
                                     pclases.Rollo.q.codigo == codigo)[0])
-                        except Exception, msg:
+                        except Exception as msg:
                             self.logger.error(
                                 "partes_de_fabricacion_rollos::etiquetas -> %s"
                                     % (msg))
@@ -3349,7 +3349,7 @@ class PartesDeFabricacionRollos(Ventana):
                         try:
                             temp.append(pclases.RolloDefectuoso.select(
                                 pclases.RolloDefectuoso.q.codigo == codigo)[0])
-                        except Exception, msg:
+                        except Exception as msg:
                             self.logger.error("partes_de_fabricacion_rollos"
                                               "::etiquetas -> %s" % (msg))
                     else:
@@ -3632,7 +3632,7 @@ class PartesDeFabricacionRollos(Ventana):
                 producto_unidad = producto.unidad
                 if producto_unidad != "":
                     unidad = " en %s" % (producto_unidad)
-            except AttributeError, msg:
+            except AttributeError as msg:
                 self.logger.error("%sEl producto tipo %s ID %d no tiene atributo unidad. Excepción AttributeError: %s."
                     % (self.usuario and self.usuario.usuario + ": " or "",
                        type(producto),
@@ -3684,7 +3684,7 @@ class PartesDeFabricacionRollos(Ventana):
                             # con cantidad 0.0000...1, que debe ser borrado.
                             try:
                                 c.destroy(ventana = __file__)
-                            except Exception, msg:
+                            except Exception as msg:
                                 self.logger.error("%sConsumo ID %d no se pudo eliminar. Excepción: %s"
                                                   % (self.usuario and self.usuario.usuario + ": " or "",
                                                      c.id,
@@ -3720,7 +3720,7 @@ class PartesDeFabricacionRollos(Ventana):
                     if observaciones != None:
                         try:
                             desecho = pclases.DescuentoDeMaterial.desechar(producto, cantidad, self.objeto, observaciones)
-                        except AssertionError, msg:
+                        except AssertionError as msg:
                             self.logger.error("%spartes_de_fabricacion_rollos::add_desecho -> AssertionError: %s" % (self.usuario and self.usuario.usuario + ": " or "", msg))
                         if desecho.cantidad != cantidad:
                             utils.dialogo_info(titulo = "EXISTENCIAS INSUFICIENTES",
@@ -3740,7 +3740,7 @@ class PartesDeFabricacionRollos(Ventana):
                 ddm = pclases.DescuentoDeMaterial.get(idddm)
                 try:
                     ddm.anular()
-                except AssertionError, msg:
+                except AssertionError as msg:
                     self.logger.error("%spartes_de_fabricacion_rollos::drop_desecho -> AssertionError: %s" % (self.usuario and self.usuario.usuario + ": " or "", msg))
                     utils.dialogo_info(titulo = "ERROR",
                                        texto = "Ocurrió un error anulando un descuento de material.\nPulse «Aceptar» para continuar.\n\n\n\nInformación de depuración:\n\n%s" % (msg),
@@ -3905,20 +3905,20 @@ def crear_articulo(numrollo,
                         densidad = 0.0
                     try:
                         rollod = pclases.RolloDefectuoso(
-                                    partida = partida,
-                                    numrollo = numrollo,
-                                    codigo = codigo,
-                                    observaciones = observaciones,
-                                    peso = peso,
-                                    densidad = densidad,
-                                    metrosLineales = largo,
-                                    ancho = ancho,
-                                    pesoEmbalaje = pesoEmbalaje)
+                                    partida=partida,
+                                    numrollo=numrollo,
+                                    codigo=codigo,
+                                    observaciones=observaciones,
+                                    peso=peso,
+                                    densidad=densidad,
+                                    metrosLineales=largo,
+                                    ancho=ancho,
+                                    pesoEmbalaje=pesoEmbalaje)
                         pclases.Auditoria.nuevo(rollod,
                                 objeto_ventana_parte
                                 and objeto_ventana_parte.usuario or None,
                                 __file__)
-                    except Exception, msg:
+                    except Exception as msg:
                         txt = "Rollo defectuoso %s no se pudo crear. "\
                               "Probablemente número duplicado. Mensaje de "\
                               "la excepción: %s" % (codigo, msg)
@@ -3991,9 +3991,13 @@ def cambiar_marcado_ce(ch_defectuoso, ch_marcado, e_numrollo):
     """
     if ch_defectuoso.get_active():
         ch_marcado.set_active(False)
-        codigo_proximo_rollo_defectuoso = pclases.RolloDefectuoso._queryOne(
+        codigo_proximo_rollo = pclases.RolloDefectuoso._queryOne(
+                "SELECT codigo_ultimo_rollo_defectuoso_mas_uno();")[0]
+        existe = pclases.RolloDefectuoso.selectBy(codigo=codigo_proximo_rollo)
+        if existe.count() > 0:
+             codigo_proximo_rollo = pclases.RolloDefectuoso._queryOne(
                 "SELECT ultimo_codigo_rollo_defectuoso_mas_uno();")[0]
-        e_numrollo.set_text(codigo_proximo_rollo_defectuoso)
+        e_numrollo.set_text(codigo_proximo_rollo)
     else:
         ch_marcado.set_active(True)
         codigo_proximo_rollo = pclases.Rollo._queryOne(
@@ -4074,12 +4078,12 @@ def imprimir_etiqueta(articulo, marcado_ce, ventana_parte, defectuoso = False):
                     fetiqueta = None    # Etiqueta estándar Geotexan
                 else:
                     fetiqueta = campos.modeloEtiqueta.get_func()
-            except AttributeError, e:  # No es un rollo.
+            except AttributeError as e:  # No es un rollo.
                 myprint("partes_de_fabricacion_rollos::imprimir_etiqueta "
                         "-> AttributeError: No es un rollo.", e)
                 fetiqueta = None
                 campos = None
-            except ValueError, e:      # No tiene modelo de etiqueta.
+            except ValueError as e:      # No tiene modelo de etiqueta.
                 myprint("partes_de_fabricacion_rollos::imprimir_etiqueta "
                         "-> ValueError: No es un rollo.", e)
                 fetiqueta = None
@@ -4155,7 +4159,7 @@ def recv_serial(com, ventana, l_peso_bruto, ventana_parte, ch_marcado, e_numroll
         # Tratar
         try:
             peso = float(c)
-        except Exception, msg:
+        except Exception as msg:
             myprint("partes_de_fabricacion_rollos -> recv_serial", msg)
             peso = 0
         if peso == 0:
@@ -4188,7 +4192,7 @@ def recv_serial(com, ventana, l_peso_bruto, ventana_parte, ch_marcado, e_numroll
                                    texto = "Cancele y seleccione una partida "
                                         "antes de introducir la producción.",
                                    padre = ventana)
-        except (psycopg_ProgrammingError, ValueError, AttributeError), msg:
+        except (psycopg_ProgrammingError, ValueError, AttributeError) as msg:
             txterror = "partes_de_fabricacion_rollos::recv_serial -> %s"%(msg)
             myprint(txterror)
             utils.dialogo_info(titulo = 'ROLLO NO CREADO',
@@ -4228,6 +4232,10 @@ def get_proximo_codigo_a_crear(e_numrollo):
                 "SELECT ultimo_codigo_rollo_mas_uno();")[0]
     elif codigo_actual.startswith("X"):
         codigo_proximo_rollo = pclases.RolloDefectuoso._queryOne(
+                "SELECT codigo_ultimo_rollo_defectuoso_mas_uno();")[0]
+        existe = pclases.RolloDefectuoso.selectBy(codigo=codigo_proximo_rollo)
+        if existe.count() > 0:
+            codigo_proximo_rollo = pclases.RolloDefectuoso._queryOne(
                 "SELECT ultimo_codigo_rollo_defectuoso_mas_uno();")[0]
     else:
         codigo_proximo_rollo = pclases.Rollo._queryOne(
