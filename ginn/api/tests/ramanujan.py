@@ -1759,12 +1759,24 @@ def build_fila_valoracion(fila, agrupacion):
         pale = fila[fila.keys()[12]]
     pv = murano.ops.get_producto_ginn(codigo_producto)
     articulo = pclases.Articulo.get_articulo(codigo_trazabilidad)
+    if not articulo:
+        # Artículo borrado en ginn pero no en Murano o se volcó a Murano y
+        # después se borró y está a 0 esa serie con un movimiento de entrada
+        # y otro de salida.
+        precio = 0
+        peso_neto = 0.0
+        fhora_fabricacion = datetime.datetime.now()
+    else:
+        precio = murano.ops.get_precio_coste(articulo)
+        peso_neto = articulo.peso_neto
+        try:
+            fhora_fabricacion = articulo.parteDeProduccion.fechahorainicio
+        except AttributeError:
+            fhora_fabricacion = articulo.fechahora
     proyecto = murano.ops.get_proyecto(pv)
-    precio = murano.ops.get_precio_coste(articulo)
     precio = float(precio)  # Viene como Decimal de SQL
     # Malo sería que cambie el peso entre que genero el datalib de
     # desglose y monto este. Así me evito el error float*Decimal:
-    peso_neto = articulo.peso_neto
     coste = precio * peso_neto
     # Asumimos la fecha del parte como fecha de fabricación de todos
     # los artículos. Se toma la fecha lógica del parte (si antes de las
@@ -1774,10 +1786,6 @@ def build_fila_valoracion(fila, agrupacion):
     # Si por lo que sea no tiene parte, se devuelve la fecha y hora
     # de creación del artículo, que no tiene por qué coincidir si
     # se ha dado de alta más tarde por problemas en la línea.
-    try:
-        fhora_fabricacion = articulo.parteDeProduccion.fechahorainicio
-    except AttributeError:
-        fhora_fabricacion = articulo.fechahora
     fecha_fabricacion = datetime.date.fromordinal(
         fhora_fabricacion.toordinal())
     if fhora_fabricacion.hour < 6:
