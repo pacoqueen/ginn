@@ -527,7 +527,7 @@ class TrazabilidadArticulos(Ventana):
         escribir(txtvw, "\t%s kg peso teórico.\n" % (
                             utils.float2str(total_peso_teorico)), ("negrita"))
         escribir(txtvw, "\t%s m².\n" % (utils.float2str(total_metros)),
-                                        ("negrita"))
+                 ("negrita"))
 
     def rellenar_producto_lote_o_partida(self, objeto):
         """

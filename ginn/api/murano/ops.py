@@ -2022,6 +2022,32 @@ def update_calidad(articulo, calidad, comentario=None, serie="API",
     return res
 
 
+def update_peso(articulo, peso_real):
+    """
+    Recibe un artículo **ya** volcado a Murano y actualiza el peso en Murano
+    y en ginn.
+    0. Elimina el artículo de Murano.
+    1. Desmarca el artículo como volcado en ginn.
+    2. Actualiza el peso bruto, neto y real en ginn teniendo en cuenta peso de
+       embalaje y demás.
+    3. Vuelca el artículo de nuevo a Murano.
+    4. Se comprueba el campo `api` respecto al resultado del volcado.
+    """
+    serie = 'API'
+    peso_anterior = articulo.peso_real
+    observaciones = 'Cambio de peso de {} a {}.'.format(peso_anterior,
+                                                        peso_real)
+    res = delete_articulo(articulo, observaciones=observaciones, serie=serie)
+    if res:
+        articulo.api = False
+        articulo.set_peso_real(peso_real)
+        articulo.api = create_articulo(articulo, observaciones=observaciones,
+                                       serie=serie)
+        articulo.sync()
+        res = articulo.api
+    return res
+
+
 def duplica_articulo(articulo, producto=None):
     """
     Devuelve True si al crear el artículo recibido con el producto indicado

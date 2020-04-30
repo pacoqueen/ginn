@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2018 Francisco José Rodríguez Bogado,                    #
+# Copyright (C) 2005-2020 Francisco José Rodríguez Bogado,                    #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -10170,18 +10170,68 @@ class Articulo(SQLObject, PRPCTOO):
             res = self.pesoReal
         return res
 
+    def set_peso_real(self, peso_real, peso_embalaje=None):
+        """
+        Actualiza el peso real del artículo, el dado por báscula.
+        Actualiza los datos de peso netro y peso bruto en función del embalaje.
+        """
+        res = True
+        self.pesoReal = peso_real
+        if self.es_rollo():
+            if peso_embalaje is not None:
+                raise ValueError("No se puede modificar el peso del embalaje.")
+            self.rollo.peso = peso_real
+            # Es property:
+            # self.rollo.peso_sin = peso_real - self.peso_embalaje
+        elif self.es_rollo_defectuoso():
+            if peso_embalaje is not None:
+                self.rolloDefectuoso.pesoEmbalaje = peso_embalaje
+            self.rolloDefectuoso.peso = peso_real
+            # Es property:
+            # self.rolloDefectuoso.peso_sin = peso_real - self.peso_embalaje
+        elif self.es_rollo_c():
+            if peso_embalaje is not None:
+                self.rolloC.pesoEmbalaje = peso_embalaje
+            self.rolloC.peso = peso_real
+        elif self.es_bala():
+            # OJO: Caso especial.
+            # El peso guardado en pclases.Bala no es el de báscula. Es el
+            # de báscula **menos** el embalaje estimado, que a lo largo del
+            # tiempo ha pasado de 1/1.5 kg a 200 gr y finalmente a 860 gr
+            if peso_embalaje is not None:
+                raise ValueError("No se puede modificar el peso del embalaje.")
+            self.bala.pesobala = peso_real + self.peso_embalaje
+        elif self.es_bala_cable():
+            if peso_embalaje is not None:
+                self.balaCable.pesoEmbalaje = peso_embalaje
+            self.balaCable.peso = peso_real
+        elif self.es_bigbag():
+            if peso_embalaje is not None:
+                raise ValueError("No se puede modificar el peso del embalaje.")
+            self.bigbag.pesobigbag = peso_real
+        elif self.es_caja():
+            # res = None   # No tienen peso real de báscula.
+            # Tomamos como peso real el peso teórico de las bolsas más
+            # el estimado de embalaje de la caja completa.
+            if peso_embalaje is not None:
+                raise ValueError("No se puede modificar el peso del embalaje.")
+            self.caja.peso = peso_real
+        else:
+            res = False
+        return res
+
     superficie = property(get_superficie)
     peso_real = property(get_peso_real)
     peso = property(get_peso)
     peso_bruto = peso
-    peso_sin = property(get_peso_sin, doc = get_peso_sin.__doc__)
+    peso_sin = property(get_peso_sin, doc=get_peso_sin.__doc__)
     peso_neto = peso_sin
     peso_teorico = property(get_peso_teorico)
     peso_embalaje = property(get_peso_embalaje)
     ancho = property(get_ancho)
     largo = property(get_largo)
     cantidad = property(get_cantidad)
-    analizado = property(get_analizado, doc = get_analizado.__doc__)
+    analizado = property(get_analizado, doc=get_analizado.__doc__)
 
     def get_codigo_interno(self):
         """
