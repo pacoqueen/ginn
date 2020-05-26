@@ -1763,6 +1763,7 @@ def build_fila_valoracion(fila, agrupacion):
         # Artículo borrado en ginn pero no en Murano o se volcó a Murano y
         # después se borró y está a 0 esa serie con un movimiento de entrada
         # y otro de salida.
+        # TODO: De momento los ignoro. Pero, ¿después qué?
         precio = 0
         peso_neto = 0.0
         fhora_fabricacion = datetime.datetime.now()

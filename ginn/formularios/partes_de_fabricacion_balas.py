@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2019  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2020  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -74,6 +74,8 @@ try:
 except ImportError:
     MURANO = False
 
+MIN_KG_A = 250
+MAX_KG_A = 350
 
 def verificar_solapamiento(partedeproduccion, padre=None,
                            fecha_anterior=None, horaini_anterior=None,
@@ -1478,7 +1480,7 @@ class PartesDeFabricacionBalas(Ventana):
             if numcol == 2 and articulo and articulo.es_bala():  # Columna de
                 # peso. En NARANJA CHILLÓN si está fuera de lo "normal". A ver
                 # si así el "interfecto" está más atento.
-                if not 250 <= articulo.peso_real <= 350:
+                if not MIN_KG_A <= articulo.peso_real <= MAX_KG_A:
                     cell.set_property("cell-background", "orange")
             utils.redondear_flotante_en_cell_cuando_sea_posible(column,
                                                                 cell,
@@ -1803,27 +1805,37 @@ class PartesDeFabricacionBalas(Ventana):
 
     def cambiar_peso_bala(self, cell, path, newtext):
         # Comprobaciones previas:
-        if not self.usuario or self.usuario.nivel > 3:
-            utils.dialogo_info(titulo="OPERACIÓN NO PERMITIDA",
-                               texto="No está permitido cambiar el peso de una"
-                                     " bala.\nTrate de eliminarla y pesarla de"
-                                     " nuevo.",
-                               padre=self.wids['ventana'])
-            return
-        if not MURANO:
-            utils.dialogo_info(titulo="ERROR DE CONEXIÓN CON MURANO",
-                               texto="No puede modificar balas. "
-                                     "Solo consultas.",
-                               padre=self.wids['ventana'])
-            return
         model = self.wids['tv_balas'].get_model()
-        if model[path][1] == 0 or model[path][1] == '':
-            # Nº bala, no tiene, no es una bala.
-            return
         try:
             codigo = model[path][1].split()[0]
         except IndexError:
             codigo = model[path][1]
+        if model[path][1] == 0 or model[path][1] == '':
+            # Nº bala, no tiene, no es una bala.
+            return
+        articulo = pclases.Articulo.get_articulo(codigo)
+        # CWT: Caso especial para corregir balas mal pesadas
+        if (not self.objeto.bloqueado and
+                articulo.es_bala() and
+                articulo.es_clase_a() and
+                not MIN_KG_A <= articulo.peso_real <= MAX_KG_A):
+            # Sea quien sea el usuario, le dejo que lo cambie.
+            pass
+        else:
+            if not self.usuario or self.usuario.nivel > 3:
+                utils.dialogo_info(
+                        titulo="OPERACIÓN NO PERMITIDA",
+                        texto="No está permitido cambiar el peso de una"
+                              " bala.\nTrate de eliminarla y pesarla de"
+                              " nuevo.",
+                        padre=self.wids['ventana'])
+                return
+            if not MURANO:
+                utils.dialogo_info(titulo="ERROR DE CONEXIÓN CON MURANO",
+                                   texto="No puede modificar balas. "
+                                         "Solo consultas.",
+                                   padre=self.wids['ventana'])
+                return
         silo_marcado = False
         for silo in pclases.Silo.select():
             silo_marcado = (silo_marcado or
@@ -1846,7 +1858,6 @@ class PartesDeFabricacionBalas(Ventana):
                                'El peso del artículo debe ser un número.',
                                padre=self.wids['ventana'])
             return
-        articulo = pclases.Articulo.get_articulo(codigo)
         volver_a_volcar_a_murano = False    # Flag para... eso. Volver a crear.
         if articulo and articulo.api:
             if not (self.usuario and self.usuario.nivel == 0):
