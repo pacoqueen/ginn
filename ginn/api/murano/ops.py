@@ -2770,7 +2770,9 @@ def buscar_almacen_silo(silo):
                  "Silo 3": "SIL3",
                  "Silo 4": "SIL4",
                  "Silo 5": "SIL5",
-                 "Silo 6": "SIL6"}
+                 "Silo 6": "SIL6",
+                 "Silo 7": "SIL7",
+                 "Silo 8": "SIL8"}
     try:
         almacen = almacenes[silo.nombre]
     except KeyError:
