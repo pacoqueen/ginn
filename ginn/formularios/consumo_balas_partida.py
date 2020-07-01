@@ -67,6 +67,7 @@ class ConsumoBalasPartida(Ventana):
         self.objeto = objeto
         Ventana.__init__(self, 'consumo_balas_partida.glade',
                          self.objeto, usuario=usuario)
+        self.add_botones_ant_sig()
         connections = {'b_salir/clicked': self.salir,
                        'b_partida/clicked': self.set_partida,
                        'b_imprimir/clicked': self.imprimir,
@@ -121,6 +122,48 @@ class ConsumoBalasPartida(Ventana):
         else:
             self.ir_a(objeto)
         gtk.main()
+
+    def add_botones_ant_sig(self):
+        """
+        Agrega dos botones para ir a la partida de carga anterior y a la
+        siguiente.
+        """
+        wpadre = self.wids['b_partida'].parent
+        self.wids['b_anterior'] = gtk.Button("<")
+        self.wids['b_siguiente'] = gtk.Button(">")
+        wpadre.add_with_properties(self.wids['b_anterior'], "expand", False)
+        wpadre.add_with_properties(self.wids['b_siguiente'], "expand", False)
+        self.wids['b_anterior'].connect('clicked', self.ir_a_anterior)
+        self.wids['b_siguiente'].connect('clicked', self.ir_a_siguiente)
+        wpadre.show_all()
+
+    def ir_a_anterior(self, boton):
+        """
+        Hace activo el anterior parte al actual, si lo hay.
+        """
+        if self.objeto:
+            try:
+                anterior = pclases.PartidaCarga.select(
+                        pclases.PartidaCarga.q.numpartida < self.objeto.numpartida,
+                        orderBy="-numpartida")[0]
+            except IndexError:
+                anterior = None
+            if anterior:
+                self.ir_a(anterior)
+
+    def ir_a_siguiente(self, boton):
+        """
+        Hace activo el siguiente parte al actual, si lo hay.
+        """
+        if self.objeto:
+            try:
+                posterior = pclases.PartidaCarga.select(
+                        pclases.PartidaCarga.q.numpartida > self.objeto.numpartida,
+                        orderBy="numpartida")[0]
+            except IndexError:
+                posterior = None
+            if posterior:
+                self.ir_a(posterior)
 
     def add_partida_gtx(self, boton):
         """
@@ -223,10 +266,23 @@ class ConsumoBalasPartida(Ventana):
                                                          partida.codigo))
             self.wids['e_fecha'].set_text(utils.str_fechahora(partida.fecha))
             self.wids['ch_api'].set_active(bool(partida.api))
+            try:
+                anterior = pclases.PartidaCarga.select(
+                        pclases.PartidaCarga.q.numpartida < partida.numpartida,
+                        orderBy="-numpartida")[0]
+            except IndexError:
+                anterior = None
+            try:
+                posterior = pclases.PartidaCarga.select(
+                        pclases.PartidaCarga.q.numpartida > partida.numpartida,
+                        orderBy="numpartida")[0]
+            except IndexError:
+                posterior = None
         else:
             self.wids['e_partida'].set_text("")
             self.wids['e_fecha'].set_text("")
             self.wids['ch_api'].set_active(False)
+            anterior = posterior = None
         self.rellenar_balas()
         self.rellenar_partidas_gtx()
         self.comprobar_permisos()
@@ -235,6 +291,8 @@ class ConsumoBalasPartida(Ventana):
         self.wids['b_add_producto'].set_sensitive(not api)
         self.wids['b_drop_bala'].set_sensitive(not api)
         self.wids['b_phaser'].set_sensitive(not api)
+        self.wids['b_anterior'].set_sensitive(anterior and True or False)
+        self.wids['b_siguiente'].set_sensitive(posterior and True or False)
 
     def comprobar_permisos(self):
         """
