@@ -1139,9 +1139,8 @@ def crear_etiquetas_balas(balas, mostrar_marcado=True, lang="es"):
         # print "Imprimiendo segunda etiquetas..."
         canvas.showPage()
         # Y ahora la etiqueta adicional por si se pierde la otra y para cargar.
-        # XXX: TODO: FIXME: CWT: TEMP: Quitar la segunda etiqueta porque estamos sin stock de pegatinas.
-        # create_etiqueta_backup_bala(canvas, bala)
-        # canvas.showPage()
+        create_etiqueta_backup_bala(canvas, bala)
+        canvas.showPage()
     canvas.save()
     return nomarchivo
 
