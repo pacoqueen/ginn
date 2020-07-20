@@ -2948,32 +2948,39 @@ class PartesDeFabricacionRollos(Ventana):
         if respuesta == gtk.RESPONSE_ACCEPT:
             codigo = dialogo.vbox.get_children()[2].get_text()
             observaciones = dialogo.vbox.get_children()[4].get_text()
+            fechahoraenvio = datetime.datetime.now()
             m = pclases.Muestra(lote = lote,
                                 partida = partida,
                                 codigo = codigo,
                                 observaciones = observaciones,
                                 pendiente = True,
-                                envio = mx.DateTime.localtime(),
+                                envio = fechahoraenvio,
                                 recepcion = None,
                                 loteCem = None)
             pclases.Auditoria.nuevo(m, self.usuario, __file__)
             _codigo[0] = codigo
-            if utils.dialogo(titulo = "MUESTRA ENVIADA",
-                             texto = "Muestra creada, enviada y pendiente para su análisis en laboratorio.\n¿Desea enviar una alerta?",
-                             padre = self.wids['ventana']):
-                usuarios = [(u.id, u.usuario) for u in pclases.Usuario.select(orderBy = 'usuario')]
-                usuario = utils.dialogo_combo(titulo = "SELECCIONE USUARIO",
-                                              texto = "Seleccione del desplegable inferior al usuario que quiere alertar acerca de la muestra.",
-                                              ops = usuarios,
-                                              padre = self.wids['ventana'])
-                if usuario != None:
-                    user = pclases.Usuario.get(usuario)
-                    if m.codigo:
-                        msj = "La muestra %s está " % m.codigo
-                    else:
-                        msj = "Tiene una muestra "
-                    msj += "pendiente de analizar."
-                    user.enviar_mensaje(msj)
+            # CWT: Enviar un correo electrónico a una dirección HARDCODED sí
+            #      o sí. +jmadrid
+            if m.codigo:
+                msj = "La muestra %s está " % m.codigo
+            else:
+                msj = "Tiene una muestra "
+            msj += "pendiente de analizar."
+            dests = [u.email for u in
+                     pclases.Usuario.select(
+                         pclases.Usuario.q.usuario.contains("lab"))]
+            try:
+                dests.append(pclases.Usuario.select(
+                    pclases.Usuario.q.email.contains("calidad"))[0].email)
+            except IndexError:
+                pass
+            rte = self.usuario
+            asunto = "Muestra {} extraída".format(m.codigo and m.codigo or "")
+            texto = "{}\n\n\n{}\n\n\n{}".format(msj, m.observaciones,
+                                                utils.str_fechahora(m.envio))
+            utils.enviar_correoe(rte.cuenta, dests, asunto, texto,
+                                 servidor=rte.smtpserver, usuario=rte.smtpuser,
+                                 password=rte.smtppassword, ssl=True)
 
     def _DEPRECATED_bloquear(self, ch, mostrar_alerta=True):
         # Si el parte tiene menos de un día y se encuentra bloqueado, dejo que lo pueda desbloquear cualquiera.
