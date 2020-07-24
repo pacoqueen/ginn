@@ -690,7 +690,6 @@ def comprobar_volcado_partes(fsalida, simulate=True):
     A = pclases.Articulo
     hoy = datetime.datetime.now()
     fini = datetime.datetime(hoy.year, hoy.month, 1, 6)
-    fini = datetime.datetime(2016, 6, 1, 6)     # FIXME
     pdps = PDP.select(pclases.AND(PDP.q.fechahorainicio >= fini,
                                   PDP.q.bloqueado == True,
                                   A.q.parteDeProduccionID == PDP.q.id,
