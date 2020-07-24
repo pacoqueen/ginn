@@ -672,6 +672,52 @@ def corregir_dimensiones_nulas(fsalida, simulate=True):
     return res
 
 
+def comprobar_volcado_partes(fsalida, simulate=True):
+    """
+    Comprueba los partes que se han quedado como validados pero contiene
+    bultos no volcados (probablemente, por saturación de Murano).
+    Se ejecuta siempre, así que debe ser rápido.
+    No usa Murano para nada. Son todo operaciones sobre ginn.
+    Si encuentra alguno, en vez de corregirlo volcando artículos (que sería
+    lento) lo que hace es marcar el parte como no validado para que el usuario
+    sea el que compruebe y vuelva a volcar.
+    Como hay 10 años de partes antes de Murano que cumplen esta condición, solo
+    busco los del mes corriente, así también evito que se toquen partes de
+    meses ya cerrados.
+    """
+    report = open(fsalida, "a", 0)
+    PDP = pclases.ParteDeProduccion
+    A = pclases.Articulo
+    hoy = datetime.datetime.now()
+    fini = datetime.datetime(hoy.year, hoy.month, 1, 6)
+    fini = datetime.datetime(2016, 6, 1, 6)     # FIXME
+    pdps = PDP.select(pclases.AND(PDP.q.fechahorainicio >= fini,
+                                  PDP.q.bloqueado == True,
+                                  A.q.parteDeProduccionID == PDP.q.id,
+                                  A.q.api == False),
+                      orderBy="-id",
+                      distinct=True)
+    report.write("{} partes validados con bultos no volcados encontrados"
+                 ".\n".format(pdps.count()))
+    for pdp in tqdm(pdps, desc="Partes validados con bultos no volcados"):
+        if not simulate:
+            report.write("Procesando {}...".format(pdp.get_info()))
+            no_volcados = [a for a in pdp.articulos if not a.api]
+            report.write(" {}/{} no volcados. Marcando pendiente...".format(
+                no_volcados, len(pdp.articulos)))
+            pdp.bloqueado = False
+            pdp.sync()
+            res = not pdp.bloqueado
+        else:
+            report.write("Simulando {}...".format(pdp.get_info()))
+            res = True
+        if res:
+            report.write(" [OK]\n")
+        else:
+            report.write(" [KO]\n")
+    report.close()
+
+
 def make_consumos(fsalida, simulate=True, fini=None, ffin=None):
     """
     Realiza todos los consumos de materiales y de balas cargadas en la línea.
@@ -951,10 +997,12 @@ def main():
         codigos_productos = _todos_los_codigos_de_producto()
     else:
         codigos_productos = args.codigos_productos
-    # Primero termino de procesar todas las posibles imortaciones pendientes:
+    # Primero termino de procesar todas las posibles importaciones pendientes:
     finish_pendientes(args.fsalida, args.simulate)
     # Y corrijo las posibles dimensiones nulas:
     corregir_dimensiones_nulas(args.fsalida, args.simulate)
+    # Y ahora los bultos no volcados de partes validados por saturación.
+    comprobar_volcado_partes(args.fsalida, args.simulate)
     if args.todo:
         # Si `--todo` Compruebo todos los artículos y productos.
         print("Comprobando TODOS los artículos y productos...")

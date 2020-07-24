@@ -18,6 +18,8 @@ fuera a ese lugar; decía: "Los ingleses van a clubs".»
 
 ---
 
+** WIP **
+
 La siguiente versión de ramanujan. Debe ser más rápida. Debe centrarse
 en obtener el resumen. Debe montar el resultado en tiempo real en Drive.
 Debe poderse invocar para un solo producto, para varios, para una
