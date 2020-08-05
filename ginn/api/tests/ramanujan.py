@@ -1058,6 +1058,7 @@ def query_articulos_from_partes(producto, fini, ffin):
     Devuelve los artículos de ginn comprendidos en los partes de producción
     del producto recibido entre las fechas recibidas. Intervalo abierto en la
     fecha de fin.
+    Independiente de si están validados o no.
     """
     # A todos los efectos el día comienza en el turno de las 6:
     fhoraini = datetime.datetime(fini.year, fini.month, fini.day, 6)
