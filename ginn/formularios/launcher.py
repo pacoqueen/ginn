@@ -109,7 +109,7 @@ def run(modulo, clase, usuario, fconfig, obj_puid=None,
     except Exception as msg:     # fallback @UnusedVariable
         # TODO: Esto debería ir al logger o algo:
         # print "launcher.py:", msg
-        exec "import {}".format(modulo)
+        exec("import {}".format(modulo))
         v = eval('{}.{}'.format(modulo, clase))
         if obj_puid:
             if isinstance(obj_puid, str):

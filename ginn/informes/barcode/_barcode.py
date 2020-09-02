@@ -63,7 +63,7 @@ except ImportError:
     from PIL import ImageDraw
 
 
-class InvalidBarcode(StandardError):
+class InvalidBarcode(Exception):
     pass
 
 
@@ -102,7 +102,7 @@ class Barcode:
         """
 
         if self.validLengths and len(value) not in self.validLengths:
-            raise InvalidBarcode, 'Barcode is not a valid length: Should be one of %s' % self.validLengths
+            raise InvalidBarcode('Barcode is not a valid length: Should be one of %s' % self.validLengths)
 
         value = str(value)
         rv = self.start + self.spacing
@@ -116,7 +116,7 @@ class Barcode:
             try:
                 rv += self.mapping[ch]
             except KeyError:
-                raise InvalidBarcode, 'Barcode cannot contain "%s" character.' % ch
+                raise InvalidBarcode('Barcode cannot contain "%s" character.' % ch)
 
         return rv + self.spacing + self.stop
 

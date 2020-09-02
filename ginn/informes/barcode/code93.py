@@ -34,7 +34,7 @@
 #
 
 from reportlab.lib.units import inch
-from common import MultiWidthBarcode
+from .common import MultiWidthBarcode
 import string
 
 _patterns = {
@@ -58,7 +58,7 @@ _patterns = {
 }
 
 _charsbyval = {}
-for k, v in _patterns.items():
+for k, v in list(_patterns.items()):
     _charsbyval[v[1]] = k
 
 _extended = {
@@ -89,7 +89,7 @@ _extended = {
 
 
 def _encode93(cad):
-    s = map(None, cad)
+    s = list(cad)
     s.reverse()
 
     # compute 'C' checksum
@@ -126,7 +126,7 @@ class _Code93Base(MultiWidthBarcode):
         if type(value) is type(1):
             value = str(value)
             
-        for (k, v) in args.items():
+        for (k, v) in list(args.items()):
             setattr(self, k, v)
 
         if self.quiet:
@@ -190,7 +190,7 @@ class Standard93(_Code93Base):
         for c in self.value:
             if c in string.lowercase:
                 c = string.upper(c)
-            if not _patterns.has_key(c):
+            if c not in _patterns:
                 self.valid = 0
                 continue
             vval = vval + c
@@ -215,7 +215,7 @@ class Extended93(_Code93Base):
         vval = ""
         self.valid = 1
         for c in self.value:
-            if not _patterns.has_key(c) and not _extended.has_key(c):
+            if c not in _patterns and c not in _extended:
                 self.valid = 0
                 continue
             vval = vval + c
@@ -225,9 +225,9 @@ class Extended93(_Code93Base):
     def encode(self):
         self.encoded = ""
         for c in self.validated:
-            if _patterns.has_key(c):
+            if c in _patterns:
                 self.encoded = self.encoded + c
-            elif _extended.has_key(c):
+            elif c in _extended:
                 self.encoded = self.encoded + _extended[c]
             else:
                 raise ValueError

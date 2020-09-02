@@ -171,7 +171,7 @@ class Barcode(Flowable):
         decodeFontFile(courB08_pbm, FDEST_PBM)
         font = ImageFont.load(FDEST_PIL)
         # Imagen:
-        im = Image.new("1", map(int, (self.width, self.height + 15)))
+        im = Image.new("1", list(map(int, (self.width, self.height + 15))))
         # Lienzo:
         dw = ImageDraw.Draw(im)
         # Comienzo con lienzo en blanco:
@@ -215,9 +215,9 @@ class Barcode(Flowable):
             import Image
         except ImportError:
             if formato_intermedio == "svg":
-                print "No se pudo importar Python Imaging (PIL). Pruebe a usar la imagen intermedia SVG generada: %s." % (svg)
+                print("No se pudo importar Python Imaging (PIL). Pruebe a usar la imagen intermedia SVG generada: %s." % (svg))
             else:
-                print "No se pudo importar Python Imaging (PIL). Pruebe a usar la imagen intermedia EPS generada: %s." % (eps)
+                print("No se pudo importar Python Imaging (PIL). Pruebe a usar la imagen intermedia EPS generada: %s." % (eps))
             return None
         if formato_intermedio == "svg":
             im = Image.open(svg)
@@ -227,15 +227,15 @@ class Barcode(Flowable):
             im = Image.open(eps)
         try:
             im.save(nombrearchivo, "PNG")
-        except IOError, msg:
+        except IOError as msg:
             if formato_intermedio == "svg":
-                print "No se pudo guardar el archivo %s. Excepción: %s. Devuelvo la imagen intermedia %s." % (nombrearchivo, msg, svg)
+                print("No se pudo guardar el archivo %s. Excepción: %s. Devuelvo la imagen intermedia %s." % (nombrearchivo, msg, svg))
                 return svg
             elif formato_intermedio == "pil":
-                print "No se pudo guardar el archivo %s. Excepción: %s." % (nombrearchivo, msg)
+                print("No se pudo guardar el archivo %s. Excepción: %s." % (nombrearchivo, msg))
                 return None
             else:
-                print "No se pudo guardar el archivo %s. Excepción: %s. Devuelvo la imagen intermedia %s." % (nombrearchivo, msg, eps)
+                print("No se pudo guardar el archivo %s. Excepción: %s. Devuelvo la imagen intermedia %s." % (nombrearchivo, msg, eps))
                 return eps
         return nombrearchivo
 
@@ -442,7 +442,7 @@ class I2of5(Barcode):
         if type(value) == type(1):
             value = str(value)
 
-        for (k, v) in args.items():
+        for (k, v) in list(args.items()):
             setattr(self, k, v)
 
         if self.quiet:
@@ -486,7 +486,7 @@ class I2of5(Barcode):
                     cm = 3
 
             d = 10 - (int(d) % 10)
-            s = s + `d`
+            s = s + repr(d)
 
         self.encoded = s
 
@@ -570,7 +570,7 @@ class MSI(Barcode):
         if type(value) == type(1):
             value = str(value)
 
-        for (k, v) in args.items():
+        for (k, v) in list(args.items()):
             setattr(self, k, v)
 
         if self.quiet:
@@ -705,7 +705,7 @@ class Codabar(Barcode):
         if type(value) == type(1):
             value = str(value)
 
-        for (k, v) in args.items():
+        for (k, v) in list(args.items()):
             setattr(self, k, v)
 
         if self.quiet:
@@ -830,7 +830,7 @@ class Code11(Barcode):
         if type(value) == type(1):
             value = str(value)
 
-        for (k, v) in args.items():
+        for (k, v) in list(args.items()):
             setattr(self, k, v)
 
         if self.quiet:
@@ -896,7 +896,7 @@ class Code11(Barcode):
 
 
 if __name__ == "__main__":
-    from reportlab.lib.units import cm; import code39
+    from reportlab.lib.units import cm; from . import code39
     b = code39.Extended39("Q-123456", xdim = .080*cm)
     import os
     os.system("qiv %s" % (b.guardar_a_png()))

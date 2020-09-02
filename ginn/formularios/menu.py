@@ -50,10 +50,23 @@
 #    de enviar bugreport hasta cerrar el programa).
 # #################################################################
 
-import pygtk
-pygtk.require('2.0')
-import gtk
-import gobject
+import gi
+gi.require_version("Gtk", '3.0')
+from gi import pygtkcompat
+
+try:
+    from gi import pygtkcompat
+except importerror:
+    pygtkcompat = none
+    from gi.repository import Gtk as gtk
+    from gi.repository import GObject as gobject
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+    import gtk
+    import gobject
+
 import os
 import sys
 import traceback
@@ -336,7 +349,7 @@ class Menu:
                 m = v.modulo
                 if m != None:
                     modulos[m].append(v)
-        modulos_sorted = modulos.keys()
+        modulos_sorted = list(modulos.keys())
         def fsortalfabeticamente(m1, m2):
             if m1.nombre < m2.nombre:
                 return -1
@@ -573,7 +586,7 @@ class Menu:
 
     def abrir_ventana_usuario(self, archivo):
         self.ventana.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
-        exec "import %s" % archivo
+        exec("import %s" % archivo)
         gobject.timeout_add(10000, self.volver_a_cursor_original)
         if archivo == "usuarios":
             from formularios import usuarios
@@ -635,7 +648,7 @@ class Menu:
                  self.get_usuario().nivel >= 4)
                 and "partes_de_fabricacion" in archivo
                 and self.get_usuario().usuario != "cemento"):
-                exec "import %s" % archivo
+                exec("import %s" % archivo)
                 v = eval('%s.%s' % (archivo, clase))
                 try:
                     v(permisos = "rx", usuario = self.get_usuario())
@@ -648,9 +661,9 @@ class Menu:
                     #raise NotImplementedError, \
                     #        "Lanzador multiproceso en desarrollo..."
                     self.lanzar_ventana(archivo, clase)
-                except Exception, e:
+                except Exception as e:
                     myprint(e)
-                    sys.stderr.write(`e`)
+                    sys.stderr.write(repr(e))
                     self._lanzar_ventana(archivo, clase)
         except:
             self.ventana.window.set_cursor(None)
@@ -664,7 +677,7 @@ class Menu:
         """
         DEPRECATED
         """
-        exec "import %s" % archivo
+        exec("import %s" % archivo)
         v = eval('%s.%s' % (archivo, clase))
         v(usuario = self.get_usuario())
         #v.wids['ventana'].set_icon_from_filename(icowindow)
@@ -851,7 +864,7 @@ def guardar_error_a_log(usuario, texto):
     Guarda el texto en el log de la aplicación. Si no se recibe usuario (es
     None) utiliza el registrado en pclases.
     """
-    from ventana import get_ginn_logger
+    from .ventana import get_ginn_logger
     logger = get_ginn_logger()
     if not usuario:
         try:
@@ -973,7 +986,7 @@ def read_changelog():
 
 
 def importar_e_instanciar(archivo, clase, usuario):
-    exec "import %s" % archivo
+    exec("import %s" % archivo)
     v = eval('%s.%s' % (archivo, clase))
     v(usuario = usuario)
 

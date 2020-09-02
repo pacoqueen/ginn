@@ -33,7 +33,7 @@
 #
 
 from reportlab.lib.units import inch
-from common import Barcode
+from .common import Barcode
 import string
 
 _fim_patterns = {
@@ -105,7 +105,7 @@ class FIM(Barcode):
         self.lquiet = inch * (15.0/32.0)
         self.quiet = 0
 
-        for (k, v) in args.items():
+        for (k, v) in list(args.items()):
             setattr(self, k, v)
 
         Barcode.__init__(self, value)
@@ -122,7 +122,7 @@ class FIM(Barcode):
                 self.valid = 0
 
         if len(self.validated) != 1:
-            raise ValueError, "Input must be exactly one character"
+            raise ValueError("Input must be exactly one character")
 
         return self.validated
 
@@ -168,7 +168,7 @@ class POSTNET(Barcode):
         self.barwide = inch * 0.018
         self.spacewide = inch * 0.0275
        
-        for (k, v) in args.items():
+        for (k, v) in list(args.items()):
             setattr(self, k, v)
 
         Barcode.__init__(self, value)
@@ -203,9 +203,9 @@ class POSTNET(Barcode):
             elif c == '-':
                 pass
             else:
-                raise ValueError, "Invalid character in input"
+                raise ValueError("Invalid character in input")
         check = (10 - (check % 10)) % 10
-        self.encoded = self.encoded + `check` + 'S'
+        self.encoded = self.encoded + repr(check) + 'S'
         return self.encoded
         
     def decompose(self):

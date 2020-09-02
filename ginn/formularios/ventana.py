@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado                    #
+# Copyright (C) 2005-2020  Francisco José Rodríguez Bogado                    #
 #                          <frbogado@geotexan.com>                            #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
@@ -28,11 +28,24 @@
 ###################################################################
 ##
 ###################################################################
-import pygtk
+import gi
+gi.require_version("Gtk", '3.0')
+from gi import pygtkcompat
+
+try:
+    from gi import pygtkcompat
+except importerror:
+    pygtkcompat = none
+    from gi.repository import Gtk as gtk
+    from gi.repository import GObject as gobject
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+    import gtk
+    import gobject
+
 from formularios import utils
-pygtk.require('2.0')
-import gtk                              # noqa
-import gobject                          # noqa
 import pango                            # noqa
 import sys                              # noqa
 import os                               # noqa
@@ -562,7 +575,7 @@ class Ventana:
                                             self.logger,
                                             self.__usuario.usuario)
                 while gtk.events_pending():
-                    gtk.main_iteration(False)
+                    gtk.main_iteration()
                 try:
                     exec("reload(%s)" % archivo)
                 except NameError:
@@ -794,7 +807,7 @@ class Ventana:
             self.wids['ventana'].window.set_cursor(cursor_reloj)
             utils.set_unset_urgency_hint(self.wids['ventana'], False)
             while gtk.events_pending():
-                gtk.main_iteration(False)
+                gtk.main_iteration()
         if DEBUG:
             myprint("1.- ventana.py::actualizar_ventana->", time.time()-antes)
         if self.soy_ventana_consulta():
@@ -1016,7 +1029,8 @@ class Ventana:
         """
         connections = {'ventana/delete_event': self.salir,
                        'ventana/destroy': gtk.main_quit}
-        for wid_con, func in connections.iteritems():
+        for wid_con in connections:
+            func = connections[wid_con]
             wid, con = wid_con.split('/')
             h_id = self.wids[wid].connect(con, func)
             try:
@@ -1029,7 +1043,8 @@ class Ventana:
         Recorre el diccionario y crea las conexiones con
         los callbacks.
         """
-        for wid_con, func in dicc.iteritems():
+        for wid_con in dicc:
+            func = dicc[wid_con]
             wid, con = wid_con.split('/')
             h_id = self.wids[wid].connect(con, func)
             try:

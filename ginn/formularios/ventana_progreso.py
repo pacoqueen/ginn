@@ -37,10 +37,23 @@
 # 1 de julio de 2006 -> Incorporada ventana de actividad.
 ###################################################################
 
-import pygtk
-pygtk.require('2.0')
-import gtk
-import gobject
+import gi
+gi.require_version("Gtk", '3.0')
+from gi import pygtkcompat
+
+try:
+    from gi import pygtkcompat
+except importerror:
+    pygtkcompat = none
+    from gi.repository import Gtk as gtk
+    from gi.repository import GObject as gobject
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+    import gtk
+    import gobject
+
 import time
 
 
@@ -96,7 +109,7 @@ class VentanaProgreso:
         self._ventana.destroy()
         self.__seguir_actualizando = False
         while gtk.events_pending():
-            gtk.main_iteration(False)
+            gtk.main_iteration()
         while not gobject.source_remove(self.__tag):
             pass
 
@@ -110,7 +123,7 @@ class VentanaProgreso:
             pass    # O no tiene padre, o no es una ventana.
         self._ventana.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         while gtk.events_pending():
-            gtk.main_iteration(False)
+            gtk.main_iteration()
 
     def ocultar(self):
         self._ventana.hide()
@@ -119,7 +132,7 @@ class VentanaProgreso:
             self._padre.window.set_cursor(None)
         self._ventana.window.set_cursor(None)
         while gtk.events_pending():
-            gtk.main_iteration(False)
+            gtk.main_iteration()
 
     def set_valor(self, valor, texto='', force_actualizar=False):
         """
@@ -135,7 +148,7 @@ class VentanaProgreso:
         if force_actualizar:
             self.actualizar()
         while gtk.events_pending():
-            gtk.main_iteration(False)
+            gtk.main_iteration()
 
     def tiempo_estable(self):
         """
@@ -360,7 +373,7 @@ class VentanaActividad:
         self._ventana.destroy()
         self.__seguir_actualizando = False
         while gtk.events_pending():
-            gtk.main_iteration(False)
+            gtk.main_iteration()
         while not gobject.source_remove(self.__tag):
             pass
 
@@ -374,7 +387,7 @@ class VentanaActividad:
             pass    # O no tiene padre, o no es una ventana.
         self._ventana.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
         while gtk.events_pending():
-            gtk.main_iteration(False)
+            gtk.main_iteration()
 
     def ocultar(self):
         self._ventana.hide()
@@ -385,7 +398,7 @@ class VentanaActividad:
             pass    # O no tiene padre, o no es una ventana.
         self._ventana.window.set_cursor(None)
         while gtk.events_pending():
-            gtk.main_iteration(False)
+            gtk.main_iteration()
 
     def actualizar(self):
         if self.__label_tiempo:
@@ -406,7 +419,7 @@ class VentanaActividad:
             self.__label.set_text(self._texto)
         self.__pbar.pulse()
         while gtk.events_pending():
-            gtk.main_iteration(False)
+            gtk.main_iteration()
 
 
 if __name__ == '__main__':

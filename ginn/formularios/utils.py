@@ -55,13 +55,23 @@
 ##   eso) el sort_column deja de funcionar.
 ###################################################################
 
+import gi
+gi.require_version("Gtk", '3.0')
+from gi import pygtkcompat
+
 try:
-    import pygtk
-    pygtk.require('2.0')
+    from gi import pygtkcompat
+except ImportError:
+    pygtkcompat = None
+    from gi.repository import Gtk as gtk
+    from gi.repository import GObject as gobject
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
     import gtk
     import gobject
-except (ImportError, RuntimeError) as msg:
-    print("WARNING: No se pudo importar GTK/pyGTK. No se podrán usar funciones gráficas:\n%s" % (msg))
+
 import os, time, datetime, re, string, sys
 import calendar
 from functools import reduce
@@ -1547,7 +1557,7 @@ def preparar_listview(tv, cols, multi = False):
                 cell.connect("edited", f, *func_params)
             if b:
                 tv.set_search_column(i)
-            cell.set_property('text', i)
+            cell.set_property('text', str(i))
             tv.insert_column_with_data_func(-1, h, cell, redondear_flotante_en_cell_cuando_sea_posible, i)
             cell.set_property('xalign', 1.0)
             if o:
@@ -1567,7 +1577,8 @@ def preparar_listview(tv, cols, multi = False):
             if t == 'gobject.TYPE_INT' or t == 'gobject.TYPE_INT64':
                 cell.set_property('xalign', 1.0)
             tv.insert_column(columns[i], -1)
-        columns[i].set_data("q_ncol", i)
+        # columns[i].set_data("q_ncol", i)
+        columns[i].q_ncol = i
         i += 1
     for c in columns:
         # XXX: Experimental

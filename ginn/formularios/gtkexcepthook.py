@@ -9,32 +9,32 @@
 # Message-ID: <1062087716.1196.5.camel@emperor.homelinux.net>
 #     "The license is whatever you want."
 
-# He cambiado algunas cosas. Para respetar el espíritu del autor(es) original, 
+# He cambiado algunas cosas. Para respetar el espíritu del autor(es) original,
 # la nueva licencia es la WTFPL (http://sam.zoy.org/wtfpl/)
 
 ################################################################################
 #             DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
 #                     Version 2, December 2004
-# 
+#
 #  Copyright (C) 2008 Francisco José Rodríguez Bogado
-#                                           
+#
 #  Everyone is permitted to copy and distribute verbatim or modified
 #  copies of this license document, and changing it is allowed as long
 #  as the name is changed.
-# 
+#
 #             DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
 #    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
-# 
+#
 #   0. You just DO WHAT THE FUCK YOU WANT TO.
 ################################################################################
 
-# Para ver cómo generar y actualizar i18n l10n: 
+# Para ver cómo generar y actualizar i18n l10n:
 #   http://my.opera.com/th3pr0ph3t/blog/localizacion-en-python-usando-gettext
-# Usar el script ../l10n/actualizar_traduccion.sh si se cambia o 
+# Usar el script ../l10n/actualizar_traduccion.sh si se cambia o
 # añade alguna cadena. Instala gtranslate si quieres llevar una vida mejor.
 
 import inspect, linecache, pydoc, sys, os# , traceback
-from cStringIO import StringIO
+from io import StringIO
 from smtplib import SMTP, SMTPException
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -50,15 +50,30 @@ TRANSLATION_DOMAIN = "gtkexcepthook"
 LOCALE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "locale"))
 language = gettext.translation(TRANSLATION_DOMAIN, LOCALE_DIR, [locale.getdefaultlocale()[0]])
 language.install()
-_ = language.ugettext
+_ = language.gettext
 
-import pygtk
-pygtk.require('2.0')
-import gtk, pango
+import gi
+gi.require_version("Gtk", '3.0')
+from gi import pygtkcompat
+
+try:
+    from gi import pygtkcompat
+except importerror:
+    pygtkcompat = none
+    from gi.repository import Gtk as gtk
+    from gi.repository import GObject as gobject
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+    import gtk
+    import gobject
+
+import pango
 
 from formularios.utils import dialogo_entrada as fdialogo
 from formularios.ventana_progreso import VentanaActividad
-        
+
 #def analyse(exctyp, value, tb):
 #    trace = StringIO()
 #    traceback.print_exception(exctyp, value, tb, None, trace)
@@ -92,7 +107,7 @@ def analyse(exctyp, value, tb):
         args, varargs, varkw, lcls = inspect.getargvalues(frame)
 
         def readline(lno=[lineno], *args):
-            if args: print args
+            if args: print(args)
             try: return linecache.getline(fname, lno[0])
             finally: lno[0] += 1
         todo, prev, name, scope = {}, None, '', None
@@ -122,20 +137,20 @@ def analyse(exctyp, value, tb):
                 prev, name, scope = None, '', None
                 if ttype == tokenize.NEWLINE:
                     break
-        
-        args = []   # El "self" dentro de la lista de argumentos da problemas. 
-                    # Salta un KeyError. Le paso la lista vacía para evitar 
+
+        args = []   # El "self" dentro de la lista de argumentos da problemas.
+                    # Salta un KeyError. Le paso la lista vacía para evitar
                     # problemas.
-        trace.write(funcname 
-                     + inspect.formatargvalues(args, 
-                        varargs, 
-                        varkw, 
-                        lcls, 
+        trace.write(funcname
+                     + inspect.formatargvalues(args,
+                        varargs,
+                        varkw,
+                        lcls,
                         formatvalue=lambda v: '='+pydoc.text.repr(v))
                      +'\n')
         if context is None:
             context = []
-        trace.write(''.join(['    ' + x.replace('\t', '  ') for x in filter(lambda a: a.strip(), context)]))
+        trace.write(''.join(['    ' + x.replace('\t', '  ') for x in [a for a in context if a.strip()]]))
         if len(todo):
             trace.write('  variables: %s\n' % myprettyprint(todo))
 
@@ -143,7 +158,8 @@ def analyse(exctyp, value, tb):
     return trace
 
 def myprettyprint(stuff):
-    from lib.pprintpp import pformat
+    # from lib.pprintpp import pformat
+    from pprintpp import pformat
     #from pprint import pformat
     return pformat(stuff)
     #from myprettyprint import print_dict
@@ -154,10 +170,10 @@ def myprettyprint(stuff):
 
 def prettyprint_html(m):
     """
-    Envuelvo el cuerpo del correo en HTML usando 
+    Envuelvo el cuerpo del correo en HTML usando
     http://code.google.com/p/google-code-prettify/
     """
-    TEMPLATE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 
+    TEMPLATE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                    "..", "informes"))
     tmpl = open(os.path.join(TEMPLATE_DIR, "traceback_template.html"))
     s = "".join(tmpl.readlines())
@@ -172,18 +188,18 @@ def prettyprint_html(m):
     return mensaje_html
 
 def _info(exctyp, value, tb):
-    # DONE: Si se puede enviar por correo, enviar por correo y no abrir 
-    # siquiera la ventana. O guardar a log o algo así si no se puede. Lo de 
-    # preguntar al usuario se tiene que quedar como última opción, porque 
-    # siempre pasan del tema. Solo mostrar una ventana si no se puede continuar 
+    # DONE: Si se puede enviar por correo, enviar por correo y no abrir
+    # siquiera la ventana. O guardar a log o algo así si no se puede. Lo de
+    # preguntar al usuario se tiene que quedar como última opción, porque
+    # siempre pasan del tema. Solo mostrar una ventana si no se puede continuar
     # la ejecución del programa de ninguna de las maneras.
     trace = None
-    dialog = gtk.MessageDialog(parent=None, flags=0, 
-                                type=gtk.MESSAGE_WARNING, 
+    dialog = gtk.MessageDialog(parent=None, flags=0,
+                                type=gtk.MESSAGE_WARNING,
                                 buttons=gtk.BUTTONS_NONE)
     dialog.set_title(_("Bug Detected"))
-    if gtk.check_version(2, 4, 0) is not None:
-        dialog.set_has_separator(False)
+    # if gtk.check_version(2, 4, 0) is not None:
+    #     dialog.set_has_separator(False)
 
     primary = _("<big><b>A programming error has been detected during the execution of this program.</b></big>")
     secondary = _("It probably isn't fatal, but should be reported to the developers nonetheless.")
@@ -192,7 +208,7 @@ def _info(exctyp, value, tb):
         setsec = dialog.format_secondary_text
     except AttributeError:
         raise
-        dialog.vbox.get_children()[0].get_children()[1].set_markup('%s\n\n%s' 
+        dialog.vbox.get_children()[0].get_children()[1].set_markup('%s\n\n%s'
             % (primary, secondary))
         #lbl.set_property("use-markup", True)
     else:
@@ -240,8 +256,8 @@ def _info(exctyp, value, tb):
             msgmail["To"] = "Soporte G-INN"
             traza = trace.getvalue()
             message = 'From: %s"\nTo: %s\nSubject: Geotex-INN'\
-                      ' -- Excepción capturada.\n\n%s'%(msgmail["From"], 
-                                                        msgmail["To"], 
+                      ' -- Excepción capturada.\n\n%s'%(msgmail["From"],
+                                                        msgmail["To"],
                                                         traza)
             text_version = message
             html_version = prettyprint_html(traza)
@@ -256,7 +272,7 @@ def _info(exctyp, value, tb):
             #    pass
             #else:
             #    ferrname += "_" + linea.replace(" ", "_")
-            # XXX: Test del HTML. En el navegador se ve fetén, pero en el 
+            # XXX: Test del HTML. En el navegador se ve fetén, pero en el
             #      thunderbird no carga el prettyPrint()
             #      Tristeza infinita.
             if False:
@@ -272,7 +288,7 @@ def _info(exctyp, value, tb):
             adjunto = MIMEBase("text", "html")
             adjunto.set_payload(html_version)
             encoders.encode_base64(adjunto)
-            adjunto.add_header("Content-Disposition", 
+            adjunto.add_header("Content-Disposition",
                                "attachment;filename=%s.html" % (ferrname))
             msgmail.attach(adjunto)
             vpro.mover()
@@ -305,17 +321,17 @@ def _info(exctyp, value, tb):
                     if not passoteword:
                         txt="Introduzca contraseña del servidor de correo %s"%(
                             server)
-                        passoteword = fdialogo(titulo = "CONTRASEÑA:", 
-                                               texto = txt, 
-                                               pwd = True) 
+                        passoteword = fdialogo(titulo = "CONTRASEÑA:",
+                                               texto = txt,
+                                               pwd = True)
                         if passoteword == None:
                             continue
-                except NameError, msg:
+                except NameError as msg:
                     txt="Introduzca contraseña del servidor de correo %s"%(
                         server)
-                    passoteword = fdialogo(titulo = "CONTRASEÑA:", 
-                                                        texto = txt, 
-                                                        pwd = True) 
+                    passoteword = fdialogo(titulo = "CONTRASEÑA:",
+                                                        texto = txt,
+                                                        pwd = True)
                     if passoteword == None:
                         continue
                 vpro.mostrar()
@@ -325,17 +341,17 @@ def _info(exctyp, value, tb):
                         s.ehlo()
                         s.starttls()
                         s.ehlo()
-                except NameError, msg:
+                except (ValueError, NameError) as msg:
                     pass    # No hay variable ssl. No cifrado.
                 vpro.mover()
                 try:
                     s.login(email, passoteword)
                 except SMTPException:
-                    print msg
+                    print(msg)
                     pass    # Servidor no necesita autenticación.
                 vpro.mover()
-            except NameError, msg:
-                pass    # No se ha especificado contraseña, será que no 
+            except NameError as msg:
+                pass    # No se ha especificado contraseña, será que no
                         # necesita autentificación entonces.
             vpro.mover()
             try:
@@ -361,7 +377,7 @@ def _info(exctyp, value, tb):
             details = gtk.Dialog(_("Bug Details"), dialog,
               gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
               (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE, ))
-            details.set_property("has-separator", False)
+            # details.set_property("has-separator", False)
 
             textview = gtk.TextView(); textview.show()
             textview.set_editable(False)

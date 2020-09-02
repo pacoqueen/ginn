@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2020  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -23,47 +23,55 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA  #
 ###############################################################################
 
+import gi
+gi.require_version("Gtk", '3.0')
+from gi import pygtkcompat
+
+try:
+    from gi import pygtkcompat
+except importerror:
+    pygtkcompat = none
+    from gi.repository import Gtk as gtk
+    from gi.repository import GObject as gobject
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+    import gtk
+    import gobject
+
 import os
-import pygtk
-pygtk.require('2.0')
-import gtk  # @UnusedImport
-import gtk.glade
+# import gtk.glade
 
-LANZAR_KEY_EXCEPTION = True # Si False se devuelve None cuando se busca un 
+LANZAR_KEY_EXCEPTION = True # Si False se devuelve None cuando se busca un
                             # widget que no existe y se ignora la excepción.
-
-BUILDER = False  # Flag para ver si trabajamos con libglade o con gtkBuilder.
 
 class Widgets:
     def __init__(self, uifile):
         if not os.path.exists(uifile):
             uifile = os.path.join(
-                os.path.abspath(os.path.dirname(os.path.realpath(__file__))), 
+                os.path.abspath(os.path.dirname(os.path.realpath(__file__))),
                 uifile)
-        try:
-            self.widgets = gtk.glade.XML(uifile)
-        except RuntimeError:
-            self.widgets = gtk.Builder()
-            self.widgets.add_from_file(uifile)
-            BUILDER = True
+        self.widgets = gtk.Builder()
+        self.widgets.add_from_file(uifile)
         self.dynwidgets = {}    # Widgets generados dinámicamente
-        
+
     def __getitem__(self, key):
-        """Si USE_DEPRECATED es True, imita el antiguo comportamiento donde los 
-        widgets cargados desde fichero tienen prioridad sobre los creados 
-        "programáticamente". USE_DEPRECATED es una "macro" definida en 
+        """Si USE_DEPRECATED es True, imita el antiguo comportamiento donde los
+        widgets cargados desde fichero tienen prioridad sobre los creados
+        "programáticamente". USE_DEPRECATED es una "macro" definida en
         el código de la clase widgets.py.
         """
         USE_DEPRECATED = False
-        # IMPORTANTE: Cambio el orden y ahora tienen preferencia los widgets 
+        # IMPORTANTE: Cambio el orden y ahora tienen preferencia los widgets
         # creados dinámicamente a posteriori.
         if not USE_DEPRECATED:
-            try: 
+            try:
                 res = self.dynwidgets[key]
             except KeyError:
-                res = self.widgets.get_widget(key)
+                res = self.widgets.get_object(key)
             if res == None and LANZAR_KEY_EXCEPTION:
-                raise KeyError, "Widget '%s' no existe." % key
+                raise KeyError("Widget '%s' no existe." % key)
         else:
             res = self.widgets.get_widget(key)
             if res == None:  # Si no es del archivo glade...
@@ -72,7 +80,7 @@ class Widgets:
                 except KeyError:
                     res = None
                     if LANZAR_KEY_EXCEPTION:
-                        raise KeyError, "Widget '%s' no existe." % key
+                        raise KeyError("Widget '%s' no existe." % key)
         return res
 
     def __setitem__(self, key, value):
@@ -84,10 +92,19 @@ class Widgets:
         Devuelve una lista de claves del diccionario de widgets.
         """
         try:
-            listaclaves = [w.name for w in self.widgets.get_widget_prefix('')] 
+            listaclaves = [w.name for w in self.widgets.get_widget_prefix('')]
         except AttributeError:
-            listaclaves = [w.name for w in self.widgets.get_objects()] 
-        listaclaves += self.dynwidgets.keys()
+            listaclaves = []
+            for w in self.widgets.get_objects():
+                try:
+                    nombre = gtk.Buildable.get_name(w)
+                except TypeError:
+                    # No tiene nombre o ID para seleccionarlo individualemnte
+                    # (TreeSelection, por ejemplo).
+                    nombre = None
+                else:
+                    listaclaves.append(nombre)
+        listaclaves += list(self.dynwidgets.keys())
         return listaclaves
 
 def replace_widget(current, new):
@@ -106,6 +123,6 @@ def replace_widget(current, new):
     gtk.Container.remove(container, current)
     container.add(new)
 
-    for name, value in props.items():
+    for name, value in list(props.items()):
         container.child_set_property(new, name, value)
 

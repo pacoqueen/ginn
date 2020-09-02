@@ -46,7 +46,6 @@
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.units import inch, cm
-import mx.DateTime
 import sys
 import os
 from framework import pclases
@@ -152,7 +151,7 @@ def sanitize_unicode(cadena):
     """
     badchars = ['✔', '✘']
     goodchars = ['+', 'x']
-    mapeo = zip(badchars, goodchars)
+    mapeo = list(zip(badchars, goodchars))
     for malo, bueno in mapeo:
         cadena = cadena.replace(malo, bueno)
     return cadena
@@ -171,26 +170,26 @@ def escribe(cadena_original, limite=None):
         # soporta UTF y falla con cp1252.
         try:
             cadena = cadena.encode('cp1252')
-        except Exception, msg:  # Lazy developer is lazy.
-            print 'geninformes.py (escribe): No se pudo cambiar codificación de cadena.'
+        except Exception as msg:  # Lazy developer is lazy.
+            print('geninformes.py (escribe): No se pudo cambiar codificación de cadena.')
             try:
-                print 'Mensaje de la excepción: {}'.format(msg)
+                print('Mensaje de la excepción: {}'.format(msg))
             except:
                 pass
             try:
                 cadena = cadena.decode("utf-8", "ignore").encode("cp1252")
-            except Exception, msg:
-                print 'geninformes.py (escribe): No se pudo decodificar de UTF-8 la cadena.'
+            except Exception as msg:
+                print('geninformes.py (escribe): No se pudo decodificar de UTF-8 la cadena.')
                 try:
-                    print 'Mensaje de la excepción: {}'.format(msg)
+                    print('Mensaje de la excepción: {}'.format(msg))
                 except:
                     pass
                 try:
                     cadena = cambiar_tildes(cadena)
-                except Exception, msg:
-                    print 'geninformes.py (escribe): No se pudieron sustituir los acentos gráficos.'
+                except Exception as msg:
+                    print('geninformes.py (escribe): No se pudieron sustituir los acentos gráficos.')
                     try:
-                        print 'Mensaje de la excepción: %s'.format(msg)
+                        print('Mensaje de la excepción: %s'.format(msg))
                     except:
                         pass
                     cadena = sanitize_unicode(cadena)
@@ -534,7 +533,7 @@ def existencias_no_nulas(hasta=None, exportar_a_csv_a=None,
                         "existencias_no_nulas_%s.pdf"%give_me_the_name_baby())
         fecha = None
         fecha_limite = " - %s, %s" % (
-            utils.str_fecha(mx.DateTime.localtime()), time.strftime("%H:%M"))
+            utils.str_fecha(datetime.datetime.now()), time.strftime("%H:%M"))
     else:
         nomarchivo = os.path.join(gettempdir(),
             "existencias_no_nulas_a_%s_%s.pdf" % (
@@ -578,7 +577,7 @@ def existencias_no_nulas(hasta=None, exportar_a_csv_a=None,
             if ventana_padre:
                 vpro.set_valor(i / total, txt_info)
             if pclases.VERBOSE:
-                print txt_info,
+                print(txt_info, end=' ')
                 sys.stdout.flush()
         existencias, valoracion, existencias_1_enero, stock_entradas, \
         valoracion_entradas, stock_salidas, valoracion_salidas, \
@@ -593,7 +592,7 @@ def existencias_no_nulas(hasta=None, exportar_a_csv_a=None,
             if ventana_padre:
                 vpro.set_valor(i / total, txt_info + " " + txt_info2)
             if pclases.VERBOSE:
-                print txt_info2
+                print(txt_info2)
 
         ## XXX: DEBUG: PLAN: Esto debería ir en una función aparte de pclases
         # para ejecutarla de vez en cuando y corregir existencias que
@@ -634,7 +633,7 @@ def existencias_no_nulas(hasta=None, exportar_a_csv_a=None,
             str_valoracion = "N/D"
             str_valoracion_inicial = "N/D"
         if len(pedidos_pendientes) > 0:
-            pedido = pedidos_pendientes.keys()[0]
+            pedido = list(pedidos_pendientes.keys())[0]
             primer_pedido = "%s: %s %s (%s €)" % (pedido.numpedido,
                 utils.float2str(pedidos_pendientes[pedido]['cantidad']),
                 p.unidad,
@@ -656,7 +655,7 @@ def existencias_no_nulas(hasta=None, exportar_a_csv_a=None,
             ))
         total_pendiente_del_producto_cantidad = 0
         total_pendiente_del_producto_valor = 0
-        for pedido in pedidos_pendientes.keys()[1:]:
+        for pedido in list(pedidos_pendientes.keys())[1:]:
             datos.append(("",
                           "",
                           "",
@@ -741,7 +740,7 @@ def existencias(hasta=None, exportar_a_csv_a=None, ventana_padre=None):
         nomarchivo = os.path.join(gettempdir(),
                                 "existencias_%s.pdf" % give_me_the_name_baby())
         fecha = None
-        fecha_limite = " - %s, %s" % (utils.str_fecha(mx.DateTime.localtime()),
+        fecha_limite = " - %s, %s" % (utils.str_fecha(datetime.datetime.now()),
                                       time.strftime("%H:%M"))
     else:
         nomarchivo = os.path.join(gettempdir(), "existencias_a_%s_%s.pdf" % (
@@ -784,12 +783,12 @@ def existencias(hasta=None, exportar_a_csv_a=None, ventana_padre=None):
             i += 1
         if pclases.DEBUG:
             try:
-                print "[{0:>6.2%}]".format(i/tot),
-                print "{i:.0f} de {tot:.0f}\t|".format(**locals()),
+                print("[{0:>6.2%}]".format(i/tot), end=' ')
+                print("{i:.0f} de {tot:.0f}\t|".format(**locals()), end=' ')
             except SyntaxError: #Python 2.5. Don't bother, man!
-                print "[%.2f]" % (i/tot),
-                print "%.0f de %.0f\t|" % (i, tot),
-            print p.get_puid(), p.descripcion
+                print("[%.2f]" % (i/tot), end=' ')
+                print("%.0f de %.0f\t|" % (i, tot), end=' ')
+            print(p.get_puid(), p.descripcion)
         if ventana_padre:
             vpro.set_valor(i/tot, "Procesando %s...\t[%s]" % (p.descripcion,
                                                               p.get_puid()))
@@ -834,7 +833,7 @@ def existencias(hasta=None, exportar_a_csv_a=None, ventana_padre=None):
             str_valoracion = "N/D"
             str_valoracion_inicial = "N/D"
         if len(pedidos_pendientes) > 0:
-            pedido = pedidos_pendientes.keys()[0]
+            pedido = list(pedidos_pendientes.keys())[0]
             primer_pedido = "%s: %s %s (%s €)" % (pedido.numpedido,
                 utils.float2str(pedidos_pendientes[pedido]['cantidad']),
                 p.unidad,
@@ -858,7 +857,7 @@ def existencias(hasta=None, exportar_a_csv_a=None, ventana_padre=None):
                     ))
         total_pendiente_del_producto_cantidad = 0
         total_pendiente_del_producto_valor = 0
-        for pedido in pedidos_pendientes.keys()[1:]:
+        for pedido in list(pedidos_pendientes.keys())[1:]:
             datos.append(("",
                           "",
                           "",
@@ -939,7 +938,7 @@ def repuestos_no_nulos(hasta=None, exportar_a_csv_a=None):
         nomarchivo = os.path.join(gettempdir(),
                         "repuestos_no_nulos_%s.pdf" % give_me_the_name_baby())
         fecha = None
-        fecha_limite = " - %s, %s"%(utils.str_fecha(mx.DateTime.localtime()),
+        fecha_limite = " - %s, %s"%(utils.str_fecha(datetime.datetime.now()),
                                     time.strftime("%H:%M"))
     else:
         nomarchivo = os.path.join(gettempdir(),
@@ -1019,7 +1018,7 @@ def repuestos(hasta = None, exportar_a_csv_a = None):
         nomarchivo = os.path.join(gettempdir(),
             "repuestos_%s.pdf" % give_me_the_name_baby())
         fecha = None
-        fecha_limite = " - %s, %s"%(utils.str_fecha(mx.DateTime.localtime()),
+        fecha_limite = " - %s, %s"%(utils.str_fecha(datetime.datetime.now()),
                                     time.strftime("%H:%M"))
     else:
         nomarchivo = os.path.join(gettempdir(), "repuestos_%s_%s.pdf" % (
@@ -1168,9 +1167,9 @@ def buscar_datos_existencias(p, hasta):
     Devuelve los datos del producto p para el informe de existencias
     en función de si hay fecha límite o no.
     """
-    uno_del_anno_corriente = mx.DateTime.DateTimeFrom(day = 1,
+    uno_del_anno_corriente = datetime.datetime(day = 1,
                                         month = 1,
-                                        year = mx.DateTime.localtime().year)
+                                        year = datetime.datetime.now().year)
     p.sync()    # Las existencias se están moviendo constantemente, mejor me
                 # aseguro de leer el valor actual.
     if hasta == None:
@@ -1234,7 +1233,7 @@ def _existencias(hasta=None):
     if hasta is not None:
         fecha_limite = " a %s" % (utils.str_fecha(hasta))
     else:
-        fecha_limite = " - %s" % (utils.str_fecha(mx.DateTime.localtime()))
+        fecha_limite = " - %s" % (utils.str_fecha(datetime.datetime.now()))
     cabecera(c, 'Inventario de materiales%s' % (fecha_limite))
     # El cuerpo
     c.setFont("Helvetica-Bold", 10)
@@ -1358,7 +1357,7 @@ def existencias_productos(informe, fecha, hasta=None, almacen=None,
         productos += ["total"]
         unidad = "kg"
     else:
-        print '"informe" debe ser "rollos" o "balas".'
+        print('"informe" debe ser "rollos" o "balas".')
         return
 
     # 41 es el número máximo de líneas en el área de impresión
@@ -2955,7 +2954,7 @@ def pedidoCompra(general, proveedor, lineas, entregas, observaciones,
         for e in entregas:
             saltos = agregarFila(xdescripcion, linea, topeDescripcion,
                                  escribe(e), c, fuente, tamano)
-            for i in xrange(saltos):
+            for i in range(saltos):
                 linea = sigLinea()
         c.restoreState()
 
@@ -3087,19 +3086,19 @@ def pedidoCompra(general, proveedor, lineas, entregas, observaciones,
         lineas_agregadas = agregarFila(izq + 0.1 * cm, linea, der,
                                        escribe(observaciones0), c,
                                        fuente, tamano)
-        for i in xrange(lineas_agregadas):
+        for i in range(lineas_agregadas):
             linea = sigLinea()
     if observaciones1 != None:
         lineas_agregadas = agregarFila(izq + 0.1 * cm, linea, der,
                                        escribe(observaciones1), c,
                                        fuente, tamano)
-        for i in xrange(lineas_agregadas):
+        for i in range(lineas_agregadas):
             linea = sigLinea()
     if observaciones != None:
         lineas_agregadas = agregarFila(izq + 0.1 * cm, linea, der,
                                        escribe(observaciones), c,
                                        fuente, tamano)
-        for i in xrange(lineas_agregadas):
+        for i in range(lineas_agregadas):
             linea = sigLinea()
 
     # Despedida
@@ -3155,8 +3154,8 @@ def el_encogedor_de_fuentes_de_doraemon(canvas, fuente, tamannoini, xini,
     elif alineacion == 0:
         canvas.drawCentredString((xfin + xini) / 2.0, y, texto)
     else:
-        print "geninformes.py::el_encogedor_de_fuentes_de_doraemon -> Error "\
-              "alineación. Uso alineación a la izquierda por defecto."
+        print("geninformes.py::el_encogedor_de_fuentes_de_doraemon -> Error "\
+              "alineación. Uso alineación a la izquierda por defecto.")
         canvas.drawString(xini, y, texto)
     canvas.restoreState()
 
@@ -3276,7 +3275,7 @@ def factura(cliente,
     _lineas, lineas = lineas, []
     for linea in _lineas:
         lineas.append(linea)
-        if linea.has_key("descuento"):
+        if "descuento" in linea:
             tiene_descuento = (linea['descuento'] != "" and
                                float(linea['descuento']) != 0)
             if tiene_descuento:
@@ -3630,11 +3629,11 @@ def factura(cliente,
                 c.drawRightString(xcodigo, linea, escribe(l['codigo']))
                 try:
                     cantidad_sin_cero = utils.float2str(float(l['cantidad']),2)
-                except ValueError, msg:
+                except ValueError as msg:
                     if isinstance(l['cantidad'], str):
                         cantidad_sin_cero = l['cantidad']
                     else:
-                        raise ValueError, msg
+                        raise ValueError(msg)
                 try:
                     unidad = l['unidad']
                 except KeyError:
@@ -3711,8 +3710,8 @@ def factura(cliente,
                     try:
                         c.drawRightString(xprecio, linea,
                             escribe(utils.float2str(l['precio'], 4)))
-                    except ValueError, msg:
-                        raise ValueError, msg
+                    except ValueError as msg:
+                        raise ValueError(msg)
                 c.setFont(fuente, tamanno)
                 try:
                     total = utils._float(l['precio'])
@@ -3720,12 +3719,12 @@ def factura(cliente,
                     c.drawRightString(xtotal,
                                       linea,
                                       escribe(utils.float2str(total, 6, 2)))
-                except ValueError, msg:
+                except ValueError as msg:
                     if l['precio'] != "" and l['cantidad'] !=  "":
                         # Si el contenido viene desglosado, precio y cantidad
                         # son cadenas vacías, por tanto la excepción no es un
                         # error y no debo avisar con falsos positivos.
-                        print >> sys.stderr, "geninformes::factura -> %s" % msg
+                        print("geninformes::factura -> %s" % msg, file=sys.stderr)
                     total = 0
                 suma += total
                 if l['descuento'] != "" and float(l['descuento']) != 0:
@@ -3755,7 +3754,7 @@ def factura(cliente,
                 c.setFont('Helvetica', 10)
                 lineas_agregadas = agregarFila(origen, linea, rm - 2.2*inch,
                     escribe(texto), c, "Helvetica", 10)
-                for i in xrange(lineas_agregadas):  # @UnusedVariable
+                for i in range(lineas_agregadas):  # @UnusedVariable
                     linea = sigLinea()
             c.saveState()
             c.setFont('Times-Roman', 8)
@@ -4055,7 +4054,7 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
     _lineas, lineas = lineas, []
     for linea in _lineas:
         lineas.append(linea)
-        if linea.has_key("descuento"):
+        if "descuento" in linea:
             tiene_descuento = (linea['descuento'] != "" and
                                float(linea['descuento']) != 0)
             if tiene_descuento:
@@ -4396,11 +4395,11 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
                 c.drawRightString(xcodigo, linea, escribe(l['codigo']))
                 try:
                     cantidad_sin_cero = utils.float2str(float(l['cantidad']),2)
-                except ValueError, msg:
+                except ValueError as msg:
                     if isinstance(l['cantidad'], str):
                         cantidad_sin_cero = l['cantidad']
                     else:
-                        raise ValueError, msg
+                        raise ValueError(msg)
                 # i 10096
                 el_encogedor_de_fuentes_de_doraemon(c, fuente, tamanno,
                                                     xcantidad - 15,
@@ -4467,14 +4466,14 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
                         c.drawRightString(xprecio,
                                     linea,
                                     escribe(utils.float2str(l['precio'], 3)))
-                    except ValueError, msg:
-                        raise ValueError, msg
+                    except ValueError as msg:
+                        raise ValueError(msg)
                 c.setFont(fuente, tamanno)
                 try:
                     total=utils._float(l['precio'])*utils._float(l['cantidad'])
                     c.drawRightString(xtotal, linea,
                                       escribe(utils.float2str(total, 2)))
-                except ValueError, msg:
+                except ValueError as msg:
                     total = 0
                 suma += total
                 if l['descuento'] != "" and float(l['descuento']) != 0:
@@ -4505,7 +4504,7 @@ def prefactura(cliente, factdata, lineas, arancel, vencimiento, texto,
                 lineas_agregadas = agregarFila(origen, linea, rm - 2.2*inch,
                                                escribe(texto), c, "Helvetica",
                                                10)
-                for i in xrange(lineas_agregadas):  # @UnusedVariable
+                for i in range(lineas_agregadas):  # @UnusedVariable
                     linea = sigLinea()
             c.saveState()
             c.setFont('Times-Roman', 8)
@@ -5236,7 +5235,7 @@ def trazabilidad(texto, borrador=False):
     lineas = texto.split("\n")
     while lineas:
         cabecera(c, 'Informe de trazabilidad',
-                 utils.str_fecha(mx.DateTime.localtime()))
+                 utils.str_fecha(datetime.datetime.now()))
         # Marca "borrador"
         if borrador:
             c.saveState()
@@ -5350,7 +5349,7 @@ def crm_generar_pdf_detalles_factura(factura):
                         pagare_o_confirming,
                         cobro.observaciones)
                     lineas.append((txtcobros, "Helvetica-Oblique", tamanno))
-        if None in vtoscobros.keys():    # Hay cobros sin vencimientos:
+        if None in list(vtoscobros.keys()):    # Hay cobros sin vencimientos:
             lineas.append(("Resto de cobros: ", fuente, tamanno))
             txtcobros = []
             for cobro in vtoscobros[None]:
@@ -5363,7 +5362,7 @@ def crm_generar_pdf_detalles_factura(factura):
     #lineas = texto.split("\n")
     while lineas:
         cabecera(c, 'CRM: Detalles de factura. %s.' % factura.numfactura,
-                 utils.str_fecha(mx.DateTime.localtime()))
+                 utils.str_fecha(datetime.datetime.now()))
         # Marca "borrador"
         #c.saveState()
         #c.setFont("Courier-BoldOblique", 42)
@@ -5405,7 +5404,7 @@ def texto_libre(texto, txtcabecera = "", incluir_fecha_del_dia = True):
     lineas = texto.split("\n")
     while lineas:
         cabecera(c, txtcabecera, incluir_fecha_del_dia
-                 and utils.str_fecha(mx.DateTime.localtime()) or "")
+                 and utils.str_fecha(datetime.datetime.now()) or "")
         x, y = lm, tm + 2.5 * cm
         while y >= bm and lineas:
             linea = lineas.pop(0)
@@ -5443,8 +5442,8 @@ def listado_clientes_solo_riesgos(clientes):
               ('Riesgo asegurado', 10),
               ('Riesgo concedido', 10)]
     datos = []
-    fechafin = mx.DateTime.localtime()
-    fechaini = mx.DateTime.DateTimeFrom(day=1, month=1, year=fechafin.year)  # @UnusedVariable
+    fechafin = datetime.datetime.now()
+    fechaini = datetime.datetime(day=1, month=1, year=fechafin.year)  # @UnusedVariable
     total_comprado = total_pagado = total_pendiente = 0  # @UnusedVariable
     #dibujar_linea_divisoria = False
     for cli in clientes:
@@ -5472,7 +5471,7 @@ def listado_clientes_solo_riesgos(clientes):
                       concedido
                      ))
     return imprimir2(archivo, titulo, campos, datos,
-                     utils.str_fecha(mx.DateTime.localtime()),
+                     utils.str_fecha(datetime.datetime.now()),
                      apaisado = True,
                      cols_a_derecha = (6, 7))
 
@@ -5495,8 +5494,8 @@ def listado_clientes(clientes):
               ('Cobrado', 7),
               ('Pendiente', 7)]
     datos = []
-    fechafin = mx.DateTime.localtime()
-    fechaini = mx.DateTime.DateTimeFrom(day=1, month=1, year=fechafin.year)
+    fechafin = datetime.datetime.now()
+    fechaini = datetime.datetime(day=1, month=1, year=fechafin.year)
     total_comprado = total_pagado = total_pendiente = 0
     dibujar_linea_divisoria = False
     for cli in clientes:
@@ -5567,7 +5566,7 @@ def listado_clientes(clientes):
                   "%s €" % (utils.float2str(total_pagado)),
                   "%s €" % (utils.float2str(total_pendiente)) ))
     return imprimir2(archivo, titulo, campos, datos,
-                     utils.str_fecha(mx.DateTime.localtime()),
+                     utils.str_fecha(datetime.datetime.now()),
                      apaisado = True,
                      sobrecampos = (('Volumen de facturación en el año', 90),),
                      cols_a_derecha = (7, 8, 9))
@@ -5590,8 +5589,8 @@ def listado_proveedores(proveedores):
               ('Pagado', 8),
               ('Pendiente', 8)]
     datos = []
-    fechafin = mx.DateTime.localtime()
-    fechaini = mx.DateTime.DateTimeFrom(day=1, month=1, year=fechafin.year)
+    fechafin = datetime.datetime.now()
+    fechaini = datetime.datetime(day=1, month=1, year=fechafin.year)
     total_comprado = total_pagado = total_pendiente = 0
     for pro in proveedores:
         formapago = ""
@@ -5626,7 +5625,7 @@ def listado_proveedores(proveedores):
                      titulo,
                      campos,
                      datos,
-                     utils.str_fecha(mx.DateTime.localtime()),
+                     utils.str_fecha(datetime.datetime.now()),
                      apaisado = True,
                      sobrecampos = (('Volumen de compras en el año', 92), ),
                      cols_a_derecha = (6, 7, 8))
@@ -6133,7 +6132,7 @@ def agregarFila(origen,
     # Había un caso extremo (espacio al final de la cadena) que acababa en
     # bucle infinito.
     try:
-        cadena = unicode(cadena)
+        cadena = str(cadena)
         # OJO: IMPORTANTE: Verificar que esto (que funciona bien para el
         # ReportLab de la máquina de desarrollo "nostromo") va igual de bien
         # en "melchor", "alfred" y en producción.
@@ -6313,14 +6312,14 @@ def agregarFila(origen,
     return lineasSumadas
 
 def exportar_a_csv(ruta, cabecera, datos):
-    import treeview2csv
+    from . import treeview2csv
     from formularios.reports import abrir_csv
     datos_iso = []
     for fila in datos:
         fila_iso = []
         for item in fila:
             if isinstance(item, bool):
-                item = item and u"Sí".encode("iso-8859-15") or "No"
+                item = item and "Sí".encode("iso-8859-15") or "No"
             else:
                 item = ("%s" % item).replace(";", ",")
                 try:
@@ -6328,8 +6327,8 @@ def exportar_a_csv(ruta, cabecera, datos):
                     item = item.replace("€", chr(164))
                         # Lo hago a manopla porque no sé por que el encoding
                         # no se cepilla el euro y lo cambia por el chr(164).
-                except Exception, msg:
-                    print msg
+                except Exception as msg:
+                    print(msg)
             fila_iso.append(item)
         datos_iso.append(fila_iso)
     cabecera_iso = []
@@ -6376,8 +6375,8 @@ def parse_fuente(cad, hoja):
         fuente, tamanno = fuente_tamanno.split("::")
         tamanno = int(tamanno)  # Lanzará ValueError si no es un entero.
         if fuente not in hoja.getAvailableFonts():
-            raise ValueError, "geninformes::parse_fuente: La fuente debe es"\
-                              "tar en %s." % hoja.getAvailableFonts()
+            raise ValueError("geninformes::parse_fuente: La fuente debe es"\
+                              "tar en %s." % hoja.getAvailableFonts())
     #print cad, fuente, tamanno, type(tamanno)
     return cad, fuente, tamanno
 
@@ -6521,7 +6520,7 @@ def imprimir2(archivo,
                 # Vuelvo a empezar
                 c = len(campos)
     if len(datos[0]) != len(campos):
-        print 'ERROR: Los datos no concuerdan con los campos del informe'
+        print('ERROR: Los datos no concuerdan con los campos del informe')
         return
     # xcampo guarda la coordenada x donde irá cada campo
     xcampo = [lm]
@@ -6665,7 +6664,7 @@ def imprimir2(archivo,
                         d[i] = d[i][:desde] + d[i][hasta:]
                         d[i] = d[i].replace(keycad_rgb, "")
                         d[i] = d[i].replace(endkeycad_rgb, "")
-                        r, g, b = map(float, strcolor.split(","))
+                        r, g, b = list(map(float, strcolor.split(",")))
                         hoja.setFillColorRGB(r, g, b)
                     # XXX: Cambio de fuente.
                     old_fuente = fuente
@@ -6675,7 +6674,7 @@ def imprimir2(archivo,
                         fuente = old_fuente
                     if tamanno == None:
                         tamanno = old_tamanno
-                except TypeError, msg:      # Se nos ha colado un entero, @UnusedVariable
+                except TypeError as msg:      # Se nos ha colado un entero, @UnusedVariable
                                             # probablemente.
                     # print msg, type(d[i]), d[i]
                     pass
@@ -6847,13 +6846,13 @@ def get_ancho_alto(imagen, limitev = None, limiteh = None):
     try:
         import Image
     except ImportError:
-        print "geninformes.py (get_ancho_alto): Necesita instalar PIL"
+        print("geninformes.py (get_ancho_alto): Necesita instalar PIL")
         return (0, 0)
     try:
         i = Image.open(imagen)
     except IOError:
-        print "geninformes.py (get_ancho_alto): Imagen %s no encontrada." % (
-            imagen)
+        print("geninformes.py (get_ancho_alto): Imagen %s no encontrada." % (
+            imagen))
         return (0, 0)
     ancho, alto = i.size
     ratio = float(alto) / ancho
@@ -6997,11 +6996,11 @@ def etiquetasRollos(rollos, mostrar_marcado):
             c.setFont("Helvetica-Bold", 28)
             c.drawString(xIzquierda[i], -yCuartaLinea[i],
                          escribe("Nº rollo: "+temp[i]['nrollo']))
-            from barcode.EANBarCode import EanBarCode
+            from .barcode.EANBarCode import EanBarCode
             bar = EanBarCode()
             c.drawImage(bar.getImage(temp[i]['codigo']), xDerecha[i]+115,
                         -ySegundaLinea[i])
-            from barcode import code39
+            from .barcode import code39
             codigobarras = code39.Extended39(temp[i]['codigo39'],
                                              xdim = .015*inch)
             codigobarras.drawOn(c, xDerecha[i]+inch, -yCuartaLinea[i]+10)
@@ -7108,7 +7107,7 @@ def etiquetasBalas(balas):
             c.drawString(xIzquierda[i], -yPrimeraLinea[i],
                          escribe("CODIGO: "+temp[i]['codigo']))
 
-            from barcode import code39
+            from .barcode import code39
             codigobarras = code39.Extended39(temp[i]['codigo'],
                                              xdim = .015*inch)
             codigobarras.drawOn(c, xIzquierda[i]+20, -yPrimeraLinea[i]+15)
@@ -7130,7 +7129,7 @@ def etiquetasBalas(balas):
             c.drawString(xDerecha[i], -yQuintaLinea[i],
                          escribe("ACABADO: "+temp[i]['acabado']))
 
-            from barcode.EANBarCode import EanBarCode
+            from .barcode.EANBarCode import EanBarCode
             bar = EanBarCode()
             c.drawImage(bar.getImage(temp[i]['codigoBarra']), xCodigo[i],
                         -yCodigo[i])
@@ -7156,8 +7155,8 @@ def etiquetasBigbags(bigbags, hook=None):
         datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
 
         from reportlab.lib.pagesizes import A5
-        from barcode import code39
-        from barcode.EANBarCode import EanBarCode
+        from .barcode import code39
+        from .barcode.EANBarCode import EanBarCode
 
         # Creo la hoja
         nomarchivo = os.path.join(gettempdir(),
@@ -7235,8 +7234,8 @@ def consumoPartida(partida, salida = "txt"):
     for rollo in rollos + rollosDefectuosos:
         pdp = rollo.articulos[0].parteDeProduccion
         if pdp == None:
-            print "geninformes::consumoPartida -> ¡Rollo [defectuoso] no "\
-                  "tiene parte de producción!\n%s" % (rollo)
+            print("geninformes::consumoPartida -> ¡Rollo [defectuoso] no "\
+                  "tiene parte de producción!\n%s" % (rollo))
         if pdp not in partes and pdp != None:
             partes.append(rollo.articulos[0].parteDeProduccion)
     # Diccionario de productos (de compra) consumidos: [cantidad, unidad]
@@ -7262,7 +7261,7 @@ def consumoPartida(partida, salida = "txt"):
                 bala.codigo)
     elif salida.lower() == "pdf":
         ### TODO: Generar PDF:
-        print "Funcionalidad no disponible temporalmente."
+        print("Funcionalidad no disponible temporalmente.")
         res = None
     return res
 
@@ -7319,8 +7318,8 @@ def packingListBalas(datos, numpagina = 1, titulo = "Packing list"):
     c.drawString(xTipo - 2.75*cm, linea, escribe('TIPO: '+ datos['tipo']))
     # XXX: Código de barras EAN del producto
     #from barcode import code39
-    from barcode import code128
-    from barcode.EANBarCode import EanBarCode
+    from .barcode import code128
+    from .barcode.EANBarCode import EanBarCode
     imbarcode = EanBarCode().getImage(datos['codigo_producto'])
     c.drawImage(imbarcode, rm - 4*cm, linea - 0.25*cm, height = 1.25*cm)
     # XXX
@@ -7522,8 +7521,8 @@ def packingListEAN(datos, numpagina = 1, titulo = "Packing list"):
     otro, a ver si Laura Moncho se compra una buena pistola de código de
     barras.
     """
-    from barcode import code128
-    from barcode.EANBarCode import EanBarCode
+    from .barcode import code128
+    from .barcode.EANBarCode import EanBarCode
     global linea, tm, lm, rm, bm
 
     # Creo el fichero
@@ -7656,7 +7655,7 @@ def packingListEAN(datos, numpagina = 1, titulo = "Packing list"):
 
 # XXX: Prueba de código de barras:
 #from reportlab.extensions.barcode import code93
-from barcode import code93
+from .barcode import code93
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.platypus import Frame
 from reportlab.lib.units import mm
@@ -7672,7 +7671,7 @@ def prueba():
     c.save()
 
 def prueba2():
-    from barcode.EANBarCode import EanBarCode
+    from .barcode.EANBarCode import EanBarCode
     bar = EanBarCode()
     p = pclases.ProductoVenta.select()[0]
     # nombrefich = bar.makeFakeCode(p.codigo)
@@ -7981,9 +7980,9 @@ def generar_etiqueta_pale(pales, tipo = 3):
     # 0.- Compruebo parámetros.
     if not isinstance(pales, (list, tuple)):
         pales = [pales]
-    rangotipos = range(0, 4)
+    rangotipos = list(range(0, 4))
     if not tipo in rangotipos:
-        raise ValueError, "El tipo debe estar en el rango %s." % rangotipos
+        raise ValueError("El tipo debe estar en el rango %s." % rangotipos)
     if 0 <= tipo <= 2:
         # 1.- Preparo el lienzo.
         ancho = 12.55 * cm
@@ -8046,7 +8045,7 @@ def pintar_data_pale(c, data, ancho, alto, tipo = 0):
             c.drawCentredString(x, y + (tamanno/2.0) + 1, escribe(cadena1))
             c.drawCentredString(x, y - (tamanno/2.0) - 1, escribe(cadena2))
     # Código de trazabilidad.
-    from barcode import code39
+    from .barcode import code39
     codigobarras = code39.Extended39(data['código'], xdim = .020*inch)
     xcodigobarras = (ancho - codigobarras.width) / 2.0
     codigobarras.drawOn(c, xcodigobarras, sizes['código'][1] + 15)
@@ -8112,9 +8111,9 @@ def generar_etiqueta_caja(cajas, tipo = 0):
     # 0.- Compruebo parámetros.
     if not isinstance(cajas, (list, tuple)):
         cajas = [cajas]
-    rangotipos = range(0, 3)
+    rangotipos = list(range(0, 3))
     if not tipo in rangotipos:
-        raise ValueError, "El tipo debe estar en el rango %s." % rangotipos
+        raise ValueError("El tipo debe estar en el rango %s." % rangotipos)
     # 1.- Preparo el lienzo.
     ancho = 12.55 * cm
     alto = 8.4 * cm
@@ -8175,7 +8174,7 @@ def pintar_data_caja(c, data, ancho, alto, tipo = 0):
             c.drawCentredString(x, y + (tamanno/2.0) + 1, escribe(cadena1))
             c.drawCentredString(x, y - (tamanno/2.0) - 1, escribe(cadena2))
     # Código de trazabilidad.
-    from barcode import code39
+    from .barcode import code39
     codigobarras = code39.Extended39(data['código'], xdim = .020*inch)
     xcodigobarras = (ancho - codigobarras.width) / 2.0
     codigobarras.drawOn(c, xcodigobarras, sizes['código'][1] + 15)
@@ -8292,7 +8291,7 @@ def _DEPRECATED_etiquetasBalasEtiquetadora(balas):
         c.drawString(xIzquierda, yPrimeraLinea,
                      escribe("CODIGO: "+temp['codigo']))
 
-        from barcode import code39
+        from .barcode import code39
         codigobarras = code39.Extended39(temp['codigo'], xdim = .020*inch)
         codigobarras.drawOn(c, xIzquierda - 0.5 * cm, yPrimeraLinea + 15)
 
@@ -8315,7 +8314,7 @@ def _DEPRECATED_etiquetasBalasEtiquetadora(balas):
         c.drawString(xDerecha, yQuintaLinea,
                      escribe("ACABADO: %s" % (temp['acabado'])))
 
-        from barcode.EANBarCode import EanBarCode
+        from .barcode.EANBarCode import EanBarCode
         bar = EanBarCode()
         nombreficheroean13 = bar.getImage(temp['codigoBarra'])
         ean13rotado = Image.open(nombreficheroean13)
@@ -8327,7 +8326,7 @@ def _DEPRECATED_etiquetasBalasEtiquetadora(balas):
 
         # XXX: DOMENECH: Por si acaso llegamos a ceder ante el cliente y hay
         # que meter otro código más. Esto se llama bajada de pantacas:
-        from barcode import code128
+        from .barcode import code128
         renteros = re.compile("\d*")
         numerolote = [n for n in renteros.findall(temp['lote']) if n != ""]
         if numerolote != []:
@@ -8342,10 +8341,10 @@ def _DEPRECATED_etiquetasBalasEtiquetadora(balas):
                     numerobala = int(numerobala)
                     pesobalaenteros = int(pesobalaenteros)
                     pesobaladecimales = int(pesobaladecimales)
-                except Exception, msg:
-                    print "geninformes::etiquetasBalasEtiquetadora: No se pu"\
+                except Exception as msg:
+                    print("geninformes::etiquetasBalasEtiquetadora: No se pu"\
                           "dieron extraer los datos para el code128 de Domen"\
-                          "ech. Excepción: %s" % (msg)
+                          "ech. Excepción: %s" % (msg))
                 else:
                     codigodomenech = "%010d%015d%03d%02d" % (numerolote,
                         numerobala, pesobalaenteros, pesobaladecimales)
@@ -8421,7 +8420,7 @@ def tmp_domenech_etiquetasBalasEtiquetadora(balas):
         c.drawString(xIzquierda, yPrimeraLinea,
                      escribe("CODIGO: "+temp['codigo']))
 
-        from barcode import code39
+        from .barcode import code39
         codigobarras = code39.Extended39(temp['codigo'], xdim = .020*inch)
         codigobarras.drawOn(c, xIzquierda - 0.5 * cm, yPrimeraLinea + 15)
 
@@ -8444,7 +8443,7 @@ def tmp_domenech_etiquetasBalasEtiquetadora(balas):
         c.drawString(xDerecha, yQuintaLinea,
                      escribe("ACABADO: %s" % (temp['acabado'])))
 
-        from barcode.EANBarCode import EanBarCode
+        from .barcode.EANBarCode import EanBarCode
         bar = EanBarCode()
         nombreficheroean13 = bar.getImage(temp['codigoBarra'])
         ean13rotado = Image.open(nombreficheroean13)
@@ -8456,7 +8455,7 @@ def tmp_domenech_etiquetasBalasEtiquetadora(balas):
 
         # XXX: DOMENECH: Por si acaso llegamos a ceder ante el cliente y hay
         # que meter otro código más. Esto se llama bajada de pantacas:
-        from barcode import code128
+        from .barcode import code128
         renteros = re.compile("\d*")
         numerolote = [n for n in renteros.findall(temp['lote']) if n != ""]
         if numerolote != []:
@@ -8472,10 +8471,10 @@ def tmp_domenech_etiquetasBalasEtiquetadora(balas):
                     numerobala = int(numerobala)
                     pesobalaenteros = int(pesobalaenteros)
                     pesobaladecimales = int(pesobaladecimales)
-                except Exception, msg:
-                    print "geninformes::etiquetasBalasEtiquetadora: No se pu"\
+                except Exception as msg:
+                    print("geninformes::etiquetasBalasEtiquetadora: No se pu"\
                           "dieron extraer los datos para el code128 de Domen"\
-                          "ech. Excepción: %s" % (msg)
+                          "ech. Excepción: %s" % (msg))
                 else:
                     # codigodomenech = "%010d%015d%03d%02d" % (numerolote,
                     #   numerobala, pesobalaenteros, pesobaladecimales)
@@ -8613,7 +8612,7 @@ def domenech_v_etiquetasBalasEtiquetadora(balas, seriep = None, numped = None):
         c.drawString(xIzquierda,
                      yPrimeraLinea,
                      escribe("CODIGO: " + temp['codigo']))
-        from barcode import code39
+        from .barcode import code39
         codigobarras = code39.Extended39(temp['codigo'], xdim = .020*inch)
         codigobarras.drawOn(c, xIzquierda - 0.5 * cm, yPrimeraLinea + 15)
         #c.drawString(xDerecha, yPrimeraLinea,
@@ -8642,7 +8641,7 @@ def domenech_v_etiquetasBalasEtiquetadora(balas, seriep = None, numped = None):
         c.drawString(xDerecha,
                      yQuintaLinea,
                      escribe("ACABADO: %s" % (temp['acabado'])))
-        from barcode.EANBarCode import EanBarCode
+        from .barcode.EANBarCode import EanBarCode
         bar = EanBarCode()
         nombreficheroean13 = bar.getImage(temp['codigoBarra'])
         ean13rotado = Image.open(nombreficheroean13)
@@ -8651,7 +8650,7 @@ def domenech_v_etiquetasBalasEtiquetadora(balas, seriep = None, numped = None):
         c.drawImage(nombreficheroean13, xCodigo - 0.5*cm, yCodigo)
         balas = balas[1:]
         # XXX: DOMENECH:
-        from barcode import code128
+        from .barcode import code128
         codigodomenech = _build_codigo_domenech(temp, seriep, numped)
         if codigodomenech:
             if len(codigodomenech) > 37:
@@ -8755,7 +8754,7 @@ def domenech_h_etiquetasBalasEtiquetadora(balas, seriep = None, numped = None):
         c.drawString(xIzquierda,
                      yPrimeraLinea,
                      escribe("CÓDIGO: " + temp['codigo']))
-        from barcode import code39
+        from .barcode import code39
         codigobarras = code39.Extended39(temp['codigo'], xdim = .020*inch)
         codigobarras.drawOn(c, xIzquierda - 0.5 * cm, yPrimeraLinea + 15)
         #c.drawString(xDerecha, yPrimeraLinea,
@@ -8784,7 +8783,7 @@ def domenech_h_etiquetasBalasEtiquetadora(balas, seriep = None, numped = None):
         c.drawString(xDerecha,
                      yQuintaLinea,
                      escribe("ACABADO: %s" % (temp['acabado'])))
-        from barcode.EANBarCode import EanBarCode
+        from .barcode.EANBarCode import EanBarCode
         bar = EanBarCode()
         nombreficheroean13 = bar.getImage(temp['codigoBarra'])
         ean13rotado = Image.open(nombreficheroean13)
@@ -8793,7 +8792,7 @@ def domenech_h_etiquetasBalasEtiquetadora(balas, seriep = None, numped = None):
         c.drawImage(nombreficheroean13, xCodigo, yCodigo)
         balas = balas[1:]
         # XXX: DOMENECH:
-        from barcode import code128
+        from .barcode import code128
         codigodomenech = _build_codigo_domenech(temp, seriep, numped)
         if codigodomenech:
             barcodedomenech = code128.Code128(codigodomenech,
@@ -8852,10 +8851,10 @@ def _build_codigo_domenech(bala, seriep = None, numped = None):
                 numerobala = int(numerobala)
                 pesobalaenteros = int(pesobalaenteros)
                 pesobaladecimales = int(pesobaladecimales)
-            except Exception, msg:
-                print "geninformes::etiquetasBalasEtiquetadora: "\
+            except Exception as msg:
+                print("geninformes::etiquetasBalasEtiquetadora: "\
                       "No se pudieron extraer los datos para el code128 "\
-                      "de Domenech. Excepción: %s" % (msg)
+                      "de Domenech. Excepción: %s" % (msg))
             else:
                 try:
                     ean_domenech = _get_ean_domenech(bala['codigoBarra'])
@@ -8878,8 +8877,8 @@ def _build_codigo_domenech(bala, seriep = None, numped = None):
                         intnumped = int(numped)
                         codnumped = "%06d" % intnumped
                         codigodomenech = codnumped + codigodomenech
-                    except (IndexError, ValueError, TypeError), msg:
-                        print "geninformes: Domenech. " + msg
+                    except (IndexError, ValueError, TypeError) as msg:
+                        print("geninformes: Domenech. " + msg)
                 if seriep:
                     try:
                         if not isinstance(seriep, (int, str)):
@@ -8890,8 +8889,8 @@ def _build_codigo_domenech(bala, seriep = None, numped = None):
                         intseriep = int(seriep)
                         codseriep = "%03d" % intseriep
                         codigodomenech = codseriep + codigodomenech
-                    except (IndexError, ValueError, TypeError), msg:
-                        print "geninformes: Domenech. " + msg
+                    except (IndexError, ValueError, TypeError) as msg:
+                        print("geninformes: Domenech. " + msg)
     return codigodomenech
 
 def _get_ean_domenech(codigo):
@@ -8972,14 +8971,14 @@ def etiquetasBalasCableEtiquetadora(balas):
         c.drawString(xIzquierda, yPrimeraLinea,
                      escribe("CODIGO: "+temp['codigo']))
 
-        from barcode import code39
+        from .barcode import code39
         codigobarras = code39.Extended39(temp['codigo'], xdim = .020*inch)
         codigobarras.drawOn(c, xIzquierda - 0.5 * cm, yPrimeraLinea + 15)
         c.drawString(xIzquierda, ySegundaLinea,
                      escribe("PESO KG: %s" % (temp['peso'])))
         agregarFila(xIzquierda, yTerceraLinea, ancho, escribe(temp['color']),
                     c, "Helvetica", 14, a_derecha = False, altura_linea = 16)
-        from barcode.EANBarCode import EanBarCode
+        from .barcode.EANBarCode import EanBarCode
         bar = EanBarCode()
         nombreficheroean13 = bar.getImage(temp['codigoBarra'])
         ean13rotado = Image.open(nombreficheroean13)
@@ -9050,7 +9049,7 @@ def etiquetasRollosCEtiquetadora(rollos):
         c.drawString(xIzquierda, yPrimeraLinea,
                      escribe("CODIGO: "+temp['codigo']))
 
-        from barcode import code39
+        from .barcode import code39
         codigobarras = code39.Extended39(temp['codigo'], xdim = .020*inch)
         codigobarras.drawOn(c, xIzquierda - 0.5 * cm, yPrimeraLinea + 15)
         c.drawString(xIzquierda,
@@ -9065,7 +9064,7 @@ def etiquetasRollosCEtiquetadora(rollos):
                     18,
                     a_derecha = False,
                     altura_linea = 16)
-        from barcode.EANBarCode import EanBarCode
+        from .barcode.EANBarCode import EanBarCode
         bar = EanBarCode()
         nombreficheroean13 = bar.getImage(temp['codigoBarra'])
         ean13rotado = Image.open(nombreficheroean13)
@@ -9170,11 +9169,11 @@ def _etiquetasRollosEtiquetadora(rollos, mostrar_marcado):
         c.setFont("Helvetica-Bold", 28)
         c.drawString(xIzquierda, -yCuartaLinea,
             escribe("Nº rollo: "+temp['nrollo']))
-        from barcode.EANBarCode import EanBarCode
+        from .barcode.EANBarCode import EanBarCode
         bar = EanBarCode()
         c.drawImage(bar.getImage(temp['codigo']), xDerecha+1.25*inch,
             -ySegundaLinea)
-        from barcode import code39
+        from .barcode import code39
         codigobarras = code39.Extended39(temp['codigo39'], xdim = .015*inch)
         codigobarras.drawOn(c, xDerecha+0.9*inch, -yCuartaLinea+10)
         c.setFont("Helvetica", 8)
@@ -9270,7 +9269,7 @@ def ausencia(empleado, centro, fecha, turno, motivo, motivos):
         saltos = agregarFila(xMotivo1, linea, xMotivo2,
             escribe("%s%s" % (m.descripcion, m.penaliza and " (*)" or "")), c,
             "Helvetica", 10, a_derecha = False, altura_linea = 12)
-        for i in xrange(saltos - 1):  # @UnusedVariable
+        for i in range(saltos - 1):  # @UnusedVariable
             linea = sigLinea(12)
         c.setFont("Helvetica", 8)
         c.drawString(xMotivo2, linea, escribe(m.descripcionDias))
@@ -9320,8 +9319,8 @@ def ausencia(empleado, centro, fecha, turno, motivo, motivos):
     try:
         datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
     except IndexError:
-        print "geninformes::ausencia -> No se encontraron los datos de la "\
-              "empresa en la tabla datos_de_la_empresa."
+        print("geninformes::ausencia -> No se encontraron los datos de la "\
+              "empresa en la tabla datos_de_la_empresa.")
     else:
         c.setFont("Times-Roman", 10)
         c.drawCentredString((rm - lm)/2.0, bm - 0.5*cm,
@@ -9363,13 +9362,13 @@ def pendiente_recibir(exportar_a_csv_a = None):
         if pendiente > 0:
             if ldpc.pedidoCompraID == None:     # Con la reescritura de la
             # consulta esto ya nunca se va a cumplir. Lo dejo por si acaso...
-                print "geninformes.py (pendiente_recibir): ¡LDPC ID %s no ti"\
-                      "ene pedido de compra! Eliminando..." % (ldpc.id),
+                print("geninformes.py (pendiente_recibir): ¡LDPC ID %s no ti"\
+                      "ene pedido de compra! Eliminando..." % (ldpc.id), end=' ')
                 try:
                     ldpc.destroySelf()
-                    print "OK"
-                except Exception, msg:
-                    print "KO: %s" % (msg)
+                    print("OK")
+                except Exception as msg:
+                    print("KO: %s" % (msg))
                 continue
             numpedido = ldpc.pedidoCompra.numpedido
             fechapedido = (ldpc.pedidoCompra.fecha
@@ -9391,7 +9390,7 @@ def pendiente_recibir(exportar_a_csv_a = None):
                      titulo,
                      campos,
                      datos,
-                     fecha = mx.DateTime.localtime().strftime('%d/%m/%Y'),
+                     fecha = datetime.datetime.now().strftime('%d/%m/%Y'),
                      cols_a_derecha = (4, 5),
                      exportar_a_csv_a = exportar_a_csv_a)
 
@@ -9437,7 +9436,7 @@ def pendiente_servir(tipo, porpedido, porproducto, nombrecliente = ""):
                      titulo,
                      campos,
                      datos,
-                     fecha = mx.DateTime.localtime().strftime('%d/%m/%Y'),
+                     fecha = datetime.datetime.now().strftime('%d/%m/%Y'),
                      cols_a_derecha = (4, 5),
                      apaisado = True)
 
@@ -9653,7 +9652,7 @@ def existencias_fibra_por_lote(fecha=None, external_api=None):
             return 1
         return 0
 
-    productos_keys = productos.keys()
+    productos_keys = list(productos.keys())
     productos_keys.sort(cmp_prod)
     datos = []
     tot = len(productos_keys)
@@ -9688,7 +9687,7 @@ def existencias_fibra_por_lote(fecha=None, external_api=None):
             "",
             ""
             ))
-        lotes_keys = productos[producto]['lotes'].keys()
+        lotes_keys = list(productos[producto]['lotes'].keys())
         lotes_keys.sort(cmp_lote)
         for lote in lotes_keys:
             if isinstance(lote, pclases.Lote):
@@ -9912,7 +9911,7 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
                              " -> Si 'defectuoso' es True, el rollo DE"\
                              "BE existir y ser del tipo plcases.Rollo "\
                              "o pclases.RolloDefectuoso."
-                    raise TypeError, txterr
+                    raise TypeError(txterr)
                 c.drawImage(os.path.join(
                                 os.path.dirname(os.path.realpath(__file__)),
                                 '..', 'imagenes', 'none.png'),
@@ -9955,7 +9954,7 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
                 _dibujare_simbolitor_en_la_etiquetar(
                     c, 9.5*cm, 0.25*cm, 2.6*cm)
             else:
-                from barcode.EANBarCode import EanBarCode
+                from .barcode.EANBarCode import EanBarCode
                 bar = EanBarCode()
                 #c.drawImage(bar.getImage(rollo['codigo']), 8.0 * cm, 0.5 * cm,
                 #            width = 4.1 * cm)
@@ -9965,7 +9964,7 @@ def etiquetasRollosEtiquetadora(rollos, mostrar_marcado, hook = None):
                 ean13rotado.save(nombreficheroean13)
                 c.drawImage(
                     nombreficheroean13, 10.5*cm, 0.5*cm, width = 1.5*cm)
-            from barcode import code39
+            from .barcode import code39
             codigobarras = code39.Extended39(rollo['codigo39'],
                                              xdim = 0.065 * cm)
             #codigobarras.drawOn(c, 3.5 * cm, 2.9 * cm)
@@ -10080,8 +10079,8 @@ def _escribir_textofijo(c, medidas, txt = "Pagaré"):
     try:
         datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
     except IndexError:
-        print "geninformes::_escribir_textofijo -> No se encontraron los "\
-              "datos de la empresa en la tabla datos_de_la_empresa."
+        print("geninformes::_escribir_textofijo -> No se encontraron los "\
+              "datos de la empresa en la tabla datos_de_la_empresa.")
     else:
         c.saveState()
         # Voy a imprimir 2 pequeñas marcas para saber por dónde doblar el
@@ -10745,8 +10744,8 @@ def escribir_cuerpo_presupuesto(c, medidas, fuentes, presupuesto, una_linea):
     try:
         datos_empresa = pclases.DatosDeLaEmpresa.select()[0]
     except IndexError:
-        print "geninformes::escribir_cuerpo_presupuesto -> No se encontraron"\
-              "los datos de la empresa en la tabla datos_de_la_empresa."
+        print("geninformes::escribir_cuerpo_presupuesto -> No se encontraron"\
+              "los datos de la empresa en la tabla datos_de_la_empresa.")
     else:
         c.setFont(fuentes['normal']['fuente'], fuentes['normal']['tamaño'])
         fecha_corta = corregir_nombres_fecha(
@@ -10853,15 +10852,15 @@ def escribir_productos_presupuesto(presupuesto, medidas, lineatexto, c,
             elif ldp.productoVenta.es_especial():
                 unidad = ldp.productoVenta.camposEspecificosEspecial.unidad
             else:
-                print "geninformes::escribir_productos_presupuesto -> No se "\
-                      "pudo determinar tipo de producto de venta."
+                print("geninformes::escribir_productos_presupuesto -> No se "\
+                      "pudo determinar tipo de producto de venta.")
                 unidad = "?"
         elif ldp.productoCompra != None:
             unidad = ldp.productoCompra.unidad
             descripcion = ldp.productoCompra.descripcion.title()
         else:
-            print "geninformes::escribir_productos_presupuesto -> No se pudo"\
-                  " determinar producto de la línea de pedido."
+            print("geninformes::escribir_productos_presupuesto -> No se pudo"\
+                  " determinar producto de la línea de pedido.")
             unidad = descripcion = "?"
         texto_producto = "%s %s de %s a %s €/%s." % (cantidad,
                                                      unidad,
@@ -11023,7 +11022,7 @@ def informe_marcado_ce(producto,
                   "del producto %d (%s), sino de %d (%s)." % (partida.id,
                     producto.id, producto.descripcion, producto_partida.id,
                     producto_partida.descripcion)
-            print txt
+            print(txt)
             if ventana_padre:
                 utils.dialogo_info(titulo = "PARTIDA INCOHERENTE",
                                    texto = "La partida %s no se mostrará, dad"\
@@ -11086,7 +11085,7 @@ def informe_marcado_ce(producto,
     calmedias = [0, ] * len(pruebas)
     calsigmas = [0, ] * len(pruebas)
     if medias != []:
-        for i in xrange(len(medias[0])):
+        for i in range(len(medias[0])):
             calmedias[i] = sum([m[i] for m in medias]) / len(medias)
             if len(medias) > 1:
                 calsigmas[i]=((sum([(m[i] - calmedias[i])**2 for m in medias])
@@ -11109,7 +11108,7 @@ def informe_marcado_ce(producto,
     calmedias = [0, ] * 10
     calsigmas = [0, ] * 10
     if medias != []:
-        for i in xrange(len(medias[0])):
+        for i in range(len(medias[0])):
             valores_no_nulos = [m[i] for m in medias if m[i] != 0]
             if len(valores_no_nulos) > 0:
                 calmedias[i] = sum(valores_no_nulos) / len(valores_no_nulos)
@@ -11157,11 +11156,11 @@ def informe_marcado_ce(producto,
               ('Porom.', 6),
               ('Piram.', 6))
     return imprimir2(archivo, titulo, campos, datos,
-                     cols_a_derecha = range(3, 3+len(pruebas)),
+                     cols_a_derecha = list(range(3, 3+len(pruebas))),
                      lineas_verticales =
                         ((sum([c[1] for c in campos[:3]]), True), ),
                      fecha = "Fecha impresión: %s" % (
-                        utils.str_fecha(mx.DateTime.localtime())),
+                        utils.str_fecha(datetime.datetime.now())),
                      sobrecampos = (("Partida", 3),),
                      exportar_a_csv_a = exportar_a_csv_a)
 
@@ -11332,8 +11331,8 @@ def generar_recibo(c, medidas, fuentes, xoffset, yoffset, datos):
         dde3 = "%s - %s (%s)" % (dde.cp, dde.ciudad, dde.provincia)
         dde_por_poder = dde.nombre
     except IndexError:
-        print "geninformes::generar_recibo -> Datos de la empresa no "\
-              "encontrados."
+        print("geninformes::generar_recibo -> Datos de la empresa no "\
+              "encontrados.")
         dde0 = "SIN DATOS"
         dde1 = "-"
         dde2 = "sin datos"
@@ -11761,7 +11760,7 @@ def cmr_fdest(c, m, f):
 
 def cmr_num(c, m, f, a):
     #rectangulo(c, m[0], m[1], texto = 'DOCUMENTO Nº %s/%d' % (
-    # mx.DateTime.localtime().strftime("%d%m%y"), 1),
+    # datetime.datetime.now().strftime("%d%m%y"), 1),
     #           alinTxtX = 'centro', alinTxtY = 'centro', doble = False)
     albaranes = [i for i in pclases.AlbaranSalida.select(
                     pclases.AlbaranSalida.q.fecha == a.fecha, orderBy = "id")

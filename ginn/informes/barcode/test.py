@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from common import *  # @UnusedWildImport
-from code39 import *  # @UnusedWildImport
-from code93 import *  # @UnusedWildImport
-from code128 import *  # @UnusedWildImport
-from usps import *  # @UnusedWildImport
+from .common import *  # @UnusedWildImport
+from .code39 import *  # @UnusedWildImport
+from .code93 import *  # @UnusedWildImport
+from .code128 import *  # @UnusedWildImport
+from .usps import *  # @UnusedWildImport
 
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.styles import getSampleStyleSheet

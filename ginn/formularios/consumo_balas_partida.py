@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2018  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2020  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -33,17 +33,32 @@
 ###################################################################
 # # Changelog:
 # # 19 de septiembre de 2006 -> Inicio.
-##
+# # 2 de septiembre de 2020 -> Migrado a python 3.
 ###################################################################
 """
 Consumo de balas de fibra por partida de geotextiles mediante partidas de carga
 """
 
-import pygtk
-pygtk.require('2.0')
-import gtk
-import mx.DateTime
+import gi
+gi.require_version("Gtk", '3.0')
+from gi import pygtkcompat
+
+try:
+    from gi import pygtkcompat
+except ImportError:
+    pygtkcompat = None
+    from gi.repository import Gtk as gtk
+    from gi.repository import GObject as gobject
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+    import gtk
+    import gobject
+
+import datetime
 import os
+from functools import cmp_to_key
 from formularios.ventana import Ventana
 from formularios import utils
 from framework import pclases
@@ -113,9 +128,9 @@ class ConsumoBalasPartida(Ventana):
                  "gobject.TYPE_STRING", False, True, False, None),
                 ("ID", "gobject.TYPE_STRING", False, False, False, None))
         utils.preparar_listview(self.wids['tv_gtx'], cols)
-        self.wids['ch_api'] = gtk.CheckButton("Partida volcada a Murano")
-        self.wids['b_add_balas'].parent.add(self.wids['ch_api'])
-        self.wids['b_add_balas'].parent.show_all()
+        self.wids['ch_api'] = gtk.CheckButton(label="Partida volcada a Murano")
+        self.wids['b_add_balas'].get_parent().add(self.wids['ch_api'])
+        self.wids['b_add_balas'].get_parent().show_all()
         self.wids['ch_api'].set_sensitive(False)
         if self.objeto is None:
             self.ir_a_primero()
@@ -128,11 +143,13 @@ class ConsumoBalasPartida(Ventana):
         Agrega dos botones para ir a la partida de carga anterior y a la
         siguiente.
         """
-        wpadre = self.wids['b_partida'].parent
-        self.wids['b_anterior'] = gtk.Button("<")
-        self.wids['b_siguiente'] = gtk.Button(">")
-        wpadre.add_with_properties(self.wids['b_anterior'], "expand", False)
-        wpadre.add_with_properties(self.wids['b_siguiente'], "expand", False)
+        wpadre = self.wids['b_partida'].get_parent()
+        self.wids['b_anterior'] = gtk.Button(label="<")
+        self.wids['b_siguiente'] = gtk.Button(label=">")
+        wpadre.add(self.wids['b_anterior'])
+        self.wids['b_anterior'].set_property("expand", False)
+        wpadre.add(self.wids['b_siguiente'])
+        self.wids['b_siguiente'].set_property("expand", False)
         self.wids['b_anterior'].connect('clicked', self.ir_a_anterior)
         self.wids['b_siguiente'].connect('clicked', self.ir_a_siguiente)
         wpadre.show_all()
@@ -368,7 +385,7 @@ class ConsumoBalasPartida(Ventana):
             else:
                 producto = "SIN PRODUCCIÓN"
                 partes = ""
-            model.append((partida.codigo, producto, partes, partida.id))
+            model.append((partida.codigo, producto, partes, str(partida.id)))
 
     def cambiar_peso_bala(self, cell, path, newtext):
         """
@@ -465,7 +482,7 @@ class ConsumoBalasPartida(Ventana):
             i = 0.0
             vpro.set_valor(i/1.0, 'Cargando datos...')
             while gtk.events_pending():
-                gtk.main_iteration(False)
+                gtk.main_iteration()
             partida.sync()
             tot = len(partida.balas)
             consumos_estimados, merma = self.get_consumos_estimados(partida,
@@ -485,7 +502,7 @@ class ConsumoBalasPartida(Ventana):
             #     producto = "ERROR"
             # self.wids['e_gtx'].set_text(producto)
             balas = [b for b in partida.balas]
-            balas.sort(func_orden_balas)
+            balas.sort(key=cmp_to_key(func_orden_balas))
             productos = {}
             for bala in balas:
                 vpro.set_valor(i/tot, 'Cargando datos (%d)...' % (
@@ -576,7 +593,7 @@ class ConsumoBalasPartida(Ventana):
                       'con un guión.',
                 padre=self.wids['ventana'])
             return []
-        return xrange(ini, fin+1)
+        return range(ini, fin+1)
 
     def drop_bala(self, wid):
         """
@@ -787,7 +804,7 @@ class ConsumoBalasPartida(Ventana):
                                    "Lote %s." % (itr[2]),
                                    itr[3]))
         reports.abrir_pdf(geninformes.consumo_fibra_partida(datos,
-            utils.str_fecha(mx.DateTime.localtime()), cols_a_derecha=(0, 1, )))
+            utils.str_fecha(datetime.date.today()), cols_a_derecha=(0, 1, )))
 
     def add_balas(self, boton):
         """
@@ -956,10 +973,11 @@ class ConsumoBalasPartida(Ventana):
             fecha = utils.mostrar_calendario(fecha_defecto=partida.fecha,
                                              padre=self.wids['ventana'])
             fecha = utils.parse_fecha(utils.str_fecha(fecha))
-            partida.fecha = mx.DateTime.DateTimeFrom(day=fecha.day,
-                    month=fecha.month, year=fecha.year,
-                    hour=partida.fecha.hour, minute=partida.fecha.minute,
-                    second=partida.fecha.second)
+            partida.fecha = datetime.datetime(day=fecha.day,
+                                              month=fecha.month, year=fecha.year,
+                                              hour=partida.fecha.hour,
+                                              minute=partida.fecha.minute,
+                                              second=partida.fecha.second)
             self.wids['e_fecha'].set_text(utils.str_fechahora(partida.fecha))
 
     def fecha_from_pdp(self, boton):
@@ -993,7 +1011,7 @@ class ConsumoBalasPartida(Ventana):
                                            or (a1.fecha > a2.fecha and 1)
                                            or 0)
                     fecha = albaranes_internos[0].fecha
-                    partida.fecha = mx.DateTime.DateTimeFrom(
+                    partida.fecha = datetime.datetime(
                             day=fecha.day, month=fecha.month,
                             year=fecha.year, hour=partida.fecha.hour,
                             minute=partida.fecha.minute,

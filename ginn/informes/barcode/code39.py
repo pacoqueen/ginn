@@ -31,7 +31,7 @@
 #
 
 from reportlab.lib.units import inch
-from common import Barcode
+from .common import Barcode
 import string
 
 _patterns = {
@@ -124,7 +124,7 @@ class _Code39Base(Barcode):
         self.checksum = 0
         self.bearers = 0.0
 
-        for (k, v) in args.items():
+        for (k, v) in list(args.items()):
             setattr(self, k, v)
             
         if self.quiet:
@@ -245,7 +245,7 @@ class Extended39(_Code39Base):
     def encode(self):
         self.encoded = ""
         for c in self.validated:
-            if _extended.has_key(c):
+            if c in _extended:
                 self.encoded = self.encoded + _extended[c]
             elif c in _stdchrs:
                 self.encoded = self.encoded + c

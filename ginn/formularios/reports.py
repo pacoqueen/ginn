@@ -39,13 +39,28 @@
 ##
 ###################################################################
 
-import pygtk
-pygtk.require('2.0')
 import os
 import sys
 import tempfile
 from formularios import utils
 from informes.geninformes import give_me_the_name_baby
+import gi
+gi.require_version("Gtk", '3.0')
+from gi import pygtkcompat
+
+try:
+    from gi import pygtkcompat
+except importerror:
+    pygtkcompat = none
+    from gi.repository import Gtk as gtk
+    from gi.repository import GObject as gobject
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+    import gtk
+    import gobject
+
 
 def abrir_pdf(pdf):
     """
@@ -140,7 +155,7 @@ def mandar_a_imprimir_con_ghostscript(fichero, rotate = False):
     # 3.- gs esté en el PATH (añadiendo C:\Archivos de programa...\bin en la
     #     variable de entorno PATH desde las propiedades avanzadas de Mi PC.)
     if os.system(comando):
-        print "No se pudo hacer la impresión directa. Lanzo el visor."
+        print("No se pudo hacer la impresión directa. Lanzo el visor.")
         abrir_pdf(fichero)
 
 def mandar_a_imprimir_con_foxit(fichero):
@@ -158,7 +173,7 @@ def mandar_a_imprimir_con_foxit(fichero):
         comando = """"C:\Archivos de programa\Foxit Software\Foxit Reader\Foxit Reader.exe" /p %s """ % (fichero)
     # print comando
     if os.system(comando):
-        print "No se pudo hacer la impresión directa con:\n%s\n\nLanzo el visor." % comando
+        print("No se pudo hacer la impresión directa con:\n%s\n\nLanzo el visor." % comando)
         abrir_pdf(fichero)
 
 def get_ruta_ghostscript():
@@ -192,7 +207,7 @@ def imprimir_con_gs(fichero, impresora = None, blanco_y_negro = False):
         # XXX
         ruta_a_gs = get_ruta_ghostscript()
         if ruta_a_gs == None:
-            print "informes.py (imprimir_con_gs): GhostScript no encontrado."
+            print("informes.py (imprimir_con_gs): GhostScript no encontrado.")
             abrir_pdf(fichero)
         else:
             if impresora == None:
@@ -212,8 +227,8 @@ def imprimir_con_gs(fichero, impresora = None, blanco_y_negro = False):
             except:
                 salida = -1
             if salida != 0 and salida != 1: #gs devuelve 1 si le da a Cancelar.
-                print "informes.py (imprimir_con_gs): No se pudo imprimir. "\
-                      "Lanzo el visor."
+                print("informes.py (imprimir_con_gs): No se pudo imprimir. "\
+                      "Lanzo el visor.")
                 abrir_pdf(fichero)
             if salida == 1:     # Si cancela la impresión a lo mejor quiere
                                 # verlo en pantalla.
@@ -236,7 +251,7 @@ def que_simpatico_es_el_interprete_de_windows(comando, parametro):
 ## ---------------------- Rutina principal ------------------------
 if __name__=='__main__':
     if len(sys.argv) < 1:
-        print "ERROR: No se pasó el nombre de ningún informe"
+        print("ERROR: No se pasó el nombre de ningún informe")
         sys.exit(0)
 
     from informes import geninformes
@@ -278,7 +293,7 @@ if __name__=='__main__':
         sys.exit(0)
     #   nombrepdf = geninformes.()
     else:
-        print "El informe %s no existe" % informe
+        print("El informe %s no existe" % informe)
         sys.exit(0)
     abrir_pdf(nombrepdf)
     #os.unlink(nombrepdf)

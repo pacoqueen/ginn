@@ -55,7 +55,7 @@ Implements the Code 39 barcode spec
 """
 #
 
-from _barcode import Barcode
+from ._barcode import Barcode
 
 class Code39(Barcode):
     """
