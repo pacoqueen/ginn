@@ -45,7 +45,7 @@ class MarqueeLabel(gtk.Label):
         if speed is None: # reset!
             self.texto = self.texto_original
         else:
-            raise NotImplementedError, "Not implemented yed."
+            raise NotImplementedError("Not implemented yed.")
 
 
 def test():

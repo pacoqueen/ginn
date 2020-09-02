@@ -45,8 +45,8 @@ while i<l:
 hirek_hossz=font.string_width(hirek)
 
 
-print image_names
-print image_pos
+print(image_names)
+print(image_pos)
 
 SZELESSEG = 632
 FRAME_DELAY = 10

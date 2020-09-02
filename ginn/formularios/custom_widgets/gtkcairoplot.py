@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2014       Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2014-2020  Francisco José Rodríguez Bogado,                   #
 #                          (pacoqueen@users.sourceforge.net)                  #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
@@ -24,7 +24,7 @@
 # Clase para empotrar gráficos hechos con Cairo en un widget Gtk
 ###############################################################################
 
-# TODO: Lo mejor de cagraph frente a cairoplot es la capacidad de zoom, pan, 
+# TODO: Lo mejor de cagraph frente a cairoplot es la capacidad de zoom, pan,
 #       etc. Pero no consigo que las señales vayan donde deben ir. :(
 # Al final me quedé con las ganas de https://networkx.github.io/ porque
 # depende de matplotlib, que es enorme y no se instala por defecto.
@@ -36,7 +36,7 @@ except:
     raise SystemExit
 
 if gtk.pygtk_version < (2, 0):
-    print "Se necesita PyGtk 2.0 o posterior."
+    print("Se necesita PyGtk 2.0 o posterior.")
     raise SystemExit
 
 import sys, os
@@ -68,7 +68,7 @@ from math import pi
  VERTICAL,      # 1
  TARTA,         # 2
  GRAFO          # 3
-) = range(4)
+) = list(range(4))
 
 class GtkCairoPlot(gtk.DrawingArea):
     """
@@ -193,9 +193,9 @@ class GtkCairoPlot(gtk.DrawingArea):
             tempsurface = cairo.SVGSurface(None, self.width, self.height)
             plot = cairoplot.PiePlot(tempsurface,
                                      self._data,
-                                     self.width, 
+                                     self.width,
                                      self.height)
-            # TODO: Dibuja algo, pero caca. No se ve nada. 
+            # TODO: Dibuja algo, pero caca. No se ve nada.
         elif self._tipo == GRAFO:
             plot = GraphPlot(self._data, self.width, self.height)
             #plot._print_data()
@@ -205,7 +205,7 @@ class GtkCairoPlot(gtk.DrawingArea):
 
     def motion_notify_hbar(self, widget, ev):
         """
-        Actualiza un label que muestra el valor de la X y el label bajo el 
+        Actualiza un label que muestra el valor de la X y el label bajo el
         cursor. Solo para derivados de cagraph.
         """
         series = self.plt.seriess[1]
@@ -224,7 +224,7 @@ class GtkCairoPlot(gtk.DrawingArea):
 
     def motion_notify_vbar(self, widget, ev):
         """
-        Actualiza un label que muestra el valor de la X y el label bajo el 
+        Actualiza un label que muestra el valor de la X y el label bajo el
         cursor. Solo para derivados de cagraph.
         """
         # FIXME
@@ -286,7 +286,7 @@ def check_data(data, tipo):
     """
     if tipo == TARTA:
         _data = {}
-        _labels = data.keys()
+        _labels = list(data.keys())
         _labels.sort()
         for label in data:
             valor = data[label]
@@ -302,7 +302,7 @@ def check_data(data, tipo):
         _labels = []
         y = 0
         yoffset = 10    # No hace falta que sea proporcional al eje de abscisas
-        labels = data.keys()
+        labels = list(data.keys())
         labels.reverse()    # Para que salgan de arriba a abajo
         for label in labels:
             valor = data[label]
@@ -315,7 +315,7 @@ def check_data(data, tipo):
                 subvalores.reverse()
                 for subvalor in subvalores:
                     _data.append((subvalor, y))
-                    _labels.append((subvalor, y, 
+                    _labels.append((subvalor, y,
                                     "%s (%s)" % (label, subvalor)))
                     y += yoffset
             else:
@@ -326,7 +326,7 @@ def check_data(data, tipo):
                              "Necesita al menos dos series de datos")
     elif tipo == GRAFO:
         _labels = []    # No se usan.
-        nodos = data.keys()
+        nodos = list(data.keys())
         _data = OrderedDict()
         for nodo in nodos:
             _data[nodo] = []
@@ -360,9 +360,9 @@ class GraphPlot(gtk.DrawingArea):
 
     def _print_data(self):
         for nodo in self._data:
-            print (nodo + " -> " + 
-                   ", ".join(["%s (%d)" % vertice 
-                              for vertice in self._data[nodo]]))
+            print((nodo + " -> " +
+                   ", ".join(["%s (%d)" % vertice
+                              for vertice in self._data[nodo]])))
 
     def expose(self, widget, event):
         """
@@ -390,12 +390,12 @@ class GraphPlot(gtk.DrawingArea):
         # draw background
         width = style.width - style.margin - style.margin
         height = style.height - style.margin - style.margin
-        
+
         cr.set_source_rgb(*style.background_color)
         cr.rectangle(style.margin, style.margin, width, height)
         cr.fill()
 
-        for nodo in self._data.keys():
+        for nodo in list(self._data.keys()):
             self.draw_nodo(nodo)
             for vertice in self._data[nodo]:
                 self.draw_vertice(nodo, vertice)
@@ -413,7 +413,7 @@ class GraphPlot(gtk.DrawingArea):
         style = self.graph_style
         cr.save()
         cr.set_source_rgb(0.0, 0.0, 0.0)
-        cr.select_font_face("Georgia", cairo.FONT_SLANT_NORMAL, 
+        cr.select_font_face("Georgia", cairo.FONT_SLANT_NORMAL,
                                  cairo.FONT_WEIGHT_BOLD)
         cr.set_font_size(32)
         (x_bearing, y_bearing,
@@ -423,7 +423,7 @@ class GraphPlot(gtk.DrawingArea):
                    y - height / 2 - y_bearing)
         cr.show_text(nodo)
         # Y un circulín alrededor.
-        cr.translate(x - width / 2 + x_advance, 
+        cr.translate(x - width / 2 + x_advance,
                      y - height / 2 + y_advance)
         cr.arc(0, 0, width, 0, 2 * pi)
         cr.stroke()
@@ -431,7 +431,7 @@ class GraphPlot(gtk.DrawingArea):
 
     def draw_vertice(self, nodo, vertice):
         """
-        Recibe el nodo origen y una lista de vértices que parten de él. Cada 
+        Recibe el nodo origen y una lista de vértices que parten de él. Cada
         vértice lleva el nodo destino (que puede o no haberse dibujado todavía)
         y el peso del vértice (grosor del arco).
         """

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2015  Francisco José Rodríguez Bogado                    #
+# Copyright (C) 2005-2020  Francisco José Rodríguez Bogado                    #
 #                          <frbogado@geotexan.com>                            #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
@@ -31,7 +31,6 @@ Superclase para las facturas de venta, de abono y prefacturas.
 """
 
 from . import VERBOSE, VencimientoCobro, DocumentoDePago
-import mx.DateTime
 import datetime
 from formularios import utils
 import re
@@ -39,13 +38,14 @@ from framework.pclases import Auditoria
 from framework.pclases import DEBUG
 from framework.pclases import Cobro
 from lib.myprint import myprint
+import calendar
 
 # "Macros/constantes" de tipos de facturas:
 (FRA_NO_DOCUMENTADA,
  FRA_NO_VENCIDA,
  FRA_IMPAGADA,
  FRA_COBRADA,
- FRA_ABONO) = range(5)
+ FRA_ABONO) = list(range(5))
 
 SIN_DATOS_PARA_VENCIMIENTOS_POR_DEFECTO = 1
 
@@ -54,14 +54,14 @@ class SuperFacturaVenta:
     Superclase para las facturas de venta y prefacturas.
     """
 
-    def calcular_vencido(self, fecha_base=mx.DateTime.today()):
+    def calcular_vencido(self, fecha_base=datetime.date.today()):
         """
         Devuelve el importe vencido[1] de la factura en la fecha recibida.
         Por defecto se usa la fecha del sistema.
 
         [1] Cobrado o no, da igual.
         """
-        from facturadeabono import FacturaDeAbono
+        from .facturadeabono import FacturaDeAbono
         if isinstance(self, FacturaDeAbono):
             # Las facturas de abono no tienen vencimientos, solo "cobros" que
             # se relacionan con otros efectos de cobro. "So", el importe habrá
@@ -94,7 +94,7 @@ class SuperFacturaVenta:
         """
         vencida = True
         for vto in self.vencimientosCobro:
-            if vto.fecha > mx.DateTime.localtime():
+            if vto.fecha > datetime.date.today():
                 vencida = False
                 break
                 # Tiene un vto. que no ha llegado. Me la salto.
@@ -203,10 +203,9 @@ class SuperFacturaVenta:
                 # for x, y in zip(i, o):
                 #     print x, "->", myround(x), "=", y
                 #     assert myround(x) == y
-                subtotales = map(lambda x: myround(x), subtotales)
+                subtotales = [myround(x) for x in subtotales]
             else:
-                subtotales = map(lambda x: round(round(x, 6), redondeo),
-                                 subtotales)
+                subtotales = [round(round(x, 6), redondeo) for x in subtotales]
             # La ley, que no es muy precisa, viene a decir que los cálculos
             # internos de precios y tal se hagan a 6 decimales los totales a 2.
             # También dice que TOTAL=BASE IMPONIBLE+IVA. Se supone que ya todo
@@ -431,9 +430,9 @@ class SuperFacturaVenta:
         Divide el resultado que devuelva la función «func_a_evaluar_en_lineas»
         aplicada a las líneas de venta, servicio, de abono, etc.
         """
-        from facturaventa import FacturaVenta
-        from facturadeabono import FacturaDeAbono
-        from prefactura import Prefactura
+        from .facturaventa import FacturaVenta
+        from .facturadeabono import FacturaDeAbono
+        from .prefactura import Prefactura
         comerciales = {None: 0.0}   # Al menos siempre debe quedar None con 0
                                     # aunque no tenga eledeuves ni servicios.
         totalregladetres = 0.0
@@ -472,9 +471,9 @@ class SuperFacturaVenta:
         Divide el resultado que devuelva la función «func_a_evaluar_en_lineas»
         aplicada a las líneas de venta, servicio, de abono, etc.
         """
-        from facturaventa import FacturaVenta
-        from facturadeabono import FacturaDeAbono
-        from prefactura import Prefactura
+        from .facturaventa import FacturaVenta
+        from .facturadeabono import FacturaDeAbono
+        from .prefactura import Prefactura
         proveedores = {None: 0.0}   # Al menos siempre debe quedar None con 0
                                     # aunque no tenga eledeuves ni servicios.
         totalregladetres = 0.0
@@ -600,7 +599,7 @@ class SuperFacturaVenta:
             pass    # No es factura de abono.
         return tuple(proveedores)
 
-    def get_str_estado(self, cache={}, fecha=mx.DateTime.today()):
+    def get_str_estado(self, cache={}, fecha=datetime.date.today()):
         """
         Si la factura está en el diccionario de caché recibido (por su puid)
         entonces no consulta el estado en la BD.
@@ -621,7 +620,7 @@ class SuperFacturaVenta:
 
     def UNOPTIMIZED_get_str_estado(self,
                                    cache = {},
-                                   fecha = mx.DateTime.today()):
+                                   fecha = datetime.date.today()):
         """
         Si la factura está en el diccionario de caché recibido (por su puid)
         entonces no consulta el estado en la BD.
@@ -641,7 +640,7 @@ class SuperFacturaVenta:
         return str_estado
 
     # 20100927: Nueva clasificación de facturas:
-    def UNOPTIMIZED_get_estado(self, fecha = mx.DateTime.today()):
+    def UNOPTIMIZED_get_estado(self, fecha = datetime.date.today()):
         """
         Devuelve el estado de la factura:
         0: No documentada ni vencida: Ningún documento de pago relacionado.
@@ -702,7 +701,7 @@ class SuperFacturaVenta:
         else:
             return FRA_IMPAGADA
 
-    def get_estado(self, fecha = mx.DateTime.today()):
+    def get_estado(self, fecha = datetime.date.today()):
         """
         Devuelve el estado de la factura:
         0: No documentada ni vencida: Ningún documento de pago relacionado.
@@ -728,9 +727,9 @@ class SuperFacturaVenta:
         # Todos los vencimientos tienen un cobro y ese cobro:
         #  - No es pagaré ni confirming.
         #  - O bien, es pagaré o confirming y no están pendientes.
-        from facturaventa import FacturaVenta
-        from facturadeabono import FacturaDeAbono
-        from prefactura import Prefactura
+        from .facturaventa import FacturaVenta
+        from .facturadeabono import FacturaDeAbono
+        from .prefactura import Prefactura
         if isinstance(self, (Prefactura, FacturaDeAbono)):
             return self.UNOPTIMIZED_get_estado(fecha = fecha)
         else:
@@ -760,7 +759,7 @@ class SuperFacturaVenta:
         # raise ValueError, "La factura «%s» no tiene estado. La función sin optimizar dice que es «%s»." % (self.get_puid(), str_estado)
         return estado
 
-    def calcular_importe_no_documentado(self, fecha = mx.DateTime.today()):
+    def calcular_importe_no_documentado(self, fecha = datetime.date.today()):
         """
         Devuelve el importe de los vencimientos no documentados.
         Vencimiento no documentado = vencimiento que no tiene asociado ningún
@@ -778,7 +777,7 @@ class SuperFacturaVenta:
                 total += vto.importe - importe_cobrado_en_fecha
         return total
 
-    def calcular_importe_documentado(self, fecha = mx.DateTime.today()):
+    def calcular_importe_documentado(self, fecha = datetime.date.today()):
         """
         Devuelve el importe de los vencimientos documentados.
         Vencimiento documentado = vencimiento que tiene asociado un
@@ -798,7 +797,7 @@ class SuperFacturaVenta:
                         total += cobro.importe
         return total
 
-    def calcular_importe_vencido(self, fecha = mx.DateTime.today()):
+    def calcular_importe_vencido(self, fecha = datetime.date.today()):
         """
         Devuelve el total del importe vencido en la fecha indicada.
         """
@@ -808,7 +807,7 @@ class SuperFacturaVenta:
         return total
 
     def calcular_importe_vencido_no_cobrado_ni_documentado(self,
-                                                fecha = mx.DateTime.today()):
+                                                fecha = datetime.date.today()):
         """
         Devuelve el total del importe vencido Y NO COBRADO O DOCUMENTADO en
         la fecha indicada.
@@ -836,7 +835,7 @@ class SuperFacturaVenta:
                             importe_vencido -= cobro.importe
         return total
 
-    def calcular_importe_cobrado(self, fecha = mx.DateTime.today()):
+    def calcular_importe_cobrado(self, fecha = datetime.date.today()):
         """
         Devuelve el total del importe cobrado en la fecha indicada. Importe
         cobrado = importe de los cobros anteriores a esa fecha o de los
@@ -995,7 +994,7 @@ class SuperFacturaVenta:
             if cliente.vencimientos != None and cliente.vencimientos != '':
                 try:
                     vtos = cliente.get_vencimientos(self.fecha)
-                except Exception, msg:
+                except Exception as msg:
                     vtos = []  # Los vencimientos no son válidos o no tiene.
                     if DEBUG:
                         myprint("pclases::superfacturaventa -> Excepción"
@@ -1014,7 +1013,7 @@ class SuperFacturaVenta:
             except ZeroDivisionError:
                 cantidad = total
             if not self.fecha:
-                self.fecha = mx.DateTime.localtime()
+                self.fecha = datetime.date.today()
             if cliente.diadepago != None and cliente.diadepago != '':
                 diaest = cliente.get_dias_de_pago()
             else:
@@ -1030,16 +1029,9 @@ class SuperFacturaVenta:
                 # ¿Factura sin pedido?
                 str_formapago = self.cliente.get_texto_forma_cobro()
             for incr in vtos:
-                try:
-                    raise TypeError
-                    fechavto = (mx.DateTime.DateFrom(self.fecha)
-                                + (incr * mx.DateTime.oneDay))
-                except TypeError:   # Python antiguo y mezcla de datetime + mx
-                    fechavto = mx.DateTime.DateFrom(self.fecha.year,
-                                                    self.fecha.month,
-                                                    self.fecha.day)
-                    for i in range(incr):
-                        fechavto += mx.DateTime.oneDay
+                fechavto = self.fecha
+                for i in range(incr):
+                    fechavto += datetime.timedelta(days=1)
                 vto = VencimientoCobro(fecha=fechavto,
                                        importe = cantidad,
                                        facturaVenta = self,
@@ -1056,7 +1048,7 @@ class SuperFacturaVenta:
                     for dia_estimado in diaest:
                         while True:
                             try:
-                                fechaest = mx.DateTime.DateTimeFrom(
+                                fechaest = datetime.date(
                                     day = dia_estimado,
                                     month = fechavto.month,
                                     year = fechavto.year)
@@ -1079,11 +1071,12 @@ class SuperFacturaVenta:
                                 mes = 1
                                 anno += 1
                             try:
-                                fechaest = mx.DateTime.DateTimeFrom(
+                                fechaest = datetime.date(
                                     day=dia_estimado, month=mes, year=anno)
-                            except mx.DateTime.RangeError:
-                                fechaest = mx.DateTime.DateTimeFrom(
-                                    day=-1, month=mes, year=anno)
+                            except ValueError:
+                                ultimodia = calendar.monthrange(anno, mes)[1]
+                                fechaest = datetine.date(
+                                    day=ultimodia, month=mes, year=anno)
                         fechas_est.append(fechaest)
                     fechas_est.sort(utils.cmp_mxDateTime)
                     fechaest = fechas_est[0]
@@ -1122,10 +1115,7 @@ def check_lunes(vto):
         fecha_vto = vto.fecha
         while not(diasemana == 0 # == Lunes en ambas libs.
                   and check_mes_posterior(fecha_vto, fecha_original)):
-            try:
-                vto.fecha += mx.DateTime.oneDay
-            except TypeError:
-                vto.fecha += datetime.timedelta(days = 1)
+            vto.fecha += datetime.timedelta(days=1)
             try:
                 diasemana = vto.fecha.day_of_week
             except AttributeError:  # Es un datetime

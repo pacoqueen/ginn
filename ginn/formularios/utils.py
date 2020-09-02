@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2019  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2020  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -60,14 +60,16 @@ try:
     pygtk.require('2.0')
     import gtk
     import gobject
-except (ImportError, RuntimeError), msg:
-    print "WARNING: No se pudo importar GTK/pyGTK. No se podrán usar funciones gráficas:\n%s" % (msg)
-import mx.DateTime, os, time, datetime, re, string, sys
+except (ImportError, RuntimeError) as msg:
+    print("WARNING: No se pudo importar GTK/pyGTK. No se podrán usar funciones gráficas:\n%s" % (msg))
+import os, time, datetime, re, string, sys
+import calendar
+from functools import reduce
 try:
     from formularios import nftp
-except ImportError, msg:
-    print "WARNING: No se pudo importar nftp. No se podrá usar FTP:\n%s" % (msg)
-from fixedpoint import FixedPoint as Ffloat
+except ImportError as msg:
+    print("WARNING: No se pudo importar nftp. No se podrá usar FTP:\n%s" % (msg))
+from .fixedpoint import FixedPoint as Ffloat
 from collections import defaultdict
 import re
 from lib.fuzzywuzzy.fuzzywuzzy import process as fuzzyprocess # fuzzyprocess
@@ -92,7 +94,7 @@ def str_fecha(fecha = time.localtime()):
     Devuelve como una cadena de texto en el formato dd/mm/aaaa
     la fecha pasada.
     "fecha" debe ser de tipo time.struct_time, un
-    mx.DateTime o bien una tupla [dd, mm, aaaa] como
+    datetime o bien una tupla [dd, mm, aaaa] como
     las que devuelve "mostrar_calendario".
     Si no se pasa ningún parámetro devuelve la fecha
     del sistema.
@@ -107,17 +109,15 @@ def str_fecha(fecha = time.localtime()):
                                     # viene ordenada
         t = fecha
     else:
-        if isinstance(fecha, type(mx.DateTime.DateTimeFrom(''))):
-            tuplafecha = fecha.tuple()
-        elif isinstance(fecha, time.struct_time):
+        if isinstance(fecha, time.struct_time):
             tuplafecha = fecha
         elif isinstance(fecha, datetime.date):
             tuplafecha = fecha.timetuple()
-        else:    # No es ni mx ni time ni None ni tupla ni nada de nada
+        else:    # No es ni time ni None ni tupla ni nada de nada
             return None
         t = list(tuplafecha)[2::-1]
     # Aquí ya tengo una lista [m, d, aa] o [mm, dd, aaaa]
-    t = map(str, ['%02d' % i for i in t])    # "Miaque" soy rebuscado a veces. Con lo fácil que tiene que ser esto.
+    t = list(map(str, ['%02d' % i for i in t]))    # "Miaque" soy rebuscado a veces. Con lo fácil que tiene que ser esto.
     t = '/'.join(t)
     return t
 
@@ -126,28 +126,14 @@ def str_hora(fh):
     Devuelve la parte de la hora de una fecha
     completa (fecha + hora, DateTime).
     """
-    try:
-        return "%02d:%02d:%02d" % (fh.hour, fh.minute, fh.second)
-    except:     # Por si es un datetime
-        try:
-            fh = mx.DateTime.DateTimeDeltaFrom(seconds = fh.total_seconds())
-            return "%02d:%02d:%02d" % (fh.hour, fh.minute, fh.second)
-        except:
-            return ''
+    return "%02d:%02d:%02d" % (fh.hour, fh.minute, fh.second)
 
 def str_hora_corta(fh):
     """
     Devuelve la parte de la hora de una fecha
     completa (fecha + hora, DateTime).
     """
-    try:
-        return "%02d:%02d" % (fh.hour, fh.minute)
-    except:     # Por si es un datetime
-        try:
-            fh = mx.DateTime.DateTimeDeltaFrom(seconds = fh.total_seconds())
-            return "%02d:%02d" % (fh.hour, fh.minute)
-        except:
-            return ''
+    return "%02d:%02d" % (fh.hour, fh.minute)
 
 def respuesta_si_no(dialog, response, res):
     res[0] = response == gtk.RESPONSE_YES
@@ -175,10 +161,10 @@ def parse_porcentaje(strfloat, fraccion = False):
     res = res.strip()
     try:
         res = _float(res)
-    except ValueError, msg:
+    except ValueError as msg:
         res = 0.0
         #utils.dialogo('El número no se puede interpretar.')
-        raise ValueError, "%s: El número %s no se puede interpretar como porcentaje." % (msg, strfloat)
+        raise ValueError("%s: El número %s no se puede interpretar como porcentaje." % (msg, strfloat))
     if fraccion:
         res /= 100.0
     return res
@@ -299,8 +285,8 @@ def dialogo(texto='',
     if bloq_temp:
         # 0.- Diccionario de botones
         area = de.action_area
-        pares = zip(("sí", "no", "cancelar"),
-                    area.get_children()[::-1])   # Siempre mismo orden.
+        pares = list(zip(("sí", "no", "cancelar"),
+                    area.get_children()[::-1]))   # Siempre mismo orden.
         dbotones = dict(pares)
     for strb in bloq_temp:
         # 1.- Determinar a qué botón se refiere:
@@ -818,11 +804,11 @@ def el_reparador_magico_de_representacion_de_flotantes_de_doraemon(filas):
     # ...
     # Ok, una explicación convincente de las dos formas de comportarse está
     # aquí: file:///usr/share/doc/python2.3/html/tut/node15.html
-    for f in xrange(len(filas)):
+    for f in range(len(filas)):
         fila = list(filas[f])
         filas[f] = fila
         # OJO porque filas debe ser una lista, si no, no aceptará la asignación.
-        for c in xrange(len(fila)):
+        for c in range(len(fila)):
             item = fila[c]
             if item == None:
                 # Voy a aprovechar el invento para quitarme los None
@@ -854,9 +840,9 @@ def construir_modelo(filas, cabeceras = None):
             tipos = [gobject.TYPE_INT64] + \
                     ([gobject.TYPE_STRING] * (len(cabeceras) - 1))
             model = gtk.ListStore(*tipos)
-    except TypeError, ex:   # ¡No hay filas! (filas es None o no es una
+    except TypeError as ex:   # ¡No hay filas! (filas es None o no es una
                             # lista/tupla
-        print "ERROR Diálogo resultados (utils.py):", ex
+        print("ERROR Diálogo resultados (utils.py):", ex)
         return -2           # No puedo hacer nada. Cierro la ventana.
     return model
 
@@ -879,7 +865,7 @@ def definir_columnas(filas, cabeceras):
         # como para no intentar mostrar un diálogo de resultados sin columnas.
     except IndexError: #Índice fuera de rango. No hay filas[0]
         n_columnas = len(cabeceras)
-    for i in xrange(n_columnas):
+    for i in range(n_columnas):
         try:
             columns.append(gtk.TreeViewColumn(cabeceras[i]))
         except IndexError:
@@ -921,8 +907,8 @@ def construir_tabla(titulo, padre, filas, cabeceras):
     for f in filas:
         try:
             model.append(f)
-        except TypeError, msg:
-            print "utils.py::construir_tabla -> model.append(%s): TypeError: %s" % (f, msg)
+        except TypeError as msg:
+            print("utils.py::construir_tabla -> model.append(%s): TypeError: %s" % (f, msg))
     tabla = gtk.TreeView(model)
     ## ------------ ScrolledWindow:
     contenedor = gtk.ScrolledWindow()
@@ -936,7 +922,7 @@ def construir_tabla(titulo, padre, filas, cabeceras):
     ## ------------ Creo los "renders" para las celdas, los añado a
     ## ------------ las columnas y los asocio: (capa "controlador")
     cells = []
-    for i in xrange(len(columns)):
+    for i in range(len(columns)):
         if (model.get_column_type(i) == gobject.TYPE_BOOLEAN
            or isinstance(model.get_column_type(i), bool)):
             cells.append(gtk.CellRendererToggle())
@@ -965,7 +951,7 @@ def construir_tabla(titulo, padre, filas, cabeceras):
         # defecto (se cambiará si hace clic en alguna cabecera).
         tabla.set_search_column(len(columns)-1)
     ## ------------ Y hago que se pueda ordenar por código o descripción:
-    for i in xrange(len(columns)):
+    for i in range(len(columns)):
         model.set_sort_func(i, funcion_orden, i)
         # model.set_sort_column_id(i)
         # columns[i].set_sort_func(i, funcion_orden, i)
@@ -1136,9 +1122,7 @@ def mostrar_calendario(fecha_defecto = time.localtime()[:3][::-1],
     La fecha por defecto debe venir en formato d/m/aaaa y
     en forma de lista o tupla.
     """
-    if isinstance(fecha_defecto, type(mx.DateTime.localtime())):
-        fecha_defecto = fecha_defecto.tuple()[:3][::-1]
-    elif isinstance(fecha_defecto, str):
+    if isinstance(fecha_defecto, str):
         try:
             fecha_defecto = parse_fecha(fecha_defecto)
             fecha_defecto = fecha_defecto.tuple()[:3][::-1]
@@ -1253,11 +1237,12 @@ def rellenar_lista(wid, textos):
                     # Venían en Latin1 de la BD.
                     res = True
             return res
-        def match_func(completion, key, itr, (column, choices)):
+        def match_func(completion, key, itr, xxx_todo_changeme):
+            (column, choices) = xxx_todo_changeme
             model = completion.get_model()
             text = model.get_value(itr, column)
             #key = unicode(key, "utf")
-            key = unicode(key, "latin1").encode("latin1")
+            key = str(key, "latin1").encode("latin1")
             if len(key) <= 3:
                 # Si llevo escrito poco texto, me valen las opciones que
                 # empiecen por esas letras.
@@ -1285,7 +1270,7 @@ def rellenar_lista(wid, textos):
                         completion.old_scores = scores = dict(
                             fuzzyprocess.extract(key, choices, limit = -1))
                     except UnicodeDecodeError:
-                        choices = map(lambda x: unicode(x, "utf8"), choices)
+                        choices = [str(x, "utf8") for x in choices]
                         completion.old_scores = scores = dict(
                             fuzzyprocess.extract(key, choices, limit = -1))
                 else:
@@ -1305,7 +1290,7 @@ def rellenar_lista(wid, textos):
         completion.set_text_column(1)
         completion.set_minimum_key_length(1)
         #choices = [unicode(t[1], "utf") for t in list(set(textos))]
-        choices = [unicode(t[1], "latin1").encode("latin1")
+        choices = [str(t[1], "latin1").encode("latin1")
                    for t in list(set(textos))]
         completion.set_match_func(match_func, (1, choices))
         # completion.set_inline_completion(True)
@@ -1620,11 +1605,11 @@ def comparar_fechas(dato1, dato2):
     NOTA: FUNCIÓN OBSOLETA.
     """
     try:
-        d1, m1, a1 = map(int, dato1.split('/'))
+        d1, m1, a1 = list(map(int, dato1.split('/')))
     except:
         return
     try:
-        d2, m2, a2 = map(int, dato2.split('/'))
+        d2, m2, a2 = list(map(int, dato2.split('/')))
     except:
         return -1   # Si dato2 no es interpretable como fecha, devuelvo que dato1 es menor (dato1 al menos parece una fecha).
     if a1 < a2:
@@ -1793,14 +1778,13 @@ def mostrar_hora(horas = 0, minutos = 0, segundos = 0, titulo = 'HORA',
     se canceló.
     """
     hora = [None]    # Listas no son inmutables
-    from widgets import Widgets
+    from .widgets import Widgets
     wids = Widgets('ventana_hora.glade')
     wids['ventana'].set_title(titulo)
     wids['ventana'].set_transient_for(padre)
     #-------------------------------------------------------------------------#
     def aceptar(boton, hora):                                                 #
-        lista_valores = map(lambda x: wids[x].get_text(),                     #
-                                ('sp_hora', 'sp_minutos', 'sp_segundos'))     #
+        lista_valores = [wids[x].get_text() for x in ('sp_hora', 'sp_minutos', 'sp_segundos')]     #
         lista_valores = ['%02d' % int(v) for v in lista_valores]              #
         hora[0] = ':'.join(lista_valores)                                     #
         wids['ventana'].destroy()                                             #
@@ -1813,7 +1797,7 @@ def mostrar_hora(horas = 0, minutos = 0, segundos = 0, titulo = 'HORA',
                    'sp_minutos/output': show_leading_zeros,
                    'sp_segundos/output': show_leading_zeros
                   }
-    for wid_con, func in connections.iteritems():
+    for wid_con, func in connections.items():
         wid, con = wid_con.split('/')
         wids[wid].connect(con, func)
     wids['b_aceptar'].connect('clicked', aceptar, hora)
@@ -1857,10 +1841,10 @@ def parse_euro(strfloat):
     res = res.strip()
     try:
         res = _float(res)
-    except ValueError, msg:
+    except ValueError as msg:
         res = None
         #utils.dialogo('El número no se puede interpretar.')
-        raise ValueError, "%s: El número %s no se puede interpretar como moneda." % (msg, strfloat)
+        raise ValueError("%s: El número %s no se puede interpretar como moneda." % (msg, strfloat))
     return res
 
 def prepara_hora(hora):
@@ -2007,7 +1991,7 @@ def ejecutar_interprete(source, *arguments, **keywords):
 
 def parse_fecha(txt):
     """
-    Devuelve un mx.DateTime con la fecha de txt.
+    Devuelve un datetime con la fecha de txt.
     Si no está en formato dd{-/\s}mm{/-\s}yy[yy] lanza una
     excepción.
     Reconoce también textos especiales para interpretar fechas:
@@ -2031,37 +2015,39 @@ def parse_fecha(txt):
     # Navision plagiarism! (¿Quién lo diría?)
     txt = txt.strip().upper()
     if "PDM" in txt:
-        tmpdate = mx.DateTime.DateTimeFrom(
+        tmpdate = datetime.datetime(
             day = 1,
-            month = mx.DateTime.localtime().month,
-            year = mx.DateTime.localtime().year)
+            month = datetime.datetime.now().month,
+            year = datetime.datetime.now().year)
         txt = txt.replace("PDM", tmpdate.strftime("%d/%m/%Y"))
     if "UDM" in txt:
-        tmpdate = mx.DateTime.DateTimeFrom(
-            day = -1,
-            month = mx.DateTime.localtime().month,
-            year = mx.DateTime.localtime().year)
+        mes = datetime.datetime.now().month
+        anno = datetime.datetime.now().year
+        tmpdate = datetime.datetime(
+            day = calendar.monthrange(anno, mes)[1],
+            month = mes,
+            year = anno)
         txt = txt.replace("UDM", tmpdate.strftime("%d/%m/%Y"))
     if txt.count("-") == 2:
         txt = txt.replace("-", "/")
     if txt.count("/") == 1:
-        txt += "/%d" % mx.DateTime.localtime().year
+        txt += "/%d" % datetime.datetime.today().year
     if "+" in txt or "-" in txt:
-        txt = txt.replace("D", " * mx.DateTime.oneDay")
-        txt = txt.replace("H", "mx.DateTime.today()")
+        txt = txt.replace("D", " * datetime.timedelta(days=1)")
+        txt = txt.replace("H", "datetime.datetime.today()")
         rex = re.compile("[-]?\d+/\d+/\d+")
         for bingo in rex.findall(txt):
             try:
-                _bingo = "/".join([`int(i)` for i in bingo.split("/")])
+                _bingo = "/".join([repr(int(i)) for i in bingo.split("/")])
             except (TypeError, ValueError):
                 pass
             try:
                 if int(_bingo.split("/")[-1]) < 100: # Año con dos dígitos.
-                    _bingo="/".join([`int(i)` for i in _bingo.split("/")[:2]] +
-                                     [`2000 + int(_bingo.split("/")[-1])`])
+                    _bingo="/".join([repr(int(i)) for i in _bingo.split("/")[:2]] +
+                                     [repr(2000 + int(_bingo.split("/")[-1]))])
             except:
                 pass
-            mxbingo = "mx.DateTime.DateTimeFrom(day=%s,month=%s,year=%s)" % (
+            mxbingo = "datetime.datetime(day=%s,month=%s,year=%s)" % (
                 _bingo.split("/")[0],
                 _bingo.split("/")[1],
                 _bingo.split("/")[2])
@@ -2069,19 +2055,19 @@ def parse_fecha(txt):
         try:
             tmpdate = eval(txt)
         except:
-            raise ValueError, "%s no se pudo interpretar como fecha." % txt
+            raise ValueError("%s no se pudo interpretar como fecha." % txt)
         try:
             txt = tmpdate.strftime("%d/%m/%Y")
         except AttributeError:
-            txt = (mx.DateTime.today()
-                    + mx.DateTime.TimeDelta(24 * tmpdate)).strftime("%d/%m/%Y")
+            txt = (datetime.datetime.today()
+                    + datetime.timedelta(24 * tmpdate)).strftime("%d/%m/%Y")
     if "H" in txt:
-        txt = txt.replace("H", mx.DateTime.today().strftime("%d/%m/%Y"))
+        txt = txt.replace("H", datetime.datetime.today().strftime("%d/%m/%Y"))
     try:
-        dia, mes, anno = map(int, txt.split('/'))
+        dia, mes, anno = list(map(int, txt.split('/')))
     except ValueError:
         try:
-            dia, mes, anno = map(int, txt.split('-'))
+            dia, mes, anno = list(map(int, txt.split('-')))
         except ValueError:
             if len(txt) >= 4:
                 dia = int(txt[:2])
@@ -2089,26 +2075,26 @@ def parse_fecha(txt):
                 if len(txt) >= 6:
                     anno = int(txt[4:])
                 else:
-                    anno = mx.DateTime.today().year
+                    anno = datetime.datetime.today().year
             elif 2 < len(txt) < 4 and txt.isdigit():
                 dia = int(txt[0])
                 mes = int(txt[-2:])
                 if mes > 12:
                     dia = int(txt[:2])
                     mes = int(txt[2:])
-                anno = mx.DateTime.localtime().year
+                anno = datetime.datetime.today().year
             elif txt.isdigit() and len(txt) <= 2:
                 dia = int(txt)
-                mes = mx.DateTime.localtime().month
-                anno = mx.DateTime.localtime().year
+                mes = datetime.datetime.today().month
+                anno = datetime.datetime.today().year
             else:
-                raise ValueError, "%s no se pudo interpretar como fecha." % txt
+                raise ValueError("%s no se pudo interpretar como fecha." % txt)
     if anno < 1000:
         anno += 2000
         # Han metido 31/12/06 y quiero que quede 31/12/2006 y no 31/12/0006
-    return mx.DateTime.DateTimeFrom(day = dia,
-                                    month = mes,
-                                    year = anno)
+    return datetime.datetime(day = dia,
+                             month = mes,
+                             year = anno)
 
 def act_fechahora(entry, event):
     """
@@ -2124,8 +2110,7 @@ def act_fechahora(entry, event):
 
 def parse_fechahora(txt):
     """
-    Devuelve un mx.DateTime con la fecha y hora de
-    txt.
+    Devuelve un datetime con la fecha y hora de txt.
     Si no está en formato dd{-/}mm{-/}yy[yy] HH:MM[:SS] lanza una
     excepción.
     """
@@ -2154,8 +2139,7 @@ def parse_fechahora(txt):
 
 def parse_hora(txt):
     """
-    Devuelve un mx.DateTimeDelta a partir del
-    texto recibido.
+    Devuelve un datetime.timedelta a partir del texto recibido.
     """
     if ":" not in txt:
         if len(txt) <= 2:
@@ -2163,17 +2147,17 @@ def parse_hora(txt):
         txt = txt[:-2] + ":" + txt[-2:]
     valores = [v.strip() != "" and v or "0" for v in txt.split(":")]
     if len(valores) == 3:
-        hora, minuto, segundo = map(_float, valores)
+        hora, minuto, segundo = list(map(_float, valores))
     elif len(valores) == 4:  # Lleva hasta días.
         dias = _float(valores[0])
-        hora, minuto, segundo = map(_float, valores[1:])
+        hora, minuto, segundo = list(map(_float, valores[1:]))
         hora += dias*24
     else:
         segundo = 0
-        hora, minuto = map(_float, valores)
-    return mx.DateTime.DateTimeDeltaFrom(hours = hora,
-                                         minutes = minuto,
-                                         seconds = segundo)
+        hora, minuto = list(map(_float, valores))
+    return datetime.timedelta(hours = hora,
+                              minutes = minuto,
+                              seconds = segundo)
 
 def round_banquero(numero, precision = 2):
     """
@@ -2222,7 +2206,7 @@ def ffloat(n, precision = 2):
                 n = n.replace(',', '.')
             return ffloat(float(n), precision)
         else:
-            raise ValueError, "(utils.py) ffloat: El parámetro n debe ser una cadena, un entero, un float o un FixedPoint."
+            raise ValueError("(utils.py) ffloat: El parámetro n debe ser una cadena, un entero, un float o un FixedPoint.")
 
 def myround(x):
     if x > 0:
@@ -2252,7 +2236,7 @@ def float2str(n, precision = 2, autodec = False, separador_decimales = ","):
                 n = float(n)
         except ImportError:
             pass
-        es_de_tipo_numerico = isinstance(n, (float, Ffloat, int, long))
+        es_de_tipo_numerico = isinstance(n, (float, Ffloat, int))
         if es_de_tipo_numerico:
             if n < 0:   # Es negativo
                 negativo = True
@@ -2287,8 +2271,7 @@ def float2str(n, precision = 2, autodec = False, separador_decimales = ","):
             try:
                 res = float2str(float(n), precision)
             except Exception:
-                raise ValueError, \
-                      "El valor %s no se pudo convertir a cadena." % n
+                raise ValueError("El valor %s no se pudo convertir a cadena." % n)
     if autodec:
         parte_fraccionaria = lambda n: "," in n and n[n.rfind(',') + 1:] or ""
         while ("," in res and len(res) - res.index(",") > 2 and res[-1] == '0'
@@ -2429,7 +2412,7 @@ def corregir_nombres_fecha(s):
         s = s.replace(in_english, trans[in_english])    # .title()
         # s = s.replace(in_english.lower(), trans[in_english])
         # s = s.replace(in_english.upper(), trans[in_english])
-    s = unicode(s, "iso8859-15")
+    s = str(s, "iso8859-15")
     s = s.encode("utf-8")
     return s
 
@@ -2456,14 +2439,10 @@ def DateTime2DateTimeDelta(dt):
     En determinadas versiones de python y las bibliotecas de terceros puede
     admitir datetime.time.
     """
-    try:
-        h = dt.hour
-    except AttributeError:
-        dtd = mx.DateTime.DateTimeDeltaFrom(dt.seconds)
-    else:
-        m = dt.minute
-        s = dt.second
-        dtd = mx.DateTime.DateTimeDeltaFrom(hours=h, minutes=m, seconds=s)
+    h = dt.hour
+    m = dt.minute
+    s = dt.second
+    dtd = datetime.timedelta(hours=h, minutes=m, seconds=s)
     return dtd
 
 def f_sort_id(x, y):
@@ -2481,24 +2460,8 @@ def f_sort_id(x, y):
 
 def cmp_mxDateTime(f1, f2):
     """
-    Compara dos fechas mx.DateTime y devuelve -1, 1 ó 0.
+    Compara dos fechas y devuelve -1, 1 ó 0.
     Útil para ordenaciones de fechas.
-    REMEMBER: ¡DEBEN SER mx.DateTime!
-
-    >>> utils.cmp_mxDateTime(mx.DateTime.today(),
-                             mx.DateTime.today() - mx.DateTime.oneDay)
-    1
-    >>> utils.cmp_mxDateTime(mx.DateTime.today(), mx.DateTime.today())
-    0
-    >>> utils.cmp_mxDateTime(None, mx.DateTime.today())
-    -1
-    >>> utils.cmp_mxDateTime(None, None)
-    0
-    >>> utils.cmp_mxDateTime(mx.DateTime.today(), None)
-    1
-    >>> utils.cmp_mxDateTime(mx.DateTime.today(),
-                             mx.DateTime.today() + mx.DateTime.oneDay)
-    -1
     """
     if f1 and f2:
         if f1 < f2:
@@ -2552,7 +2515,7 @@ def dialogo_pedir_codigos(titulo = "INTRODUZCA RANGO",
                 if len(letra_codigo) == 0:
                     continue
             letra_codigo = letra_codigo[0]
-            res += ["%s%d" % (letra_codigo, i) for i in xrange(ini, fin+1) if "%s%d" % (letra_codigo, i) not in res]
+            res += ["%s%d" % (letra_codigo, i) for i in range(ini, fin+1) if "%s%d" % (letra_codigo, i) not in res]
         for suelto in sueltos.findall(rango_entrada):
             num = suelto.upper().replace(" ", "")
             if num not in res:
@@ -2583,7 +2546,7 @@ def dialogo_pedir_rango(titulo = "INTRODUZCA RANGO",
             ini, fin = [int(i) for i in rango.split("-")]
             if fin < ini:
                 ini, fin = fin, ini
-            res += [i for i in xrange(ini, fin+1) if i not in res]
+            res += [i for i in range(ini, fin+1) if i not in res]
         for suelto in sueltos.findall(rango_entrada):
             num = int(suelto)
             if permitir_repetidos or num not in res:
@@ -2673,7 +2636,7 @@ def enviar_correoe(remitente,
             smtp = smtplib.SMTP(servidor)
         else:
             smtp = smtplib.SMTP(servidor, 587)
-    except socket_error, msg:
+    except socket_error as msg:
         dialogo_info(titulo = "ERROR CONECTANDO A SERVIDOR SMTP",
                      texto = "Ocurrió el siguiente error al conectar al "
                              "servidor de correo saliente:\n%s\n\n"
@@ -2691,15 +2654,15 @@ def enviar_correoe(remitente,
                 smtp.login(usuario, password)
             response = smtp.sendmail(remitente, destinos, msg.as_string())  # @UnusedVariable
             ok = True
-        except smtplib.SMTPAuthenticationError, msg:
+        except smtplib.SMTPAuthenticationError as msg:
             dialogo_info(titulo = "ERROR AUTENTICACIÓN",
                          texto = "Ocurrió un error al intentar la autentificación en el servidor:\n\n%s" % (msg))
             ok = False
-        except (smtplib.SMTPRecipientsRefused, smtplib.SMTPSenderRefused), msg:
-            print "utils.py (enviar_correoe) -> Excepción: %s" % (msg)
+        except (smtplib.SMTPRecipientsRefused, smtplib.SMTPSenderRefused) as msg:
+            print("utils.py (enviar_correoe) -> Excepción: %s" % (msg))
             ok = False
-        except (smtplib.SMTPServerDisconnected), msg:
-            print "utils.py (enviar_correoe) -> Desconectado. ¿Timeout? Excepción: %s" % (msg)
+        except (smtplib.SMTPServerDisconnected) as msg:
+            print("utils.py (enviar_correoe) -> Desconectado. ¿Timeout? Excepción: %s" % (msg))
             ok = False
         smtp.close()
     return ok
@@ -2836,10 +2799,10 @@ def abs_mxfecha(fecha):
     Útil para comparar dos fechas, una (o las dos) de ellas contiene además
     la hora y sólo interesa saber si comparten fecha (día concreto, vamos).
     """
-    return mx.DateTime.DateTimeFrom(day = fecha.day,
-                                    month = fecha.month,
-                                    year = fecha.year)
-                                    # hour, minutes... por defecto son 0
+    return datetime.datetime(day = fecha.day,
+                             month = fecha.month,
+                             year = fecha.year)
+                             # hour, minutes... por defecto son 0
 
 def cmp_abs_mxfecha(f1, f2):
     """
@@ -2903,8 +2866,8 @@ def buscar_productos_compra(a_buscar, incluir_obsoletos = False):
                           for w in a_buscar.split()])
     _a_buscar, a_buscar = a_buscar, _a_buscar
     if pclases.DEBUG:
-        print "utils::buscar_productos_compra -> «", _a_buscar,
-        print "» se ha convertido en «", a_buscar, "»"
+        print("utils::buscar_productos_compra -> «", _a_buscar, end=' ')
+        print("» se ha convertido en «", a_buscar, "»")
     subcriterios = [PC.q.codigo.contains(t) for t in a_buscar.split()]
     if subcriterios:
         crit_codigo = pclases.AND(*subcriterios)
@@ -3361,7 +3324,7 @@ def procesar_codigo(codigo, logger = None):
             if logger != None:
                 logger.warning(txt)
             else:
-                print txt
+                print(txt)
     return objeto
 
 def procesar_albaran(codigo, logger = None):
@@ -3379,7 +3342,7 @@ def procesar_albaran(codigo, logger = None):
         if logger != None:
             logger.warning(txt)
         else:
-            print txt
+            print(txt)
         albaran = albaranes[-1]
     else:
         albaran = albaranes[0]
@@ -3399,7 +3362,7 @@ def procesar_rollo(codigo, logger = None):
         if logger != None:
             logger.warning(txt)
         else:
-            print txt
+            print(txt)
         try:
             rollo = [r for r in rollos if r.albaranSalida == None][0]
         except IndexError:
@@ -3407,7 +3370,7 @@ def procesar_rollo(codigo, logger = None):
             if logger != None:
                 logger.warning(txt)
             else:
-                print txt
+                print(txt)
     else:
         rollo = rollos[0]
     return rollo
@@ -3426,7 +3389,7 @@ def procesar_bala(codigo, logger = None):
         if logger != None:
             logger.warning(txt)
         else:
-            print txt
+            print(txt)
         try:
             bala = [b for b in balas if b.en_almacen()][0]
         except IndexError:
@@ -3434,7 +3397,7 @@ def procesar_bala(codigo, logger = None):
             if logger != None:
                 logger.warning(txt)
             else:
-                print txt
+                print(txt)
     else:
         bala = balas[0]
     return bala
@@ -3453,7 +3416,7 @@ def procesar_bigbag(codigo, logger = None):
         if logger != None:
             logger.warning(txt)
         else:
-            print txt
+            print(txt)
         try:
             bigbag = [r for r in bigbags if r.albaranSalida == None][0]
         except IndexError:
@@ -3461,7 +3424,7 @@ def procesar_bigbag(codigo, logger = None):
             if logger != None:
                 logger.warning(txt)
             else:
-                print txt
+                print(txt)
     else:
         bigbag = bigbags[0]
     return bigbag
@@ -3480,7 +3443,7 @@ def procesar_gtxc(codigo, logger = None):
         if logger != None:
             logger.warning(txt)
         else:
-            print txt
+            print(txt)
         try:
             gtxc = [r for r in gtxcs if r.albaranSalida == None][0]
         except IndexError:
@@ -3488,7 +3451,7 @@ def procesar_gtxc(codigo, logger = None):
             if logger != None:
                 logger.warning(txt)
             else:
-                print txt
+                print(txt)
     else:
         gtxc = gtxcs[0]
     return gtxc
@@ -3509,20 +3472,20 @@ def procesar_partida_carga(codigo, logger = None):
         if logger != None:
             logger.warning(txt)
         else:
-            print txt
+            print(txt)
         partida_carga = partidas_carga[-1]
     else:
         partida_carga = partidas_carga[0]
     return partida_carga
 
-def unir_fecha_y_hora(mxfecha, mxhora):
+def unir_fecha_y_hora(fecha, hora):
     """
-    Devuelve un DateTime con la fecha "mxfecha" y la hora "mxhora".
+    Devuelve un DateTime con la fecha "fecha" y la hora "hora".
     Acepta DateTime y DateTimeDelta como parte «hora».
     """
-    dia = mxfecha.day; mes = mxfecha.month; anno = mxfecha.year
-    hora = mxhora.hour; minuto = mxhora.minute; segundo = mxhora.second
-    fecha_mas_hora = mx.DateTime.DateTimeFrom(day = dia, month = mes, year = anno,
+    dia = fecha.day; mes = fecha.month; anno = fecha.year
+    hora = hora.hour; minuto = hora.minute; segundo = hora.second
+    fecha_mas_hora = datetime.datetime(day = dia, month = mes, year = anno,
                                               hour = hora, minute = minuto, second = segundo)
     return fecha_mas_hora
 
@@ -3650,13 +3613,13 @@ def asegurar_fecha_positiva(fecha):
     Así que lo único que hace esta función es asegurarse de
     que el día de la fecha es positivo en la fecha devuelta
     equivalente a la recibida.
-    Esta función quedará obsoleta en cuanto se corrija el
-    bug de mx-extension.
+    Esta función queda obsoleta en la miugración a python 3.
+    mx-extension solo funciona en python 2.
     """
     if fecha.day < 1:
-        fecha = mx.DateTime.DateTimeFrom(day = fecha.days_in_month + fecha.day + 1,
-                                         month = fecha.month,
-                                         year = fecha.year)
+        fecha = datetime.datetime(day = fecha.days_in_month + fecha.day + 1,
+                                  month = fecha.month,
+                                  year = fecha.year)
     return fecha
 
 def unificar(lista):
@@ -3664,7 +3627,7 @@ def unificar(lista):
     Devuelve una lista con valores únicos.
     """
     if not isinstance(lista, (list, tuple)):
-        raise TypeError, "lista debe ser una lista, no un %s." % (type(lista))
+        raise TypeError("lista debe ser una lista, no un %s." % (type(lista)))
     res = []
     for i in lista:
         if i not in res:
@@ -3679,7 +3642,7 @@ def unificar_textos(lista, case_sensitive = False):
     de ellos en lista.
     """
     if not isinstance(lista, (list, tuple)):
-        raise TypeError, "lista debe ser una lista, no un %s." % (type(lista))
+        raise TypeError("lista debe ser una lista, no un %s." % (type(lista)))
     res = []
     for t in lista:
         if case_sensitive:
@@ -3797,7 +3760,7 @@ def dialogo_guardar_adjunto(documento, padre = None):
         except KeyError:
             from tempfile import gettempdir
             home = gettempdir()
-            print "WARNING: No se pudo obtener el «home» del usuario"
+            print("WARNING: No se pudo obtener el «home» del usuario")
     if os.path.exists(os.path.join(home, 'tmp')):
         dialog.set_current_folder(os.path.join(home, 'tmp'))
     else:
@@ -3841,7 +3804,7 @@ def mover_a_tmp(ruta):
     try:
         shutil.move(ruta, gettempdir())
     except IOError:
-        print "utils::mover_a_tmp -> Fichero %s no existe." % (ruta)
+        print("utils::mover_a_tmp -> Fichero %s no existe." % (ruta))
 
 def buscar_factura(ventana_padre = None, multi = False, filtrar = False, cliente = None, conds_fras = [], conds_pres = []):
     """
@@ -3913,10 +3876,10 @@ def abrir_factura_venta(ide, num, usuario = None):
     from framework import pclases
     try:
         fra = pclases.FacturaVenta.get(ide)
-        print fra
+        print(fra)
     except pclases.SQLObjectNotFound:
         res = False
-        print res
+        print(res)
     else:
         if fra.numfactura == num:
             res = True
@@ -3966,7 +3929,7 @@ def textview_get_all_text(w):
     Devuelve todo el texto de un textview.
     """
     if not isinstance(w, gtk.TextView):
-        raise TypeError, "utils::tv_get_all_text -> El widget debe ser un gtk.TextView."
+        raise TypeError("utils::tv_get_all_text -> El widget debe ser un gtk.TextView.")
     buf = w.get_buffer()
     return buf.get_text(*buf.get_bounds())
 
@@ -3974,8 +3937,8 @@ def image2pixbuf(image):
     """
     http://www.daa.com.au/pipermail/pygtk/2003-June/005268.html
     """
-    import StringIO
-    fich = StringIO.StringIO()
+    import io
+    fich = io.StringIO()
     image.save(fich, 'ppm')
     contents = fich.getvalue()
     fich.close()
@@ -4006,7 +3969,7 @@ def calcCC(cBanco, cSucursal, cCuenta):
     """Cálculo del Código de Control Bancario"""
     cTexto="00%04d%04d" % (int(cBanco),int(cSucursal))
     DC1 = cccCRC(cTexto)
-    cTexto="%010d" % long(cCuenta)
+    cTexto="%010d" % int(cCuenta)
     DC2 = cccCRC(cTexto)
     return "%1d%1d" % (DC1,DC2)
 
@@ -4016,7 +3979,7 @@ def calcularNIF(dni):
     else:
         DNI = dni
     if not isinstance(DNI, int):
-        raise TypeError, "El parámetro debe ser un entero o una cadena."
+        raise TypeError("El parámetro debe ser un entero o una cadena.")
     # DNI=12345678
     NIF='TRWAGMYFPDXBNJZSQVHLCKE'
     letra = NIF[DNI % 23]
@@ -4287,9 +4250,9 @@ def parse_cif(cif = None):
             if res[pais].replace(" ", "") == samples[pais].replace(" ", ""):
                 aciertos += 1
             else:
-                print "Error en %s: %s -> %s" % (pais,samples[pais],res[pais])
-        print "WARNING: TEST MODE: %.2f %% aciertos" % (
-                aciertos * 100.0 / len(samples.keys()))
+                print("Error en %s: %s -> %s" % (pais,samples[pais],res[pais]))
+        print("WARNING: TEST MODE: %.2f %% aciertos" % (
+                aciertos * 100.0 / len(list(samples.keys()))))
     else:
         # PLAN: Chequear que si el CIF/NIF es "españolo", que sea correcto. La
         # letra es fácil de sacar (y hasta podría metérsela en caso de que solo
@@ -4396,7 +4359,7 @@ def set_fecha(entry):
     try:
         defecto = parse_fecha(texto)
     except ValueError:
-        defecto = mx.DateTime.localtime()
+        defecto = datetime.datetime.now()
     ventana_padre = None
     padre = entry.parent
     while padre != None:
@@ -4427,7 +4390,7 @@ def cambiar_por_combo(tv, numcol, opts, clase, campo, ventana_padre = None,
     hay que reemplazarlo.
     """
     # MODOS DEL AUTOCOMPLETADO EN COMBOBOXENTRY
-    INCLUDE, STARTS, CONTAINS, FUZZY = range(4)
+    INCLUDE, STARTS, CONTAINS, FUZZY = list(range(4))
     # INCLUDE = El texto completo está incluido
     # STARTS = El texto está al principio
     # CONTAINS = Las palabras del texto están incluidas, aunque no en ese orden
@@ -4455,7 +4418,7 @@ def cambiar_por_combo(tv, numcol, opts, clase, campo, ventana_padre = None,
         """
         # Es lento, pero no encuentro otra cosa:
         idct = None
-        for i in xrange(len(model_combo)):
+        for i in range(len(model_combo)):
             texto, ide = model_combo[i]
             if texto == text:
                 idct = ide
@@ -4503,8 +4466,8 @@ def cambiar_por_combo(tv, numcol, opts, clase, campo, ventana_padre = None,
                     res = False
                     break
         elif mode == FUZZY:
-            raise NotImplementedError, "Búsqueda difusa no implementada. "\
-                                       "Use otra función de autocompletado."
+            raise NotImplementedError("Búsqueda difusa no implementada. "\
+                                       "Use otra función de autocompletado.")
         return res
     # Creo CellCombo
     if not entry:
@@ -4564,7 +4527,7 @@ def restar_datetime_time(t1, t2):
     t1 = parse_hora(str_hora(t1))
     t2 = parse_hora(str_hora(t2))
     if t1 < t2:
-        t1 += mx.DateTime.oneDay
+        t1 += datetime.timedelta(days=1)
     res = t1 - t2
     return res
 
@@ -4610,8 +4573,8 @@ def sanitize(cad, strict = False):
     :returns: Cadena de texto con caracteres reemplazados.
 
     """
-    equivalencias = [(r"'", u"'"),
-                     (r"/", u"-")]
+    equivalencias = [(r"'", "'"),
+                     (r"/", "-")]
     if strict:
         equivalencias += [(",", "_"),
                           ("\n", "_"),
@@ -4661,18 +4624,18 @@ def dialogo_proveedor(padre = None, inhabilitados = False):
 
 
 if __name__=="__main__":
-    print dialogo_radio(titulo='Seleccione una opción',
+    print(dialogo_radio(titulo='Seleccione una opción',
                 texto='Selecciona una opción del radiobutton y tal y cual.',
                 ops=[(0, 'Sin opciones'), (1, "Una opción"), (2, "Y otra"),
                      (3, "La misoginia no es una opción")],
                 padre = None,
-                valor_por_defecto = 3)
+                valor_por_defecto = 3))
     sys.exit(0)
     ## --------
-    print "Debe responder True: ", dialogo(titulo = "PRUEBA", texto = "Probando", defecto = True, tiempo = 5, bloq_temp = ["Sí"])
+    print("Debe responder True: ", dialogo(titulo = "PRUEBA", texto = "Probando", defecto = True, tiempo = 5, bloq_temp = ["Sí"]))
     sys.exit(0)
-    print "Debe responder False: ", dialogo(titulo = "PRUEBA", texto = "Probando", defecto = False, tiempo = 4)
-    print "Debe responder gtk.RESPONSE_CANCEL: ", dialogo(titulo = "PRUEBA", texto = "Probando", cancelar = True, defecto = gtk.RESPONSE_CANCEL, tiempo = 6)
+    print("Debe responder False: ", dialogo(titulo = "PRUEBA", texto = "Probando", defecto = False, tiempo = 4))
+    print("Debe responder gtk.RESPONSE_CANCEL: ", dialogo(titulo = "PRUEBA", texto = "Probando", cancelar = True, defecto = gtk.RESPONSE_CANCEL, tiempo = 6))
     sys.exit(0)
     from framework import pclases
     #l = [filtrar_tildes(p.documentodepago.split(" ")[0].lower()) for p in pclases.Proveedor.select()]
@@ -4681,7 +4644,7 @@ if __name__=="__main__":
     l = unificar(l)
     l.sort()
     for e in l:
-        print e
+        print(e)
     sys.exit()
     #print corregir_mayusculas_despues_de_punto(" Rocío. Take.  my.hand.")
     #print corregir_mayusculas_despues_de_punto(" Sin punto no hay diversión €")
@@ -4691,7 +4654,7 @@ if __name__=="__main__":
     #print corregir_mayusculas_despues_de_punto("")
     ahora = time.time()
     buscar_producto_general(mostrar_precios = True)
-    print (time.time() - ahora) / 60.0
+    print((time.time() - ahora) / 60.0)
     #print dialogo_entrada()
     #dialogo_info('Título', 'Texto\nmultilínea y tal y Pascual.')
     #dialogo_resultado(((1, 'Uno', '1'), (2, 'Dos', '2')), 'Resultados de búsqueda')

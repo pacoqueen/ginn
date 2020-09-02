@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2020  Francisco José Rodríguez Bogado,                   #
 #                          (pacoqueen@users.sourceforge.net)                  #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
@@ -34,7 +34,7 @@ except:
 
 
 if gtk.pygtk_version < (2, 0):
-    print "Se necesita PyGtk 2.0 o posterior."
+    print("Se necesita PyGtk 2.0 o posterior.")
     raise SystemExit
 
 BORDER_WIDTH = 5
@@ -354,11 +354,11 @@ class StarHScale(gtk.Widget):
 
         # load the star xpm
         self.pixbuf = gtk.gdk.pixbuf_new_from_xpm_data(STAR_PIXMAP)
-        self.pixbuf = self.pixbuf.scale_simple(self.pixmap_size, self.pixmap_size, 
+        self.pixbuf = self.pixbuf.scale_simple(self.pixmap_size, self.pixmap_size,
                 gtk.gdk.INTERP_BILINEAR)
         #self.pixmap, mask = gtk.gdk.pixmap_create_from_xpm_d(  # @UnusedVariable
-        #    self.window, 
-        #    self.style.bg[gtk.STATE_NORMAL], 
+        #    self.window,
+        #    self.style.bg[gtk.STATE_NORMAL],
         #    STAR_PIXMAP)
 
         # self.style is a gtk.Style object, self.style.fg_gc is
@@ -397,10 +397,10 @@ class StarHScale(gtk.Widget):
         #Draw the correct number of stars.  Each time you draw another star
         #move over by 22 pixels. which is the size of the star.
         for count in range(0, self.stars):
-            #self.window.draw_drawable(self.gc, 
-            #    self.pixmap, 0, 0, 
+            #self.window.draw_drawable(self.gc,
+            #    self.pixmap, 0, 0,
             #    self.sizes[count], 0, -1, -1)
-            self.window.draw_pixbuf(self.gc, 
+            self.window.draw_pixbuf(self.gc,
                     self.pixbuf, 0, 0, self.sizes[count], 0)
 
     def motion_notify_event(self, widget, event):
@@ -461,8 +461,8 @@ class StarHScale(gtk.Widget):
                 self.queue_resize()
                 try:
                     self.window.move_resize(*self.allocation)
-                except AttributeError, E:
-                    print E
+                except AttributeError as E:
+                    print(E)
                     pass    # ¿Por qué self.window podría ser None?
 
     def get_value(self):

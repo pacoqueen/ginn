@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2020  Francisco José Rodríguez Bogado,                   #
 #                          (pacoqueen@users.sourceforge.net)                  #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
@@ -22,27 +22,34 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA  #
 ###############################################################################
 
+import gi
+gi.require_version("Gtk", '3.0')
+from gi import pygtkcompat
+import os
+
 try:
+    from gi import pygtkcompat
+except ImportError:
+    pygtkcompat = None
+    from gi.repository import Gtk as gtk
+    from gi.repository import GObject as gobject
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
     import gtk
     import gobject
-    from gtk import gdk
-except:
-    raise SystemExit
-import pygtk
-if gtk.pygtk_version < (2, 0):
-    print "Se necesita PyGtk 2.0 o posterior."
-    raise SystemExit
 
-from velocimetro import Velocimetro
-from starhscale import StarHScale
-from marquee_label import MarqueeLabel
-from cellrendererautocomplete import CellRendererAutoComplete
+from .velocimetro import Velocimetro
+from .starhscale import StarHScale
+from .marquee_label import MarqueeLabel
+from .cellrendererautocomplete import CellRendererAutoComplete
 # Registro la clase como un widget Gtk
 gobject.type_register(StarHScale)
 gobject.type_register(Velocimetro)
 gobject.type_register(MarqueeLabel)
 gobject.type_register(CellRendererAutoComplete)
 
-__all__ = ["Velocimetro", "StarHScale", "MarqueeLabel", 
+__all__ = ["Velocimetro", "StarHScale", "MarqueeLabel",
            "CellRendererAutoComplete", "Mapamundi"]
 

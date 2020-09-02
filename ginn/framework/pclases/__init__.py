@@ -71,6 +71,7 @@ VERBOSE = False
 
 import sys
 import os
+from functools import reduce
 if sys.executable.endswith("pythonw.exe"):
     # Porque entonces no hay stdout y salta excepción IOError 9
     # Más info: http://bugs.python.org/issue706263
@@ -107,7 +108,6 @@ import time
 from formularios import utils
 from framework import notificacion
 import datetime
-import mx.DateTime  # WARNING: Será marcado como DEPRECATED pronto.
 try:
     from collections import OrderedDict
 except ImportError:
@@ -292,15 +292,15 @@ class SQLlist(list):
             res += getattr(item, campo)
         return res
     def append(self, *args, **kw):
-        raise TypeError, "No se pueden añadir elementos a un SelectResults"
+        raise TypeError("No se pueden añadir elementos a un SelectResults")
     def extend(self, *args, **kw):
-        raise TypeError, "No se puede extender un SelectResults."
+        raise TypeError("No se puede extender un SelectResults.")
     def insert(self, *args, **kw):
-        raise TypeError, "No se pueden insertar elementos en un SelectResults."
+        raise TypeError("No se pueden insertar elementos en un SelectResults.")
     def pop(self, *args, **kw):
-        raise TypeError, "No se pueden eliminar elementos de un SelectResults."
+        raise TypeError("No se pueden eliminar elementos de un SelectResults.")
     def remove(self, *args, **kw):
-        raise TypeError, "No se pueden eliminar elementos de un SelectResults."
+        raise TypeError("No se pueden eliminar elementos de un SelectResults.")
 
 
 class PRPCTOO:
@@ -475,14 +475,14 @@ class PRPCTOO:
         res = True
         try:
             descripcion = self.get_info()
-        except Exception, msg:  # Seguro que vengo de destroy_en_cascada
+        except Exception as msg:  # Seguro que vengo de destroy_en_cascada
             if DEBUG:
                 myprint("pclases::destroy: Excepción ignorada:\n\t%s" % msg)
-            descripcion = `self`.replace("'", '"')
+            descripcion = repr(self).replace("'", '"')
         puid = self.get_puid()
         try:
             self.destroySelf()
-        except Exception, msg: # IntegrityError:
+        except Exception as msg: # IntegrityError:
             res = False     # «a lo» rollback
             if DEBUG:
                 myprint("pclases:destroy: Objeto no borrado\n\t%s"
@@ -648,7 +648,7 @@ def actualizar_estado_cobro_de(clase):
     cobrado.
     """
     for p in clase.select(clase.q.procesado == False):
-        if mx.DateTime.today() >= p.fechaVencimiento:
+        if datetime.datetime.today() >= p.fechaVencimiento:
             if DEBUG:
                 myprint("Actualizando el estado de %s..." % p.get_puid())
                 try:
@@ -692,13 +692,13 @@ PREFIJO_CAJA = "J"
 PREFIJO_BOLSA = "K"
 
 # Estados de pagarés/confirming
-GESTION, CARTERA, DESCONTADO, IMPAGADO, COBRADO = range(5)
+GESTION, CARTERA, DESCONTADO, IMPAGADO, COBRADO = list(range(5))
 
 # Estados de validación de pedidos y ofertas
 NO_VALIDABLE, VALIDABLE, PLAZO_EXCESIVO, SIN_FORMA_DE_PAGO, \
         PRECIO_INSUFICIENTE, CLIENTE_DEUDOR, SIN_CIF, SIN_CLIENTE, \
         COND_PARTICULARES, COMERCIALIZADO, BLOQUEO_FORZADO, \
-        BLOQUEO_CLIENTE, SERVICIO = range(13)
+        BLOQUEO_CLIENTE, SERVICIO = list(range(13))
 
 # Algunos pesos HARCODED:
 PESO_EMBALAJE_BALAS = 0.86
@@ -960,7 +960,7 @@ class Almacen(SQLObject, PRPCTOO):
                                   existencias = existencias)
             sa.existencias = existencias
         else:
-            raise TypeError, "El parámetro debe ser un ProductoCompra."
+            raise TypeError("El parámetro debe ser un ProductoCompra.")
 
     def crear_almacen_principal():
         """
@@ -1304,7 +1304,7 @@ class HistorialExistencias(SQLObject, PRPCTOO, CacheExistencias):
         incluida esta última. Para contar hacia atrás, ese día completo hay
         que excluirlo, ya que las cantidades deben coincidir exactamente a
         las 23:59:59 del día "self.fecha" y 00:00:00 del día
-        "self.fecha + mx.DateTime.oneDay", por tanto el test debe sumar desde
+        "self.fecha + datetime.timedelta(days=1)", por tanto el test debe sumar desde
         el self.fecha más un día (es decir, desde las 00:00) hasta la fecha
         actual; de otro modo las ventas, producciones y demás del día en
         cuestión (self.fecha) se estarían contando de más.
@@ -1312,8 +1312,8 @@ class HistorialExistencias(SQLObject, PRPCTOO, CacheExistencias):
         Si almacen != None comprueba las existencias solo para ese almacén.
         En otro caso lo hace para el total de todos los almacenes.
         """
-        hoy = mx.DateTime.localtime()
-        fecha = self.fecha + mx.DateTime.oneDay
+        hoy = datetime.datetime.now()
+        fecha = self.fecha + datetime.timedelta(days=1)
         ##### BULTOS #####
         existencias_base = self.productoVenta.get_existencias(
             contar_defectuosos = True,
@@ -1413,7 +1413,7 @@ class HistorialExistenciasA(SQLObject, PRPCTOO, CacheExistencias):
         incluida esta última. Para contar hacia atrás, ese día completo hay
         que excluirlo, ya que las cantidades deben coincidir exactamente a
         las 23:59:59 del día "self.fecha" y 00:00:00 del día
-        "self.fecha + mx.DateTime.oneDay", por tanto el test debe sumar desde
+        "self.fecha + datetime.timedelta(days=1)", por tanto el test debe sumar desde
         el self.fecha más un día (es decir, desde las 00:00) hasta la fecha
         actual; de otro modo las ventas, producciones y demás del día en
         cuestión (self.fecha) se estarían contando de más.
@@ -1421,8 +1421,8 @@ class HistorialExistenciasA(SQLObject, PRPCTOO, CacheExistencias):
         Si almacen != None comprueba las existencias solo para ese almacén.
         En otro caso lo hace para el total de todos los almacenes.
         """
-        hoy = mx.DateTime.localtime()
-        fecha = self.fecha + mx.DateTime.oneDay
+        hoy = datetime.datetime.now()
+        fecha = self.fecha + datetime.timedelta(days=1)
         ##### BULTOS #####
         existencias_base = self.productoVenta.get_existencias_A(
             contar_defectuosos = True,
@@ -1522,7 +1522,7 @@ class HistorialExistenciasB(SQLObject, PRPCTOO, CacheExistencias):
         incluida esta última. Para contar hacia atrás, ese día completo hay
         que excluirlo, ya que las cantidades deben coincidir exactamente a
         las 23:59:59 del día "self.fecha" y 00:00:00 del día
-        "self.fecha + mx.DateTime.oneDay", por tanto el test debe sumar desde
+        "self.fecha + datetime.timedelta(days=1)", por tanto el test debe sumar desde
         el self.fecha más un día (es decir, desde las 00:00) hasta la fecha
         actual; de otro modo las ventas, producciones y demás del día en
         cuestión (self.fecha) se estarían contando de más.
@@ -1530,8 +1530,8 @@ class HistorialExistenciasB(SQLObject, PRPCTOO, CacheExistencias):
         Si almacen != None comprueba las existencias solo para ese almacén.
         En otro caso lo hace para el total de todos los almacenes.
         """
-        hoy = mx.DateTime.localtime()
-        fecha = self.fecha + mx.DateTime.oneDay
+        hoy = datetime.datetime.now()
+        fecha = self.fecha + datetime.timedelta(days=1)
         ##### BULTOS #####
         existencias_base = self.productoVenta.get_existencias_B(
             contar_defectuosos = True,
@@ -1631,7 +1631,7 @@ class HistorialExistenciasC(SQLObject, PRPCTOO, CacheExistencias):
         incluida esta última. Para contar hacia atrás, ese día completo hay
         que excluirlo, ya que las cantidades deben coincidir exactamente a
         las 23:59:59 del día "self.fecha" y 00:00:00 del día
-        "self.fecha + mx.DateTime.oneDay", por tanto el test debe sumar desde
+        "self.fecha + datetime.timedelta(days=1)", por tanto el test debe sumar desde
         el self.fecha más un día (es decir, desde las 00:00) hasta la fecha
         actual; de otro modo las ventas, producciones y demás del día en
         cuestión (self.fecha) se estarían contando de más.
@@ -1639,8 +1639,8 @@ class HistorialExistenciasC(SQLObject, PRPCTOO, CacheExistencias):
         Si almacen != None comprueba las existencias solo para ese almacén.
         En otro caso lo hace para el total de todos los almacenes.
         """
-        hoy = mx.DateTime.localtime()
-        fecha = self.fecha + mx.DateTime.oneDay
+        hoy = datetime.datetime.now()
+        fecha = self.fecha + datetime.timedelta(days=1)
         ##### BULTOS #####
         existencias_base = self.productoVenta.get_existencias_C(
             contar_defectuosos = True,
@@ -1797,7 +1797,7 @@ class Silo(SQLObject, PRPCTOO):
                 dic_productos[producto] = -consumo
             else:
                 dic_productos[producto] -= consumo
-        for producto in dic_productos.keys():
+        for producto in list(dic_productos.keys()):
             if dic_productos[producto] <= 0:
                 dic_productos.pop(producto)
         return dic_productos
@@ -1915,7 +1915,7 @@ class Silo(SQLObject, PRPCTOO):
             if DEBUG:
                 try:
                     myprint(" --->", carga_antigua.cantidad, carga_antigua.consumido, cantidad_de_producto)
-                except AssertionError, msg:
+                except AssertionError as msg:
                     myprint(" ---> AssertionError", msg)
             cantidad_consumida = min(cantidad_de_producto, cantidad)
             #myprint("¡Hola hombre cangrejo!", cantidad_consumida,
@@ -1982,7 +1982,7 @@ class Silo(SQLObject, PRPCTOO):
         pychecker dice: ldc no se usa. Y es verdad. ¿Qué hace ahí?
         """
         if not fecha:
-            fecha = mx.DateTime.localtime()
+            fecha = datetime.datetime.now()
         carga_silo = CargaSilo(silo = self,  # @UnusedVariable
                                productoCompra = producto,
                                fechaCarga = fecha,
@@ -2270,7 +2270,7 @@ class FacturaCompra(SQLObject, PRPCTOO):
                 try:
                     msg = "El IVA total de la factura de compra %d no coincide con el IVA de sus líneas de venta USANDO ÚNICAMENTE 2 DÍGITOS DE PRECISIÓN: %s != %s." % (self.id, subtotal * self.iva, totiva)
                     assert round(subtotal * self.iva, 2) == round(totiva, 2), msg ## Este es el assert que usaba hasta ahora, pero da más problemas que soluciones el propagarlo y capturarlo fuera.
-                except AssertionError, msg:
+                except AssertionError as msg:
                     myprint(msg)
                 # assert subtotal * self.iva == totiva, "El IVA total de la factura de compra %d no coincide con el IVA de sus líneas de venta: %s != %s." % (self.id, subtotal * self.iva, totiva)
             else:
@@ -2752,7 +2752,7 @@ class VencimientoPago(SQLObject, PRPCTOO):
                             "comprobar automáticamente su importe pagado.")
                         continue    # Ya está pagado aunque no haya sido
                                     # procesado automáticamente.
-            if mx.DateTime.today() >= v.fecha:
+            if datetime.datetime.today() >= v.fecha:
                 if DEBUG:
                     myprint("Actualizando el estado de %s..." % v.get_puid())
                     try:
@@ -3080,7 +3080,7 @@ class Cobro(SQLObject, PRPCTOO):
                         # Además de no estar pendiente(arriba), lo considero
                         # cobrado si no ha vencido aún aunque esté pendiente.
                         if (compromiso_cobro.fechaVencimiento
-                            > mx.DateTime.localtime()):
+                            > datetime.datetime.now()):
                             cobrado += compromiso_cobro.cantidad
             else:
                 if (compromiso_cobro.fechaCobrado
@@ -3427,7 +3427,7 @@ class PagareCobro(SQLObject, PRPCTOO):
         except (AttributeError, IndexError):
             return None
 
-    def get_estado(self, fecha = mx.DateTime.today()):
+    def get_estado(self, fecha = datetime.datetime.today()):
         """
         Devuelve el estado del pagaré:
         0: Gestión de cobro: Entregado al banco al vencimiento y esperando a
@@ -3514,7 +3514,7 @@ class Confirming(SQLObject, PRPCTOO):
 
     efecto = property(get_efecto, set_efecto)
 
-    def esta_pendiente(self, fecha_base = mx.DateTime.today()):
+    def esta_pendiente(self, fecha_base = datetime.datetime.today()):
         """
         Devuelve True si el confirming ya se ha cobrado completamente.
         OJO: Un confirming está cobrado si la cantidad de cobro no es menor
@@ -3524,7 +3524,7 @@ class Confirming(SQLObject, PRPCTOO):
         actualizará la cantidad cobrada para ajustarla al importe si además
         es superior a la de vencimiento (fecha_cobro).
         """
-        if fecha_base == mx.DateTime.today() and fecha_base >= self.fechaCobro:
+        if fecha_base == datetime.datetime.today() and fecha_base >= self.fechaCobro:
             self.cobrado = self.cantidad
             # Si se ha cobrado pero no tengo fecha de cobro, esto es un sindiós
             if not self.fechaCobrado:
@@ -3589,7 +3589,7 @@ class Confirming(SQLObject, PRPCTOO):
     #               confirming = self,
     #               cuentaBancariaCliente = None)
 
-    def get_estado(self, fecha = mx.DateTime.today()):
+    def get_estado(self, fecha = datetime.datetime.today()):
         """
         Devuelve el estado del confirming:
         0: Gestión de cobro: En el banco esperando al vencimiento.
@@ -3984,8 +3984,8 @@ class LoteCem(SQLObject, PRPCTOO):
         del lote sea el recibido.
         """
         if not isinstance(productoVenta, ProductoVenta):
-            raise TypeError, "El producto debe ser un objeto de la clase "\
-                             "ProductoVenta."
+            raise TypeError("El producto debe ser un objeto de la clase "\
+                             "ProductoVenta.")
         for b in self.bigbags:
             b.articulo.productoVenta = productoVenta
 
@@ -4206,9 +4206,9 @@ class Pale(SQLObject, PRPCTOO):
             elif isinstance(pdp, ParteDeProduccion):
                 a.parteDeProduccionID = pdp.id
             else:
-                raise TypeError, "pclases.py::Pale::set_parte_de_produccion: "\
+                raise TypeError("pclases.py::Pale::set_parte_de_produccion: "\
                                  "El parámetro debe ser un entero o un "\
-                                 "objeto ParteDeProduccion"
+                                 "objeto ParteDeProduccion")
 
     parteDeProduccion = property(get_parte_de_produccion,
                                  set_parte_de_produccion)
@@ -4222,19 +4222,19 @@ class Pale(SQLObject, PRPCTOO):
         if not partidaCem:
             partidaCem = parteDeProduccion.partidaCem
             if not partidaCem:
-                raise ValueError, "pclases.py::crear_pale -> No se pudo "\
-                    "determinar partida de cemento. Especifique una."
+                raise ValueError("pclases.py::crear_pale -> No se pudo "\
+                    "determinar partida de cemento. Especifique una.")
         if productoVenta == None:
             productoVenta = parteDeProduccion.productoVenta
         if not productoVenta:
-            raise ValueError, "pclases.py::crear_pale -> No se pudo "\
-                "determinar producto de venta. Especifique uno."
+            raise ValueError("pclases.py::crear_pale -> No se pudo "\
+                "determinar producto de venta. Especifique uno.")
         if numbolsas is None:
             numbolsas = productoVenta.camposEspecificosBala.bolsasCaja
             if not numbolsas:
-                raise ValueError, "pclases.py::crear_pale -> No se pudo "\
+                raise ValueError("pclases.py::crear_pale -> No se pudo "\
                     "determinar el número de bolsas por caja. Especifique "\
-                    "una cantidad."
+                    "una cantidad.")
         listanumbolsas = [numbolsas]
         for numbolsas in listanumbolsas:
             if not numcajas:
@@ -4250,7 +4250,7 @@ class Pale(SQLObject, PRPCTOO):
             pale = Pale(partidaCem = partidaCem,
                     numpale = numpale,
                     codigo = codigo,
-                    fechahora = mx.DateTime.localtime(),
+                    fechahora = datetime.datetime.now(),
                     numbolsas = numbolsas,
                     numcajas = numcajasdefecto
                     )
@@ -4533,12 +4533,12 @@ class Caja(SQLObject, PRPCTOO):
         van en la caja, así como sus códigos de trazabilidad y peso.
         """
         primera, ultima = self.get_bounds_numbolsa()
-        numsbolsas = range(primera, ultima + 1)
+        numsbolsas = list(range(primera, ultima + 1))
         databolsas = []
         try:
             ceb = self.productoVenta.camposEspecificosBala
             peso_bolsa_en_kg = ceb.gramosBolsa
-        except AttributeError, msg:
+        except AttributeError as msg:
             # O no es un producto de fibra de cemento o está mal dado de alta.
             myprint("El palé %s tiene un producto de venta relacionado "\
                   "inválido. Excepción AttributeError: %s" % (self.get_puid(),
@@ -4548,7 +4548,7 @@ class Caja(SQLObject, PRPCTOO):
         for numbolsa in numsbolsas:
             databolsas.append({"código": "K%d" % numbolsa,
                                "peso": peso_bolsa_en_kg})
-        res = dict(zip(numsbolsas, databolsas))
+        res = dict(list(zip(numsbolsas, databolsas)))
         return res
 
     def get_caja_from_bolsa(numbolsa):
@@ -4576,8 +4576,8 @@ class Caja(SQLObject, PRPCTOO):
         if not isinstance(numbolsa, int):
             numbolsa = utils.parse_numero(numbolsa)
             if not numbolsa:
-                raise TypeError, "pclases.py::Caja::get_caja_from_bolsa -> "\
-                                 "El parámetro numbolsa debe ser un entero."
+                raise TypeError("pclases.py::Caja::get_caja_from_bolsa -> "\
+                                 "El parámetro numbolsa debe ser un entero.")
         ## Algoritmo base: búsqueda secuencial. O(n)
         #for caja in Caja.select(orderBy = "numcaja"):
         #    if numbolsa in xrange(*caja._get_bounds_numbolsa_range()):
@@ -4595,7 +4595,7 @@ class Caja(SQLObject, PRPCTOO):
             """
             try:
                 caja = Caja.selectBy(numcaja = i)[0]
-                return xrange(*caja._get_bounds_numbolsa_range())
+                return range(*caja._get_bounds_numbolsa_range())
             except IndexError:
                 return []
         #################################################################
@@ -4620,14 +4620,14 @@ class Caja(SQLObject, PRPCTOO):
     def crear_caja(parteDeProduccion, pale, numbolsas = None):
         productoVenta = parteDeProduccion.productoVenta
         if not productoVenta:
-            raise ValueError, "pclases.py::crear_caja -> No se pudo "\
-                "determinar producto de venta. Especifique uno."
+            raise ValueError("pclases.py::crear_caja -> No se pudo "\
+                "determinar producto de venta. Especifique uno.")
         if numbolsas is None:
             numbolsas = pale.numbolsas
             if not numbolsas:
-                raise ValueError, "pclases.py::crear_caja -> No se pudo "\
+                raise ValueError("pclases.py::crear_caja -> No se pudo "\
                     "determinar el número de bolsas por caja. Especifique "\
-                    "una cantidad."
+                    "una cantidad.")
         numcaja, codigo = Caja.get_next_numcaja()
         try:
             gramos = productoVenta.camposEspecificosBala.gramosBolsa
@@ -4637,7 +4637,7 @@ class Caja(SQLObject, PRPCTOO):
         caja = Caja(pale = pale,
                     numcaja = numcaja,
                     codigo = codigo,
-                    fechahora = mx.DateTime.localtime(),
+                    fechahora = datetime.datetime.now(),
                     peso = peso,
                     numbolsas = numbolsas)
         ## 3.- Creo los artículos.
@@ -4653,7 +4653,7 @@ class Caja(SQLObject, PRPCTOO):
         #    bolsa = Bolsa(caja = caja,
         #                          numbolsa = numbolsa,
         #                          codigo = codigo,
-        #                          fechahora = mx.DateTime.localtime(),
+        #                          fechahora = datetime.datetime.now(),
         #                          peso = peso,
         #                          claseb = claseb)
         articulo = Articulo(parteDeProduccion = parteDeProduccion,  # @UnusedVariable
@@ -4715,8 +4715,8 @@ class PartidaCem(SQLObject, PRPCTOO):
         la partida sea el recibido.
         """
         if not isinstance(productoVenta, ProductoVenta):
-            raise TypeError, "El producto debe ser un objeto de la clase Pro"\
-                             "ductoVenta."
+            raise TypeError("El producto debe ser un objeto de la clase Pro"\
+                             "ductoVenta.")
         for p in self.pales:
             for c in p.cajas:
                 c.articulo.productoVenta = productoVenta
@@ -5073,8 +5073,8 @@ class Proveedor(SQLObject, PRPCTOO):
             lista_dias = regexpr.findall(self.diadepago)
             try:
                 res = tuple([int(i) for i in lista_dias if i != ''])
-            except TypeError, msg:
-                print "ERROR: pclases: cliente.get_dias_de_pago(): %s" % (msg)
+            except TypeError as msg:
+                print("ERROR: pclases: cliente.get_dias_de_pago(): %s" % (msg))
         return res
 
     def get_documentoDePago(self, strict_mode = False):
@@ -5104,14 +5104,14 @@ class Proveedor(SQLObject, PRPCTOO):
         de la empresa. Si no se encuentran datos de la empresa
         devuelve True si el país no es España.
         """
-        cpf = unicode(self.paisfacturacion.strip())
+        cpf = str(self.paisfacturacion.strip())
         try:
             de = DatosDeLaEmpresa.select()[0]
-            depf = unicode(de.paisfacturacion.strip())
+            depf = str(de.paisfacturacion.strip())
             res = cpf != "" and depf.lower() != cpf.lower()
         except IndexError:
-            res = (cpf != "" and cpf.lower() != unicode("españa")
-                             and cpf.lower() != unicode("spain"))
+            res = (cpf != "" and cpf.lower() != str("españa")
+                             and cpf.lower() != str("spain"))
         return res
 
     extranjero = property(es_extranjero)
@@ -5259,7 +5259,7 @@ class Proveedor(SQLObject, PRPCTOO):
             if diacobro != None:
                 while True:
                     try:
-                        res[-1] = mx.DateTime.DateTimeFrom(
+                        res[-1] = datetime.datetime(
                                     day = diacobro,
                                     month = res[-1].month,
                                     year = res[-1].year)
@@ -5276,7 +5276,7 @@ class Proveedor(SQLObject, PRPCTOO):
                     mes = res[-1].month + 1; anno = res[-1].year
                     if mes > 12:
                         mes = 1; anno += 1
-                    res[-1] = mx.DateTime.DateTimeFrom(day = diacobro,
+                    res[-1] = datetime.datetime(day = diacobro,
                                                        month = mes,
                                                        year = anno)
                 try:
@@ -5284,7 +5284,7 @@ class Proveedor(SQLObject, PRPCTOO):
                 except AttributeError:
                     diasemana = res[-1].weekday()
                 while diasemana >= 5:
-                    res[-1] += mx.DateTime.oneDay
+                    res[-1] += datetime.timedelta(days=1)
                     try:
                         diasemana = res[-1].day_of_week
                     except AttributeError:
@@ -5322,7 +5322,7 @@ class Proveedor(SQLObject, PRPCTOO):
                 lista_vtos = regexpr.findall(self.vencimiento)
                 try:
                     res = [int(i) for i in lista_vtos if i != '']
-                except TypeError, msg:
+                except TypeError as msg:
                     myprint("ERROR: pclases::proveedor.get_vencimientos()-> %s"%(
                         msg))
         return res
@@ -5439,7 +5439,7 @@ class PartidaCarga(SQLObject, PRPCTOO):
         si no las tiene.
         OJO: Este método usa fechahorafin, que es un atributo que se introdujo A POSTERIORI y la fecha absoluta debería
              coincidir con parteDeProduccion.fecha si la hora es posterior a parteDeProduccion.horainicio; e igual a
-             parteDeProduccion.fecha + mx.DateTime.oneDay en caso contrario.
+             parteDeProduccion.fecha + datetime.timedelta(days=1) en caso contrario.
         """
         partes = self._get_partes_partidas()
         partes.sort(lambda pdp1, pdp2:
@@ -5548,7 +5548,7 @@ class PartidaCarga(SQLObject, PRPCTOO):
         """
         Crea una LDV en el albarán "interno" con los datos recibidos.
         """
-        ahora = mx.DateTime.localtime()
+        ahora = datetime.datetime.now()
         try:
             ldv = LineaDeVenta(productoCompra = None,
                                pedidoVenta = pedido,
@@ -5787,7 +5787,7 @@ class Partida(SQLObject, PRPCTOO):
         partida al recibido.
         """
         if not isinstance(producto, ProductoVenta):
-            raise TypeError, "Operación no permitida. El parámetro debe ser un ProductoVenta."
+            raise TypeError("Operación no permitida. El parámetro debe ser un ProductoVenta.")
         for rollo in self.rollos:
             rollo.articulo.productoVenta = producto
         for rollod in self.rollosDefectuosos:
@@ -5993,7 +5993,7 @@ class Partida(SQLObject, PRPCTOO):
                        'Piramidal': 'pruebasPiramidal'
                       }  # "Traducción" de la prueba al nombre del campo de la lista de pruebas.
         if prueba not in trans:
-            raise ValueError, '"prueba" debe tener uno de los siguientes valores: %s' % (", ".join([p for p in trans.keys()]))
+            raise ValueError('"prueba" debe tener uno de los siguientes valores: %s' % (", ".join([p for p in list(trans.keys())])))
         producto = self.get_producto()
         if producto != None:
             valor = getattr(self, trans[prueba])
@@ -6027,10 +6027,9 @@ class Partida(SQLObject, PRPCTOO):
         if not fecha:
             res = None
         else:
-            if (not isinstance(fecha[0], type(mx.DateTime.today()))
+            if (not isinstance(fecha[0], type(datetime.datetime.today()))
                 and hasattr(fecha[0], "strftime")):
-                # Devuelvo un mx, que es lo que espera el resto del programa.
-                res = mx.DateTime.DateFrom(fecha[0].strftime("%Y-%m-%d"))
+                res = datetime.date.fromisoformat(fecha[0].strftime("%Y-%m-%d"))
             else:
                 res = fecha[0]
         return res
@@ -6610,13 +6609,13 @@ class BalaCable(SQLObject, PRPCTOO):
         Devuelve el peso de todas las balas recicladas ese mes sin el
         embalaje.
         """
-        primero_mes = mx.DateTime.DateTimeFrom(day = 1,
+        primero_mes = datetime.datetime(day = 1,
                                                month = mes,
                                                year = anno)
-        primero_mes_sig = mx.DateTime.DateTimeFrom(day = -1,
+        primero_mes_sig = datetime.datetime(day = -1,
                                                    month = mes,
                                                    year = anno)
-        primero_mes_sig += mx.DateTime.oneDay
+        primero_mes_sig += datetime.timedelta(days=1)
         balas = BalaCable.select(AND(BalaCable.q.fechahora >= primero_mes,
                                      BalaCable.q.fechahora < primero_mes_sig))
         peso = balas.sum("peso")
@@ -6780,13 +6779,13 @@ class RolloC(SQLObject, PRPCTOO):
         Devuelve el peso de todas las balas recicladas ese mes sin el
         embalaje.
         """
-        primero_mes = mx.DateTime.DateTimeFrom(day = 1,
+        primero_mes = datetime.datetime(day = 1,
                                                month = mes,
                                                year = anno)
-        primero_mes_sig = mx.DateTime.DateTimeFrom(day = -1,
+        primero_mes_sig = datetime.datetime(day = -1,
                                                    month = mes,
                                                    year = anno)
-        primero_mes_sig += mx.DateTime.oneDay
+        primero_mes_sig += datetime.timedelta(days=1)
         rollosc = RolloC.select(AND(RolloC.q.fechahora >= primero_mes,
                                     RolloC.q.fechahora < primero_mes_sig))
         peso = rollosc.sum("peso")
@@ -6838,7 +6837,7 @@ class LineaDePedido(SQLObject, PRPCTOO):
             if self.pedidoVenta:
                 subtotal *= (1 + self.pedidoVenta.iva)
             else:
-                raise ValueError, "pclases::LineaDePedido::calcular_subtotal -> La LDP ID %s no tiene pedido del que obtener el IVA."
+                raise ValueError("pclases::LineaDePedido::calcular_subtotal -> La LDP ID %s no tiene pedido del que obtener el IVA.")
         return subtotal
 
     calcular_subtotal = get_subtotal # Por compatibilidad con LineaDeVenta.
@@ -7109,13 +7108,13 @@ class Ticket(SQLObject, PRPCTOO):
         del 1 de julio de 2010, 16%; después y hasta el 1 de septiembre de
         2012, el 18%. A partir de entonces, el 21%
         """
-        fechahora = mx.DateTime.DateFrom(self.fechahora.year,
-                                         self.fechahora.month,
-                                         self.fechahora.day)
-        if fechahora >= mx.DateTime.DateFrom(2012, 9, 1):
+        fechahora = datetime.date(self.fechahora.year,
+                                  self.fechahora.month,
+                                  self.fechahora.day)
+        if fechahora >= datetime.date(2012, 9, 1):
             iva = 0.21
-        elif (fechahora >= mx.DateTime.DateFrom(2010, 7, 1) and
-            fechahora < mx.DateTime.DateFrom(2012, 9, 1)):
+        elif (fechahora >= datetime.date(2010, 7, 1) and
+            fechahora < datetime.date(2012, 9, 1)):
             iva = 0.18
         else:
             iva = 0.16
@@ -7525,7 +7524,7 @@ class LineaDeVenta(SQLObject, PRPCTOO, Venta):
                     else:
                         txtexcepcion = "pclases::__init__ -> Artículo %s "\
                                 "no es A, B ni C." % a.puid
-                        raise ValueError, txtexcepcion
+                        raise ValueError(txtexcepcion)
                     res['total']['m²'] += superficie
                     res['total']['kg'] += peso
                     res['total']['#'] += 1
@@ -7535,7 +7534,7 @@ class LineaDeVenta(SQLObject, PRPCTOO, Venta):
         if res == None:
             txtexception = "pclases::__init__ -> Solo los productos de venta "\
                     "pueden clasificarse por calidad (A, B y C)."
-            raise TypeError, txtexception
+            raise TypeError(txtexception)
         return res
 
     def eliminar(self):
@@ -7559,7 +7558,7 @@ class LineaDeVenta(SQLObject, PRPCTOO, Venta):
         if rels == 0:
             try:
                 self.destroy()
-            except Exception, msg:
+            except Exception as msg:
                 # No es buena práctica capturar _cualquier_ excepción
                 # genérica. Esto es eventual para temas de depuración.
                 myprint("ERROR: pclases::LineaDeVenta:eliminar-> No se pudo eliminar la LDV. Excepción disparada: %s" % (msg))
@@ -7705,12 +7704,12 @@ class LineaDePedidoDeCompra(SQLObject, PRPCTOO):
         else:
             try:
                 ldpcs.sort(utils.cmp_fecha_id)
-            except TypeError, msg:
+            except TypeError as msg:
                 myprint("pclases.py (get_cantidad_servida): Excepción al ordenar líneas de pedido de compra: %s" % (msg))
                 myprint(ldpcs)
             try:
                 ldcs.sort(utils.cmp_fecha_id)
-            except TypeError, msg:
+            except TypeError as msg:
                 myprint("pclases.py (get_cantidad_servida): Excepción al ordenar líneas de compra: %s" % (msg))
                 myprint(ldcs)
             ildpc = 0
@@ -7804,9 +7803,9 @@ class PedidoCompra(SQLObject, PRPCTOO):
         """
         a_borrar = []
         copia_ldcs = self.lineasDeCompra[:]     # Para evitar que se cambien de orden al actualizar cantidades.
-        for i in xrange(len(copia_ldcs)):
+        for i in range(len(copia_ldcs)):
             ldc1 = copia_ldcs[i]
-            for j in xrange(i+1, len(copia_ldcs)):
+            for j in range(i+1, len(copia_ldcs)):
                 ldc2 = copia_ldcs[j]
                 if ldc1 not in a_borrar and ldc2 not in a_borrar and ldc1.es_igual_salvo_cantidad(ldc2):
                     ldc1.cantidad += ldc2.cantidad
@@ -7825,9 +7824,9 @@ class PedidoCompra(SQLObject, PRPCTOO):
         """
         a_borrar = []
         copia_ldpcs = self.lineasDePedidoDeCompra[:]     # Para evitar que se cambien de orden al actualizar cantidades.
-        for i in xrange(len(copia_ldpcs)):
+        for i in range(len(copia_ldpcs)):
             ldpc1 = copia_ldpcs[i]
-            for j in xrange(i+1, len(copia_ldpcs)):
+            for j in range(i+1, len(copia_ldpcs)):
                 ldpc2 = copia_ldpcs[j]
                 if ldpc1 not in a_borrar and ldpc2 not in a_borrar and ldpc1.es_igual_salvo_cantidad(ldpc2):
                     ldpc1.cantidad += ldpc2.cantidad
@@ -8064,7 +8063,7 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
         las existencias negativas.
         """
         self.sync() # Me aseguro de que las existencias son las actuales
-        print self.existencias
+        print(self.existencias)
         for sa in self.stocksAlmacen:
             sa.sync()
             if sa.existencias < 0:
@@ -8100,7 +8099,7 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
         Anotará en las observaciones del caché de existencias que se ha
         ajustado programáticamente.
         """
-        #self.ajustar_a_fecha_pasada(fecha = mx.DateTime.today(),
+        #self.ajustar_a_fecha_pasada(fecha = datetime.datetime.today(),
         #                            cantidad = cantidad, almacen = almacen,
         #    observaciones_historico = "Cacheado por ajuste de existencias",
         #    check_assert = False)   # No tiene sentido comprobar nada porque
@@ -8115,8 +8114,8 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
             try:
                 almacen = Almacen.get(almacen)
             except:
-                raise ValueError, "Si almacen es un número, debe coincidir"\
-                                  " con un ID de la base de datos."
+                raise ValueError("Si almacen es un número, debe coincidir"\
+                                  " con un ID de la base de datos.")
         # actual = self.existencias
         actual = self.get_existencias(almacen)
         delta = cantidad - actual
@@ -8133,18 +8132,18 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                 HistorialExistenciasCompra(productoCompra = self,
                         cantidad = a.get_existencias(self),
                         observaciones = "Cacheado por ajuste de existencias",
-                        fecha = mx.DateTime.today(),
+                        fecha = datetime.datetime.today(),
                         almacen = a)
             except:     # Integrity error. Ya existía para esa fecha.
                 for hec in HistorialExistenciasCompra.select(AND(
                    HistorialExistenciasCompra.q.productoCompraID == self.id,
                    HistorialExistenciasCompra.q.almacenID == a.id,
-                   HistorialExistenciasCompra.q.fecha == mx.DateTime.today())):
+                   HistorialExistenciasCompra.q.fecha == datetime.datetime.today())):
                     hec.destroySelf()
                 HistorialExistenciasCompra(productoCompra = self,
                         cantidad = a.get_existencias(self),
                         observaciones = "Cacheado por ajuste de existencias",
-                        fecha = mx.DateTime.today(),
+                        fecha = datetime.datetime.today(),
                         almacen = a)
 
     def ajustar_a_fecha_pasada(self, fecha, cantidad = None, bultos = None,
@@ -8176,9 +8175,9 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
         salidas (a False es útil para llamadas recursivas).
         """
         if cantidad == None:
-            raise ValueError, "En productos de compra se debe especificar "\
+            raise ValueError("En productos de compra se debe especificar "\
                               "una cantidad. No es posible la estimación a "\
-                              "partir de bultos."
+                              "partir de bultos.")
         # 1.- Calcular entradas y salidas
         delta = {}
         if not almacen:
@@ -8301,7 +8300,7 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                     utils.float2str(stock_alm.existencias)))
 
     def get_existencias_historico(self,
-                                  fecha = mx.DateTime.localtime(),
+                                  fecha = datetime.datetime.now(),
                                   forzar = False,
                                   almacen = None,
                                   observaciones_historico
@@ -8348,7 +8347,7 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
         concreto.
         """
         res = None
-        if fecha == mx.DateTime.localtime():
+        if fecha == datetime.datetime.now():
             if not almacen:
                 res = self.existencias
             else:
@@ -8399,9 +8398,9 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                     # En un caso raro, podría ser None. Aseguro un número:
                     existencias_anteriores = cache_mas_cercano.cantidad or 0
                     entradas_y_salidas = self.get_entradas_y_salidas_entre(
-                        mx.DateTime.DateFrom(cache_mas_cercano.fecha)
-                            + mx.DateTime.oneDay, fecha,
-                        almacen = almacen)
+                        cache_mas_cercano.fecha + datetime.timedelta(days=1),
+                        fecha,
+                        almacen=almacen)
                         # Le sumo un día porque en el caché ya están incluídas
                         # las existencias justo hasta las 23:59:59 de ese mismo
                         # día.
@@ -8457,12 +8456,12 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
         """
         #unittest:
         from framework import pclases
-        import mx.DateTime
+        import datetime
         pclases.DEBUG = True
         pc = pclases.ProductoCompra.select(
             pclases.ProductoCompra.q.descripcion.contains("PLAST"),
             orderBy = "id")[0]
-        fechaini = mx.DateTime.DateTimeFrom(2009,1,1)
+        fechaini = datetime.datetime(2009,1,1)
         pc.get_entradas_y_salidas_entre(fechaini)
         pc.get_entradas_y_salidas_entre(fechaini,
             almacen = pclases.Almacen.get_almacen_principal())
@@ -8718,17 +8717,17 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
         Devuelve un diccionario de existencias del producto en los días 1 y 15
         de los últimos 12 meses y las existencias actuales.
         """
-        hoy = mx.DateTime.localtime()   # Hoy... que no es hoy. Dará las
+        hoy = datetime.datetime.now()   # Hoy... que no es hoy. Dará las
                     # existencias a las 00:00 de hoy, no en tiempo real.
         if hoy.day > 15:
-            ultima = mx.DateTime.DateTimeFrom(day = 15,
+            ultima = datetime.datetime(day = 15,
                                               month = hoy.month,
                                               year = hoy.year)
         else:
-            ultima = mx.DateTime.DateTimeFrom(day = 1,
+            ultima = datetime.datetime(day = 1,
                                               month = hoy.month,
                                               year = hoy.year)
-        primera = mx.DateTime.DateTimeFrom(day = ultima.day,
+        primera = datetime.datetime(day = ultima.day,
                                            month = ultima.month,
                                            year = ultima.year - 1)
         fechas = [primera, ]
@@ -8739,10 +8738,10 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
             else:
                 anno = fechas[-1].year + 1
                 mes = 1
-            fechas.append(mx.DateTime.DateTimeFrom(day = 1,
+            fechas.append(datetime.datetime(day = 1,
                                                    month = mes,
                                                    year = anno))
-            fechas.append(mx.DateTime.DateTimeFrom(day = 15,
+            fechas.append(datetime.datetime(day = 15,
                                                    month = mes,
                                                    year = anno))
         fechas.append(hoy)
@@ -8758,7 +8757,6 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
         Devuelve las entradas del producto, agrupadas por fecha y tal.
         El resultado es un diccionario tal que:
             {fecha: {'albaranes': {albaranEntrada: cantidad,... }, 'cantidad': 0}, ...}
-        fechaini y fechafin, de recibirse, _deben ser_ fechas mx.DateTime.
         """
         res = {}
         if not fechaini and not fechafin:
@@ -8806,7 +8804,6 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
             {fecha: {'partes': {ParteDeProduccion: cantidad, ... },
                      'albaranes': {AlbaranSalida: cantidad, ...},
                      'cantidad': 0}, ...}
-        fechaini y fechafin, de recibirse, _deben ser_ fechas mx.DateTime.
         """
         res = {}
         if not fechaini and not fechafin:
@@ -9294,8 +9291,8 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
             try:
                 almacen = Almacen.get(almacen)
             except:
-                raise ValueError, "Si almacen es un número, debe coincidir"\
-                                  " con un ID de la base de datos."
+                raise ValueError("Si almacen es un número, debe coincidir"\
+                                  " con un ID de la base de datos.")
         if almacen == None:
             almacen = Almacen.get_almacen_principal()
         try:
@@ -9345,7 +9342,7 @@ class ProductoCompra(SQLObject, PRPCTOO, Producto):
                 fechas2[fecha] = [h2.cantidad, h2.observaciones]
         # Guardo las diferencias en lugar de cantidades absolutas.
         for f in (fechas1, fechas2):
-            fechasdic = f.keys()
+            fechasdic = list(f.keys())
             fechasdic.sort()
             for i in range(1, len(fechasdic)):
                 fecha = fechasdic[i]
@@ -9695,7 +9692,7 @@ class Articulo(SQLObject, PRPCTOO):
         elif self.es_clase_c():
             return "C"
         else:
-            raise ValueError, "El artículo %d no es clase A, B ni C." % self.id
+            raise ValueError("El artículo %d no es clase A, B ni C." % self.id)
 
     def get_ldv(self, albaran):
         """
@@ -9746,7 +9743,7 @@ class Articulo(SQLObject, PRPCTOO):
         Si "partida" no es una Partida, lanza un TypeError.
         """
         if not isinstance(partida, Partida):
-            raise TypeError, "pclases::Articulo::set_partida -> La partida debe ser un objeto Partida de pclases."
+            raise TypeError("pclases::Articulo::set_partida -> La partida debe ser un objeto Partida de pclases.")
         if self.rolloID != None:
             self.rollo.partida = partida
         elif self.rolloDefectuosoID != None:
@@ -9827,7 +9824,7 @@ class Articulo(SQLObject, PRPCTOO):
             # una fecha anterior a la de fabricación.
             if fecha < self.fecha_fabricacion:
                 res = False
-            elif fecha >= mx.DateTime.today():
+            elif fecha >= datetime.datetime.today():
                 # Si pregunto por hoy, solo tengo que mirar si está en almacén
                 if almacen:
                     res = self.almacen == almacen
@@ -10707,7 +10704,7 @@ class PedidoVenta(SQLObject, PRPCTOO):
                 ultimo = [int(item) for item in regexp.findall(numpedido)
                           if item != ''][0]
                 break
-            except (IndexError, ValueError), msg:
+            except (IndexError, ValueError) as msg:
                 myprint("pclases.py (ultimo_numpedido): Número de último pedido no se pudo determinar: %s" % (msg))
                 # No se encontaron números en la cadena de numalbaran o ¿se
                 # encontró un número pero no se pudo parsear (!)?
@@ -10928,7 +10925,7 @@ class LineaDePresupuesto(SQLObject, PRPCTOO):
             try:
                 subtotal *= (1 + self.presupuesto.cliente.iva)
             except AttributeError:
-                raise ValueError, "pclases::LineaDePresupuesto::calcular_subtotal -> La LDP ID %s no tiene cliente del que obtener el IVA."
+                raise ValueError("pclases::LineaDePresupuesto::calcular_subtotal -> La LDP ID %s no tiene cliente del que obtener el IVA.")
         return subtotal
 
     @property
@@ -11267,11 +11264,11 @@ class Presupuesto(SQLObject, PRPCTOO):
             # días negativos (que según qué versión de MX es posible, pero
             # no me es útil en este caso).
             try:
-                fecha_limite = mx.DateTime.DateTimeFrom(day = dia,
-                                                        month = mes_limite,
-                                                        year = anno_limite)
+                fecha_limite = datetime.datetime(day = dia,
+                                                 month = mes_limite,
+                                                 year = anno_limite)
                 break
-            except mx.DateTime.RangeError:  # Día fuera de rango
+            except ValueError:  # Día fuera de rango
                 dia -= 1
         return fecha_limite
 
@@ -11280,7 +11277,7 @@ class Presupuesto(SQLObject, PRPCTOO):
         Devuelve True si la validez del presupuesto es 0 o la fecha actual
         es inferior o igual a la fecha del presupuesto + «validez» meses.
         """
-        hoy = mx.DateTime.localtime()
+        hoy = datetime.datetime.now()
         fecha_limite = self.calcular_fecha_limite()
         return (not self.validez) or hoy <= fecha_limite
 
@@ -11516,8 +11513,8 @@ class Presupuesto(SQLObject, PRPCTOO):
                 fv_aprox = None
             self.fechaValidacion = fv
         else:
-            raise ValueError, "El parámetro de validación de presupuesto "\
-                              "debe ser un usuario de pclases o False."
+            raise ValueError("El parámetro de validación de presupuesto "\
+                              "debe ser un usuario de pclases o False.")
 
     def get_str_tipo(self):
         if self.estudio is None:
@@ -11653,17 +11650,17 @@ class ModeloEtiqueta(SQLObject, PRPCTOO):
             modulo = "geninformes"
         try:
             modulobj = __import__("informes." + modulo)
-        except ImportError, e:
-            raise ValueError, "pclases::ModeloEtiqueta.get_func -> "\
+        except ImportError as e:
+            raise ValueError("pclases::ModeloEtiqueta.get_func -> "\
                 "El módulo %s no se encontró en la ruta estándar "\
                 "de informes. Información de la excepción original: %s" % (
-                modulo, e)
+                modulo, e))
         try:
             fwrap = getattr(getattr(modulobj, modulo), self.funcion)
         except NameError:
-            raise ValueError, "pclases::ModeloEtiqueta.get_func -> " \
+            raise ValueError("pclases::ModeloEtiqueta.get_func -> " \
                 "El módulo %s no contiene ninguna función %s." % (
-                    modulo, self.funcion)
+                    modulo, self.funcion))
         return fwrap
 
     @staticmethod
@@ -11787,8 +11784,8 @@ class CamposEspecificosRollo(SQLObject, PRPCTOO):
                    "Espesor", "Compresion", "Perforacion", "Permeabilidad",
                    "Piramidal")
         if prueba not in pruebas:
-            raise ValueError, '"prueba" debe tener alguno de estos valores'\
-                              ': %s' % (", ".join([p for p in pruebas]))
+            raise ValueError('"prueba" debe tener alguno de estos valores'\
+                              ': %s' % (", ".join([p for p in pruebas])))
 
         # Determino el valor de referencia en función de la fecha recibida.
         marcado = self.buscar_marcado(fecha)
@@ -12062,9 +12059,9 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         elif self.es_rollo_c():
             res = None  # El peso es variable en cada bulto.
         else:
-            raise ValueError, "pclases::calcular_razon_bultos -> Tipo de "\
+            raise ValueError("pclases::calcular_razon_bultos -> Tipo de "\
                               "producto no soportado. PUID: %s" % (
-                                self.get_puid())
+                                self.get_puid()))
         return res
 
     def buscar_produccion_bultos(self, fecha0, fecha1):
@@ -12090,11 +12087,11 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                     Articulo.q.parteDeProduccionID == None))
             res += len([a for a in magic_articulos
                         if a.fecha_fabricacion >= fecha0
-                        and a.fecha_fabricacion <= fecha1+mx.DateTime.oneDay])
+                        and a.fecha_fabricacion <= fecha1+datetime.timedelta(days=1)])
         elif pv.es_bala_cable():
             BC = BalaCable
             balas_cable = BC.select(AND(BC.q.fechahora >= fecha0,
-                                BC.q.fechahora <= fecha1 + mx.DateTime.oneDay,
+                                BC.q.fechahora <= fecha1 + datetime.timedelta(days=1),
                                 BC.q.id == Articulo.q.balaCableID,
                                 Articulo.q.productoVentaID == self.id))
                 # Le sumo un día porque una bala de cable del día 1/1/07 23:59
@@ -12106,7 +12103,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
             RC = RolloC
             rollos_c = RC.select(AND(RC.q.fechahora >= fecha0,
                                      RC.q.fechahora <= fecha1
-                                        + mx.DateTime.oneDay,
+                                        + datetime.timedelta(days=1),
                                      RC.q.id == Articulo.q.balaCableID,
                                      Articulo.q.productoVentaID == self.id))
                 # Le sumo un día porque una rollo C del día 1/1/07 23:59 debe
@@ -12145,7 +12142,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                 Articulo.q.parteDeProduccionID == None))
             res += sum([a.peso for a in magic_articulos
                         if a.fecha_fabricacion >= fecha0
-                        and a.fecha_fabricacion <= fecha1 + mx.DateTime.oneDay])
+                        and a.fecha_fabricacion <= fecha1 + datetime.timedelta(days=1)])
         elif pv.es_bigbag():
             bigbags = Bigbag.select(AND(
                             Bigbag.q.id == Articulo.q.bigbagID,
@@ -12165,7 +12162,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                 Articulo.q.parteDeProduccionID == None))
             res += sum([a.peso for a in magic_articulos
                         if a.fecha_fabricacion >= fecha0
-                        and a.fecha_fabricacion <= fecha1 + mx.DateTime.oneDay])
+                        and a.fecha_fabricacion <= fecha1 + datetime.timedelta(days=1)])
         elif pv.es_caja():
             cajas = Caja.select(AND(
                             Caja.q.id == Articulo.q.cajaID,
@@ -12182,7 +12179,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                 Articulo.q.parteDeProduccionID == None))
             res += sum([a.peso for a in magic_articulos
                         if a.fecha_fabricacion >= fecha0
-                        and a.fecha_fabricacion <= fecha1 + mx.DateTime.oneDay])
+                        and a.fecha_fabricacion <= fecha1 + datetime.timedelta(days=1)])
         elif pv.es_rollo():
             PDP = ParteDeProduccion
             pdps = PDP.select(AND(PDP.q.fecha >= fecha0, PDP.q.fecha <= fecha1))
@@ -12198,12 +12195,12 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                 Articulo.q.parteDeProduccionID == None))
             res += sum([a.superficie for a in magic_articulos
                         if a.fecha_fabricacion >= fecha0
-                        and a.fecha_fabricacion <= fecha1 + mx.DateTime.oneDay])
+                        and a.fecha_fabricacion <= fecha1 + datetime.timedelta(days=1)])
         elif pv.es_bala_cable():
             BC = BalaCable
             balas_cable = BC.select(AND(
                             BC.q.fechahora >= fecha0,
-                            BC.q.fechahora <= fecha1 + mx.DateTime.oneDay,
+                            BC.q.fechahora <= fecha1 + datetime.timedelta(days=1),
                             BC.q.id == Articulo.q.balaCableID,
                             Articulo.q.productoVentaID == self.id))
                 # Le sumo un día porque una bala de cable del día 1/1/07
@@ -12218,7 +12215,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
             RC = RolloC
             balas_cable = RC.select(AND(
                             RC.q.fechahora >= fecha0,
-                            RC.q.fechahora <= fecha1 + mx.DateTime.oneDay,
+                            RC.q.fechahora <= fecha1 + datetime.timedelta(days=1),
                             RC.q.id == Articulo.q.balaCableID,
                             Articulo.q.productoVentaID == self.id))
                 # Le sumo un día porque una bala de cable del día 1/1/07
@@ -12245,7 +12242,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                               Bala.q.partidaCargaID == PartidaCarga.q.id,
                               Articulo.q.productoVentaID == self.id,
                               PartidaCarga.q.fecha > fecha0,
-                              PartidaCarga.q.fecha < fecha1 + mx.DateTime.oneDay))
+                              PartidaCarga.q.fecha < fecha1 + datetime.timedelta(days=1)))
         return res
         # return list(res)
 
@@ -12479,7 +12476,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         #       no prodecen de partes de producción, así que se ignoran aquí.
         fecha = hasta.strftime('%Y-%m-%d')
         fecha_limite_para_comparaciones_con_fechahoras = (hasta
-                                    + mx.DateTime.oneDay).strftime('%Y-%m-%d')
+                                    + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         albaranes_antes_de_fecha = """
             SELECT albaran_salida.id
             FROM albaran_salida
@@ -12549,7 +12546,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         """
         fecha = hasta.strftime('%Y-%m-%d')
         fecha_limite_para_comparaciones_con_fechahoras = (hasta
-                                    + mx.DateTime.oneDay).strftime('%Y-%m-%d')
+                                    + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         albaranes_de_salida_antes_de_fecha = """
             SELECT albaran_salida.id
             FROM albaran_salida
@@ -12661,7 +12658,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
             return self.__get_balas_hasta_por_almacen(hasta, almacen = almacen)
         fecha = hasta.strftime('%Y-%m-%d')
         fecha_limite_para_comparaciones_con_fechahoras = (hasta
-                                    + mx.DateTime.oneDay).strftime('%Y-%m-%d')
+                                    + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ##
         try:
             Bala._connection.query("""
@@ -12748,7 +12745,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                             if len(pc._get_partes_partidas()) == 0]
         if len(ids_pcs_sin_prod) > 0:
             partidas_de_carga_sin_produccion = ", ".join(
-                                        map(str, map(int, ids_pcs_sin_prod)))
+                                        map(str, list(map(int, ids_pcs_sin_prod))))
         else:
             partidas_de_carga_sin_produccion = "-1" # No hay IDs -1, así que
             # es como si no estuviera la rama OR (pero algo hay que poner).
@@ -12810,11 +12807,11 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         hasta (incluida) la fecha proporcionada para el almacén recibido.
         """
         if almacen == None:
-            raise ValueError, "pclases.py::__get_balas_hasta_por_almacen:Deb"\
-                              "e especificarse un almacén."
+            raise ValueError("pclases.py::__get_balas_hasta_por_almacen:Deb"\
+                              "e especificarse un almacén.")
         fecha = hasta.strftime('%Y-%m-%d')
         fecha_limite_para_comparaciones_con_fechahoras = (hasta
-            + mx.DateTime.oneDay).strftime('%Y-%m-%d')
+            + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ##
         try:
             Bala._connection.query("""
@@ -12904,7 +12901,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
             #       SQLObject se pueda optimizar:
             ids_pcs_sin_prod = [pc.id for pc in PartidaCarga.select(PartidaCarga.q.fecha > hasta) if len(pc._get_partes_partidas()) == 0]
             if len(ids_pcs_sin_prod) > 0:
-                partidas_de_carga_sin_produccion = ", ".join(map(str, map(int, ids_pcs_sin_prod)))
+                partidas_de_carga_sin_produccion = ", ".join(map(str, list(map(int, ids_pcs_sin_prod))))
             else:
                 partidas_de_carga_sin_produccion = "-1" # No hay IDs -1, así que
                 # es como si no estuviera la rama OR (pero algo hay que poner).
@@ -13034,7 +13031,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
             - no es None: Devuelve para el almacén recibido, pero siempre
                           en forma de tupla.
 
-        IN:  fecha (mx.DateTime)
+        IN:  fecha (datetime)
              almacen (pclases.Almacen | int) [None]
         OUT: tupla{pclases.HistorialExistencias}
         """
@@ -13083,7 +13080,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         historicos = {}
         for a in Almacen.select():
             historicos[a] = (None, 0)
-        if hasta and hasta >= mx.DateTime.localtime():
+        if hasta and hasta >= datetime.datetime.now():
             # No permito búsquedas ni caché en HistorialExistencias de fechas
             # posteriores al día de hoy.
             hasta = None
@@ -13166,7 +13163,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         return res
 
     def get_salidas(self, desde, contar_defectuosos = False, almacen = None,
-                    hasta = mx.DateTime.localtime()):
+                    hasta = datetime.datetime.now()):
         """
         Listado de artículos que salieron de un almacén en concreto o de
         cualquier almacén (ojo, un artículo puede estar en stock en un
@@ -13191,7 +13188,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         return list(articulos_as)
 
     def get_entradas(self, desde, contar_defectuosos = False, almacen = None,
-                     hasta = mx.DateTime.localtime()):
+                     hasta = datetime.datetime.now()):
         """
         Listado de artículos que entraron en el almacén desde la fecha
         «desde» hasta la actualidad por defecto, ambas incluidas.
@@ -13268,7 +13265,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
     def get_diferencia_entradas_salidas(self, desde,
                                         contar_defectuosos = False,
                                         almacen = None,
-                                        hasta = mx.DateTime.localtime()):
+                                        hasta = datetime.datetime.now()):
         """
         Devuelve los objetos artículos de difernecia entre las entradas y
         las salidas entre dos fechas dadas.
@@ -13346,7 +13343,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         """
         # TMP: De momento se ignora el almacén. Es únicamente para evitar
         #      errores en invocación.
-        if hasta and hasta >= mx.DateTime.localtime():
+        if hasta and hasta >= datetime.datetime.now():
             # No permito búsquedas ni caché en HistorialExistencias de fechas
             # posteriores al día de hoy.
             hasta = None
@@ -13384,7 +13381,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                             WHERE albaran_salida.fecha > '%s'
                             """ % (fecha)
                             fecha_limite_para_comparaciones_con_fechahoras = (
-                                hasta+mx.DateTime.oneDay).strftime('%Y-%m-%d')
+                                hasta+datetime.timedelta(days=1)).strftime('%Y-%m-%d')
                             articulos_en_almacen = BalaCable.select("""
                                 bala_cable.id IN (SELECT articulo.bala_cable_id
                                                  FROM articulo
@@ -13403,7 +13400,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                             WHERE albaran_salida.fecha > '%s'
                             """ % (fecha)
                             fecha_limite_para_comparaciones_con_fechahoras = (
-                                hasta+mx.DateTime.oneDay).strftime('%Y-%m-%d')
+                                hasta+datetime.timedelta(days=1)).strftime('%Y-%m-%d')
                             articulos_en_almacen = RolloC.select("""
                                 rollo_c.id IN (
                                     SELECT articulo.rollo_c_id
@@ -13467,7 +13464,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         """
         # TMP: De momento se ignora el almacén. Es únicamente para evitar
         # errores en invocación.
-        if hasta >= mx.DateTime.localtime():
+        if hasta >= datetime.datetime.now():
             # No permito búsquedas ni caché en HistorialExistencias de fechas
             # posteriores al día de hoy.
             hasta = None
@@ -13498,7 +13495,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         cantidad = balas.sum('pesobala')
                     else:
                         cantidad = 0.0
-                except Exception, msg:      # Lo que sea. Error psycopg,
+                except Exception as msg:      # Lo que sea. Error psycopg,
                                             # interno de sqlobjet, lo que sea.
                     myprint("pclases.py: get_stock: Error contando existencias en balas de productoVentaID %d: %s" % (self.id, msg))
                     cantidad = 0.0
@@ -13517,7 +13514,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                                 Articulo.q.parteDeProduccionID
                                     == ParteDeProduccion.q.id,
                                 ParteDeProduccion.q.fecha
-                                    < hasta + mx.DateTime.oneDay,
+                                    < hasta + datetime.timedelta(days=1),
                                 Articulo.q.albaranSalidaID == None))
                     else:
                         rollos_defectuosos_almacen = RolloDefectuoso.select(
@@ -13541,7 +13538,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                     else:
                         fecha = hasta.strftime('%Y-%m-%d')
                         fecha_limite_para_comparaciones_con_fechahoras = (
-                                hasta+mx.DateTime.oneDay).strftime('%Y-%m-%d')
+                                hasta+datetime.timedelta(days=1)).strftime('%Y-%m-%d')
                         partes_de_produccion_antes_de_fecha = """
                         SELECT id
                         FROM parte_de_produccion
@@ -13590,7 +13587,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                     else:
                         fecha = hasta.strftime('%Y-%m-%d')
                         fecha_limite_para_comparaciones_con_fechahoras = (
-                                hasta+mx.DateTime.oneDay).strftime('%Y-%m-%d')
+                                hasta+datetime.timedelta(days=1)).strftime('%Y-%m-%d')
                         partes_de_produccion_antes_de_fecha = """
                         SELECT id
                         FROM parte_de_produccion
@@ -13642,7 +13639,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         WHERE albaran_salida.fecha > '%s'
                         """ % (fecha)
                         fecha_limite_para_comparaciones_con_fechahoras = (
-                                hasta+mx.DateTime.oneDay).strftime('%Y-%m-%d')
+                                hasta+datetime.timedelta(days=1)).strftime('%Y-%m-%d')
                         bala_cables = BalaCable.select("""
                             bala_cable.id IN (
                                 SELECT articulo.bala_cable_id
@@ -13659,7 +13656,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         cantidad = bala_cables.sum('peso')
                     else:
                         cantidad = 0.0
-                except Exception, msg:      # Lo que sea. Error psycopg,
+                except Exception as msg:      # Lo que sea. Error psycopg,
                                             # interno de sqlobjet, lo que sea.
                     myprint("pclases.py: get_stock: Error contando existencias en balas de cable de productoVentaID %d. Excepción: %s" % (self.id, msg))
                     cantidad = 0.0
@@ -13682,7 +13679,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         WHERE albaran_salida.fecha > '%s'
                         """ % (fecha)
                         fecha_limite_para_comparaciones_con_fechahoras = (
-                                hasta+mx.DateTime.oneDay).strftime('%Y-%m-%d')
+                                hasta+datetime.timedelta(days=1)).strftime('%Y-%m-%d')
                         rollos_c = RolloC.select("""
                             rollo_c.id IN (
                                 SELECT articulo.rollo_c_id
@@ -13699,7 +13696,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         cantidad = rollos_c.sum('peso')
                     else:
                         cantidad = 0.0
-                except Exception, msg:      # Lo que sea. Error psycopg,
+                except Exception as msg:      # Lo que sea. Error psycopg,
                                             # interno de sqlobjet, lo que sea.
                     myprint("pclases.py: get_stock: Error contando existencias en balas de cable de productoVentaID %d. Excepción: %s" % (self.id, msg))
                     cantidad = 0.0
@@ -13731,7 +13728,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         PDP = ParteDeProduccion
         rds = RD.select(AND(A.q.rolloDefectuosoID == RD.q.id,
                             A.q.parteDeProduccionID == PDP.q.id,
-                            PDP.q.fecha < hasta + mx.DateTime.oneDay))
+                            PDP.q.fecha < hasta + datetime.timedelta(days=1)))
         # Premature optimization is the root of all evil.
         # De entre todos los rollos fabricados antes de la fecha, voy a ver
         # los que estaban en el almacén. Puede ser lento, sí, pero es lo que
@@ -13742,7 +13739,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                 en_almacen.append(rd)
         return SQLlist(en_almacen)
 
-    def _get_articulos_en_fecha_en_almacen(self, fecha = mx.DateTime.today(),
+    def _get_articulos_en_fecha_en_almacen(self, fecha = datetime.datetime.today(),
                                            almacen = None,
                                            tipo = None):
         """
@@ -13756,9 +13753,9 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         A = Articulo
         PDP = ParteDeProduccion
         if not fecha:
-            fecha = mx.DateTime.today()
+            fecha = datetime.datetime.today()
         clauses = [A.q.parteDeProduccionID == PDP.q.id,
-                   PDP.q.fecha < fecha + mx.DateTime.oneDay,
+                   PDP.q.fecha < fecha + datetime.timedelta(days=1),
                    A.q.productoVentaID == self.id]
         if tipo is Rollo:
             clauses.append(A.q.rolloID != None)
@@ -13776,18 +13773,18 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
             clauses = [A.q.productoVentaID == self.id]
             if tipo is BalaCable:
                 clauses.append(
-                    BalaCable.q.fechahora < fecha + mx.DateTime.oneDay)
+                    BalaCable.q.fechahora < fecha + datetime.timedelta(days=1))
                 clauses.append(A.q.balaCableID == BalaCable.q.id)
                 #clauses.append(A.q.balaCableID != None)
             elif tipo is RolloC:
                 clauses.append(
-                    RolloC.q.fechahora < fecha + mx.DateTime.oneDay)
+                    RolloC.q.fechahora < fecha + datetime.timedelta(days=1))
                 clauses.append(A.q.rolloCID == RolloC.q.id)
                 #clauses.append(A.q.rolloCID != None)
             else:
-                raise ValueError, "pclases.py::ProductoVenta: tipo debe ser "\
+                raise ValueError("pclases.py::ProductoVenta: tipo debe ser "\
                                   "Rollo, Bala, Bigbag, Caja, "\
-                                  " RolloDefecutoso, BalaCable o RolloC"
+                                  " RolloDefecutoso, BalaCable o RolloC")
         else:
             pass    # Cualquier tipo de artículo. No cláusulas adicionales.
         articulos = A.select(AND(*clauses))
@@ -13846,7 +13843,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                        != None. Devuelve el stock en unidades del SI para el
                                 almacén recibido.
         """
-        if hasta and hasta >= mx.DateTime.localtime():
+        if hasta and hasta >= datetime.datetime.now():
             # No permito búsquedas ni caché en HistorialExistencias de fechas
             # posteriores al día de hoy.
             hasta = None
@@ -13872,7 +13869,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         cantidad = balas.sum('pesobala')
                     else:
                         cantidad = 0.0
-                except Exception, msg:      # Lo que sea. Error psycopg,
+                except Exception as msg:      # Lo que sea. Error psycopg,
                                             # interno de sqlobjet, lo que sea.
                     myprint("pclases.py: get_stock: Error contando existencias "\
                           "en balas de productoVentaID %d: %s" % (self.id, msg))
@@ -13895,7 +13892,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         #            Articulo.q.parteDeProduccionID
                         #                == ParteDeProduccion.q.id,
                         #            ParteDeProduccion.q.fecha
-                        #                < hasta + mx.DateTime.oneDay,
+                        #                < hasta + datetime.timedelta(days=1),
                         #            Articulo.q.almacen == almacen))
                         #            #Articulo.q.albaranSalidaID == None))
                         #else:
@@ -13906,7 +13903,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         #            Articulo.q.parteDeProduccionID
                         #                == ParteDeProduccion.q.id,
                         #            ParteDeProduccion.q.fecha
-                        #                < hasta + mx.DateTime.oneDay,
+                        #                < hasta + datetime.timedelta(days=1),
                         #            Articulo.q.almacen != None))
                         #            #Articulo.q.albaranSalidaID == None))
                     else:
@@ -13946,7 +13943,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         bigbags = SQLtuple([a.bigbag for a in articulos
                                             if a.bigbagID != None])
                         #fecha = hasta.strftime('%Y-%m-%d')
-                        #fecha_limite_para_comparaciones_con_fechahoras = (hasta + mx.DateTime.oneDay).strftime('%Y-%m-%d')
+                        #fecha_limite_para_comparaciones_con_fechahoras = (hasta + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
                         #partes_de_produccion_antes_de_fecha = """
                         #SELECT id
                         #FROM parte_de_produccion
@@ -13978,7 +13975,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         cantidad = bigbags.sum('pesobigbag')
                     else:
                         cantidad = 0.0
-                except Exception, msg:  # Lo que sea. Error psycopg, interno
+                except Exception as msg:  # Lo que sea. Error psycopg, interno
                                         # de sqlobjet, lo que sea.
                     myprint("pclases.py: get_stock: Error contando existencias en bigbags de productoVentaID %d: %s" % (self.id, msg))
                     cantidad = 0.0
@@ -14022,7 +14019,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         #FROM albaran_salida
                         #WHERE albaran_salida.fecha > '%s'
                         #""" % (fecha)
-                        #fecha_limite_para_comparaciones_con_fechahoras = (hasta + mx.DateTime.oneDay).strftime('%Y-%m-%d')
+                        #fecha_limite_para_comparaciones_con_fechahoras = (hasta + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
                         #bala_cables = BalaCable.select("""
                         #    bala_cable.id IN (
                         #        SELECT articulo.bala_cable_id
@@ -14039,7 +14036,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         cantidad = bala_cables.sum('peso')
                     else:
                         cantidad = 0.0
-                except Exception, msg:      # Lo que sea. Error psycopg,
+                except Exception as msg:      # Lo que sea. Error psycopg,
                                             # interno de sqlobjet, lo que sea.
                     myprint("pclases.py: get_stock: Error contando existencias en balas de cable de productoVentaID %d. Excepción: %s" % (self.id, msg))
                     cantidad = 0.0
@@ -14083,7 +14080,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         #FROM albaran_salida
                         #WHERE albaran_salida.fecha > '%s'
                         #""" % (fecha)
-                        #fecha_limite_para_comparaciones_con_fechahoras = (hasta + mx.DateTime.oneDay).strftime('%Y-%m-%d')
+                        #fecha_limite_para_comparaciones_con_fechahoras = (hasta + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
                         #rollos_c = RolloC.select("""
                         #    rollo_c.id IN (
                         #        SELECT articulo.rollo_c_id
@@ -14100,7 +14097,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         cantidad = rollos_c.sum('peso')
                     else:
                         cantidad = 0.0
-                except Exception, msg:      # Lo que sea. Error psycopg,
+                except Exception as msg:      # Lo que sea. Error psycopg,
                                             # interno de sqlobjet, lo que sea.
                     myprint("pclases.py: get_stock: Error contando existencias "\
                           "en rollos_c de productoVentaID %d. Excepción: "\
@@ -14136,7 +14133,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         cantidad = sum([c.peso for c in cajas])
                     else:
                         cantidad = 0.0
-                except Exception, msg:  # Lo que sea. Error psycopg, interno
+                except Exception as msg:  # Lo que sea. Error psycopg, interno
                                         # de sqlobjet, lo que sea.
                     myprint("pclases.py: get_stock: Error contando existencias en cajas de productoVentaID %d: %s" % (self.id, msg))
                     cantidad = 0.0
@@ -14308,7 +14305,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
               Los rolloDefectuoso (rollos X) se consideran B por tener un
               largo inferior al estándar.
         """
-        if not hasta or hasta >= mx.DateTime.localtime():
+        if not hasta or hasta >= datetime.datetime.now():
             if not almacen:     # Todos los almacenes
                 res = self.get_cantidad_A_actuales_todos_almacenes()
             else:   # Pregunta por un almacén concreto.
@@ -14544,7 +14541,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         pero no objetos pclases.Rollo con claseb = True. A eso me refería.
         [... end of más meses más tarde ...]
         """
-        if not hasta or hasta >= mx.DateTime.localtime():
+        if not hasta or hasta >= datetime.datetime.now():
             if not almacen:     # Todos los almacenes
                 res = self.get_cantidad_B_actuales_todos_almacenes()
             else:   # Pregunta por un almacén concreto.
@@ -14665,7 +14662,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         almacenar temporalmente).
         Hasta entonces se contarán como clase B.
         """
-        if not hasta or hasta >= mx.DateTime.localtime():
+        if not hasta or hasta >= datetime.datetime.now():
             if not almacen:     # Todos los almacenes
                 res = self.get_cantidad_C_actuales_todos_almacenes()
             else:   # Pregunta por un almacén concreto.
@@ -14867,7 +14864,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
             almacén -> Almacén sobre el que cuenta las existencias. Si None,
                        devuelve la cantidad total entre todos los almacenes.
         """
-        if not hasta or hasta >= mx.DateTime.localtime():
+        if not hasta or hasta >= datetime.datetime.now():
             if not almacen:
                 res = self.get_bultos_A_actuales_todos_almacenes()
             else:
@@ -15036,7 +15033,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         NOTA: Las balas de cable y los geotextiles «C» no se consideran ni
               A ni B. Son simplemente otro tipo de producto. Desechos.
         """
-        if not hasta or hasta >= mx.DateTime.localtime():
+        if not hasta or hasta >= datetime.datetime.now():
             if not almacen:
                 res = self.get_bultos_B_actuales_todos_almacenes()
             else:
@@ -15149,7 +15146,7 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
         almacenar temporalmente).
         Hasta entonces se contarán como clase B.
         """
-        if not hasta or hasta >= mx.DateTime.localtime():
+        if not hasta or hasta >= datetime.datetime.now():
             if not almacen:
                 res = self.get_bultos_C_actuales_todos_almacenes()
             else:
@@ -15276,11 +15273,11 @@ class ProductoVenta(SQLObject, PRPCTOO, Producto):
                         * self.camposEspecificosBala.bolsasCaja)
             else:
                 if self.es_especial():
-                    raise ValueError, "Los productos especiales no tienen"\
-                                      " peso teórico."
+                    raise ValueError("Los productos especiales no tienen"\
+                                      " peso teórico.")
                 elif self.es_fibra():
-                    raise ValueError, "Las balas de fibra no tienen peso "\
-                                      "teórico."
+                    raise ValueError("Las balas de fibra no tienen peso "\
+                                      "teórico.")
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
@@ -15346,7 +15343,7 @@ class AlbaranSalida(SQLObject, PRPCTOO):
     lineasDeMovimiento = MultipleJoin("LineaDeMovimiento")
 
     str_tipos = ("Movimiento", "Interno", "Normal", "Repuestos", "Vacío")
-    MOVIMIENTO, INTERNO, NORMAL, REPUESTOS, VACIO = range(len(str_tipos))
+    MOVIMIENTO, INTERNO, NORMAL, REPUESTOS, VACIO = list(range(len(str_tipos)))
 
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
@@ -15977,7 +15974,7 @@ class AlbaranSalida(SQLObject, PRPCTOO):
                 ultimo = [int(item) for item in regexp.findall(numalbaran) if item != ''][0]
                 # ultimo = int(numalbaran)
                 break
-            except (IndexError, ValueError), msg:
+            except (IndexError, ValueError) as msg:
                 myprint("pclases.py (ultimo_numalbaran): Número de último albarán no se pudo determinar: %s" % (msg))
                 # No se encontaron números en la cadena de numalbaran o ¿se encontró un número pero no se pudo parsear (!)?
                 ultimo = 0
@@ -16018,7 +16015,7 @@ class AlbaranSalida(SQLObject, PRPCTOO):
                 numalbaran = a.numalbaran
                 ultimo = [int(item) for item in regexp.findall(numalbaran) if item != ''][-1]
                 break
-            except (IndexError, ValueError), msg:
+            except (IndexError, ValueError) as msg:
                 myprint("pclases.py (siguiente_numalbaran_str): Número de último albarán no se pudo determinar: %s" % (msg))
                 # No se encontaron números en la cadena de numalbaran o ¿se encontró un número pero no se pudo parsear (!)?
                 ultimo = ""
@@ -16545,7 +16542,7 @@ class Obra(SQLObject, PRPCTOO):
         ended = False
         if self.fechafin:
             try:
-                if mx.DateTime.today() > self.fechafin:
+                if datetime.datetime.today() > self.fechafin:
                     ended = True
             except TypeError:
                 if datetime.date.today() > self.fechafin:
@@ -16657,7 +16654,7 @@ class Alarma(SQLObject, PRPCTOO):
                 fechahora_last_vencimiento = fra.vencimientosCobro[-1].fecha
                 nueva_alarma = Alarma(facturaVenta = fra,
                             estado = estado,
-                            fechahora = mx.DateTime.localtime(),
+                            fechahora = datetime.datetime.now(),
                             texto = "Factura vencida sin documento de pago.",
                             fechahoraAlarma = fechahora_last_vencimiento,
                             objetoRelacionado = None,
@@ -16671,8 +16668,8 @@ class Alarma(SQLObject, PRPCTOO):
             # días y aún no se ha recibido un documento de pago. En el correo
             # se debe adjuntar el PDF del historial de la factura y un PDF de
             # la copia de la factura -la que lleva marca de agua-.
-            if (mx.DateTime.DateFrom(fra.fecha) + (mx.DateTime.oneDay * 45)
-                    <= mx.DateTime.localtime()
+            if (fra.fecha + datetime.timedelta(days=45)
+                    <= datetime.datetime.now()
                 and not fra.cobros):
                 # Verifico que no se haya enviado ya el correo electrónico.
                 for t in fra.tareas:
@@ -16928,7 +16925,7 @@ class Lote(SQLObject, PRPCTOO):
         del lote sea el recibido.
         """
         if not isinstance(productoVenta, ProductoVenta):
-            raise TypeError, "El producto debe ser un objeto de la clase ProductoVenta."
+            raise TypeError("El producto debe ser un objeto de la clase ProductoVenta.")
         for b in self.balas:
             b.articulo.productoVenta = productoVenta
 
@@ -17033,7 +17030,7 @@ class Transportista(SQLObject, PRPCTOO):
             try:
                 t, s = [i.strip() for i in self.matricula.split("  ")
                         if i.strip() != ""]
-            except Exception, msg:
+            except Exception as msg:
                 if DEBUG:
                     myprint("pclases::transportista::parse_matricula -> %s" % msg)
                 t = self.matricula.split("  ")[0].strip()
@@ -17077,7 +17074,7 @@ class Tarifa(SQLObject, PRPCTOO):
         res = "%s (%s)" % (self.nombre, vigencia)
         return res
 
-    def esta_vigente(self, fecha = mx.DateTime.localtime()):
+    def esta_vigente(self, fecha = datetime.datetime.now()):
         """
         Devuelve True si la tarifa está vigente en la
         fecha recibida.
@@ -17113,7 +17110,7 @@ class Tarifa(SQLObject, PRPCTOO):
                 myprint("WARNING: pclases.py: obtener_precio: Más de un precio para una misma tarifa y producto de compra.")
                 return True
         else:
-            raise TypeError, "producto debe ser un ProductoCompra o un ProductoVenta."
+            raise TypeError("producto debe ser un ProductoCompra o un ProductoVenta.")
         return False
 
     def obtener_precio(self,
@@ -17190,7 +17187,7 @@ class Tarifa(SQLObject, PRPCTOO):
                 else:
                     precio = producto.precioDefecto
         else:
-            raise TypeError, "producto debe ser un ProductoCompra o un ProductoVenta."
+            raise TypeError("producto debe ser un ProductoCompra o un ProductoVenta.")
         return precio
 
     def get_porcentaje(self, producto, fraccion = False, precio_cache = None):
@@ -17228,7 +17225,7 @@ class Tarifa(SQLObject, PRPCTOO):
             criterio = AND(Precio.q.productoCompraID == producto.id,
                            Precio.q.tarifaID == self.id)
         else:
-            raise TypeError, "El producto debe ser un objeto de ProductoVenta o ProductoCompra."
+            raise TypeError("El producto debe ser un objeto de ProductoVenta o ProductoCompra.")
         precios = Precio.select(criterio)
         if precios.count() == 0:
             # Crear registro
@@ -17308,7 +17305,7 @@ class Precio(SQLObject, PRPCTOO):
             self.productoVenta = None
             self.productoCompra = producto
         else:
-            raise TypeError, 'El parámetro "producto" debe ser del tipo ProductoCompra o ProductoVenta.'
+            raise TypeError('El parámetro "producto" debe ser del tipo ProductoCompra o ProductoVenta.')
 
     producto = property(get_producto, set_producto, "Producto relacionado con el precio de tarifa.")
 
@@ -17339,7 +17336,7 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         return "%s (%s --> %s): %s" % (self.puid, self.fechahorainicio,
                 self.fechahorafin, producto)
 
-    def save_conf_silos(self, silos = {}, fechahora = mx.DateTime.localtime()):
+    def save_conf_silos(self, silos = {}, fechahora = datetime.datetime.now()):
         """
         Guarda la configuración de los silos reales y de granza reciclada
         recibidos. El diccionario debe contener objetos silos (o enteros
@@ -17357,7 +17354,7 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         """
         prev_conf = self.get_conf_silos(fechahora)
         if not PDPConfSilo.cmp_conf_silos(silos, prev_conf):
-            for key_silo in silos.keys():
+            for key_silo in list(silos.keys()):
                 if isinstance(key_silo, Silo):
                     silo = key_silo
                     reciclada = None
@@ -17371,7 +17368,7 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
                             porcentaje = silos[key_silo]['porcentaje'],
                             parteDeProduccion = self)
 
-    def get_conf_silos(self, fechahora = mx.DateTime.localtime()):
+    def get_conf_silos(self, fechahora = datetime.datetime.now()):
         """
         Devuelve un diccionario de silos con el porcentaje marcado en cada
         uno de ellos y el producto de compra seleccionado en ese momento como
@@ -17390,19 +17387,19 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
             # Sanity check:
             if not (cs.parteDeProduccion.fechahorainicio
                     <= cs.fechahora <= cs.parteDeProduccion.fechahorafin):
-                raise AssertionError, "pclases::ParteDeProduccion."\
+                raise AssertionError("pclases::ParteDeProduccion."\
                         "get_conf_silos -> [%s] Configuración inválida "\
                         "para %s. Hora incorrecta: %s (%s)" % (
                                 self.puid,
                                 self.get_info(),
                                 utils.str_fechahora(cs.fechahora),
-                                cs.get_info())
+                                cs.get_info()))
             if cs.fechahora > fechahora:
                 break
             # Se trata de agrupar por misma fechahora (segundos incluidos). Si
             # el registro que voy a tratar ahora no tiene la misma fechahora
             # que los de antes (con comprobar uno, me vale), vacío el dict.
-            if res and res[res.keys()[0]].fechahora != cs.fechahora:
+            if res and res[list(res.keys())[0]].fechahora != cs.fechahora:
                 res = defaultdict(lambda: None)
             if cs.silo:
                 res[cs.silo] = cs
@@ -17594,7 +17591,8 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
             grupo = ht.empleado.grupo
             ht_horas = ht.horas
             if not hasattr(ht_horas, "hours"):
-                ht_horas=mx.DateTime.TimeDeltaFrom(ht_horas.strftime("%H:%M"))
+                ht_horas=datetime.timedelta(hours=ht_horas.hour,
+                                            minutes=ht_horas.minute)
             if grupo not in res:
                 res[grupo] = ht_horas
             else:
@@ -17733,7 +17731,7 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
                     txterror = "pclases::__init__ -> "\
                             "calcular_kilos_peso_estandar_A -> "\
                             "La fibra no tiene peso teórico estándar definido."
-                    raise ValueError, txterror
+                    raise ValueError(txterror)
         return res
 
     def calcular_productividad(self):
@@ -17748,7 +17746,7 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         durparte = self.get_duracion()
         try:
             ht = self.get_horas_trabajadas()
-        except AssertionError, msg:
+        except AssertionError as msg:
             myprint("pclases::ParteDeProduccion::calcular_productividad -> Parte ID %d con más tiempo de paradas que duración. AssertionError: %s" % (self.id, msg))
             ht = 0.0
         try:
@@ -17764,7 +17762,7 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         """
         horas_paradas = sum([i.get_duracion() for i in self.incidencias])
         if isinstance(horas_paradas, (int, float)):
-            horas_paradas = mx.DateTime.DateTimeDeltaFrom(horas_paradas)
+            horas_paradas = datetime.timedelta(horas_paradas)
         return horas_paradas
 
     def get_horas_trabajadas(self):
@@ -17783,7 +17781,7 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         Si las horas de inicio y fin de las paradas se salen de las de inicio
         y fin del parte de producción, las corrige también.
         """
-        sinco_minutosh = mx.DateTime.DateTimeDeltaFrom(minutes = 5)
+        sinco_minutosh = datetime.timedelta(minutes = 5)
         while self.get_horas_paradas() > self.get_duracion():
             for parada in self.incidencias:
                 if (not (self.fechahorainicio
@@ -17850,8 +17848,8 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         elif self.es_de_geotextiles():
             criterio_br = criterio_rollos
         else:
-            raise ValueError, "El parte ID %s no es ni de fibra, geotextiles"\
-                              " ni embolsado."
+            raise ValueError("El parte ID %s no es ni de fibra, geotextiles"\
+                              " ni embolsado.")
         criterio = """ %s AND (%s OR %s OR %s) """ % (criterio_br,
                                                       pisan_por_arriba,
                                                       pisan_por_abajo,
@@ -17948,16 +17946,16 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
             if horas == None:
                 try:
                     if self.horafin < self.horainicio:
-                        horas = (self.horafin + mx.DateTime.oneDay
+                        horas = (self.horafin + datetime.timedelta(days=1)
                                  - self.horainicio)
                     else:
                         horas = self.horafin - self.horainicio
-                except Exception, msg:
+                except Exception as msg:
                     try:
                         horas = utils.restar_datetime_time(self.horafin,
                                                            self.horainicio)
-                    except Exception, msg:
-                        horas = mx.DateTime.DateTimeDelta(0)
+                    except Exception as msg:
+                        horas = datetime.timedelta(0)
                         if DEBUG:
                             myprint("pclases::ParteDeProduccion.addEmpleado "\
                                   "Excepción al calcular la duración del "\
@@ -18039,15 +18037,11 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         NUNCA devolverá más de 23 horas, 59 minutos.
         """
         self.sync()
-        try:
-            duracion = self.horafin - self.horainicio
-        except TypeError:   # Vienen como datetime.date y no soportan la resta.
-            duracion = (utils.DateTime2DateTimeDelta(self.horafin)
-                        - utils.DateTime2DateTimeDelta(self.horainicio))
+        duracion = self.horafin - self.horainicio
         if duracion < 0:
-            duracion += mx.DateTime.oneDay
-        while duracion > mx.DateTime.oneDay:
-            duracion -= mx.DateTime.oneDay
+            duracion += datetime.timedelta(days=1)
+        while duracion > datetime.timedelta(days=1):
+            duracion -= datetime.timedelta(days=1)
             # Ningún parte dura más de un turno, me aseguro que sea así
             # aunque las horas de inicio y fin estén mal.
         return duracion
@@ -18107,8 +18101,8 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         elif self.es_de_bolsas():
             return self._get_consumo_bigbags()
         else:
-            raise NotImplementedError, "Tipo de parte no contemplado en el "\
-                                       "consumo de materia prima."
+            raise NotImplementedError("Tipo de parte no contemplado en el "\
+                                       "consumo de materia prima.")
 
     def _get_consumo_granza(self):
         return self.get_granza_consumida()
@@ -18172,8 +18166,8 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         Si el parte está vacío devuelve None.
         """
         if not self.es_de_geotextiles():
-            raise ValueError, "Solo los partes de geotextiles tienen "\
-                    "asociados una partida de geotextiles."
+            raise ValueError("Solo los partes de geotextiles tienen "\
+                    "asociados una partida de geotextiles.")
         try:
             return self.articulos[0].partida
         except IndexError:  # Vacío
@@ -18188,8 +18182,8 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
             return self._get_partida().partidaCarga
         except AttributeError:
             if not self.es_de_geotextiles():
-                raise ValueError, "Solo los partes de geotextiles tienen "\
-                        "asociados una partida de carga de fibra en cuartos."
+                raise ValueError("Solo los partes de geotextiles tienen "\
+                        "asociados una partida de carga de fibra en cuartos.")
             else:
                 return None     # Parte vacío.
 
@@ -18203,19 +18197,19 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
             # Con que el parte empiece en algún turno de noche (suponiendo que haya varios), ya se considera nocturno.
             if turno.horainicio > turno.horafin:
                 #esta_en_turno = self.horainicio >= utils.DateTime2DateTimeDelta(turno.horainicio) and \
-                #                self.horainicio <= (utils.DateTime2DateTimeDelta(turno.horafin) + mx.DateTime.oneDay)
+                #                self.horainicio <= (utils.DateTime2DateTimeDelta(turno.horafin) + datetime.timedelta(days=1))
                 # Time for algebra!
                 # Traslado el eje para facilitar los calculotes:
-                dif = mx.DateTime.oneDay - utils.DateTime2DateTimeDelta(turno.horainicio)
+                dif = datetime.timedelta(days=1) - utils.DateTime2DateTimeDelta(turno.horainicio)
                 hf = utils.DateTime2DateTimeDelta(turno.horafin) + dif
-                hi = mx.DateTime.DateTimeDelta(0)   # Equivalente a hi + dif módulo oneDay
+                hi = datetime.timedaelta(0)   # Equivalente a hi + dif módulo oneDay
                 try:
                     hp = self.horainicio + dif
-                        # % mx.DateTime.oneDay  -> Operation not implemented
+                        # % datetime.timedelta(days=1)  -> Operation not implemented
                 except TypeError:
                     hp = utils.DateTime2DateTimeDelta(self.horainicio) + dif
-                while hp >= mx.DateTime.oneDay:
-                    hp -= mx.DateTime.oneDay
+                while hp >= datetime.timedelta(days=1):
+                    hp -= datetime.timedelta(days=1)
                 # Y ahora a comparar:
                 esta_en_turno = hp >= hi and hp < hf
             else:
@@ -18309,7 +18303,7 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         la granza consumida. Si es de rollos lanza una excepción ValueError.
         """
         if self.es_de_rollos():
-            raise ValueError, "El parte ID %d no es de fibra. No consume granza como materia prima." % (self.id)
+            raise ValueError("El parte ID %d no es de fibra. No consume granza como materia prima." % (self.id))
         return sum([c.cantidad for c in self.consumos if c.es_de_granza()])
 
     def get_producto_fabricado(self):
@@ -18332,7 +18326,7 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         poniendo el mismo como productoVenta de los artículo del parte.
         """
         if not isinstance(producto, ProductoVenta):
-            raise TypeError, "El parámetro debe ser un objeto de la clase ProductoVenta."
+            raise TypeError("El parámetro debe ser un objeto de la clase ProductoVenta.")
         for a in self.articulos:
             a.productoVenta = producto
 
@@ -18347,8 +18341,8 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         try:
             self.fechahorainicio = fechahorainicio
             self.fechahorafin = fechahorafin
-        except Exception, e:
-            # Jaleo de versiones entre SQLObject, mx y datetime
+        except Exception as e:
+            # Jaleo de versiones entre SQLObject y datetime
             self.fechahorainicio = datetime.datetime(*fechahorainicio.timetuple()[:7])
             self.fechahorafin = datetime.datetime(*fechahorafin.timetuple()[:7])
         self.syncUpdate()
@@ -18358,11 +18352,11 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         Devuelve una tupla con los campos fechahorainicio y fechahorafin
         calculados en base a fecha, fechahora y fechafin.
         """
-        self.sync()    # Necesario para asegurar un mx en el atributo.
+        self.sync()
         fechahorainicio = utils.unir_fecha_y_hora(self.fecha, self.horainicio)
         fechahorafin = utils.unir_fecha_y_hora(self.fecha, self.horafin)
         if fechahorafin < fechahorainicio:
-            fechahorafin += mx.DateTime.oneDay
+            fechahorafin += datetime.timedelta(days=1)
         return (fechahorainicio, fechahorafin)
 
     def _comprobar_coherencia_campos_fechahora(self):
@@ -18387,12 +18381,12 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         acaba a las 13:00) se asiganará al día laborable que empieza a las 6:00
         del día natural anterior.
         """
-        dia = mx.DateTime.DateTimeFrom(day = self.fechahorainicio.day,
+        dia = datetime.datetime(day = self.fechahorainicio.day,
                                        month = self.fechahorainicio.month,
                                        year = self.fechahorainicio.year)
         if (self.fechahorainicio.hour >= 0
            and self.fechahorainicio.hour < 6):
-            dia -= mx.DateTime.oneDay
+            dia -= datetime.timedelta(days=1)
         return dia
 
 cont, tiempo = print_verbose(cont, total, tiempo)
@@ -18484,7 +18478,7 @@ class Empleado(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
-    def get_categoriaLaboral_vigente(self, fecha = mx.DateTime.today()):
+    def get_categoriaLaboral_vigente(self, fecha = datetime.datetime.today()):
         """
         Devuelve la categoría laboral vigente según fecha o None.
         """
@@ -18577,7 +18571,7 @@ class Empleado(SQLObject, PRPCTOO):
         except AttributeError:
             return "", ""
 
-    def get_diasConvenioRestantes(self, anno = mx.DateTime.localtime().year):
+    def get_diasConvenioRestantes(self, anno = datetime.datetime.now().year):
         dc_cogidos = len([a for a in self.ausencias if a.motivo and a.motivo.convenio and a.fecha.year == anno])
         try:
             dc_restantes = self.categoriaLaboral.diasConvenio - dc_cogidos
@@ -18585,7 +18579,7 @@ class Empleado(SQLObject, PRPCTOO):
             dc_restantes = 0
         return dc_restantes
 
-    def get_diasAsuntosPropiosRestantes(self, anno = mx.DateTime.localtime().year):
+    def get_diasAsuntosPropiosRestantes(self, anno = datetime.datetime.now().year):
         dap_cogidos = len([a for a in self.ausencias if a.motivo and not a.motivo.convenio and a.fecha.year == anno])
         try:
             dap_restantes = self.categoriaLaboral.diasAsuntosPropios - dap_cogidos
@@ -18602,10 +18596,10 @@ class Empleado(SQLObject, PRPCTOO):
         """
         Devuelve el tiempo trabajado en partes de producción en horas en forma
         de diccionario de fibras, geotextiles y geocompuestos:
-        res = {'fibra': {dia1: {'día': mx.DateTime.DateTimeDelta,
-                                'noche': mx.DateTime.DateTimeDelta},
-                         dia2: {'día': mx.DateTime.DateTimeDelta,
-                                'noche': mx.DateTime.DateTimeDelta},
+        res = {'fibra': {dia1: {'día': datetime.timedelta,
+                                'noche': datetime.timedelta},
+                         dia2: {'día': datetime.timedelta,
+                                'noche': datetime.timedelta},
                          ...
                         }
                'geotextiles': {},
@@ -18616,15 +18610,15 @@ class Empleado(SQLObject, PRPCTOO):
          'noche' -> Horas del día dia(n) que trabajó entre las 22:00 y las 6:00.
         """
         PDP = ParteDeProduccion
-        inicio = mx.DateTime.DateTimeFrom(day = fechaini.day,
+        inicio = datetime.datetime(day = fechaini.day,
                                           month = fechaini.month,
                                           year = fechaini.year,
                                           hour = 6)
-        fin = mx.DateTime.DateTimeFrom(day = fechafin.day,
+        fin = datetime.datetime(day = fechafin.day,
                                        month = fechafin.month,
                                        year = fechafin.year,
                                        hour = 6)
-        fin += mx.DateTime.oneDay   # hasta 6:00 AM del día siguiente entra
+        fin += datetime.timedelta(days=1)   # hasta 6:00 AM del día siguiente entra
                                     # en el día laboral.
         partes = PDP.select(PDP.q.fechahorainicio >= inicio,
                             PDP.q.fechahorainicio <= fin)
@@ -18638,11 +18632,11 @@ class Empleado(SQLObject, PRPCTOO):
                     elif parte.es_de_geotextiles():
                         tipo = "geotextiles"
                     else:
-                        raise ValueError, "pclases.py::Empleado::calcular_ho"\
+                        raise ValueError("pclases.py::Empleado::calcular_ho"\
                                           "ras_produccion -> El parte no es "\
                                           "de fibra ni de geotextiles. ¿Ya s"\
                                           "e ha abierto la línea de geocompu"\
-                                          "estos y yo con estos pelos?"
+                                          "estos y yo con estos pelos?")
                     try:
                         dias[tipo][fecha]["día"] += ht.horas_dia
                     except KeyError:
@@ -18706,12 +18700,16 @@ class HorasTrabajadas(SQLObject, PRPCTOO):
         :returns: DateTimeDelta con el número de horas trabajadas entre
                   las 6:00 y las 22:00.
         """
-        horainicio = mx.DateTime.TimeFrom(self.parteDeProduccion.horainicio)
-        horafin = horainicio + self.horas
-        NOCHE = mx.DateTime.DateTimeDeltaFrom(22*60*60)
-        DIA = mx.DateTime.DateTimeDeltaFrom(6*60*60)
+        horainicio = self.parteDeProduccion.fechahorainicio
+        horafin = horainicio + datetime.timedelta(hours = self.horas.hour,
+                                                  minutes = self.horas.minute)
+        NOCHE = datetime.datetime.combine(horainicio,
+                                          datetime.time(22))
+        DIA = datetime.datetime.combine(horainicio,
+                                        datetime.time(6))
         if horainicio >= DIA:
-            horasdia = mx.DateTime.DateTimeDeltaFrom(self.horas)
+            horasdia = datetime.timedelta(hours = self.horas.hour,
+                                          minutes = self.horas.minute)
             if horafin > NOCHE:
                 horasdia -= (horafin - NOCHE)
         else:
@@ -18723,7 +18721,8 @@ class HorasTrabajadas(SQLObject, PRPCTOO):
         :returns: DateTimeDelta con el número de horas transcurridas entre
                   22:00 y las 6:00.
         """
-        return mx.DateTime.DateTimeDeltaFrom(self.horas) - self.get_horas_dia()
+        return datetime.timedelta(hours = self.horas.hour,
+                                  minutes = self.horas.minute) - self.get_horas_dia()
 
     horas_dia = property(get_horas_dia)
     horas_noche = property(get_horas_noche)
@@ -18795,7 +18794,7 @@ class DescuentoDeMaterial(SQLObject, PRPCTOO):
         error. En otro caso lanzará un error de aserción.
         """
         if not isinstance(producto, ProductoCompra):
-            raise TypeError, 'pclases::desechar -> "producto" debe ser un ProductoCompra.'
+            raise TypeError('pclases::desechar -> "producto" debe ser un ProductoCompra.')
         producto.sync()         # Me aseguro de que tabajo con la cantidad correcta en existencias.
         existencias_antes = producto.existencias
         if existencias_antes < cantidad:
@@ -18808,14 +18807,14 @@ class DescuentoDeMaterial(SQLObject, PRPCTOO):
         descuentoDeMaterial = cls(productoCompra = producto,
                                     parteDeProduccion = pdp,
                                     cantidad = cantidad,
-                                    fechahora = mx.DateTime.localtime(),
+                                    fechahora = datetime.datetime.now(),
                                     observaciones = observaciones)
         assert abs(producto.existencias - (existencias_antes - cantidad)) < 0.001, "pclases::desechar -> Error de concurrencia. Existencias antes: %f. Existencias después: %f. Cantidad desechada: %f." % (existencias_antes, producto.existencias, cantidad)
         return descuentoDeMaterial
 
     desechar = classmethod(desechar)
 
-    def cambiar_cantidad(self, cantidad, fechahora = mx.DateTime.localtime()):
+    def cambiar_cantidad(self, cantidad, fechahora = datetime.datetime.now()):
         """
         Cambia la cantidad consumida/desechada, actualiza
         las existencias del producto implicado y cambia la
@@ -18891,7 +18890,7 @@ class Consumo(SQLObject, PRPCTOO):
                 self.parteDeProduccion.unificar_consumos()
             else:
                 self.destroy()
-                raise ValueError, "pclases.py::anular_consumo_silo -> No se pudo trasladar el consumo al silo %s por no haber existencias en él. El consumo se eliminó. Cree un nuevo consumo después de asegurarse que el silo %s tiene carga suficiente." % (a_silo.nombre, a_silo.nombre)
+                raise ValueError("pclases.py::anular_consumo_silo -> No se pudo trasladar el consumo al silo %s por no haber existencias en él. El consumo se eliminó. Cree un nuevo consumo después de asegurarse que el silo %s tiene carga suficiente." % (a_silo.nombre, a_silo.nombre))
 
     def anular_consumo(self):
         """
@@ -18979,9 +18978,9 @@ class Incidencia(SQLObject, PRPCTOO):
         finally:
             tiene_duracion_negativa = duracion < 0
         if tiene_duracion_negativa:
-            duracion += mx.DateTime.oneDay
-        while duracion > mx.DateTime.oneDay:
-            duracion -= mx.DateTime.oneDay      # FIXME: Esto es para devolver
+            duracion += datetime.timedelta(days=1)
+        while duracion > datetime.timedelta(days=1):
+            duracion -= datetime.timedelta(days=1)      # FIXME: Esto es para devolver
                 # una duración correcta, pero aún quedaría arreglar la fecha
                 # para que se coincidiera con la de su parte
                 # (self.parteDeProduccion); ya que si ha dado más de un día es
@@ -19035,9 +19034,9 @@ class Abono(SQLObject, PRPCTOO):
         try:
             return self.facturaDeAbono.calcular_total_iva()
         except AttributeError:
-            raise NotImplementedError, "pclases::Abono -> No puede calcularse"\
+            raise NotImplementedError("pclases::Abono -> No puede calcularse"\
                     " el importe de IVA sin generar previamente la factura "\
-                    "de abono."
+                    "de abono.")
 
     def get_albaranes(self):
         """
@@ -19113,7 +19112,7 @@ class Abono(SQLObject, PRPCTOO):
         Los números no se repetirán e irán correlativos
         _dentro_ de la serie del año (dígito "y").
         """
-        anno = mx.DateTime.localtime().year
+        anno = datetime.datetime.now().year
         abonos_de_mi_serie, prefijo = Abono._buscar_abonos_de_la_serie(anno)
         numsabono = []
         for abono in abonos_de_mi_serie:
@@ -19161,18 +19160,18 @@ class Abono(SQLObject, PRPCTOO):
         anterior.
         """
         if not isinstance(numero, int):
-            raise TypeError, "El parámetro debe ser un número entero."
+            raise TypeError("El parámetro debe ser un número entero.")
         numabono_anterior = self.numabono
         if not self.fecha:
-            self.fecha = mx.DateTime.localtime()
+            self.fecha = datetime.datetime.now()
         if self.fecha.year <= 2015:
-            digito_anno = `self.fecha.year`[-1] + "0"
+            digito_anno = repr(self.fecha.year)[-1] + "0"
         else:
-            digito_anno = `self.fecha.year`[-2:]
+            digito_anno = repr(self.fecha.year)[-2:]
         self.numabono = "A%s%03d" % (digito_anno, numero)
         if not self.numabono_correcto():
             self.numabono = numabono_anterior
-            raise ValueError, "El número %d no satisface restricción de secuencialidad para el abono ID %d" % (numero, self.id)
+            raise ValueError("El número %d no satisface restricción de secuencialidad para el abono ID %d" % (numero, self.id))
 
     numero_numabono = property(get_numero_numabono, set_numero_numabono)
 
@@ -19856,18 +19855,15 @@ class DatosDeLaEmpresa(SQLObject, PRPCTOO):
         """
         # CWT: Fecha por defecto los 25 si no es domingo.
         if not fecha_base:
-            fecha_defecto = mx.DateTime.localtime()
+            fecha_defecto = datetime.datetime.now()
         else:
             fecha_defecto = fecha_base
         while fecha_defecto.day != 25:
-            # fecha_defecto += mx.DateTime.oneDay
+            # fecha_defecto += datetime.timedelta(days=1)
             fecha_defecto += datetime.timedelta(1)
-        try:
-            diasemana = fecha_defecto.day_of_week
-        except AttributeError:  # No es un mx. Es un datetime.
-            diasemana = fecha_defecto.weekday()
+        diasemana = fecha_defecto.weekday()
         if diasemana == 6:
-            #fecha_defecto += mx.DateTime.oneDay
+            #fecha_defecto += datetime.timedelta(days=1)
             fecha_defecto += datetime.timedelta(1)
         return fecha_defecto
 
@@ -19922,7 +19918,7 @@ class ParteDeTrabajo(SQLObject, PRPCTOO):
                 esta_en_turno = utils.DateTime2DateTimeDelta(self.horainicio) >= \
                                     utils.DateTime2DateTimeDelta(turno.horainicio) and \
                                 utils.DateTime2DateTimeDelta(self.horainicio) <= \
-                                    (utils.DateTime2DateTimeDelta(turno.horafin) + mx.DateTime.oneDay)
+                                    (utils.DateTime2DateTimeDelta(turno.horafin) + datetime.timedelta(days=1))
             else:
                 esta_en_turno = utils.DateTime2DateTimeDelta(self.horainicio) >= \
                                     utils.DateTime2DateTimeDelta(turno.horainicio) and \
@@ -19992,7 +19988,7 @@ class Baja(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
-    def esta_vigente(self, fecha = mx.DateTime.localtime()):
+    def esta_vigente(self, fecha = datetime.datetime.now()):
         """
         Devuelve True si la baja era efectiva en la fecha recibida.
         """
@@ -20022,10 +20018,10 @@ class CalendarioLaboral(SQLObject, PRPCTOO):
         return self.mesAnno.year
 
     def set_mes(self, mes):
-        self.mesAnno = mx.DateTime.DateTimeFrom(day = self.mesAnno.day, month = mes, year = self.mesAnno.year)
+        self.mesAnno = datetime.datetime(day = self.mesAnno.day, month = mes, year = self.mesAnno.year)
 
     def set_anno(self, anno):
-        self.mesAnno = mx.DateTime.DateTimeFrom(day = self.mesAnno.day, month = self.mesAnno.month, year = anno)
+        self.mesAnno = datetime.datetime(day = self.mesAnno.day, month = self.mesAnno.month, year = anno)
 
     mes = property(get_mes, set_mes, doc = "Mes")
     anno = property(get_anno, set_anno, doc = "Año")
@@ -20568,7 +20564,7 @@ class Documento(SQLObject, PRPCTOO):
         try:
             shutil.copy(self.get_ruta_completa(), ruta)
             res = True
-        except Exception, msg:
+        except Exception as msg:
             myprint("pclases::Documento::copiar_a -> Excepción %s" % msg)
             res = False
         return res
@@ -20581,7 +20577,7 @@ class Documento(SQLObject, PRPCTOO):
         try:
             shutil.copy(ruta, Documento.get_ruta_base())
             res = True
-        except Exception, msg:
+        except Exception as msg:
             myprint("pclases::Documento::copiar_a_diradjuntos -> Excepción %s" % msg)
             res = False
         return res
@@ -20628,7 +20624,7 @@ class Documento(SQLObject, PRPCTOO):
             elif isinstance(objeto, PagarePago):
                 pagarePago = objeto
             else:
-                raise TypeError, "pclases::Documento::adjuntar -> %s no es un tipo válido." % type(objeto)
+                raise TypeError("pclases::Documento::adjuntar -> %s no es un tipo válido." % type(objeto))
             nombreFichero = os.path.split(ruta)[-1]
             if Documento.copiar_a_diradjuntos(ruta):
                 nuevoDoc = Documento(nombre = nombre,
@@ -20672,7 +20668,7 @@ class Estadistica(SQLObject, PRPCTOO):
             try:
                 ventana = Ventana.selectBy(fichero = ventana)[0]
                 ventana_id = ventana.id
-            except Exception, msg:
+            except Exception as msg:
                 myprint("pclases::Estadistica::incrementar -> Ventana '%s' no encontrada. Excepción: %s" % (ventana, msg))
                 return
         else:
@@ -20690,7 +20686,7 @@ class Estadistica(SQLObject, PRPCTOO):
                     s.destroySelf()
             st = st[0]
         # Esto peta con algunas versiones de SQLObject y MX en WinXP
-        #st.ultimaVez = mx.DateTime.localtime()
+        #st.ultimaVez = datetime.datetime.now()
         st.ultimaVez = datetime.date.today()
         st.veces += 1
         st.sync()
@@ -20939,8 +20935,8 @@ class ControlHoras(SQLObject, PRPCTOO):
         """
         lineas = LineaDeProduccion.select()
         lineas = [l for l in lineas]
-        res = dict(zip(lineas + list(self.RESTOCENTROS),
-                       (0, )*(len(lineas) + len(self.RESTOCENTROS))))
+        res = dict(list(zip(lineas + list(self.RESTOCENTROS),
+                       (0, )*(len(lineas) + len(self.RESTOCENTROS)))))
         # Empiezo con diccionario con todas las líneas a 0.
         if self.get_por_hora()["noche"]:
             # Primero lo fácil, horas de almacén y de varios.
@@ -20966,7 +20962,7 @@ class ControlHoras(SQLObject, PRPCTOO):
         son siempre "Almacén" y "Varios" (RESTOCENTROS[0] y [1]).
         """
         lineas = LineaDeProduccion.select()
-        claves = zip(lineas, (0, )*lineas.count())
+        claves = list(zip(lineas, (0, )*lineas.count()))
         r = {"producción": dict(claves),
              "mantenimiento": dict(claves),
              "almacén": 0.0,
@@ -21007,7 +21003,7 @@ class ControlHoras(SQLObject, PRPCTOO):
             por_linea = self._dividir_horas_mantenimiento_por_linea()
             rp, ep = self._dividir_horas_mantenimiento_por_tipo()  # @UnusedVariable
         else:
-            raise ValueError, "actividad debe ser producción o mantenimiento."
+            raise ValueError("actividad debe ser producción o mantenimiento.")
         for linea in por_linea:
             # Inicialmente asigno todas las horas como regulares (optimizo
             # para caso más común):
@@ -21015,7 +21011,7 @@ class ControlHoras(SQLObject, PRPCTOO):
                           "extras": 0.0}
         # Y ahora paso paso horas a extras hasta cumplir los cálculos
         # totales de extras y regulares.
-        lineas = por_linea.keys()
+        lineas = list(por_linea.keys())
         lineas.sort(lambda l1, l2: int(l1.id - l2.id))
         # Siempre mismo orden para asegurar determinismo.
         i = 0
@@ -21040,7 +21036,7 @@ class ControlHoras(SQLObject, PRPCTOO):
         Divide las horas exclusivamente de producción por línea.
         """
         lineas = LineaDeProduccion.select()
-        res = dict(zip(lineas, (0, )*lineas.count()))
+        res = dict(list(zip(lineas, (0, )*lineas.count())))
         for hp in self.controlesHorasProduccion:
             # Los registros ControlHorasProduccion incluyen horas extras.
             res[hp.lineaDeProduccion] += hp.horasProduccion
@@ -21051,7 +21047,7 @@ class ControlHoras(SQLObject, PRPCTOO):
         Divide las horas exclusivamente de mantenimiento por línea.
         """
         lineas = LineaDeProduccion.select()
-        res = dict(zip(lineas, (0, )*lineas.count()))
+        res = dict(list(zip(lineas, (0, )*lineas.count())))
         for hp in self.controlesHorasMantenimiento:
             # Los registros ControlHorasMantenimiento incluyen horas extras.
             res[hp.lineaDeProduccion] += hp.horasMantenimiento
@@ -21200,13 +21196,13 @@ class ListaObjetosRecientes(SQLObject, PRPCTOO):
         """
         if ide != None:
             if ide not in [r.objetoID for r in self.idsRecientes]:
-                raise ValueError, "ID %d no está en la lista de ids recientes."
+                raise ValueError("ID %d no está en la lista de ids recientes.")
             idr = [r for r in self.idsRecientes if r.objetoID == ide][0]
             idr.destroySelf()
             res_id = ide
         else:
             if len(self.idsRecientes) == 0:
-                raise ValueError, "Lista de ids recientes vacía."
+                raise ValueError("Lista de ids recientes vacía.")
             idrs = [r for r in self.idsRecientes]
             idrs.sort(lambda r1, r2: int(r1.id - r2.id))
             idr = idrs[0]
@@ -21236,8 +21232,8 @@ class ListaObjetosRecientes(SQLObject, PRPCTOO):
             try:
                 ventana = Ventana.select(Ventana.q.fichero == ventana)[0]
             except IndexError:
-                raise ValueError, "%s no es una ventana válida en la BD" % (
-                    ventana)
+                raise ValueError("%s no es una ventana válida en la BD" % (
+                    ventana))
         if usuario != None:
             uid = usuario.id
         else:
@@ -21341,7 +21337,7 @@ class Auditoria(SQLObject, PRPCTOO):
         if not descripcion:
             try:
                 descripcion = objeto.get_info().replace("'", "`")
-            except Exception, msg:
+            except Exception as msg:
                 descripcion = "pclases::Auditoria.nuevo -> "\
                               "Error al obtener información del objeto. "\
                               "Excepción capturada: %s " % msg
@@ -21414,7 +21410,7 @@ class Auditoria(SQLObject, PRPCTOO):
                 descripcion = descripcion.decode("utf8", "ignore")
                 descripcion = descripcion.replace("'", '"')
                 descripcion = descripcion.encode("ascii", "ignore")
-            except Exception, msg:
+            except Exception as msg:
                 descripcion = "pclases::Auditoria.modificado -> "\
                               "Error al obtener información del objeto. "\
                               "Excepción capturada: %s " % msg
@@ -21600,7 +21596,7 @@ class Efecto(SQLObject, PRPCTOO):
             str_a_la_orden = "Confirming"
         return str_a_la_orden
 
-    def get_estado(self, fecha = mx.DateTime.today()):
+    def get_estado(self, fecha = datetime.datetime.today()):
         """
         Devuelve el estado del efecto de cobro. Ya sea confirming o pagaré.
         """
@@ -21629,7 +21625,7 @@ class Remesa(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
-    def esta_vencida(self, fecha_base = mx.DateTime.today()):
+    def esta_vencida(self, fecha_base = datetime.datetime.today()):
         """
         True si la primera fecha de vencimiento está cumplida.
         """
@@ -21782,7 +21778,7 @@ class ConceptoPresupuestoAnual(SQLObject, PRPCTOO):
     def _init(self, *args, **kw):
         starter(self, *args, **kw)
 
-    def calcular_vencimientos(self, fecha = mx.DateTime.today()):
+    def calcular_vencimientos(self, fecha = datetime.datetime.today()):
         """
         En función del tipo de concepto devuelve la fecha de vencimiento
         para el importe presupuestado.
@@ -21795,11 +21791,11 @@ class ConceptoPresupuestoAnual(SQLObject, PRPCTOO):
             # - Si es julio, en lugar de vencer el 20 de agosto lo hace el 20
             #   de septiembre.
             if fecha.month == 12:
-                vto = [mx.DateTime.DateFrom(fecha.year + 1, 1, 30)]
+                vto = [datetime.date(fecha.year + 1, 1, 30)]
             elif fecha.month == 7:
-                vto = [mx.DateTime.DateFrom(fecha.year, 9, 20)]
+                vto = [datetime.date(fecha.year, 9, 20)]
             else:
-                vto = [mx.DateTime.DateFrom(fecha.year, fecha.month + 1, 20)]
+                vto = [datetime.date(fecha.year, fecha.month + 1, 20)]
         elif self.proveedor:
             # Cada proveedor vence en la fecha que diga su forma de pago.
             self.proveedor.sync()
@@ -21809,14 +21805,14 @@ class ConceptoPresupuestoAnual(SQLObject, PRPCTOO):
                     *self.descripcion.split(" - "))
             vto = []
             for plazo in plazos_media_forma_pago:
-                vto.append(fecha + (mx.DateTime.oneDay * plazo))
+                vto.append(fecha + (datetime.timedelta(days=1) * plazo))
         elif self.presupuestoAnual.descripcion == "Resto proveedores":
             plazos_media_forma_pago \
                     = self.calcular_vencimiento_medio_proveedores(
                         self.descripcion)
             vto = []
             for plazo in plazos_media_forma_pago:
-                vto.append(fecha + (mx.DateTime.oneDay * plazo))
+                vto.append(fecha + (datetime.timedelta(days=1) * plazo))
         else:
             vto = [fecha]
         return vto
@@ -21930,7 +21926,7 @@ class ConceptoPresupuestoAnual(SQLObject, PRPCTOO):
             doc = None
         return doc
 
-    def calcular_total(self, fini = mx.DateTime.today(), ffin = None):
+    def calcular_total(self, fini = datetime.datetime.today(), ffin = None):
         """
         Devuelve el total de los importes de los valores presupuestados
         bajo este concepto entre las fechas indicadas. Ambas incluidas.
@@ -21947,7 +21943,7 @@ class ConceptoPresupuestoAnual(SQLObject, PRPCTOO):
             res = 0.0
         return res
 
-    def calcular_total_vencimientos(self, fini = mx.DateTime.today(),
+    def calcular_total_vencimientos(self, fini = datetime.datetime.today(),
                                     ffin = None):
         """
         Devuelve el total de los importes de los valores presupuestados
@@ -22287,8 +22283,8 @@ def getObjetoPUID(puid):
         try:
             clase = eval(tipo)
         except:
-            raise ValueError, "La primera parte del PUID debe ser: %s" % (
-                ", ".join(dict_clases.keys()))
+            raise ValueError("La primera parte del PUID debe ser: %s" % (
+                ", ".join(list(dict_clases.keys()))))
     else:
         clase = dict_clases[tipo]
     ide = int(ide)
@@ -22333,7 +22329,7 @@ def unificar(bueno, malos, borrar_despues = True):
                         clave_ajena = col.name
                 try:
                     setattr(dependiente, clave_ajena, bueno.id)
-                except UnboundLocalError, e:
+                except UnboundLocalError as e:
                     myprint("pclases.py::unificar -> UnboundLocalError %s:"\
                           "\ndependiente: %s\ncol: %s" % (
                             e, dependiente, col))
@@ -22391,7 +22387,7 @@ def buscar_puids_sobre_fecha(fecha, nameclase, namecol):
     Devuelve una lista de PUIDs coincidentes.
     """
     colbusqueda = nameclase + ".q." + namecol
-    diasiguiente = fecha + mx.DateTime.oneDay  # @UnusedVariable
+    diasiguiente = fecha + datetime.timedelta(days=1)  # @UnusedVariable
     consulta = nameclase + ".select(AND(%s >= fecha, %s < diasiguiente))" % (
         colbusqueda)
     if DEBUG:
@@ -22425,19 +22421,19 @@ cont, tiempo = print_verbose(cont, total, tiempo)
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
-from facturaventa import *
+from .facturaventa import *
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
-from facturadeabono import *
+from .facturadeabono import *
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
-from prefactura import *
+from .prefactura import *
 
 cont, tiempo = print_verbose(cont, total, tiempo)
 
-from cliente import *
+from .cliente import *
 
 ##############################################################################
 

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2020  Francisco José Rodríguez Bogado,                   #
 #                          (pacoqueen@users.sourceforge.net)                  #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
@@ -34,7 +34,7 @@ except:
 
 
 if gtk.pygtk_version < (2, 0):
-    print "Se necesita PyGtk 2.0 o posterior."
+    print("Se necesita PyGtk 2.0 o posterior.")
     raise SystemExit
 
 class Velocimetro(gtk.Widget):

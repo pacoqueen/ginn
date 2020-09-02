@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2013  Francisco José Rodríguez Bogado                    #
+# Copyright (C) 2005-2020  Francisco José Rodríguez Bogado                    #
 #                          <frbogado@geotexan.com>                            #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
@@ -34,9 +34,9 @@ Created on 03/07/2013
 
 from . import PRPCTOO, starter
 from sqlobject import SQLObject, MultipleJoin
-from superfacturaventa import SuperFacturaVenta
+from .superfacturaventa import SuperFacturaVenta
 from formularios import utils
-import mx.DateTime
+import datetime
 
 class Prefactura(SQLObject, PRPCTOO, SuperFacturaVenta):
     class sqlmeta:
@@ -55,21 +55,21 @@ class Prefactura(SQLObject, PRPCTOO, SuperFacturaVenta):
         starter(self, *args, **kw)
 
     def get_info(self):
-        res = "%s - %s; %s" % (self.numfactura, 
-                self.cliente and self.cliente.nombre or "", 
+        res = "%s - %s; %s" % (self.numfactura,
+                self.cliente and self.cliente.nombre or "",
                 utils.str_fecha(self.fecha))
         return res
 
     def DEPRECATED_get_str_estado(self):
         """
-        Devuelve el estado de la prefactura como cadena: 
+        Devuelve el estado de la prefactura como cadena:
         Vacía: No tiene líneas de venta ni servicios.
         Sin vencimientos: No tiene vencimientos creados.
         No vencida: Si alguna fecha de vencimiento < actual.
         Vencida: Si todas las fechas de vencimiento >= actual.
         Cobrada: Si cobros == importe total.
         """
-        ESTADOS = ("Vacía", "Sin vencimientos", "No vencida", "Vencida", 
+        ESTADOS = ("Vacía", "Sin vencimientos", "No vencida", "Vencida",
                    "Cobrada")
         if len(self.lineasDeVenta) + len(self.servicios) == 0:
             return ESTADOS[0]
@@ -85,15 +85,17 @@ class Prefactura(SQLObject, PRPCTOO, SuperFacturaVenta):
         if cobrado and cobrado >= vencido:
             return ESTADOS[4]
         else:
-            if ultima_fecha_vto < mx.DateTime.today():
+            if ultima_fecha_vto < datetime.date.today():
                 return ESTADOS[3]
             else:
                 return ESTADOS[2]
-    def get_next_numfactura(anno = mx.DateTime.localtime().year):
+    def get_next_numfactura(anno = datetime.date.today().year):
         """
         Devuelve el siguiente número de factura del año recibido.
         """
-        fras = Prefactura.select(Prefactura.q.fecha >= mx.DateTime.DateTimeFrom(day = 1, month = 1, year = anno))
+        fras = Prefactura.select(Prefactura.q.fecha >= datetime.date(day=1,
+                                                                     month=1,
+                                                                     year=anno))
         numfacturas = [fra.get_numero_numfactura() for fra in fras]
         try:
             sig = max(numfacturas) + 1
@@ -110,7 +112,7 @@ class Prefactura(SQLObject, PRPCTOO, SuperFacturaVenta):
         assert n > 0
         assert len(str(a)) == 4
         return n, a
-    
+
     get_numero_numfactura_y_anno_from = staticmethod(get_numero_numfactura_y_anno_from)
 
     def get_numero_numfactura_from(numfactura):
@@ -120,11 +122,11 @@ class Prefactura(SQLObject, PRPCTOO, SuperFacturaVenta):
 
     def get_numero_numfactura(self):
         """
-        Devuelve el número de factura sin prefijo ni 
+        Devuelve el número de factura sin prefijo ni
         sufijo y como entero.
         Salta una excepción si no se pudo determinar
         la parte numérica del número de factura.
-        Comprueba también la aserción 
+        Comprueba también la aserción
         año de la fecha de factura = año de numfactura
         """
         numfactura, partyear = Prefactura.get_numero_numfactura_y_anno_from(self.numfactura)
@@ -138,7 +140,7 @@ class Prefactura(SQLObject, PRPCTOO, SuperFacturaVenta):
         """
         if subtotal == None:
             subtotal = self.calcular_subtotal()
-        if tot_dto == None: 
+        if tot_dto == None:
             tot_dto = self.calcular_total_descuento(subtotal)
         if cargo == None:
             cargo = self.cargo

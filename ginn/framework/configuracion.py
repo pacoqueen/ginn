@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2014 Francisco José Rodríguez Bogado,                    #
+# Copyright (C) 2005-2020 Francisco José Rodríguez Bogado,                    #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -104,12 +104,11 @@ class Singleton(type):
         return self._instances[args]
 
 
-class ConfigConexion:
+class ConfigConexion(metaclass=Singleton):
     """
     Clase que recoge los parámetros de configuración
     a partir de un archivo.
     """
-    __metaclass__ = Singleton
 
     def __init__(self, fileconf='ginn.conf'):
         if fileconf is None:
@@ -137,9 +136,9 @@ class ConfigConexion:
         try:
             self.__fileconf = open(self.__fileconf)
         except IOError:
-            print "ERROR: configuracion::__set_conf -> Fichero de "\
+            print("ERROR: configuracion::__set_conf -> Fichero de "\
                   "configuración %s no encontrado (%s)." % (fileconf,
-                                                            self.__fileconf)
+                                                            self.__fileconf))
             self.__fileconf = None
             self.__conf = {}
         else:
@@ -424,7 +423,7 @@ class ConfigConexion:
         except (KeyError, ValueError, TypeError):
             precision = None
         except AssertionError:
-            print "configuracion::precision debe ser entero positivo o None."
+            print("configuracion::precision debe ser entero positivo o None.")
             precision = None
         return precision
 
@@ -433,9 +432,7 @@ def unittest():
     """
     Pruebas unitarias del patrón Singleton.
     """
-    class Test:
-        __metaclass__ = Singleton
-
+    class Test(metaclass=Singleton):
         def __init__(self, *args):
             pass
 
@@ -456,7 +453,7 @@ def es_macro(txt):
 def guess_class(modulo):
     # Lo mismo es mejor con esto: http://docs.python.org/2/library/imp.html
     moduler = None  # Para el Syntastic check más que nada
-    exec "from formularios import %s as moduler" % modulo
+    exec("from formularios import %s as moduler" % modulo)
     clases = [c for c in dir(moduler) if c[0].isupper()  # @UndefinedVariable
               and c != "Ventana"
               and c != "VentanaGenerica"

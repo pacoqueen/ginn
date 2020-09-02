@@ -84,3 +84,22 @@ extra/scripts/*.xlsx
 # Datos temporales
 ginn/api/tests/sr_lobo.db
 extra/scripts/estudio_de_merma*.txt
+
+# virtual environment
+bin/Activate.ps1
+bin/activate
+bin/activate.csh
+bin/activate.fish
+bin/easy_install
+bin/easy_install-3.8
+bin/pip
+bin/pip3
+bin/pip3.8
+bin/python
+bin/python3
+bin/sqlobject-admin
+bin/sqlobject-convertOldURI
+include/
+lib/
+lib64
+share/

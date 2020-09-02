@@ -60,7 +60,7 @@ class Header(gtk.MenuItem):
         elif pspec.name == 'alignment':
             self.set_alignment(value)
         else:
-            raise AttributeError, 'unknown property %s' % pspec.name
+            raise AttributeError('unknown property %s' % pspec.name)
 
     def do_get_property(self, pspec):
         if pspec.name == 'markup':
@@ -68,7 +68,7 @@ class Header(gtk.MenuItem):
         elif pspec.name == 'alignment':
             return self.alignment
         else:
-            raise AttributeError, 'unknown property %s' % pspec.name
+            raise AttributeError('unknown property %s' % pspec.name)
 
     def do_style_set(self, style):
         self.label.set_style(self.get_style())
@@ -161,7 +161,7 @@ def main():
                   "and <u>underline</u>. The window can be wrapped to any "
                   "width, unlike the standard Gtk::Label, which is set to "
                   "a certain wrap width.")
-    print l.get_text()
+    print(l.get_text())
     vbox.pack_start(l)
 
     bb.pack_start(vbox)

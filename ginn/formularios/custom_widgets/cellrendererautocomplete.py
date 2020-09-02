@@ -1,8 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import pygtk
-import gtk
+import gi
+gi.require_version("Gtk", '3.0')
+from gi import pygtkcompat
+import os
+
+try:
+    from gi import pygtkcompat
+except ImportError:
+    pygtkcompat = None
+    from gi.repository import Gtk as gtk
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+    import gtk
+
 
 class CellRendererAutoComplete(gtk.CellRendererText):
 

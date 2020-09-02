@@ -1,9 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import pygtk
-pygtk.require('2.0')
-import gtk, os
+import gi
+gi.require_version("Gtk", '3.0')
+from gi import pygtkcompat
+import os
+
+try:
+    from gi import pygtkcompat
+except ImportError:
+    pygtkcompat = None
+    from gi.repository import Gtk as gtk
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+    import gtk
+
 ###############################################################################
 # Detalles de configuración:
 #os.environ['LANG'] = "es_ES"
@@ -35,7 +48,7 @@ if "HOMEPATH" in os.environ:
 ###############################################################################
 # TODO: Esto de parsear el gtkrc está repetido aquí y en el menu.py. Debería dejarlo en un solo sitio y tener cuidado con el tema MS-Windows en Windows 8, Vista y algunos XP. La solución pasa por poner el tema Industrial o Redmond con el GTK2-prefs.exe. O bien usar esto:
 import platform
-if platform.win32_ver()[0] == ("post2008Server", "6.2.9200", "", u"Multiprocessor Free"):
+if platform.win32_ver()[0] == ("post2008Server", "6.2.9200", "", "Multiprocessor Free"):
     # Windows 8
     gtk.rc_parse_string('gtk-theme-name = "Industrial"') # O bien
 #   gtk.rc_parse_string('gtk-theme-name = "Redmond"')

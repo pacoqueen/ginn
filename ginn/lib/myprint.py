@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2014 Francisco José Rodríguez Bogado
+# Copyright (C) 2014-2020 Francisco José Rodríguez Bogado
 # Licencia: http://en.wikipedia.org/wiki/Beerware
 # ----------------------------------------------------------------------------
 # "THE BEER-WARE LICENSE" (Revision 42):
@@ -47,7 +47,7 @@ def test():
     """
     Prueba. Punto.
     """
-    print "Tal y pam", 12*3
+    print("Tal y pam", 12*3)
     myprint("Tal y pam", 12*3, a = 2)
     myprint()
 

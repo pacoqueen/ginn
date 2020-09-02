@@ -1,8 +1,8 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2020  Francisco José Rodríguez Bogado,                   #
 #                                  Diego Muñoz Escalante.                     #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -37,7 +37,7 @@ http://inamidst.com/proj/nftp/
 Modificado por Franciso José Rodríguez Bogado para
 adaptarlo a Geotex-Inn.
 Se usará nftp ginn --get archivo.pyw
-Debe existir un archivo ../framework/nftp.conf con 
+Debe existir un archivo ../framework/nftp.conf con
 una entrada para la configuración ginn.
 """
 
@@ -48,19 +48,19 @@ from optparse import OptionParser
 config = ('../framework/nftp.conf')
 r_field = re.compile(r'(?s)([^\n:]+): (.*?)(?=\n[^ \t]|\Z)')
 
-def getConfig(name=None): 
+def getConfig(name=None):
     # Find the config file
     home = os.path.expanduser('~/')
     nftp_conf = os.getenv('NFTP_CONF')
-    if nftp_conf is not None: 
+    if nftp_conf is not None:
         s = open(nftp_conf).read()
-    elif os.path.exists(config): 
+    elif os.path.exists(config):
         s = open(config).read()
-    elif os.path.exists('.nftprc'): 
+    elif os.path.exists('.nftprc'):
         s = open('.nftprc').read()
-    elif os.path.exists('nftp.conf'): 
+    elif os.path.exists('nftp.conf'):
         s = open('nftp.conf').read()
-    elif os.path.exists(home + 'nftp.conf'): 
+    elif os.path.exists(home + 'nftp.conf'):
         s = open(home + 'nftp.conf').read()
     elif os.path.exists(os.path.join('..', 'framework', 'nftp.conf')):
         s = open(os.path.join('..', 'framework', 'nftp.conf'))
@@ -69,36 +69,37 @@ def getConfig(name=None):
     # Parse the config file
     conf = {}
     s = s.replace('\r', '\n')
-    for item in s.split('\n'): 
+    for item in s.split('\n'):
         meta = dict([(j[0].strip(), j[1].strip()) for j in r_field.findall(item)])
-        if meta.has_key('name'): 
+        if 'name' in meta:
             fname = meta['name']
             del meta['name']
             conf[fname] = meta
-        else: raise 'ConfigError', 'Debe incluir un nombre'
+        else:
+            raise ValueError('Debe incluir un nombre')
 
-    if name is not None: 
+    if name is not None:
         return conf[name]
-    else: 
+    else:
         return conf['ginn']    #Debe haber al menos una configuración por defecto llamada 'ginn'
 
-def pathSplit(filepath): 
-    if filepath.startswith('/'): 
+def pathSplit(filepath):
+    if filepath.startswith('/'):
         filepath = filepath[1:]
 
-    if '/' not in filepath: 
+    if '/' not in filepath:
         return '', filepath
 
     parts = filepath.split('/')
     filename = parts.pop()
-    return '/'.join(parts), filename    
+    return '/'.join(parts), filename
 
-def getFtp(meta): 
+def getFtp(meta):
     ftp = ftplib.FTP(meta['host'], meta['username'], meta['password'])
     ftp.cwd(meta['remotedir'])
     return ftp
 
-def chmod(name, filepath, code): 
+def chmod(name, filepath, code):
     meta = getConfig(name)
 
     ftp = getFtp(meta)
@@ -106,47 +107,47 @@ def chmod(name, filepath, code):
     path = path.lstrip('/')
     ftp.cwd(path)
 
-    print >> sys.stderr, 'Haciendo CHMOD -%s en %s...' % (code, fn)
+    print('Haciendo CHMOD -%s en %s...' % (code, fn), file=sys.stderr)
     result = ftp.sendcmd('SITE CHMOD %s %s' % (code, fn))
-    print >> sys.stderr, 'Resultado: %s' % result
+    print('Resultado: %s' % result, file=sys.stderr)
 
-def upload(name, filepath): 
+def upload(name, filepath):
     meta = getConfig(name)
 
     ftp = getFtp(meta)
     path, fn = os.path.split(filepath)
     path = path.lstrip('/') or '.'
     try: ftp.cwd(path)
-    except ftplib.error_perm, e: 
-        print >> sys.stderr, 'Error: "%s"' % e
-        if raw_input("Crear directorio /%s? [s/n]: " % path).startswith('s'): 
-            for folder in path.split('/'): 
+    except ftplib.error_perm as e:
+        print('Error: "%s"' % e, file=sys.stderr)
+        if input("Crear directorio /%s? [s/n]: " % path).startswith('s'):
+            for folder in path.split('/'):
                 try: ftp.cwd(folder)
-                except: 
+                except:
                     ftp.mkd(folder)
                     ftp.cwd(folder)
         else: sys.exit(1)
 
     f = open(os.path.join(meta['localdir'], path+'/'+fn), 'rb')
-    print >> sys.stderr, 'Guardando %s...' % filepath
+    print('Guardando %s...' % filepath, file=sys.stderr)
     result = ftp.storbinary('STOR %s' % fn, f)
-    print >> sys.stderr, 'Resultado: %s' % result
+    print('Resultado: %s' % result, file=sys.stderr)
     f.close()
 
 def descargar_archivo(archivo, md5 = False):
     """
     Recibe un archivo concreto que debe ser descargado
     al directorio de trabajo.
-    Por defecto descarga el archivo del directorio de 
-    formularios (enlazado a través de "ginn"). Si 
+    Por defecto descarga el archivo del directorio de
+    formularios (enlazado a través de "ginn"). Si
     md5 es True descarga el archivo desde el directorio
-    ginn/md5. NO AÑADE LA EXTENSIÓN .md5, el nombre del 
+    ginn/md5. NO AÑADE LA EXTENSIÓN .md5, el nombre del
     archivo debe ser correcto.
     """
     # OJO: Todo esto está HARCODED. Hay que hacer un archivo de configuración de donde coger los datos y tal.
 #    meta = {'host':'192.168.1.33', 'username':'geotexan', 'password':'', 'localdir':'.', 'remotedir':'ginn'}
 #    meta = {'host' : '192.168.1.100', 'username':'geotexan', 'password':'', 'localdir':'.', 'remotedir':'ginn'}
-    meta = getConfig() 
+    meta = getConfig()
 
     ftp = getFtp(meta)
     path, fn = os.path.split(archivo)
@@ -161,12 +162,12 @@ def descargar_archivo(archivo, md5 = False):
     if not os.path.exists(os.path.join(meta['localdir'], 'md5')):
         os.mkdir(os.path.join(meta['localdir'], 'md5'))
     f = open(filename, 'wb')
-    print >> sys.stderr, 'Obteniendo %s...' % archivo 
+    print('Obteniendo %s...' % archivo, file=sys.stderr)
     ftp.retrbinary("RETR %s" % fn, f.write)
-    print >> sys.stderr, 'Descarga correcta'
+    print('Descarga correcta', file=sys.stderr)
     f.close()
 
-def get(name, filepath): 
+def get(name, filepath):
     meta = getConfig(name)
 
     ftp = getFtp(meta)
@@ -177,19 +178,19 @@ def get(name, filepath):
     retrieve = False
 #    filename = os.path.join(meta['localdir'], path + '/' + fn)
     filename = os.path.join(meta['localdir'], fn)
-    if os.path.exists(filename): 
-        retrieve = raw_input('Sobreescribir %s? [s/n]: ' % fn).startswith('s')
+    if os.path.exists(filename):
+        retrieve = input('Sobreescribir %s? [s/n]: ' % fn).startswith('s')
     else: retrieve = True
 
-    if retrieve: 
+    if retrieve:
         f = open(filename, 'wb')
-        print >> sys.stderr, 'Obteniendo %s...' % filepath
+        print('Obteniendo %s...' % filepath, file=sys.stderr)
         ftp.retrbinary("RETR %s" % fn, f.write)
-        print >> sys.stderr, 'Descarga correcta'
+        print('Descarga correcta', file=sys.stderr)
         f.close()
-    else: print >> sys.stderr, "No se puede descargar %s" % fn
+    else: print("No se puede descargar %s" % fn, file=sys.stderr)
 
-def delete(name, filepath): 
+def delete(name, filepath):
     meta = getConfig(name)
 
     ftp = getFtp(meta)
@@ -197,64 +198,64 @@ def delete(name, filepath):
     path = path.lstrip('/')
     ftp.cwd(path)
 
-    if raw_input('¿Borrar %s? [s/n]: ' % fn).startswith('s'): 
-        print >> sys.stderr, 'Borrando %s...' % fn
+    if input('¿Borrar %s? [s/n]: ' % fn).startswith('s'):
+        print('Borrando %s...' % fn, file=sys.stderr)
         try: result = ftp.delete(fn)
-        except ftplib.error_perm, e: 
+        except ftplib.error_perm as e:
             msg = 'Se tiene "%s", ¿intentar borrar como directorio? [s/n]: ' % e
-            if raw_input(msg).startswith('s'): 
+            if input(msg).startswith('s'):
                 try: result = ftp.rmd(fn)
-                except ftplib.error_perm, e: 
-                    print >> sys.stderr, 'Error:', e
+                except ftplib.error_perm as e:
+                    print('Error:', e, file=sys.stderr)
                     sys.exit(1)
-        print >> sys.stderr, 'Resultado: %s' % result
-    else: print >> sys.stderr, "No se eliminó %s" % fn
+        print('Resultado: %s' % result, file=sys.stderr)
+    else: print("No se eliminó %s" % fn, file=sys.stderr)
 
 # upload, -c chmod, -d delete, -u update, -g get
 
-def main(argv=None): 
+def main(argv=None):
     ##parser = OptionParser(usage='%prog [options] <name> <path>')
     parser = OptionParser(usage='%prog <name> [options]')
-    parser.add_option("-c", "--chmod", dest="chmod", default=False, 
+    parser.add_option("-c", "--chmod", dest="chmod", default=False,
                             help="chmod a file on the server")
-    parser.add_option("-u", "--update", dest="update", 
-                            action="store_true", default=False, 
+    parser.add_option("-u", "--update", dest="update",
+                            action="store_true", default=False,
                             help="update a file, on the server or locally")
-    parser.add_option("-g", "--get", dest="get", 
-                            action="store_true", default=False, 
+    parser.add_option("-g", "--get", dest="get",
+                            action="store_true", default=False,
                             help="download a file from the server")
-    parser.add_option("-d", "--delete", dest="delete", 
-                            action="store_true", default=False, 
+    parser.add_option("-d", "--delete", dest="delete",
+                            action="store_true", default=False,
                             help="delete a file from the server")
 
     options, args = parser.parse_args(argv)
 
-    if (len(args) < 1) or (len(args) > 2): 
+    if (len(args) < 1) or (len(args) > 2):
         parser.error("Número incorrecto de argumentos")
-    elif len(args) == 1: 
-        print >> sys.stderr, 'Intentando (Guessing) cuenta y ruta...'
+    elif len(args) == 1:
+        print('Intentando (Guessing) cuenta y ruta...', file=sys.stderr)
         found, cwd, fn = False, os.getcwd(), args[0]
-        for (account, info) in getConfig().items(): 
-            if cwd.startswith(info['localdir']): 
+        for (account, info) in list(getConfig().items()):
+            if cwd.startswith(info['localdir']):
                 path = cwd[len(info['localdir']):]
                 filepath = path + '/' + fn
-                print >> sys.stderr, 'Encontrado "%s %s"' % (account, filepath)
+                print('Encontrado "%s %s"' % (account, filepath), file=sys.stderr)
                 name, found = account, True
-        if not found: 
-            print >> sys.stderr, "¡No se pudo encontrar la cuenta!"
+        if not found:
+            print("¡No se pudo encontrar la cuenta!", file=sys.stderr)
             sys.exit(1)
     else: name, filepath = args
 
-    if options.update: 
-        raise "NotImplemented", "¡Implementar @@!"
-    elif options.chmod: 
+    if options.update:
+        raise NotImplemented("¡Implementar @@!")
+    elif options.chmod:
         chmod(name, filepath, options.chmod)
-    elif options.get: 
+    elif options.get:
         get(name, filepath)
-    elif options.delete: 
+    elif options.delete:
         delete(name, filepath)
     else: upload(name, filepath)
 
-if __name__=="__main__": 
+if __name__=="__main__":
     main()
 
