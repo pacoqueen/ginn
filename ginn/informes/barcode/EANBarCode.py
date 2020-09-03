@@ -51,7 +51,7 @@ Modificado ligeramente para devolver la imagen de PIL en vez de guardarla
 entre otros pequeños detalles:
    imbar = bar.getImagePIL(...)
 
-21 de noviembre de 2005 -> Modificado para generar code39 (3 of 9) a 
+21 de noviembre de 2005 -> Modificado para generar code39 (3 of 9) a
 través de parte del módulo common/printing de GNUe (framework GNU Enterprise)
 """
 
@@ -114,7 +114,7 @@ eVQFrS7Sh/uFLftIidKWbgj6Oq652d4c3v88Dw2JDK7bSWX/ByuaLZI="""
 class EanBarCode:
     """ Compute the EAN bar code """
     def __init__(self):
-        A = {0 : "0001101", 1 : "0011001", 2 : "0010011", 3 : "0111101", 4 : "0100011", 
+        A = {0 : "0001101", 1 : "0011001", 2 : "0010011", 3 : "0111101", 4 : "0100011",
              5 : "0110001", 6 : "0101111", 7 : "0111011", 8 : "0110111", 9 : "0001011"}
         B = {0 : "0100111", 1 : "0110011", 2 : "0011011", 3 : "0100001", 4 : "0011101",
              5 : "0111001", 6 : "0000101", 7 : "0010001", 8 : "0001001", 9 : "0010111"}
@@ -125,9 +125,9 @@ class EanBarCode:
                        5 : (A,B,B,A,A,B), 6 : (A,B,B,B,A,A), 7 : (A,B,A,B,A,B), 8 : (A,B,A,B,B,A), 9 : (A,B,B,A,B,A)}
 
     def makeCode(self, code):
-        """ 
+        """
         Create the binary code
-        return a string which contains "0" for white bar, "1" for black bar, "L" for long bar. 
+        return a string which contains "0" for white bar, "1" for black bar, "L" for long bar.
         """
         # Convert code string in integer list
         self.EAN13 = []
@@ -148,7 +148,7 @@ class EanBarCode:
         # Compute the left part of bar code
         for i in range(0,6):
             strCode += left[i][self.EAN13[i+1]]
-        # Add middle separator 
+        # Add middle separator
         strCode += '0L0L0'
         # Compute the right codage class
         for i in range (7,13):
@@ -163,7 +163,7 @@ class EanBarCode:
         weight=[1,3]*6
         magic=10
         suma = 0
-      
+
         for i in range(12):         # checksum based on first 12 digits.
             suma = suma + int(arg[i]) * weight[i]
         z = ( magic - (suma % magic) ) % magic
@@ -171,7 +171,7 @@ class EanBarCode:
             return None
         return z
 
-    def verifyChecksum(self, bits): 
+    def verifyChecksum(self, bits):
         """ Verify the checksum """
         computedChecksum = self.computeChecksum(bits[:12])
         codeBarChecksum = bits[12]
@@ -180,8 +180,8 @@ class EanBarCode:
             raise Exception ("Bad checksum is %s and should be %s"%(codeBarChecksum, computedChecksum))
 
     def getImagePIL(self, value, height = 50, extension = "PNG"):
-        """ 
-        Get an image with PIL library 
+        """
+        Get an image with PIL library
         value code barre value
         height height in pixel of the bar code
         extension image file extension.
@@ -192,7 +192,7 @@ class EanBarCode:
             from PIL import Image, ImageFont, ImageDraw   # Pillow
 
         if len(value) != 12 and len(value) != 13:
-            # Si no es de la longitud correcta para EAN13 genero un Code9 en EncapsulatedPostScript y 
+            # Si no es de la longitud correcta para EAN13 genero un Code9 en EncapsulatedPostScript y
             # devuelvo un PIL con el contenido de ese archivo. OJO: Necesita ghostView para que PIL pueda
             # leer EPS.
             # DEPRECATED. El code39.py que solía usar ya no es el code39.py fusilado de ReportLab que uso ahora.
@@ -241,21 +241,20 @@ class EanBarCode:
                 elif bits[bit] == 'L':
                     draw.rectangle(((bit+position,0),(bit+position,height-3)),fill=0)
             return im, code
-      
+
     def getImage(self, value, height = 50, extension = "PNG"):
-        """ 
-        Get an image with PIL library 
+        """
+        Get an image with PIL library
         value code barre value
         height height in pixel of the bar code
         extension image file extension
         """
-        from string import lower, upper
         from tempfile import gettempdir
         im, code = self.getImagePIL(value, height, extension)
         # Save the result image
-        nombre = "%s.%s" % (code, lower(extension))
+        nombre = "%s.%s" % (code, extension.lower())
         nombre = os.path.join(gettempdir(), nombre)
-        im.save(nombre, upper(extension))
+        im.save(nombre, extension.upper())
         return nombre
 
 def decodeFontFile(data, fich):
@@ -295,7 +294,7 @@ def testWithoutChecksum():
     assert(bar.makeCode('666666666666') == 'L0L0101111000010100001010000101010111101011110L0L0101000010100001010000101000010100001010000L0L' )
     assert(bar.makeCode('777777777777') == 'L0L0111011001000101110110010001011101100100010L0L0100010010001001000100100010010001001101100L0L' )
     assert(bar.makeCode('888888888888') == 'L0L0110111000100101101110001001000100101101110L0L0100100010010001001000100100010010001001000L0L' )
-    assert(bar.makeCode('999999999999') == 'L0L0001011001011100101110001011001011100010110L0L0111010011101001110100111010011101001011100L0L' ) 
+    assert(bar.makeCode('999999999999') == 'L0L0001011001011100101110001011001011100010110L0L0111010011101001110100111010011101001011100L0L' )
 
 def testImage():
     """ Test images generation with PIL """

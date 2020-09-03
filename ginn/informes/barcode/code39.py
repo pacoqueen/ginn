@@ -93,8 +93,8 @@ _extended = {
 }
 
 
-_stdchrs = string.digits + string.uppercase + "-. *$/+%"
-_extchrs = _stdchrs + string.lowercase + \
+_stdchrs = string.digits + string.ascii_uppercase + "-. *$/+%"
+_extchrs = _stdchrs + string.ascii_lowercase + \
     "\000\001\002\003\004\005\006\007\010\011\012\013\014\015\016\017" + \
     "\020\021\022\023\024\025\026\027\030\031\032\033\034\035\036\037" + \
     "!'#&\"(),:;<=>?@[\\]^_`{|}~\177"
@@ -111,7 +111,7 @@ def _encode39(cad, cksum):
         newval = newval + _valchars[v]
     return newval + '*'
 
-        
+
 class _Code39Base(Barcode):
     def __init__(self, value = "", **args):
         self.xdim = inch * 0.0075
@@ -126,14 +126,14 @@ class _Code39Base(Barcode):
 
         for (k, v) in list(args.items()):
             setattr(self, k, v)
-            
+
         if self.quiet:
             if self.lquiet is None:
                 self.lquiet = max(inch * 0.25, self.xdim * 10.0)
                 self.rquiet = max(inch * 0.25, self.xdim * 10.0)
         else:
             self.lquiet = self.rquiet = 0.0
-                                                         
+
         Barcode.__init__(self, value)
 
     def decompose(self):
@@ -153,19 +153,19 @@ class Standard39(_Code39Base):
 
         value (int, or numeric string. required.):
             The value to encode.
-   
+
         xdim (float, default .0075):
             X-Dimension, or width of the smallest element
             Minumum is .0075 inch (7.5 mils).
-            
+
         ratio (float, default 2.2):
             The ratio of wide elements to narrow elements.
             Must be between 2.0 and 3.0 (or 2.2 and 3.0 if the
             xdim is greater than 20 mils (.02 inch))
-            
+
         gap (float or None, default None):
             width of intercharacter gap. None means "use xdim".
-        
+
         height (float, see default below):
             Height of the symbol.  Default is the height of the two
             bearer bars (if they exist) plus the greater of .25 inch
@@ -173,24 +173,24 @@ class Standard39(_Code39Base):
 
         checksum (bool, default 0):
             Wether to compute and include the check digit
-            
+
         bearers (float, in units of xdim. default 0):
             Height of bearer bars (horizontal bars along the top and
             bottom of the barcode). Default is 0 (no bearers).
-            
+
         quiet (bool, default 1):
             Wether to include quiet zones in the symbol.
-            
+
         lquiet (float, see default below):
             Quiet zone size to left of code, if quiet is true.
             Default is the greater of .25 inch, or .15 times the symbol's
             length.
-            
+
         rquiet (float, defaults as above):
             Quiet zone size to right left of code, if quiet is true.
 
     Sources of Information on Code 39:
-    
+
     http://www.semiconductor.agilent.com/barcode/sg/Misc/code_39.html
     http://www.adams1.com/pub/russadam/39code.html
     http://www.barcodeman.com/c39_1.html
@@ -203,8 +203,8 @@ class Standard39(_Code39Base):
         vval = ""
         self.valid = 1
         for c in self.value:
-            if c in string.lowercase:
-                c = string.upper(c)
+            if c in string.ascii_lowercase:
+                c = c.upper()
             if c not in _stdchrs:
                 self.valid = 0
                 continue
@@ -222,11 +222,11 @@ class Extended39(_Code39Base):
     Extended Code 39 is a convention for encoding additional characters
     not present in standard Code 39 by using pairs of characters to
     represent the characters missing in Standard Code 39.
-    
+
     See Standard39 for arguments.
 
     Sources of Information on Extended Code 39:
-    
+
     http://www.semiconductor.agilent.com/barcode/sg/Misc/xcode_39.html
     http://www.barcodeman.com/c39_ext.html
     """

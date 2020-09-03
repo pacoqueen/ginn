@@ -91,7 +91,7 @@ class PartesNoBloqueados(Ventana):
                 ('#', 'gobject.TYPE_STRING', False, True, False, None),
                 ('m²', 'gobject.TYPE_STRING', False, True, False, None),
                 ('kg ℮', 'gobject.TYPE_STRING', False, True, False, None),
-                ('ID', 'gobject.TYPE_INT64', False, False, False, None))
+                ('ID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_listview(self.wids['tv_partes'], cols)
         self.wids['tv_partes'].connect("row-activated", self.abrir_parte_tv)
         self.colorear(self.wids['tv_partes'])
@@ -127,9 +127,10 @@ class PartesNoBloqueados(Ventana):
                 self.wids['rb_bolsas'].set_active(True)
                 tiene_al_menos_un_permiso = True
         if tiene_al_menos_un_permiso:
-            padre = self.wids['b_salir'].parent
+            padre = self.wids['b_salir'].get_parent()
             padre.remove(self.wids['b_salir'])
-            bcsv = gtk.Button("Exportar a CSV")
+            bcsv = gtk.Button()
+            bcsv.set_label("Exportar a CSV")
             padre.add(bcsv)
             padre.add(self.wids['b_salir'])
             bcsv.connect("clicked",
@@ -201,7 +202,18 @@ class PartesNoBloqueados(Ventana):
                 else:
                     str_producto = "VACÍO"
                     lotepartida = ""
-                bultos = len(parte.articulos)
+                if parte.es_de_balas() or parte.es_de_fibra():
+                    unidad = "balas"
+                elif parte.es_de_bigbags():
+                    unidad = "bigbag"
+                elif parte.es_de_bolsas() or parte.es_de_cajas():
+                    unidad = "cajas"
+                elif parte.es_de_rollos() or parte.es_de_geotextiles():
+                    unidad = "rollos"
+                else:
+                    unidad = "?"
+                bultos = "{} {}".format(len(parte.articulos),
+                                        unidad)
                 metros = utils.float2str(
                         sum([a.superficie and a.superficie or 0
                              for a in parte.articulos]))
@@ -216,7 +228,7 @@ class PartesNoBloqueados(Ventana):
                               bultos,
                               metros,
                               kilos,
-                              parte.id))
+                              str(parte.id)))
         self.wids['tv_partes'].set_model(model)
         self.wids['tv_partes'].thaw_child_notify()
         vpro.ocultar()
@@ -293,6 +305,8 @@ class PartesNoBloqueados(Ventana):
         Asocia una función al treeview para resaltar los partes
         de la misma línea que se solapan entre ellos.
         """
+        return
+        # TODO: La técnica que usaba para colorear los TreeView ha cambiado en GTK3. XXX XXX XXX XXX XXX
         def cell_func(column, cell, model, itr, numcol):
             """
             Si el parte se solapa con algún otro de su misma línea

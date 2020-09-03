@@ -71,7 +71,7 @@ VERBOSE = False
 
 import sys
 import os
-from functools import reduce
+from functools import reduce, cmp_to_key
 if sys.executable.endswith("pythonw.exe"):
     # Porque entonces no hay stdout y salta excepción IOError 9
     # Más info: http://bugs.python.org/issue706263
@@ -9900,7 +9900,7 @@ class Articulo(SQLObject, PRPCTOO):
                         pc,
                         None))
         # ... y ordenar por fecha.
-        res.sort(utils.comparar_como_fechahora)
+        res.sort(key=cmp_to_key(utils.comparar_como_fechahora))
         #res.sort(lambda t1, t2: (t1[0] < t2[0] and -1)
         #                        or (t1[0] > t2[0] and 1)
         #                        or 0)

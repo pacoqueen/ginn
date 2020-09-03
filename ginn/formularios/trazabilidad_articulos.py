@@ -39,11 +39,23 @@
 ###################################################################
 
 
+import gi
+gi.require_version("Gtk", '3.0')
+from gi import pygtkcompat
+try:
+    from gi import pygtkcompat
+except ImportError:
+    pygtkcompat = None
+    from gi.repository import Gtk as gtk
+    from gi.repository import GObject as gobject
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+    import gtk
+    import gobject
 from ventana import Ventana
 from formularios import utils
-import pygtk
-pygtk.require('2.0')
-import gtk                                          # noqa
 from framework import pclases                       # noqa
 from informes.barcode import code39                 # noqa
 from informes.barcode.EANBarCode import EanBarCode  # noqa
@@ -348,7 +360,7 @@ class TrazabilidadArticulos(Ventana):
         objeto.sync()
         if isinstance(objeto, (pclases.Bala, pclases.Rollo, pclases.Bigbag,
                                pclases.RolloDefectuoso, pclases.BalaCable,
-                               pclases.RolloC, pclases.Pale, pclases.Caja,
+                               pclases.RolloC, pclases.Pale, pclases.Caja
                                )):
             # pclases.Bolsa)):
             try:
@@ -1080,7 +1092,7 @@ class TrazabilidadArticulos(Ventana):
         else:
             try:
                 a = articulo.articulos[0]
-            except IndexError, msg:
+            except IndexError as msg:
                 self.logger.error("ERROR trazabilidad_articulos.py "
                                   "(rellenar_albaran): %s" % (msg))
             else:
@@ -1200,7 +1212,7 @@ class TrazabilidadArticulos(Ventana):
                                     ldd.albaranDeEntradaDeAbono.fecha),
                                 ldd.albaranDeEntradaDeAbono.numalbaran),
                              ("_verdeclaro", "cursiva"))
-                except AttributeError, msg:
+                except AttributeError as msg:
                     escribir(txtvw,
                              "ERROR DE INCONSISTENCIA. Contacte con el "
                              "administrador de la base de datos.\n",
@@ -1208,7 +1220,7 @@ class TrazabilidadArticulos(Ventana):
                     txterror="trazabilidad_articulos.py::mostrar_info_abonos"\
                              " -> Excepción capturada con artículo "\
                              "ID %d: %s." % (articulo.id, msg)
-                    print txterror
+                    print(txterror)
                     self.logger.error(txterror)
             escribir(txtvw, "\n")
 
@@ -1294,7 +1306,7 @@ class TrazabilidadArticulos(Ventana):
                      ("cursiva"))
             try:
                 pdp = articulo.articulos[0].parteDeProduccion
-            except IndexError, msg:
+            except IndexError as msg:
                 self.logger.error("ERROR trazabilidad_articulos.py "
                                   "(rellenar_produccion): %s" % (msg))
                 pdp = None
@@ -1335,7 +1347,7 @@ class TrazabilidadArticulos(Ventana):
         else:
             try:
                 producto = articulo.articulos[0].productoVenta
-            except IndexError, msg:
+            except IndexError as msg:
                 self.logger.error("ERROR trazabilidad_articulos.py"
                                   " (rellenar_albaran): %s" % (msg))
                 producto = None
@@ -1354,7 +1366,7 @@ class TrazabilidadArticulos(Ventana):
                 codigobarras39 = code39.Extended39(articulo.codigo,
                                             xdim = .070 * cm).guardar_a_png()
                 codigobarras39 = gtk.gdk.pixbuf_new_from_file(codigobarras39)
-            except Exception, e:
+            except Exception as e:
                 self.logger.error("trazabilidad_articulos::rellenar_producto"
                                   " -> No se pudo guardar o mostrar el código"
                                   " %s. Excepción: %s" % (articulo.codigo, e))
