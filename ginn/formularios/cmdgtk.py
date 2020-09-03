@@ -5,17 +5,28 @@ import os
 
 from threading import Thread
 
-import pygtk
-pygtk.require("2.0")
-import gtk
-import gobject
+import gi
+gi.require_version("Gtk", '3.0')
+from gi import pygtkcompat
+try:
+    from gi import pygtkcompat
+except ImportError:
+    pygtkcompat = None
+    from gi.repository import Gtk as gtk
+    from gi.repository import GObject as gobject
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+    import gtk
+    import gobject
 
 class ShellCommandJob(gobject.GObject):
 
     def execute(self, command):
         self.command = command
         Thread(target = self._process).start()
-    
+
     def _process(self):
         handle = os.popen(self.command)
         line = handle.readline()
@@ -59,8 +70,9 @@ class CmdGTK:
         scrollwin.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
         contenedor.add(scrollwin)
         scrollwin.show()
-        
-        view = gtk.TextView(buff)
+
+        view = gtk.TextView()
+        view.textbuffer = buff
         scrollwin.add(view)
         view.show()
 
@@ -88,7 +100,7 @@ class CmdGTK:
         entry.connect("key_press_event", pasar_foco, button)
 
 if __name__ == "__main__":
-    
+
     gtk.gdk.threads_init()
 
     win = gtk.Window()
@@ -98,12 +110,12 @@ if __name__ == "__main__":
     vbox.set_border_width(6)
     win.add(vbox)
     vbox.show()
-    
+
     cmdgtk = CmdGTK()
     cmdgtk.attach_to(vbox)
 
     win.connect("destroy", gtk.main_quit)
     win.show()
-    
+
     gtk.main()
 

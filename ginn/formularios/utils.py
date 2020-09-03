@@ -1488,7 +1488,7 @@ def preparar_treeview(tv, cols, multi = False):
                 tv.set_search_column(i)
             if t == 'gobject.TYPE_INT' or t == 'gobject.TYPE_INT64':
                 cell.set_property('xalign', 1.0)
-        columns[i].set_data("q_ncol", i)
+        columns[i].q_ncol = i
         i += 1
     for c in columns:
         # XXX: Experimental

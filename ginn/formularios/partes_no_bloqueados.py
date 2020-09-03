@@ -43,17 +43,28 @@ Partes de producción pendientes de validar.
 # # aparecería en la lista).
 ###################################################################
 
-from __future__ import print_function
+import gi
+gi.require_version("Gtk", '3.0')
+from gi import pygtkcompat
+try:
+    from gi import pygtkcompat
+except ImportError:
+    pygtkcompat = None
+    from gi.repository import Gtk as gtk
+    from gi.repository import GObject as gobject
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+    import gtk
+    import gobject
 from framework import pclases   # noqa
 from ventana import Ventana     # noqa
-import gtk                      # noqa
-import pygtk
 import sys
 from formularios import utils               # noqa
 from formularios import ventana_progreso    # noqa
 from informes import treeview2csv           # noqa
 from formularios.reports import abrir_csv   # noqa
-pygtk.require('2.0')
 
 
 class PartesNoBloqueados(Ventana):

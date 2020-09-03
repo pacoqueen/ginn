@@ -1,28 +1,29 @@
 <?xml version="1.0"?>
-<glade-interface>
+<interface>
   <!-- interface-requires gtk+ 2.16 -->
   <!-- interface-naming-policy toplevel-contextual -->
-  <widget class="GtkWindow" id="ventana">
+  <object class="GtkWindow" id="ventana">
     <property name="width_request">600</property>
     <property name="height_request">400</property>
     <property name="visible">True</property>
     <property name="title" translatable="yes">Partes de producci&#xF3;n no bloqueados</property>
     <child>
-      <widget class="GtkVBox" id="vbox1">
+      <object class="GtkBox" id="vbox1">
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
         <property name="visible">True</property>
         <child>
-          <widget class="GtkHBox" id="hbox1">
+          <object class="GtkBox" id="hbox1">
             <property name="visible">True</property>
             <property name="homogeneous">True</property>
             <child>
-              <widget class="GtkRadioButton" id="rb_balas">
+              <object class="GtkRadioButton" id="rb_balas">
                 <property name="label" translatable="yes">Fibra</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_underline">True</property>
                 <property name="draw_indicator">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
@@ -30,7 +31,7 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkRadioButton" id="rb_rollos">
+              <object class="GtkRadioButton" id="rb_rollos">
                 <property name="label" translatable="yes">Geotextiles</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -38,7 +39,7 @@
                 <property name="use_underline">True</property>
                 <property name="draw_indicator">True</property>
                 <property name="group">rb_balas</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
@@ -46,7 +47,7 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkRadioButton" id="rb_bolsas">
+              <object class="GtkRadioButton" id="rb_bolsas">
                 <property name="label" translatable="yes">Embolsado</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -54,7 +55,7 @@
                 <property name="use_underline">True</property>
                 <property name="draw_indicator">True</property>
                 <property name="group">rb_balas</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
@@ -62,7 +63,7 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkRadioButton" id="rb_todos">
+              <object class="GtkRadioButton" id="rb_todos">
                 <property name="label" translatable="yes">Todos</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -70,47 +71,47 @@
                 <property name="use_underline">True</property>
                 <property name="draw_indicator">True</property>
                 <property name="group">rb_balas</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
                 <property name="position">3</property>
               </packing>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="position">0</property>
           </packing>
         </child>
         <child>
-          <widget class="GtkScrolledWindow" id="scrolledwindow1">
+          <object class="GtkScrolledWindow" id="scrolledwindow1">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="shadow_type">in</property>
             <child>
-              <widget class="GtkTreeView" id="tv_partes">
+              <object class="GtkTreeView" id="tv_partes">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-              </widget>
+              </object>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="position">1</property>
           </packing>
         </child>
         <child>
-          <widget class="GtkHButtonBox" id="hbuttonbox1">
+          <object class="GtkButtonBox" id="hbuttonbox1">
             <property name="visible">True</property>
             <child>
-              <widget class="GtkButton" id="b_actualizar">
+              <object class="GtkButton" id="b_actualizar">
                 <property name="label">gtk-refresh</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_stock">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
@@ -118,14 +119,14 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkButton" id="b_editar">
+              <object class="GtkButton" id="b_editar">
                 <property name="label">gtk-edit</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_stock">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
@@ -133,27 +134,27 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkButton" id="b_salir">
+              <object class="GtkButton" id="b_salir">
                 <property name="label">gtk-quit</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_stock">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
                 <property name="position">2</property>
               </packing>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="position">2</property>
           </packing>
         </child>
-      </widget>
+      </object>
     </child>
-  </widget>
-</glade-interface>
+  </object>
+</interface>

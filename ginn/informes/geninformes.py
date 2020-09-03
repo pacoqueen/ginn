@@ -6128,6 +6128,8 @@ def agregarFila(origen,
     #print "fuente", fuente
     #print "tamaño", tamano
     # XXX: Refactorizar. Menudo spaghetti code.
+    if isinstance(cadena, type(b'')):
+        cadena = cadena.decode()
     cadena = cadena.replace("\n", ". ").strip()
     # Había un caso extremo (espacio al final de la cadena) que acababa en
     # bucle infinito.

@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2007 Francisco José Rodríguez Bogado                          #
-#                    (pacoqueen@users.sourceforge.net)                        #
+# Copyright (C) 2007-2020 Francisco José Rodríguez Bogado                     #
+#                         (pacoqueen@users.sourceforge.net)                   #
 #                                                                             #
 # This file is part of Dent-Inn.                                              #
 #                                                                             #
@@ -26,26 +26,39 @@
 ## trazabilidad.py - Trazabilidad GENERAL de cualquier registro.
 ###################################################################
 ## NOTAS:
-##  
+##
 ## ----------------------------------------------------------------
-##  
+##
 ###################################################################
 ## Changelog:
 ## 24 de mayo de 2006 -> Inicio
 ## 24 de mayo de 2006 -> It's alive!
 ## 9 de diciembre de 2006 -> Añadida consola.
 ###################################################################
-## 
+##
 ###################################################################
 
+import gi
+gi.require_version("Gtk", '3.0')
+from gi import pygtkcompat
+try:
+    from gi import pygtkcompat
+except ImportError:
+    pygtkcompat = None
+    from gi.repository import Gtk as gtk
+    from gi.repository import GObject as gobject
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+    import gtk
+    import gobject
 from ventana import Ventana
 from formularios import utils
-import pygtk
-pygtk.require('2.0')
-import gtk
 from framework import pclases
-import os 
+import os
 from formularios import cmdgtk
+from formularios import pyconsole
 
 class Trazabilidad(Ventana):
     """
@@ -68,19 +81,18 @@ class Trazabilidad(Ventana):
         self.wids['e_num'].connect("key_press_event", self.pasar_foco)
         self.wids['tv_datos'].connect("row-expanded", self.expandir)
         self.wids['tv_datos'].connect("row-collapsed", self.cerrar)
-        from formularios import pyconsole
         vars_locales = locals()
         for k in locals_adicionales:
-            vars_locales[k] = locals_adicionales[k] 
+            vars_locales[k] = locals_adicionales[k]
         consola = pyconsole.attach_console(self.wids['contenedor_consola'],  # @UnusedVariable
-                                           banner = "Consola python de depuración GINN", 
+                                           banner = "Consola python de depuración GINN",
                                            script_inicio = """import sys, os, pygtk, gtk, gtk.glade
 from formularios import utils
 from framework import pclases
 from framework.seeker import VentanaGenerica as Ver
 dir()
 #Ver(self.objeto)
-""", 
+""",
                                             locales = vars_locales)
         if objeto != None:
             self.rellenar_datos(objeto)
@@ -97,7 +109,8 @@ dir()
             elif posactual > MAX:                                                                       #
                 paned.set_position(MAX)                                                                 #
         #-----------------------------------------------------------------------------------------------#
-        self.wids['hpaned1'].connect("size_request", comprobar_que_no_me_hace_el_gato)
+        # TODO: ¡¿No existe size-request en gkt3?!
+        # self.wids['hpaned1'].connect("size_request", comprobar_que_no_me_hace_el_gato)
         self.wids['ventana'].resize(800, 600)
         self.wids['hpaned1'].set_position(self.wids['ventana'].get_size()[0] / 2)
         self.wids['ventana'].set_position(gtk.WIN_POS_CENTER)
@@ -118,7 +131,7 @@ dir()
         elif ars.count() > 1:
             filas = [(a.id, a.numbala, a.codigo) for a in ars]
             idbala = utils.dialogo_resultado(filas,
-                                             titulo = "Seleccione bala", 
+                                             titulo = "Seleccione bala",
                                              cabeceras = ('ID', 'Número de bala', 'Código'),
                                              padre = self.wids['ventana'])
             if idbala > 0:
@@ -132,8 +145,8 @@ dir()
             ar = ars[0]
         elif ars.count() > 1:
             filas = [(a.id, a.numrollo, a.codigo) for a in ars]
-            idrollo = utils.dialogo_resultado(filas, 
-                                              titulo = "Seleccione rollo", 
+            idrollo = utils.dialogo_resultado(filas,
+                                              titulo = "Seleccione rollo",
                                               cabeceras = ('ID', 'Número de rollo', 'Código'),
                                               padre = self.wids['ventana'])
             if idrollo > 0:
@@ -158,7 +171,7 @@ dir()
                 self.rellenar_datos(eval(a_buscar))
                 articulo = None
             except:
-                utils.dialogo_info(titulo = "ERROR EN CONSULTA", 
+                utils.dialogo_info(titulo = "ERROR EN CONSULTA",
                                    texto = "La consulta:\n%s\nprovocó una excepción." % a_buscar,
                                    padre = self.wids['ventana'])
             return
@@ -170,30 +183,30 @@ dir()
             try:
                 ide = int(a_buscar[2:])
             except ValueError:
-                utils.dialogo_info(titulo = "ERROR", 
-                                   texto = "El ID debe ser númerico.\nIntrodujo %s." % (a_buscar[2:]), 
+                utils.dialogo_info(titulo = "ERROR",
+                                   texto = "El ID debe ser númerico.\nIntrodujo %s." % (a_buscar[2:]),
                                    padre = self.wids['ventana'])
                 return
             try:
                 articulo = pclases.AlbaranSalida.get(ide)
             except pclases.SQLObjectNotFound:
-                utils.dialogo_info(titulo = "ERROR", 
-                                   texto = "El AlbaranSalida con ID %d no existe." % (ide), 
+                utils.dialogo_info(titulo = "ERROR",
+                                   texto = "El AlbaranSalida con ID %d no existe." % (ide),
                                    padre = self.wids['ventana'])
                 return
         elif a_buscar.upper().startswith('PDP'):
             try:
                 ide = int(a_buscar[3:])
             except ValueError:
-                utils.dialogo_info(titulo = "ERROR", 
-                                   texto = "El ID debe ser númerico.\nIntrodujo %s." % (a_buscar[3:]), 
+                utils.dialogo_info(titulo = "ERROR",
+                                   texto = "El ID debe ser númerico.\nIntrodujo %s." % (a_buscar[3:]),
                                    padre = self.wids['ventana'])
                 return
             try:
                 articulo = pclases.ParteDeProduccion.get(ide)
             except pclases.SQLObjectNotFound:
-                utils.dialogo_info(titulo = "ERROR", 
-                                   texto = "El ParteDeProduccion con ID %d no existe." % (ide), 
+                utils.dialogo_info(titulo = "ERROR",
+                                   texto = "El ParteDeProduccion con ID %d no existe." % (ide),
                                    padre = self.wids['ventana'])
                 return
         else:
@@ -208,19 +221,19 @@ dir()
         model = self.wids['tv_datos'].get_model()
         model.clear()
         itr = self.insertar_rama(articulo, None, model)  # @UnusedVariable
-    
+
     def insertar_rama(self, objeto, padre, model):
         itr = self.insertar_nombre(objeto, padre, model)
         self.insertar_campos(objeto, itr, model)
         self.insertar_ajenos(objeto, itr, model)
         self.insertar_multiples(objeto, itr, model)
         return itr
-    
+
     def insertar_nombre(self, objeto, padre, model, nombre_opcional = ""):
         if objeto == None:
-            itr = model.append(padre, ("", 
-                                       nombre_opcional, 
-                                       "", 
+            itr = model.append(padre, ("",
+                                       nombre_opcional,
+                                       "",
                                        ""))
             return None
         else:
@@ -228,28 +241,29 @@ dir()
                 nombretabla = objeto.sqlmeta.table
             except AttributeError: # SQLObject <= 0.6.1
                 nombretabla = objeto._table
-            itr = model.append(padre, (objeto.id, 
-                                        nombretabla, 
-                                        "", 
+            itr = model.append(padre, (str(objeto.id),
+                                        nombretabla,
+                                        "",
                                         objeto.__class__.__name__))
             return itr
-         
+
     def insertar_campos(self, objeto, padre, model):
         """
         Inserta los campos del objeto colgando de la rama "iter".
-        Siempre empieza por el ID y el nombre de la tabla del objeto y 
+        Siempre empieza por el ID y el nombre de la tabla del objeto y
         a continuación sus campos.
         Devuelve el iter del objeto insertado.
         """
         if padre == None: return
         try:
-            campos = [c for c in objeto.sqlmeta.columns 
+            campos = [c for c in objeto.sqlmeta.columns
                       if not c.upper().endswith('ID')]
         except AttributeError:  # SQLObject > 0.6.1
             campos = [c for c in objeto.sqlmeta.columns
                       if not c.upper().endswith("ID")]
         for campo in campos:
-            model.append(padre, ("", campo, getattr(objeto, campo), ""))
+            valor = str(getattr(objeto, campo))
+            model.append(padre, ("", campo, valor, ""))
         # return iter
 
     def insertar_ajenos(self, objeto, padre, model):
@@ -261,7 +275,7 @@ dir()
         """
         if padre == None: return
         try:
-            ajenas = [c for c in objeto.sqlmeta.columns 
+            ajenas = [c for c in objeto.sqlmeta.columns
                       if c.upper().endswith('ID')]
         except AttributeError:  # SQLObject > 0.6.1
             ajenas = [c for c in objeto.sqlmeta.columns
@@ -274,10 +288,10 @@ dir()
 
     def insertar_multiples(self, objeto, padre, model):
         """
-        Inserta un campo con desplegable por cada relación a muchos 
+        Inserta un campo con desplegable por cada relación a muchos
         del objeto, y dentro de éste tantos nombres de la tabla ajena
         como tuplas relacionadas que tenga.
-        Además, por cada tupla creará un "child" vacío que se susituirá 
+        Además, por cada tupla creará un "child" vacío que se susituirá
         por los datos de este registro cuando expanda la fila.
         """
         if padre == None: return
@@ -288,10 +302,10 @@ dir()
             for obj_d in lista_objs:
                 itr = self.insertar_nombre(obj_d, padre, model, multiple.otherClassName)
                 model.append(itr, ("", "", "", ""))
-    
+
     def expandir(self, tv, itr, path):
         model = tv.get_model()
-        child = model[path].iterchildren().next()
+        child = next(model[path].iterchildren())
         if child[0] == "" and \
            child[1] == "" and \
            child[2] == "" and \
@@ -320,10 +334,10 @@ dir()
         model = tv.get_model()
         iterador = model[path].iterchildren()
         try:
-            hijo = iterador.next()
+            hijo = next(iterador)
             while (1):
                 model.remove(hijo.iter)
-                hijo = iterador.next()
+                hijo = next(iterador)
         except StopIteration:
             pass
         model.append(itr, ("", "", "", ""))
@@ -340,21 +354,21 @@ dir()
                 try:
                     try:
                         setattr(objeto, campo, text)
-                    except Exception, inner_e:
+                    except Exception as inner_e:
                         try:
                             setattr(objeto, campo, utils._float(text))
-                        except Exception, float_e:  # @UnusedVariable
+                        except Exception as float_e:  # @UnusedVariable
                             try:
                                 setattr(objeto, campo, int(text))
-                            except Exception, int_e:  # @UnusedVariable
+                            except Exception as int_e:  # @UnusedVariable
                                 raise inner_e
                     model[path][2] = getattr(objeto, campo)
-                except Exception, e:
-                    utils.dialogo_info(titulo = "ERROR", 
+                except Exception as e:
+                    utils.dialogo_info(titulo = "ERROR",
                         texto = "Valor incorrecto para este campo."
-                                "\n\n{0}".format(e), 
+                                "\n\n{0}".format(e),
                         padre = self.wids['ventana'])
-    
+
 # XXX XXX XXX XXX XXX XXX
 
 ##!/usr/bin/env python
@@ -395,7 +409,7 @@ dir()
 #        info = repr(value)
 #        if not hasattr(value, "__dict__"):
 #            if len(info) > 80:
-#                # it's a big list, or dict etc. 
+#                # it's a big list, or dict etc.
 #                info = info[:80] + "..."
 #        _piter = self.treestore.append( piter, [ name, type(value).__name__, info ] )
 #        return _piter
@@ -450,7 +464,7 @@ dir()
 #        self.window.set_size_request(512, 320)
 #        self.window.connect("delete_event", self.delete_event)
 
-#        # Nombre, tipo y __repr__ (los tres de tipo str): 
+#        # Nombre, tipo y __repr__ (los tres de tipo str):
 #        columns = [str,str,str]
 #        self.treestore = gtk.TreeStore(*columns)
 
