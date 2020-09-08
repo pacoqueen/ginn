@@ -23,24 +23,30 @@
 ###############################################################################
 
 ###################################################################
-## trazabilidad.py - Trazabilidad GENERAL de cualquier registro.
+# trazabilidad.py - Trazabilidad GENERAL de cualquier registro.
 ###################################################################
-## NOTAS:
+# NOTAS:
 ##
-## ----------------------------------------------------------------
+# ----------------------------------------------------------------
 ##
 ###################################################################
-## Changelog:
-## 24 de mayo de 2006 -> Inicio
-## 24 de mayo de 2006 -> It's alive!
-## 9 de diciembre de 2006 -> Añadida consola.
+# Changelog:
+# 24 de mayo de 2006 -> Inicio
+# 24 de mayo de 2006 -> It's alive!
+# 9 de diciembre de 2006 -> Añadida consola.
 ###################################################################
 ##
 ###################################################################
 
+from formularios import pyconsole
+from formularios import cmdgtk
+import os
+from framework import pclases
+from formularios import utils
+from formularios.ventana import Ventana
+from gi import pygtkcompat
 import gi
 gi.require_version("Gtk", '3.0')
-from gi import pygtkcompat
 try:
     from gi import pygtkcompat
 except ImportError:
@@ -53,29 +59,32 @@ if pygtkcompat is not None:
     pygtkcompat.enable_gtk(version='3.0')
     import gtk
     import gobject
-from ventana import Ventana
-from formularios import utils
-from framework import pclases
-import os
-from formularios import cmdgtk
-from formularios import pyconsole
+
 
 class Trazabilidad(Ventana):
     """
     Ventana de trazabilidad interna de objetos.
     Acepta tanto códigos de trazabilidad como consultas a la BD de SQLObject.
     """
-    def __init__(self, objeto = None, usuario = None, ventana_padre = None, locals_adicionales = {}):
+
+    def __init__(self, objeto=None, usuario=None, ventana_padre=None,
+                 locals_adicionales={}):
         try:
-            Ventana.__init__(self, 'trazabilidad.glade', objeto, usuario = usuario)
+            Ventana.__init__(self, 'trazabilidad.glade', objeto,
+                             usuario=usuario)
         except:     # Tal vez me estén llamando desde otro directorio
-            Ventana.__init__(self, os.path.join('..', 'formularios', 'trazabilidad.glade'), objeto, usuario = usuario)
+            Ventana.__init__(self,
+                             os.path.join('..', 'formularios',
+                                          'trazabilidad.glade'),
+                             objeto,
+                             usuario=usuario)
         connections = {'b_salir/clicked': self.salir,
                        'b_buscar/clicked': self.buscar}
         self.add_connections(connections)
         cols = (('ID', 'gobject.TYPE_STRING', False, False, False, None),
                 ('campo', 'gobject.TYPE_STRING', False, False, False, None),
-                ('valor', 'gobject.TYPE_STRING', True, False, True, self.cambiar_valor),
+                ('valor', 'gobject.TYPE_STRING', True,
+                 False, True, self.cambiar_valor),
                 ('clase', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_treeview(self.wids['tv_datos'], cols)
         self.wids['e_num'].connect("key_press_event", self.pasar_foco)
@@ -85,34 +94,35 @@ class Trazabilidad(Ventana):
         for k in locals_adicionales:
             vars_locales[k] = locals_adicionales[k]
         consola = pyconsole.attach_console(self.wids['contenedor_consola'],  # @UnusedVariable
-                                           banner = "Consola python de depuración GINN",
-                                           script_inicio = """import sys, os, pygtk, gtk, gtk.glade
+                                           banner="Consola python de depuración GINN",
+                                           script_inicio="""import sys, os, pygtk, gtk, gtk.glade
 from formularios import utils
 from framework import pclases
 from framework.seeker import VentanaGenerica as Ver
 dir()
 #Ver(self.objeto)
 """,
-                                            locales = vars_locales)
+                                           locales=vars_locales)
         if objeto != None:
             self.rellenar_datos(objeto)
         cmd_gtk = cmdgtk.CmdGTK()
         cmd_gtk.attach_to(self.wids['boxcmd'])
-        #-----------------------------------------------------------------------------------------------#
-        def comprobar_que_no_me_hace_el_gato(paned, scrolltype_or_allocation_or_requisition = None):    #
-            width = self.wids['ventana'].get_size()[0]                                                  #
-            MIN =  width / 2                                                                            #
-            MAX = width - 100                                                                           #
-            posactual = paned.get_position()                                                            #
-            if posactual < MIN:                                                                         #
-                paned.set_position(MIN)                                                                 #
-            elif posactual > MAX:                                                                       #
-                paned.set_position(MAX)                                                                 #
-        #-----------------------------------------------------------------------------------------------#
+        #---------------------------------------------------------------------#
+        # def comprobar_que_no_me_hace_el_gato(paned,
+        #         scrolltype_or_allocation_or_requisition = None):
+        #     width = self.wids['ventana'].get_size()[0]
+        #     MIN =  width / 2
+        #     MAX = width - 100
+        #     posactual = paned.get_position()
+        #     if posactual < MIN:
+        #         paned.set_position(MIN)
+        #     elif posactual > MAX:
+        #         paned.set_position(MAX)
+        #----------------------------------------------------------------------#
         # TODO: ¡¿No existe size-request en gkt3?!
         # self.wids['hpaned1'].connect("size_request", comprobar_que_no_me_hace_el_gato)
         self.wids['ventana'].resize(800, 600)
-        self.wids['hpaned1'].set_position(self.wids['ventana'].get_size()[0] / 2)
+        self.wids['hpaned1'].set_position(self.wids['ventana'].get_size()[0]/2)
         self.wids['ventana'].set_position(gtk.WIN_POS_CENTER)
         gtk.main()
 
@@ -131,9 +141,10 @@ dir()
         elif ars.count() > 1:
             filas = [(a.id, a.numbala, a.codigo) for a in ars]
             idbala = utils.dialogo_resultado(filas,
-                                             titulo = "Seleccione bala",
-                                             cabeceras = ('ID', 'Número de bala', 'Código'),
-                                             padre = self.wids['ventana'])
+                                             titulo="Seleccione bala",
+                                             cabeceras=(
+                                                 'ID', 'Número de bala', 'Código'),
+                                             padre=self.wids['ventana'])
             if idbala > 0:
                 ar = pclases.Bala.get(idbala)
         return ar
@@ -146,9 +157,10 @@ dir()
         elif ars.count() > 1:
             filas = [(a.id, a.numrollo, a.codigo) for a in ars]
             idrollo = utils.dialogo_resultado(filas,
-                                              titulo = "Seleccione rollo",
-                                              cabeceras = ('ID', 'Número de rollo', 'Código'),
-                                              padre = self.wids['ventana'])
+                                              titulo="Seleccione rollo",
+                                              cabeceras=(
+                                                  'ID', 'Número de rollo', 'Código'),
+                                              padre=self.wids['ventana'])
             if idrollo > 0:
                 ar = pclases.Rollo.get(idrollo)
         return ar
@@ -171,9 +183,10 @@ dir()
                 self.rellenar_datos(eval(a_buscar))
                 articulo = None
             except:
-                utils.dialogo_info(titulo = "ERROR EN CONSULTA",
-                                   texto = "La consulta:\n%s\nprovocó una excepción." % a_buscar,
-                                   padre = self.wids['ventana'])
+                utils.dialogo_info(
+                        titulo="ERROR EN CONSULTA",
+                        texto="La consulta:\n{}\nprovocó una excepción.".format(a_buscar),
+                        padre=self.wids['ventana'])
             return
         elif a_buscar.startswith('r') or a_buscar.startswith('R'):
             articulo = self.buscar_rollo(a_buscar[1:])
@@ -183,31 +196,35 @@ dir()
             try:
                 ide = int(a_buscar[2:])
             except ValueError:
-                utils.dialogo_info(titulo = "ERROR",
-                                   texto = "El ID debe ser númerico.\nIntrodujo %s." % (a_buscar[2:]),
-                                   padre = self.wids['ventana'])
+                utils.dialogo_info(titulo="ERROR",
+                                   texto="El ID debe ser númerico.\nIntrodujo %s.".format(
+                                       a_buscar[2:]),
+                                   padre=self.wids['ventana'])
                 return
             try:
                 articulo = pclases.AlbaranSalida.get(ide)
             except pclases.SQLObjectNotFound:
-                utils.dialogo_info(titulo = "ERROR",
-                                   texto = "El AlbaranSalida con ID %d no existe." % (ide),
-                                   padre = self.wids['ventana'])
+                utils.dialogo_info(titulo="ERROR",
+                                   texto="El AlbaranSalida con ID %d no existe.".format(
+                                       ide),
+                                   padre=self.wids['ventana'])
                 return
         elif a_buscar.upper().startswith('PDP'):
             try:
                 ide = int(a_buscar[3:])
             except ValueError:
-                utils.dialogo_info(titulo = "ERROR",
-                                   texto = "El ID debe ser númerico.\nIntrodujo %s." % (a_buscar[3:]),
-                                   padre = self.wids['ventana'])
+                utils.dialogo_info(titulo="ERROR",
+                                   texto="El ID debe ser númerico.\nIntrodujo %s.".format(
+                                       a_buscar[3:]),
+                                   padre=self.wids['ventana'])
                 return
             try:
                 articulo = pclases.ParteDeProduccion.get(ide)
             except pclases.SQLObjectNotFound:
-                utils.dialogo_info(titulo = "ERROR",
-                                   texto = "El ParteDeProduccion con ID %d no existe." % (ide),
-                                   padre = self.wids['ventana'])
+                utils.dialogo_info(titulo="ERROR",
+                                   texto="El ParteDeProduccion con ID %d no existe.".format(
+                                       ide),
+                                   padre=self.wids['ventana'])
                 return
         else:
             articulo = self.buscar_articulo(a_buscar)
@@ -215,7 +232,9 @@ dir()
             articulo.sync()
             self.rellenar_datos(articulo)
         else:
-            utils.dialogo_info(titulo = "NO ENCONTRADO", texto = "Producto no encontrado", padre = self.wids['ventana'])
+            utils.dialogo_info(titulo="NO ENCONTRADO",
+                               texto="Producto no encontrado",
+                               padre=self.wids['ventana'])
 
     def rellenar_datos(self, articulo):
         model = self.wids['tv_datos'].get_model()
@@ -229,7 +248,7 @@ dir()
         self.insertar_multiples(objeto, itr, model)
         return itr
 
-    def insertar_nombre(self, objeto, padre, model, nombre_opcional = ""):
+    def insertar_nombre(self, objeto, padre, model, nombre_opcional=""):
         if objeto == None:
             itr = model.append(padre, ("",
                                        nombre_opcional,
@@ -239,12 +258,12 @@ dir()
         else:
             try:
                 nombretabla = objeto.sqlmeta.table
-            except AttributeError: # SQLObject <= 0.6.1
+            except AttributeError:  # SQLObject <= 0.6.1
                 nombretabla = objeto._table
             itr = model.append(padre, (str(objeto.id),
-                                        nombretabla,
-                                        "",
-                                        objeto.__class__.__name__))
+                                       nombretabla,
+                                       "",
+                                       objeto.__class__.__name__))
             return itr
 
     def insertar_campos(self, objeto, padre, model):
@@ -254,7 +273,8 @@ dir()
         a continuación sus campos.
         Devuelve el iter del objeto insertado.
         """
-        if padre == None: return
+        if padre == None:
+            return
         try:
             campos = [c for c in objeto.sqlmeta.columns
                       if not c.upper().endswith('ID')]
@@ -273,7 +293,8 @@ dir()
         rellenar los campos de la clave ajena en cuestión en caso
         de que se despliegue.
         """
-        if padre == None: return
+        if padre == None:
+            return
         try:
             ajenas = [c for c in objeto.sqlmeta.columns
                       if c.upper().endswith('ID')]
@@ -294,13 +315,15 @@ dir()
         Además, por cada tupla creará un "child" vacío que se susituirá
         por los datos de este registro cuando expanda la fila.
         """
-        if padre == None: return
+        if padre == None:
+            return
         multiples = objeto.sqlmeta.joins
         for multiple in multiples:
             lista_objs = getattr(objeto, multiple.joinMethodName)
             # print multiple.joinMethodName, lista_objs
             for obj_d in lista_objs:
-                itr = self.insertar_nombre(obj_d, padre, model, multiple.otherClassName)
+                itr = self.insertar_nombre(
+                    obj_d, padre, model, multiple.otherClassName)
                 model.append(itr, ("", "", "", ""))
 
     def expandir(self, tv, itr, path):
@@ -313,11 +336,11 @@ dir()
             model.remove(child.iter)
             ide = int(model[path][0])
             clase = model[path][-1]
-#            print clase, ide
             try:
-                objeto = eval('pclases.%s.get(%d)' % (clase, ide))
+                objeto = getattr(pclases, clase).get(ide)
             except pclases.SQLObjectNotFound:
-                utils.dialogo_info(titulo = "ERROR", texto = "El objeto %s con ID %d no existe." % (clase, ide))
+                utils.dialogo_info(
+                    titulo="ERROR", texto="El objeto %s con ID %d no existe.".format(clase, ide))
             padre = model.get_iter(path)
             try:
                 objeto.sync()
@@ -349,7 +372,7 @@ dir()
                 ide = model[path].parent[0]
                 clase = model[path].parent[-1]
                 campo = model[path][1]
-                objeto = eval("pclases.%s.get(%d)" % (clase, int(ide)))
+                objeto = getattr(pclases, clase).get(ide)
                 objeto.syncUpdate()
                 try:
                     try:
@@ -364,15 +387,15 @@ dir()
                                 raise inner_e
                     model[path][2] = getattr(objeto, campo)
                 except Exception as e:
-                    utils.dialogo_info(titulo = "ERROR",
-                        texto = "Valor incorrecto para este campo."
-                                "\n\n{0}".format(e),
-                        padre = self.wids['ventana'])
+                    utils.dialogo_info(titulo="ERROR",
+                                       texto="Valor incorrecto para este campo."
+                                       "\n\n{0}".format(e),
+                                       padre=self.wids['ventana'])
 
 # XXX XXX XXX XXX XXX XXX
 
-##!/usr/bin/env python
-## -*- coding: utf-8 -*-
+# !/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 ################################################################################
 ## Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
@@ -397,14 +420,14 @@ dir()
 ################################################################################
 
 
-## Sacado de la página de Python Recipes (ASPN).
-## Créditos a quien corresponda (ya lo buscaré).
+# Sacado de la página de Python Recipes (ASPN).
+# Créditos a quien corresponda (ya lo buscaré).
 
 #import pygtk
-#pygtk.require('2.0')
+# pygtk.require('2.0')
 #import gtk
 
-#class Browser:
+# class Browser:
 #    def make_row( self, piter, name, value ):
 #        info = repr(value)
 #        if not hasattr(value, "__dict__"):
@@ -487,11 +510,11 @@ dir()
 #        self.window.add(self.treeview)
 #        self.window.show_all()
 
-#def dump( name, value ):
+# def dump( name, value ):
 #    browser = Browser( name, value )
 #    gtk.main()
 
-#def test():
+# def test():
 #    class Nil:
 #        pass
 #    a = Nil()
@@ -504,11 +527,10 @@ dir()
 #    d.a=a # circular chain
 #    dump( "a", a )
 
-#if __name__ == "__main__":
+# if __name__ == "__main__":
 #    test()
 # XXX XXX XXX XXX XXX XXX
 
 if __name__ == '__main__':
     t = Trazabilidad()
     #dump("Rollo", pclases.Rollo.select()[0])
-

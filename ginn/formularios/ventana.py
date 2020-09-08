@@ -49,7 +49,7 @@ from formularios import utils
 import pango                            # noqa
 import sys                              # noqa
 import os                               # noqa
-from widgets import Widgets             # noqa
+from formularios.widgets import Widgets # noqa
 from formularios import gtkexcepthook   # noqa
 from lib.myprint import myprint         # noqa
 
@@ -194,16 +194,17 @@ class Ventana:
                         '..', 'imagenes', "logo.xpm"))
                 self.wids['ventana'].set_icon(logo_xpm)
             self.wids['barra_estado'] = barrastado = gtk.Statusbar()
-            try:
-                label_statusbar = barrastado.get_children(
-                )[0].child.get_children()[0]
-            except:     # noqa
-                label_statusbar = barrastado.get_children()[0].child
-            font = pango.FontDescription("Monospace oblique 7")
-            label_statusbar.modify_font(font)
-            label_statusbar.modify_fg(
-                    gtk.STATE_NORMAL,
-                    label_statusbar.get_colormap().alloc_color("darkgray"))
+            # XXX: En Gtk3 no se cambian los colores y fuentes así. Se usa CSS.
+            # try:
+            #     label_statusbar = barrastado.get_children(
+            #     )[0].child.get_children()[0]
+            # except:     # noqa
+            #     label_statusbar = barrastado.get_children()[0].child
+            # font = pango.FontDescription("Monospace oblique 7")
+            # label_statusbar.modify_font(font)
+            # label_statusbar.modify_fg(
+            #         gtk.STATE_NORMAL,
+            #         label_statusbar.get_colormap().alloc_color("darkgray"))
             if self.usuario and self.usuario.nivel == 0:
                 self.add_debug_admin_controls(barrastado)
             contenido_anterior = self.wids['ventana'].get_child()
@@ -235,8 +236,8 @@ class Ventana:
                                                                info_usuario))
         except Exception as msg:
             txt = "ventana.py::__init__ -> No se pudo establecer ancho de "\
-                  "borde, icono de ventana o barra de estado. Excepción: %s."\
-                % (msg)
+                  "borde, icono de ventana o barra de estado. Excepción: {}."\
+                  "".format(msg)
             myprint(txt)
             # FIXME: Logger no es "pickable" y falla el Process
             self.logger.warning(txt)
@@ -326,10 +327,11 @@ class Ventana:
         self.ch_pclasesverbose = gtk.CheckButton(label="VERBOSE")
         hbox_barrastado.pack_start(self.ch_pclasesdebug, expand=False)
         hbox_barrastado.pack_start(self.ch_pclasesverbose, expand=False)
-        self.ch_pclasesdebug.child.modify_font(
-            pango.FontDescription("sans oblique 8"))
-        self.ch_pclasesverbose.child.modify_font(
-            pango.FontDescription("sans oblique 8"))
+        # En Gtk3 no se cambian colores y fuentes así. Se usa CSS.
+        # self.ch_pclasesdebug.child.modify_font(
+        #     pango.FontDescription("sans oblique 8"))
+        # self.ch_pclasesverbose.child.modify_font(
+        #     pango.FontDescription("sans oblique 8"))
         self.ch_pclasesdebug.set_active(pclases.DEBUG)
         self.ch_pclasesverbose.set_active(pclases.VERBOSE)
 
@@ -403,9 +405,7 @@ class Ventana:
         ventanas = [
             p.ventana for p in self.__usuario.permisos
             if p.permiso and p.ventana.modulo == modulo]
-        ventanas.sort(
-                lambda s1, s2: (s1.descripcion > s2.descripcion and 1) or (
-                                s1.descripcion < s2.descripcion and -1) or 0)
+        ventanas.sort(key = lambda s: s.descripcion)
         for ventana in ventanas:
             res += """<menuitem name="%s" action="V%d"/>""" % (
                 ventana.descripcion, ventana.id)

@@ -34,13 +34,25 @@
 ##
 ###################################################################
 
+import gi
+gi.require_version("Gtk", '3.0')
+from gi import pygtkcompat
+try:
+    from gi import pygtkcompat
+except ImportError:
+    pygtkcompat = None
+    from gi.repository import Gtk as gtk
+    from gi.repository import GObject as gobject
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+    import gtk
+    import gobject
+import datetime
 from ventana import Ventana
 from formularios import utils
-import pygtk
-pygtk.require('2.0')
-import gtk
 from framework import pclases
-import mx.DateTime
 from informes import geninformes
 from ventana_progreso import VentanaProgreso
 try:
@@ -100,15 +112,15 @@ class RollosC(Ventana):
             except IndexError:  # Producto mal borrado, CER desparejado.
                 mensaje = "%srollos_c::__init__ -> CamposEspecificosRollo ID %d sin productosVenta. Intento eliminar." % (self.usuario and self.usuario.usuario + ": " or "", cer.id)
                 self.logger.error(mensaje)
-                print mensaje
+                print(mensaje)
                 if not cer.productosVenta:  # Sobra. Lo borro.
                     try:
                         cer.destroy(ventana = __file__)
-                    except Exception, msg:
+                    except Exception as msg:
                         mensaje = "%srollos_c::__init__ -> CamposEspecificosRollo ID %d sin productosVenta no se pudo eliminar. Excepción: %s" % (self.usuario and self.usuario.usuario + ": " or "", cer.id, msg)
-                        print mensaje
+                        print(mensaje)
                         self.logger.error(mensaje)
-        productos_gtxc.sort(lambda p1, p2: p1[0] - p2[0])
+        productos_gtxc.sort(key = lambda p: p[0])
         utils.rellenar_lista(self.wids['cbe_producto'], productos_gtxc)
         if len(productos_gtxc) > 0:
             utils.combo_set_from_db(self.wids['cbe_producto'],
@@ -143,7 +155,7 @@ class RollosC(Ventana):
         Genera una lista de diccionarios con los datos de los rollos
         para generar sus etiquetas.
         """
-        from listado_rollos import preparar_datos_etiquetas_rollos_c
+        from .listado_rollos import preparar_datos_etiquetas_rollos_c
         data = preparar_datos_etiquetas_rollos_c(rollos)
         if data:
             from formularios import reports
@@ -169,7 +181,7 @@ class RollosC(Ventana):
             try:
                 murano_deleted = murano.ops.delete_articulo(a, observaciones="")
                 a.destroy(ventana = __file__)
-            except Exception, msg:
+            except Exception as msg:
                 self.logger.error("%srollos_c::borrar_rollos -> Artículo ID %d de rollo ID %d (%s) no se pudo eliminar. Excepción: %s"
                     % (self.usuario and self.usuario.usuario + ": " or "", a.id, b.id, b.codigo, msg))
                 a.rolloC = b
@@ -179,12 +191,12 @@ class RollosC(Ventana):
             else:
                 try:
                     b.destroy(ventana = __file__)
-                except Exception, msg:
+                except Exception as msg:
                     self.logger.error("%srollos_c::borrar_rollos -> Rollo ID %d (%s) no se pudo eliminar. Excepción: %s"
                         % (self.usuario and self.usuario.usuario + ": " or "", b.id, b.codigo, msg))
                     try:
                         b.destroy_en_cascada(ventana = __file__)
-                    except Exception, msg:
+                    except Exception as msg:
                         self.logger.error("%srollos_c::borrar_rollos -> Rollo ID %d (%s) no se pudo eliminar en cascada. Excepción: %s"
                             % (self.usuario and self.usuario.usuario + ": " or "", b.id, b.codigo, msg))
                         self.consumir(b)
@@ -264,7 +276,7 @@ class RollosC(Ventana):
                                 bala = None,
                                 bigbag = None,
                                 rollo = None,
-                                fechahora = mx.DateTime.localtime(),
+                                fechahora = datetime.datetime.now(),
                                 productoVenta = producto,
                                 parteDeProduccion = None,
                                 albaranSalida = None,
@@ -376,8 +388,8 @@ class RollosC(Ventana):
         No se almacenan mes y año, de modo que en cuanto se refresque la
         pantalla volverá al mes y año actual.
         """
-        mes_actual = mx.DateTime.today().month
-        meses = zip(range(1, 13), ("enero",
+        mes_actual = datetime.datetime.today().month
+        meses = list(zip(list(range(1, 13)), ("enero",
                                    "febrero",
                                    "marzo",
                                    "abril",
@@ -388,14 +400,14 @@ class RollosC(Ventana):
                                    "septiembre",
                                    "octubre",
                                    "noviembre",
-                                   "diciembre"))
+                                   "diciembre")))
         mes = utils.dialogo_combo(titulo = "MES",
                                   texto = "Seleccione mes:",
                                   ops = meses,
                                   padre = self.wids['ventana'],
                                   valor_por_defecto = mes_actual)
         if mes != None:
-            anno_actual = mx.DateTime.today().year
+            anno_actual = datetime.datetime.today().year
             anno = utils.dialogo_entrada(titulo = "AÑO",
                                          texto = "Introduzca año:",
                                          valor_por_defecto = str(anno_actual),
@@ -419,9 +431,9 @@ class RollosC(Ventana):
         """
         totacum = pclases.RolloC.calcular_acumulado_peso_sin()
         if mes == None or not isinstance(mes, int):
-            mes = mx.DateTime.localtime().month
+            mes = datetime.datetime.today().month
         if anno == None or not isinstance(anno, int):
-            anno = mx.DateTime.localtime().year
+            anno = datetime.datetime.today().year
         self.wids['label4'].set_text("Total mes:\n<small><i>%02d/%d</i></small>" % (
             mes, anno))
         self.wids['label4'].set_use_markup(True)
@@ -459,9 +471,11 @@ class RollosC(Ventana):
                     self.cambiar_observaciones),
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(tv, cols)
+        # XXX: En Gtk3 el color y fuente se aplica con gtk.CssProvider
+        # TODO: Gtk3 no tiene get_cell_renderers XXX XXX XXX XXX XXX XXX XXX
         for col in tv.get_columns()[2:3]:
-            for cell in col.get_cell_renderers():
-                cell.set_property("xalign", 1.0)
+        #     for cell in col.get_cell_renderers():
+        #         cell.set_property("xalign", 1.0)
             col.set_alignment(0.5)
         self.wids['tv_rollos'].get_selection().set_mode(gtk.SELECTION_MULTIPLE)
 

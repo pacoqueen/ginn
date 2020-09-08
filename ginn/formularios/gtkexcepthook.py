@@ -54,12 +54,10 @@ _ = language.gettext
 
 import gi
 gi.require_version("Gtk", '3.0')
-from gi import pygtkcompat
-
 try:
     from gi import pygtkcompat
 except importerror:
-    pygtkcompat = none
+    pygtkcompat = None
     from gi.repository import Gtk as gtk
     from gi.repository import GObject as gobject
 

@@ -108,6 +108,7 @@ import time
 from formularios import utils
 from framework import notificacion
 import datetime
+import calendar
 try:
     from collections import OrderedDict
 except ImportError:
@@ -6610,11 +6611,12 @@ class BalaCable(SQLObject, PRPCTOO):
         embalaje.
         """
         primero_mes = datetime.datetime(day = 1,
-                                               month = mes,
-                                               year = anno)
-        primero_mes_sig = datetime.datetime(day = -1,
-                                                   month = mes,
-                                                   year = anno)
+                                        month = mes,
+                                        year = anno)
+        primero_mes_sig = datetime.datetime(
+                day = calendar.monthrange(anno, mes)[1],
+                month = mes,
+                year = anno)
         primero_mes_sig += datetime.timedelta(days=1)
         balas = BalaCable.select(AND(BalaCable.q.fechahora >= primero_mes,
                                      BalaCable.q.fechahora < primero_mes_sig))
@@ -6780,11 +6782,12 @@ class RolloC(SQLObject, PRPCTOO):
         embalaje.
         """
         primero_mes = datetime.datetime(day = 1,
-                                               month = mes,
-                                               year = anno)
-        primero_mes_sig = datetime.datetime(day = -1,
-                                                   month = mes,
-                                                   year = anno)
+                                        month = mes,
+                                        year = anno)
+        primero_mes_sig = datetime.datetime(
+                day = calendar.monthrange(anno, mes)[1],
+                month = mes,
+                year = anno)
         primero_mes_sig += datetime.timedelta(days=1)
         rollosc = RolloC.select(AND(RolloC.q.fechahora >= primero_mes,
                                     RolloC.q.fechahora < primero_mes_sig))
