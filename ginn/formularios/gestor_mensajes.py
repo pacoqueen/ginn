@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2019  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2020  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -25,33 +25,47 @@
 
 
 ###################################################################
-## gestor_mensajes.py -- Gestor de mensajes y alertas de usuarios.
+# gestor_mensajes.py -- Gestor de mensajes y alertas de usuarios.
 ###################################################################
-## NOTAS:
+# NOTAS:
 ##
-## ----------------------------------------------------------------
-##
-###################################################################
-## Changelog:
-## 27 de abril de 2006 -> Inicio
-##
+# ----------------------------------------------------------------
 ##
 ###################################################################
-## FIXME:
-## OJO: Hay un BUG en SQLObject 0.6.1 que ignora los DEFAULTs en
-## los campos BOOLEAN de la base de datos y usa siempre True como
-## valor por defecto aunque en la tabla se haya especificado
-## BOOLEAN DEFAULT False.
-## La clase Widget también debería hacer saltar una excepción
-## cuando se accede a un widget que no existe, en lugar de devolver
-## None. Opino. <-- Esto ya está hecho.
+# Changelog:
+# 27 de abril de 2006 -> Inicio
+##
+##
 ###################################################################
-import pygtk
-pygtk.require('2.0')
-import os
-import gtk
-from framework import pclases
+# FIXME:
+# OJO: Hay un BUG en SQLObject 0.6.1 que ignora los DEFAULTs en
+# los campos BOOLEAN de la base de datos y usa siempre True como
+# valor por defecto aunque en la tabla se haya especificado
+# BOOLEAN DEFAULT False.
+# La clase Widget también debería hacer saltar una excepción
+# cuando se accede a un widget que no existe, en lugar de devolver
+# None. Opino. <-- Esto ya está hecho.
+###################################################################
 from formularios.widgets import Widgets
+from framework import pclases
+import os
+from gi import pygtkcompat
+import gi
+gi.require_version("Gtk", '3.0')
+
+try:
+    from gi import pygtkcompat
+except importerror:
+    pygtkcompat = none
+    from gi.repository import Gtk as gtk
+    from gi.repository import GObject as gobject
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+    import gtk
+    import gobject
+
 
 def eliminar_temporales():
     """
@@ -63,7 +77,7 @@ def eliminar_temporales():
     for root, dirs, files in os.walk(gettempdir()):  # @UnusedVariable
         for fich in files:
             try:
-                #print os.path.join(root, fich)
+                # print os.path.join(root, fich)
                 os.unlink(os.path.join(root, fich))
                 # ¿Realmente necesito borrar solo los de ayer y anteriores?
                 # Se acaba de abrir el menú principal. No puede haber
@@ -73,6 +87,7 @@ def eliminar_temporales():
                 # me deje. Exception powah!
             except (OSError, IOError):
                 pass    # Protegido, bloqueado... da igual. Sigo borrando.
+
 
 class GestorMensajes:
     def __init__(self, usuario):
@@ -90,8 +105,8 @@ class GestorMensajes:
 
         self.__usuario = usuario
         if self.__usuario == None:
-            print __file__, "ERROR: Intentando iniciar gestor de mensajes "\
-                    "con usuario inválido."
+            print(__file__, "ERROR: Intentando iniciar gestor de mensajes "
+                  "con usuario inválido.")
         else:
             self.__pendientes = self.comprobar_pendientes()
             if self.__pendientes:
@@ -99,8 +114,8 @@ class GestorMensajes:
 
     def comprobar_pendientes(self):
         no_entregados = pclases.Alerta.select(
-                """ usuario_id = %d AND entregado = FALSE """ % (
-                    self.__usuario.id))
+            """ usuario_id = %d AND entregado = FALSE """ % (
+                self.__usuario.id))
         return [a for a in no_entregados if "bajo mínimos" not in a.mensaje]
 
     def mostrar_alerta(self, a):
@@ -114,7 +129,8 @@ class GestorMensajes:
         """
         mensaje = a.mensaje
         fecha = a.fechahora.strftime("%d/%m/%Y a las %H:%M")
-        ventana = self.construir_ventana(fecha,mensaje,len(self.__pendientes))
+        ventana = self.construir_ventana(
+            fecha, mensaje, len(self.__pendientes))
         a.entregado = self.mostrar_ventana(ventana, a)
         if a.entregado:
             try:
@@ -172,7 +188,7 @@ class GestorMensajes:
         res = [True]
         ventana['b_aceptar'].connect("clicked", self.aceptar, ventana, alerta)
         ventana['confirmado'].connect("toggled",
-                self.cambiar_contador_pendientes, ventana['no_leidos'], res)
+                                      self.cambiar_contador_pendientes, ventana['no_leidos'], res)
         ventana['ventana'].connect("destroy", gtk.main_quit)
         gtk.main()  # Saldrá de aquí con el main_quit
         return res[0]
@@ -196,12 +212,10 @@ class GestorMensajes:
 
 if __name__ == '__main__':
     gm = GestorMensajes()
-            #pclases.Usuario.select(pclases.Usuario.q.usuario=='admin')[0])
+    # pclases.Usuario.select(pclases.Usuario.q.usuario=='admin')[0])
 #    gm.nueva_alerta('Esto es una alerta de prueba')
 #    gm.nueva_alerta('Esto es otra alerta')
 #    gm.nueva_alerta("""Oh! Otra alerta más. Y esta a demás tiene un montón de texto. Pero no un montón de eso que dices "bueno, es un montoncito", no. Esto es un montón pero un montón de verdad. Meet the new boss... same as the old boss. My name is Ivor, I'm an engine driver.
 #    I'm taking a ride with my best friend.
 #    Never let me down... again""")
 #    gm.run()
-
-

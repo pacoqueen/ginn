@@ -50,9 +50,18 @@
 #    de enviar bugreport hasta cerrar el programa).
 # #################################################################
 
+from formularios.ventana import install_bug_hook, abrir_gajim
+from formularios import custom_widgets
+from framework.configuracion import ConfigConexion, parse_params
+from formularios import utils
+from framework import pclases
+from lib.myprint import myprint
+import traceback
+import sys
+import os
+from gi import pygtkcompat
 import gi
 gi.require_version("Gtk", '3.0')
-from gi import pygtkcompat
 
 try:
     from gi import pygtkcompat
@@ -67,16 +76,6 @@ if pygtkcompat is not None:
     import gtk
     import gobject
 
-import os
-import sys
-import traceback
-from lib.myprint import myprint
-from framework import pclases
-from formularios import utils
-from framework.configuracion import ConfigConexion, parse_params
-
-from formularios import custom_widgets
-from formularios.ventana import install_bug_hook, abrir_gajim
 
 __version__ = '6.3.1'
 __version_info__ = tuple(
@@ -130,6 +129,7 @@ class MetaF:
     "Metafichero" para almacenar la salida de errores y poder
     enviar informes de error.
     """
+
     def __init__(self):
         self.t = ''
 
@@ -247,14 +247,14 @@ class Menu:
             res = (not mostrar_ventana
                    or not utils.dialogo('¿Desea cerrar el menú principal?',
                                         'SALIR',
-                                        padre = ventana,
-                                        icono = gtk.STOCK_QUIT))
+                                        padre=ventana,
+                                        icono=gtk.STOCK_QUIT))
             if not res:
                 try:
                     self.logger.warning("LOGOUT: %s" % (self.usuario.usuario))
                 except IOError:
                     pass    # El fichero de log se ha cerrado por algún
-                            # motivo. Mutis por el foro.
+                    # motivo. Mutis por el foro.
         return res
 
     def construir_ventana(self):
@@ -292,24 +292,26 @@ class Menu:
         texto.set_justify(gtk.JUSTIFY_CENTER)
         texto.set_use_markup(True)
         event_box = gtk.EventBox()
-            # Porque el gtk.Label no permite cambiar el background.
+        # Porque el gtk.Label no permite cambiar el background.
         event_box.add(texto)
-        event_box.modify_bg(gtk.STATE_NORMAL,
-                            event_box.get_colormap().alloc_color("white"))
+        # XXX: Los colores en Gtk3 van por CSS.
+        # event_box.modify_bg(gtk.STATE_NORMAL,
+        #                     event_box.get_colormap().alloc_color("white"))
         half_header = gtk.VBox()
         half_header.add(event_box)
         txtchangelog = read_changelog()
         if txtchangelog:
             marquee_changelog = custom_widgets.MarqueeLabel(
-                    txtchangelog, init_long = 61)
+                txtchangelog, init_long=61)
             little_label = gtk.Label(
-                    "<small><i>Últimas actualizaciones:</i></small>")
+                "<small><i>Últimas actualizaciones:</i></small>")
             little_label.set_use_markup(True)
             little_label.set_property("xalign", 0.1)
             half_header.add(little_label)
             marquee_changelog_event = gtk.EventBox()
             marquee_changelog_event.add(marquee_changelog)
             half_header.add(marquee_changelog_event)
+
             def reset(*args, **kw):
                 marquee_changelog.rewind()
             marquee_changelog_event.connect("button-press-event", reset)
@@ -329,7 +331,7 @@ class Menu:
         if pclases.VERBOSE:
             i = 0
             tot = pclases.Modulo.select().count()
-        for m in pclases.Modulo.select(orderBy = "nombre"):
+        for m in pclases.Modulo.select(orderBy="nombre"):
             if pclases.VERBOSE:
                 i += 1
                 myprint("Analizando permisos (1/2)... (%d/%d)" % (i, tot))
@@ -350,13 +352,7 @@ class Menu:
                 if m != None:
                     modulos[m].append(v)
         modulos_sorted = list(modulos.keys())
-        def fsortalfabeticamente(m1, m2):
-            if m1.nombre < m2.nombre:
-                return -1
-            if m1.nombre > m2.nombre:
-                return 1
-            return 0
-        modulos_sorted.sort(fsortalfabeticamente)
+        modulos_sorted.sort(key = lambda m: m.nombre)
         for modulo in modulos_sorted:
             if modulos[modulo]:
                 fichicono = os.path.join(
@@ -375,14 +371,17 @@ class Menu:
         icon_view = gtk.IconView(model)
         icon_view.set_text_column(0)
         icon_view.set_pixbuf_column(1)
-        icon_view.set_orientation(gtk.ORIENTATION_VERTICAL)
+        # Icon view does not support this functionality.
+        # https://stackoverflow.com/questions/63095959/how-to-list-items-vertically-in-gtk-iconview#comment111663637_63095959
+        # icon_view.set_orientation(gtk.ORIENTATION_VERTICAL)
         icon_view.set_selection_mode(gtk.SELECTION_SINGLE)
         icon_view.connect('selection-changed', self.on_select, model)
         icon_view.set_columns(1)
-        icon_view.set_item_width(110)
-        icon_view.set_size_request(140, -1)
+        icon_view.set_item_width(90)
+        icon_view.set_size_request(130, -1)
 
         contenedor.add(icon_view)
+        contenedor.set_size_request(150, -1)
         self.content_box = gtk.HBox(False)
         self.content_box.pack_start(contenedor, fill=True, expand=False)
         # icon_view.select_path((0,))
@@ -419,23 +418,23 @@ class Menu:
 
     def create_frame(self, modulo):
         if modulo != "Favoritos":
-            frame = gtk.Frame(modulo.descripcion)
+            frame = gtk.Frame()
+            frame.set_label(modulo.descripcion)
             frame.add(self.construir_modulo(modulo.descripcion,
-                      [p.ventana for p in self.get_usuario().permisos
-                       if p.permiso and p.ventana.modulo == modulo]))
+                                            [p.ventana for p in self.get_usuario().permisos
+                                             if p.permiso and p.ventana.modulo == modulo]))
         else:
-            frame = gtk.Frame("Ventanas más usadas")
+            frame = gtk.Frame()
+            frame.set_label("Ventanas más usadas")
             usuario = self.get_usuario()
             stats = pclases.Estadistica.select(
-             pclases.Estadistica.q.usuarioID == usuario.id, orderBy="-veces")
+                pclases.Estadistica.q.usuarioID == usuario.id, orderBy="-veces")
             # Se filtran las ventanas en las que ya no tiene permisos aunque
             # estén en favoritos.
             stats = [s for s in stats
                      if usuario.get_permiso(s.ventana)
                      and usuario.get_permiso(s.ventana).permiso][:9]
-            stats.sort(lambda s1, s2: (s1.ultimaVez > s2.ultimaVez and -1)
-                       or (s1.ultimaVez < s2.ultimaVez and 1)
-                       or 0)
+            stats.sort(key = lambda s: s.ultimaVez)
             ventanas = [s.ventana for s in stats]
             frame.add(self.construir_modulo("Ventanas más usadas",
                                             ventanas,
@@ -484,21 +483,19 @@ class Menu:
         # En Python2.3 parece ser que no estaba la opción de especificar
         # la clave de ordenación.
         if ordenar:
-            ventanas.sort(lambda s1, s2:
-                          (s1.descripcion > s2.descripcion and 1) or
-                          (s1.descripcion < s2.descripcion and -1) or 0)
+            ventanas.sort(key = lambda s: s.descripcion)
         for ventana in ventanas:
             try:
                 pixbuf = gtk.gdk.pixbuf_new_from_file(
                     os.path.join(
-                                 os.path.dirname(os.path.realpath(__file__)),
-                                 '..', 'imagenes', ventana.icono))
+                        os.path.dirname(os.path.realpath(__file__)),
+                        '..', 'imagenes', ventana.icono))
             except (gobject.GError, AttributeError, TypeError):
                 # Icono es "" o None (NULL en la tabla).
                 pixbuf = gtk.gdk.pixbuf_new_from_file(
                     os.path.join(
-                                 os.path.dirname(os.path.realpath(__file__)),
-                                 '..', 'imagenes', 'dorsia.png'))
+                        os.path.dirname(os.path.realpath(__file__)),
+                        '..', 'imagenes', 'dorsia.png'))
             model.append((self.cutmaister(ventana.descripcion),
                           pixbuf, ventana.fichero, ventana.clase))
             # El model tiene: nombre (descripción), icono, archivo, clase,
@@ -509,7 +506,7 @@ class Menu:
         iview = gtk.IconView(model)
         iview.set_text_column(0)
         iview.set_pixbuf_column(1)
-        iview.set_item_width(180)
+        iview.set_item_width(115)
         iview.connect('selection-changed', self.mostrar_item_seleccionado,
                       model)
         contenedor.add(iview)
@@ -538,7 +535,7 @@ class Menu:
                 except IndexError:
                     pass    # "Nada seleccionado"
                 else:
-                    #widget.item_activated(path)
+                    # widget.item_activated(path)
                     self.abrir(widget, path, model)
                     widget.clics = 0
             return True
@@ -547,14 +544,14 @@ class Menu:
             # Abro ventanas también con espacio y ENTER porque he desactivado
             # el item-activated.
             if (event.keyval == gtk.gdk.keyval_from_name("Return")
-                or event.keyval == gtk.gdk.keyval_from_name("KP_Enter")):
+                    or event.keyval == gtk.gdk.keyval_from_name("KP_Enter")):
                 try:
                     paths = widget.get_selected_items()
                     path = paths[0]
                 except IndexError:
                     pass    # "Nada seleccionado"
                 else:
-                    #widget.item_activated(path)
+                    # widget.item_activated(path)
                     self.abrir(widget, path, model)
         iview.connect('button-press-event', button_press)
         iview.connect('motion-notify-event', motion)
@@ -564,11 +561,14 @@ class Menu:
 
     def mostrar_item_seleccionado(self, icon_view, model):
         selected = icon_view.get_selected_items()
-        if len(selected) == 0: return
+        if len(selected) == 0:
+            return
         i = selected[0][0]
         descripcion_icono_seleccionado = model[i][0]
-        descripcion_icono_seleccionado = descripcion_icono_seleccionado.replace('\n', ' ')
-        utils.escribir_barra_estado(self.statusbar, descripcion_icono_seleccionado, self.logger, self.usuario.usuario)
+        descripcion_icono_seleccionado = descripcion_icono_seleccionado.replace(
+            '\n', ' ')
+        utils.escribir_barra_estado(
+            self.statusbar, descripcion_icono_seleccionado, self.logger, self.usuario.usuario)
 
     def volver_a_cursor_original(self):
         # myprint("Patrick Bateman sabe que es una chapuza y que no hay que hacer suposiciones de tiempo.")
@@ -632,7 +632,8 @@ class Menu:
     def abrir_ventana_modulo_python(self, archivo, clase):
         try:
             self.ventana.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
-            while gtk.events_pending(): gtk.main_iteration(False)
+            while gtk.events_pending():
+                gtk.main_iteration(False)
             # HACK: Debe haber una forma mejor de hacerlo. De momento me
             #       aprovecho de que el mainloop no va a atender al
             #       timeout aunque se cumpla el tiempo, ya que está
@@ -647,18 +648,18 @@ class Menu:
                  self.get_usuario().usuario == "fibra" or
                  self.get_usuario().nivel >= 4)
                 and "partes_de_fabricacion" in archivo
-                and self.get_usuario().usuario != "cemento"):
+                    and self.get_usuario().usuario != "cemento"):
                 exec("import %s" % archivo)
                 v = eval('%s.%s' % (archivo, clase))
                 try:
-                    v(permisos = "rx", usuario = self.get_usuario())
+                    v(permisos="rx", usuario=self.get_usuario())
                 except TypeError:   # La ventana no soporta el modelo
-                                    # antiguo de permisos.
-                    v(usuario = self.get_usuario())
-                #v.wids['ventana'].set_icon_from_filename(icowindow)
+                    # antiguo de permisos.
+                    v(usuario=self.get_usuario())
+                # v.wids['ventana'].set_icon_from_filename(icowindow)
             else:
                 try:
-                    #raise NotImplementedError, \
+                    # raise NotImplementedError, \
                     #        "Lanzador multiproceso en desarrollo..."
                     self.lanzar_ventana(archivo, clase)
                 except Exception as e:
@@ -668,9 +669,9 @@ class Menu:
         except:
             self.ventana.window.set_cursor(None)
             utils.escribir_barra_estado(self.statusbar,
-                "Error detectado. Iniciando informe por correo.",
-                self.logger,
-                self.usuario.usuario)
+                                        "Error detectado. Iniciando informe por correo.",
+                                        self.logger,
+                                        self.usuario.usuario)
             self.enviar_correo_error_ventana()
 
     def _lanzar_ventana(self, archivo, clase):
@@ -679,8 +680,8 @@ class Menu:
         """
         exec("import %s" % archivo)
         v = eval('%s.%s' % (archivo, clase))
-        v(usuario = self.get_usuario())
-        #v.wids['ventana'].set_icon_from_filename(icowindow)
+        v(usuario=self.get_usuario())
+        # v.wids['ventana'].set_icon_from_filename(icowindow)
         # Podría incluso guardar los objetos ventana que se van
         # abriendo para controlar... no sé, algo, contar las ventanas
         # abiertas o qué se yo.
@@ -692,11 +693,11 @@ class Menu:
         DISASTER!
         """
         #self._lanzar_ventana(archivo, clase)
-        #return
+        # return
         # XXX
         from multiprocessing import Process
-        v = Process(target = importar_e_instanciar,
-                    args = (archivo, clase, self.get_usuario()))
+        v = Process(target=importar_e_instanciar,
+                    args=(archivo, clase, self.get_usuario()))
         try:
             self.ventanas_abiertas.append(v)
         except (AttributeError):
@@ -727,7 +728,7 @@ class Menu:
         tb = sys.exc_info()[2]
         texto += "Línea %s\n" % tb.tb_lineno
         info = MetaF()
-        traceback.print_tb(tb, file = info)
+        traceback.print_tb(tb, file=info)
         texto += "%s\n" % info
         enviar_correo(texto, self.get_usuario())
 
@@ -739,9 +740,11 @@ class Menu:
             w.add(scroll)
             tv = gtk.TextView()
             scroll.add(tv)
+
             def forzar_iter_gtk(*args, **kw):
                 while gtk.events_pending():
                     gtk.main_iteration(False)
+
             def printstdout(msg):
                 tv.get_buffer().insert_at_cursor(msg)
                 forzar_iter_gtk()
@@ -757,11 +760,11 @@ class Menu:
         elif os.name == 'nt':
             os.startfile("checklist_window.py")  # @UndefinedVariable
         else:
-            utils.dialogo_info(titulo = "PLATAFORMA NO SOPORTADA",
-                texto = "Pruebas de coherencia solo funcionan en arquitecturas"
-                        " con plataformas POSIX o NT\n(GNU/Linux, MS-Windows, "
-                        "*BSD...).",
-                padre = self.ventana)
+            utils.dialogo_info(titulo="PLATAFORMA NO SOPORTADA",
+                               texto="Pruebas de coherencia solo funcionan en arquitecturas"
+                               " con plataformas POSIX o NT\n(GNU/Linux, MS-Windows, "
+                               "*BSD...).",
+                               padre=self.ventana)
 
     def mostrar(self):
         self.ventana.show_all()
@@ -775,7 +778,7 @@ class Menu:
             if os.name == 'nt':
                 try:
                     os.startfile('mailto:%s' % uri)  # if pywin32 is installed
-                                                     # we open
+                    # we open
                 except:
                     pass
             else:
@@ -783,7 +786,7 @@ class Menu:
                                    'Funcionalidad no implementada.\n'
                                    'Debe lanzar manualmente su cliente de '
                                    'correo.\nCorreo-e seleccionado: %s' % uri,
-                                   padre = self.ventana)
+                                   padre=self.ventana)
         elif tipo == 'web':
             if os.name == 'nt':
                 try:
@@ -807,13 +810,13 @@ class Menu:
                              'Diego Muñoz Escalante <escalant3@gmail.com>'])
         config = ConfigConexion()
         logo = gtk.gdk.pixbuf_new_from_file(os.path.join(
-                os.path.dirname(os.path.realpath(__file__)),
-                '..', 'imagenes', config.get_logo()))
+            os.path.dirname(os.path.realpath(__file__)),
+            '..', 'imagenes', config.get_logo()))
         logo = escalar_a(300, 200, logo)
         vacerca.set_logo(logo)
         vacerca.set_license(open(os.path.join(
-                os.path.dirname(os.path.realpath(__file__)),
-                '..', 'gpl.txt')).read())
+            os.path.dirname(os.path.realpath(__file__)),
+            '..', 'gpl.txt')).read())
         vacerca.set_website('http://ginn.sf.net')
         vacerca.set_artists(['Iconos gartoon por Kuswanto (a.k.a. Zeus) '
                              '<zeussama@gmail.com>'])
@@ -823,7 +826,7 @@ class Menu:
         vacerca.destroy()
 
 
-def enviar_correo(texto, usuario = None):
+def enviar_correo(texto, usuario=None):
     """
     Envía **silenciosamente** un correo electrónico con el texto recibido.
     Si no se puede enviar o no se recibe usuario, se guarda el texto en
@@ -834,8 +837,8 @@ def enviar_correo(texto, usuario = None):
         gmail_user = usuario.cuenta
         gmail_pwd = usuario.cpass
     else:
-        gmail_user = "practicas.geotexan@gmail.com" # Utilizo una cuenta "genérica"
-        gmail_pwd = "20mesa20" # FIXME !!!
+        gmail_user = "practicas.geotexan@gmail.com"  # Utilizo una cuenta "genérica"
+        gmail_pwd = "20mesa20"  # FIXME !!!
     gmail_from = gmail_user
     gmail_to = ['frbogado@geotexan.com']
     gmail_subject = "Geotex-INN: Informe de error"
@@ -849,15 +852,17 @@ def enviar_correo(texto, usuario = None):
     """ % (gmail_from, ", ".join(gmail_to), gmail_subject, gmail_text)
     try:
         #server = smtplib.SMTP(SERVER)
-        server = smtplib.SMTP("smtp.gmail.com", 587) #or port 465 doesn't seem to work!
+        # or port 465 doesn't seem to work!
+        server = smtplib.SMTP("smtp.gmail.com", 587)
         server.ehlo()
         server.starttls()
         server.login(gmail_user, gmail_pwd)
         server.sendmail(gmail_from, gmail_to, message)
-        #server.quit()
+        # server.quit()
         server.close()
     except:
         guardar_error_a_log(usuario, texto)
+
 
 def guardar_error_a_log(usuario, texto):
     """
@@ -875,6 +880,7 @@ def guardar_error_a_log(usuario, texto):
         nombre_usuario = usuario.usuario
     texto_a_log = "%s: -> %s" % (nombre_usuario, texto)
     logger.error(texto_a_log)
+
 
 def escalar_a(ancho, alto, pixbuf):
     """
@@ -928,13 +934,13 @@ def main():
     # Si hay ficheros de estilo gtk, los cargo por orden: General de la
     # aplicación y específico del usuario en WIN y UNIX. Se machacan opciones
     # por ese orden.
-    GTKRC2 = ".gtkrc-2.0" # Depende de la versión...
+    GTKRC2 = ".gtkrc-2.0"  # Depende de la versión...
     GTKRC = "gtkrc"
     gtk.rc_parse(os.path.join(
         os.path.dirname(__file__), "..", GTKRC))
     gtk.rc_parse(os.path.join(
-        os.path.dirname(__file__),"..", GTKRC2))    # Si no existe se ignora
-                                                    # de manera silenciosa.
+        os.path.dirname(__file__), "..", GTKRC2))    # Si no existe se ignora
+    # de manera silenciosa.
     if "HOME" in os.environ:
         gtk.rc_parse(os.path.join(os.environ["HOME"], GTKRC))
         gtk.rc_parse(os.path.join(os.environ["HOME"], GTKRC2))
@@ -965,8 +971,9 @@ def main():
         myprint("Se han detectado algunos errores en segundo plano durante "
                 "la ejecución.")
         enviar_correo('Errores en segundo plano. La stderr contiene:\n%s'
-                        % (errores),
+                      % (errores),
                       m.get_usuario())
+
 
 def read_changelog():
     """
@@ -988,7 +995,7 @@ def read_changelog():
 def importar_e_instanciar(archivo, clase, usuario):
     exec("import %s" % archivo)
     v = eval('%s.%s' % (archivo, clase))
-    v(usuario = usuario)
+    v(usuario=usuario)
 
 
 if __name__ == '__main__':
@@ -996,9 +1003,8 @@ if __name__ == '__main__':
     try:
         import psyco
         psyco.full()
-        #psyco.log()
-        #psyco.profile()
+        # psyco.log()
+        # psyco.profile()
     except ImportError:
         myprint("Optimizaciones no disponibles.")
     main()
-

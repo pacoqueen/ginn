@@ -1,7 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import gtk, gobject
+from gi import pygtkcompat
+import gi
+gi.require_version("Gtk", '3.0')
+
+try:
+    from gi import pygtkcompat
+except importerror:
+    pygtkcompat = none
+    from gi.repository import Gtk as gtk
+    from gi.repository import GObject as gobject
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+    import gtk
+    import gobject
+
 
 class MarqueeLabel(gtk.Label):
     """
@@ -18,7 +34,7 @@ class MarqueeLabel(gtk.Label):
         padre del widget. Se deja para futuras versiones.
         speed es el número de caracteres por segundo que se desplazan.
         """
-        self.texto_original = self.texto = texto.decode("utf-8")
+        self.texto_original = self.texto = texto
         self._long = init_long
         self.parte_visible = texto[:self._long]
         FRAME_DELAY = int(round(1000.0 / speed))
