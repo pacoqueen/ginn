@@ -1,670 +1,695 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#
-#   pyconsole.py
-#
-#   Copyright (C) 2004-2006 by Yevgen Muntyan <muntyan@math.tamu.edu>
-#   Portions of code by Geoffrey French.
-#   Minors modifications by Francisco José Rodríguez Bogado.
-#
-#   This program is free software; you can redistribute it and/or modify
-#   it under the terms of the GNU General Public License as published by
-#   the Free Software Foundation; either version 2 of the License, or
-#   (at your option) any later version.
-#
-#   See COPYING file that comes with this distribution.
-#
-###############################################################################
-# Copyright (C) 2005-2008  Francisco José Rodríguez Bogado,                   #
-#                          Diego Muñoz Escalante.                             #
-# (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
-#                                                                             #
-# This file is part of GeotexInn.                                             #
-#                                                                             #
-# GeotexInn is free software; you can redistribute it and/or modify           #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation; either version 2 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# GeotexInn is distributed in the hope that it will be useful,                #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with GeotexInn; if not, write to the Free Software                    #
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA  #
-###############################################################################
+'''
+Provides IPython console widget.
 
+@author: Eitan Isaacson
+@organization: IBM Corporation
+@copyright: Copyright (c) 2007 IBM Corporation
+@license: BSD
 
-# This module 'runs' python interpreter in a TextView widget.
-# The main class is Console, usage is:
-# Console(locals=None, banner=None, completer=None, use_rlcompleter=True, start_script='') -
-# it creates the widget and 'starts' interactive session; see the end of
-# this file. If start_script is not empty, it pastes it as it was entered from keyboard.
-#
-# Console has "command" signal which is emitted when code is about to
-# be executed. You may connect to it using console.connect or console.connect_after
-# to get your callback ran before or after the code is executed.
-#
-# To modify output appearance, set attributes of console.stdout_tag and
-# console.stderr_tag.
-#
-# Console may subclass a type other than gtk.TextView, to allow syntax highlighting and stuff,
-# e.g.:
-#   console_type = pyconsole.ConsoleType(moo.edit.TextView)
-#   console = console_type(use_rlcompleter=False, start_script="import moo\nimport gtk\n")
-#
-# This widget is not a replacement for real terminal with python running
-# inside: GtkTextView is not a terminal.
-# The use case is: you have a python program, you create this widget,
-# and inspect your program interiors.
+All rights reserved. This program and the accompanying materials are made
+available under the terms of the BSD which accompanies this distribution, and
+is available at U{http://www.opensource.org/licenses/bsd-license.php}
+'''
 
-import gtk
-import gtk.gdk as gdk
-import gobject
-import pango
-import gtk.keysyms as _keys
-import code
-import sys
-import keyword
+import gi
+
+gi.require_version("Gtk", "3.0")
+
+from gi.repository import Gtk as gtk
+from gi.repository import Gdk as gdk
+from gi.repository import GLib
+from gi.repository import Pango
+
+from pkg_resources import parse_version
+
 import re
+import sys
+import os
 
-# commonprefix() from posixpath
-def _commonprefix(m):
-    "Given a list of pathnames, returns the longest common leading component"
-    if not m: return ''
-    prefix = m[0]
-    for item in m:
-        for i in range(len(prefix)):
-            if prefix[:i+1] != item[:i+1]:
-                prefix = prefix[:i]
-                if i == 0:
-                    return ''
-                break
-    return prefix
+from io import StringIO
+from functools import reduce
 
-class _ReadLine(object):
+try:
+    import IPython
+except ImportError:
+    IPython = None
 
-    class Output(object):
-        def __init__(self, console, tag_name):
-            object.__init__(self)
-            self.buffer = console.get_buffer()
-            self.tag_name = tag_name
-        def write(self, text):
-            pos = self.buffer.get_iter_at_mark(self.buffer.get_insert())
-            self.buffer.insert_with_tags_by_name(pos, text, self.tag_name)
 
-    class History(object):
-        def __init__(self):
-            object.__init__(self)
-            self.items = ['']
-            self.ptr = 0
-            self.edited = {}
+class IterableIPShell:
+    '''
+    Create an IPython instance. Does not start a blocking event loop,
+    instead allow single iterations. This allows embedding in GTK+
+    without blockage.
 
-        def commit(self, text):
-            if text and self.items[-1] != text:
-                self.items.append(text)
-            self.ptr = 0
-            self.edited = {}
+    @ivar IP: IPython instance.
+    @type IP: IPython.iplib.InteractiveShell
+    @ivar iter_more: Indicates if the line executed was a complete command,
+    or we should wait for more.
+    @type iter_more: integer
+    @ivar history_level: The place in history where we currently are
+    when pressing up/down.
+    @type history_level: integer
+    @ivar complete_sep: Seperation delimeters for completion function.
+    @type complete_sep: _sre.SRE_Pattern
+    '''
 
-        def get(self, folder, text):
-            if len(self.items) == 1:
-                return None
+    def __init__(self, argv=[], user_ns=None, user_global_ns=None,
+                 cin=None, cout=None, cerr=None, input_func=None):
+        '''
 
-            if text != self.items[self.ptr]:
-                self.edited[self.ptr] = text
-            elif self.ptr in self.edited:
-                del self.edited[self.ptr]
 
-            self.ptr = self.ptr + folder
-            if self.ptr >= len(self.items):
-                self.ptr = 0
-            elif self.ptr < 0:
-                self.ptr = len(self.items) - 1
+        @param argv: Command line options for IPython
+        @type argv: list
+        @param user_ns: User namespace.
+        @type user_ns: dictionary
+        @param user_global_ns: User global namespace.
+        @type user_global_ns: dictionary.
+        @param cin: Console standard input.
+        @type cin: IO stream
+        @param cout: Console standard output.
+        @type cout: IO stream
+        @param cerr: Console standard error.
+        @type cerr: IO stream
+        @param input_func: Replacement for builtin raw_input()
+        @type input_func: function
+        '''
+        io = IPython.utils.io
+        if input_func:
+            if parse_version(IPython.release.version) >= parse_version("1.2.1"):
+                IPython.terminal.interactiveshell.raw_input_original = input_func
+            else:
+                IPython.frontend.terminal.interactiveshell.raw_input_original = input_func
+        if cin:
+            io.stdin = io.IOStream(cin)
+        if cout:
+            io.stdout = io.IOStream(cout)
+            # XXX io.stdout = sys.stdout
+        if cerr:
+            # XXX io.stderr = io.IOStream(cerr)
+            io.stderr = sys.stderr
 
+        # This is to get rid of the blockage that accurs during
+        # IPython.Shell.InteractiveShell.user_setup()
+
+        io.raw_input = lambda x: None
+
+        os.environ['TERM'] = 'dumb'
+        excepthook = sys.excepthook
+
+        if parse_version(IPython.release.version) >= parse_version('4.0.0'):
+            from traitlets.config.loader import Config
+        else:
+            from IPython.config.loader import Config
+        cfg = Config()
+        cfg.InteractiveShell.colors = "Linux"
+        cfg.Completer.use_jedi = False
+
+        # InteractiveShell's __init__ overwrites io.stdout,io.stderr with
+        # sys.stdout, sys.stderr, this makes sure they are right
+        #
+        old_stdout, old_stderr = sys.stdout, sys.stderr
+        # XXX sys.stdout, sys.stderr = io.stdout.stream, io.stderr.stream
+        sys.stdout, sys.stderr = io.stdout, io.stderr
+
+        # InteractiveShell inherits from SingletonConfigurable, so use instance()
+        #
+        if parse_version(IPython.release.version) >= parse_version("1.2.1"):
+            self.IP = IPython.terminal.embed.InteractiveShellEmbed.instance(
+                config=cfg, user_ns=user_ns)
+        else:
+            self.IP = IPython.frontend.terminal.embed.InteractiveShellEmbed.instance(
+                config=cfg, user_ns=user_ns)
+
+        sys.stdout, sys.stderr = old_stdout, old_stderr
+
+        self.IP.system = lambda cmd: self.shell(self.IP.var_expand(cmd),
+                                                header='IPython system call: ')
+#                                            local_ns=user_ns)
+        # global_ns=user_global_ns)
+        # verbose=self.IP.rc.system_verbose)
+
+        self.IP.raw_input = input_func
+        sys.excepthook = excepthook
+        self.iter_more = 0
+        self.history_level = 0
+        self.complete_sep = re.compile('[\s\{\}\[\]\(\)]')
+        self.updateNamespace({'exit': lambda: None})
+        self.updateNamespace({'quit': lambda: None})
+        if parse_version(IPython.release.version) < parse_version("5.0.0"):
+            self.IP.readline_startup_hook(self.IP.pre_readline)
+        # Workaround for updating namespace with sys.modules
+        #
+        self.__update_namespace()
+
+        # Avoid using input splitter when not really needed.
+        # Perhaps it could work even before 5.8.0
+        # But it definitely does not work any more with >= 7.0.0
+        self.no_input_splitter = parse_version(
+            IPython.release.version) >= parse_version('5.8.0')
+        self.lines = []
+        self.indent_spaces = ''
+
+    def __update_namespace(self):
+        '''
+        Update self.IP namespace for autocompletion with sys.modules
+        '''
+        for k, v in list(sys.modules.items()):
+            if not '.' in k:
+                self.IP.user_ns.update({k: v})
+
+    def execute(self):
+        '''
+        Executes the current line provided by the shell object.
+        '''
+        self.history_level = 0
+
+        # this is needed because some functions in IPython use 'print' to print
+        # output (like 'who')
+        #
+        orig_stdout = sys.stdout
+        sys.stdout = IPython.utils.io.stdout
+
+        orig_stdin = sys.stdin
+        sys.stdin = IPython.utils.io.stdin
+        self.prompt = self.generatePrompt(self.iter_more)
+
+        self.IP.hooks.pre_prompt_hook()
+        if self.iter_more:
             try:
-                return self.edited[self.ptr]
-            except KeyError:
-                return self.items[self.ptr]
+                self.prompt = self.generatePrompt(True)
+            except:
+                self.IP.showtraceback()
+            if self.IP.autoindent:
+                self.IP.rl_do_indent = True
+
+        try:
+            line = self.IP.raw_input(self.prompt)
+        except KeyboardInterrupt:
+            self.IP.write('\nKeyboardInterrupt\n')
+            if self.no_input_splitter:
+                self.lines = []
+            else:
+                self.IP.input_splitter.reset()
+        except:
+            self.IP.showtraceback()
+        else:
+            if self.no_input_splitter:
+                self.lines.append(line)
+                (status, self.indent_spaces) = self.IP.check_complete(
+                    '\n'.join(self.lines))
+                self.iter_more = status == 'incomplete'
+            else:
+                self.IP.input_splitter.push(line)
+                self.iter_more = self.IP.input_splitter.push_accepts_more()
+            self.prompt = self.generatePrompt(self.iter_more)
+            if not self.iter_more:
+                if self.no_input_splitter:
+                    source_raw = '\n'.join(self.lines)
+                    self.lines = []
+                elif parse_version(IPython.release.version) >= parse_version("2.0.0-dev"):
+                    source_raw = self.IP.input_splitter.raw_reset()
+                else:
+                    source_raw = self.IP.input_splitter.source_raw_reset()[1]
+                self.IP.run_cell(source_raw, store_history=True)
+                self.IP.rl_do_indent = False
+            else:
+                # TODO: Auto-indent
+                #
+                self.IP.rl_do_indent = True
+                pass
+
+        sys.stdout = orig_stdout
+        sys.stdin = orig_stdin
+
+    def generatePrompt(self, is_continuation):
+        '''
+        Generate prompt depending on is_continuation value
+
+        @param is_continuation
+        @type is_continuation: boolean
+
+        @return: The prompt string representation
+        @rtype: string
+
+        '''
+
+        # Backwards compatibility with ipyton-0.11
+        #
+        ver = IPython.__version__
+        if ver[0:4] == '0.11':
+            prompt = self.IP.hooks.generate_prompt(is_continuation)
+        elif parse_version(IPython.release.version) < parse_version("5.0.0"):
+            if is_continuation:
+                prompt = self.IP.prompt_manager.render('in2')
+            else:
+                prompt = self.IP.prompt_manager.render('in')
+        else:
+            # TODO: update to IPython 5.x and later
+            prompt = "In [%d]: " % self.IP.execution_count
+
+        return prompt
+
+    def historyBack(self):
+        '''
+        Provides one history command back.
+
+        @return: The command string.
+        @rtype: string
+        '''
+        self.history_level -= 1
+        if not self._getHistory():
+            self.history_level += 1
+        return self._getHistory()
+
+    def historyForward(self):
+        '''
+        Provides one history command forward.
+
+        @return: The command string.
+        @rtype: string
+        '''
+        if self.history_level < 0:
+            self.history_level += 1
+        return self._getHistory()
+
+    def _getHistory(self):
+        '''
+        Get's the command string of the current history level.
+
+        @return: Historic command string.
+        @rtype: string
+        '''
+        try:
+            rv = self.IP.user_ns['In'][self.history_level].strip('\n')
+        except IndexError:
+            rv = ''
+        return rv
+
+    def updateNamespace(self, ns_dict):
+        '''
+        Add the current dictionary to the shell namespace.
+
+        @param ns_dict: A dictionary of symbol-values.
+        @type ns_dict: dictionary
+        '''
+        self.IP.user_ns.update(ns_dict)
+
+    def complete(self, line):
+        '''
+        Returns an auto completed line and/or posibilities for completion.
+
+        @param line: Given line so far.
+        @type line: string
+
+        @return: Line completed as for as possible,
+        and possible further completions.
+        @rtype: tuple
+        '''
+        split_line = self.complete_sep.split(line)
+        if split_line[-1]:
+            possibilities = self.IP.complete(split_line[-1])
+        else:
+            completed = line
+            possibilities = ['', []]
+        if possibilities:
+            def _commonPrefix(str1, str2):
+                '''
+                Reduction function. returns common prefix of two given strings.
+
+                @param str1: First string.
+                @type str1: string
+                @param str2: Second string
+                @type str2: string
+
+                @return: Common prefix to both strings.
+                @rtype: string
+                '''
+                for i in range(len(str1)):
+                    if not str2.startswith(str1[:i+1]):
+                        return str1[:i]
+                return str1
+            if possibilities[1]:
+                common_prefix = reduce(
+                    _commonPrefix, possibilities[1]) or split_line[-1]
+                completed = line[:-len(split_line[-1])]+common_prefix
+            else:
+                completed = line
+        else:
+            completed = line
+        return completed, possibilities[1]
+
+    def shell(self, cmd, verbose=0, debug=0, header=''):
+        '''
+        Replacement method to allow shell commands without them blocking.
+
+        @param cmd: Shell command to execute.
+        @type cmd: string
+        @param verbose: Verbosity
+        @type verbose: integer
+        @param debug: Debug level
+        @type debug: integer
+        @param header: Header to be printed before output
+        @type header: string
+        '''
+        stat = 0
+        if verbose or debug:
+            print(header+cmd)
+        # flush stdout so we don't mangle python's buffering
+        if not debug:
+            input, output = os.popen4(cmd)
+            print(output.read())
+            output.close()
+            input.close()
+
+
+class ConsoleView(gtk.TextView):
+    '''
+    Specialized text view for console-like workflow.
+
+    @cvar ANSI_COLORS: Mapping of terminal colors to X11 names.
+    @type ANSI_COLORS: dictionary
+
+    @ivar text_buffer: Widget's text buffer.
+    @type text_buffer: gtk.TextBuffer
+    @ivar color_pat: Regex of terminal color pattern
+    @type color_pat: _sre.SRE_Pattern
+    @ivar mark: Scroll mark for automatic scrolling on input.
+    @type mark: gtk.TextMark
+    @ivar line_start: Start of command line mark.
+    @type line_start: gtk.TextMark
+    '''
+    ANSI_COLORS = {'0;30': 'Black',     '0;31': 'Red',
+                   '0;32': 'Green',     '0;33': 'Brown',
+                   '0;34': 'Blue',      '0;35': 'Purple',
+                   '0;36': 'Cyan',      '0;37': 'LightGray',
+                   '1;30': 'DarkGray',  '1;31': 'DarkRed',
+                   '1;32': 'SeaGreen',  '1;33': 'Yellow',
+                   '1;34': 'LightBlue', '1;35': 'MediumPurple',
+                   '1;36': 'LightCyan', '1;37': 'White'}
 
     def __init__(self):
-        object.__init__(self)
+        '''
+        Initialize console view.
+        '''
+        gtk.TextView.__init__(self)
+        pango_ctx = self.get_pango_context()
+        chosen = None
+        for f in pango_ctx.list_families():
+            name = f.get_name()
+            # These are known to show e.g U+FFFC
+            if name in ["Courier New", "Courier Mono"]:
+                chosen = name
+                break
+            if name in ["Liberation Sans"]:
+                chosen = name
+                # But prefer a monospace one if possible
+        if chosen == None:
+            chosen = "Mono"
+        # TODO: XXX Deprecated XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX
+        # self.modify_font(Pango.FontDescription(chosen))
+        self.set_cursor_visible(True)
+        self.text_buffer = self.get_buffer()
+        self.mark = self.text_buffer.create_mark('scroll_mark',
+                                                 self.text_buffer.get_end_iter(),
+                                                 False)
+        for code in self.ANSI_COLORS:
+            self.text_buffer.create_tag(code,
+                                        foreground=self.ANSI_COLORS[code],
+                                        weight=700)
+        self.text_buffer.create_tag('0')
+        self.text_buffer.create_tag('notouch', editable=False)
+        self.color_pat = re.compile('\x01?\x1b\[(.*?)m\x02?')
+        self.line_start = \
+            self.text_buffer.create_mark('line_start',
+                                         self.text_buffer.get_end_iter(), True)
+        self.connect('key-press-event', self.onKeyPress)
 
-        self.set_wrap_mode(gtk.WRAP_CHAR)
-        self.modify_font(pango.FontDescription("Monospace"))
+    def write(self, text, editable=False):
+        GLib.idle_add(self._write, text, editable)
 
-        self.buffer = self.get_buffer()
-        self.buffer.connect("insert-text", self.on_buf_insert)
-        self.buffer.connect("delete-range", self.on_buf_delete)
-        self.buffer.connect("mark-set", self.on_buf_mark_set)
-        self.do_insert = False
-        self.do_delete = False
+    def _write(self, text, editable=False):
+        '''
+        Write given text to buffer.
 
-        self.stdout_tag = self.buffer.create_tag("stdout", foreground="#006000")
-        self.stderr_tag = self.buffer.create_tag("stderr", foreground="#B00000")
-        self._stdout = _ReadLine.Output(self, "stdout")
-        self._stderr = _ReadLine.Output(self, "stderr")
+        @param text: Text to append.
+        @type text: string
+        @param editable: If true, added text is editable.
+        @type editable: boolean
+        '''
+        segments = self.color_pat.split(text)
+        segment = segments.pop(0)
+        start_mark = self.text_buffer.create_mark(None,
+                                                  self.text_buffer.get_end_iter(),
+                                                  True)
+        self.text_buffer.insert(self.text_buffer.get_end_iter(), segment)
 
-        self.cursor = self.buffer.create_mark("cursor",
-                                              self.buffer.get_start_iter(),
-                                              False)
-        insert = self.buffer.get_insert()
-        self.cursor.set_visible(True)
-        insert.set_visible(False)
+        if segments:
+            ansi_tags = self.color_pat.findall(text)
+            for tag in ansi_tags:
+                i = segments.index(tag)
+                self.text_buffer.insert_with_tags_by_name(self.text_buffer.get_end_iter(),
+                                                          segments[i+1], tag)
+                segments.pop(i)
+        if not editable:
+            self.text_buffer.apply_tag_by_name('notouch',
+                                               self.text_buffer.get_iter_at_mark(
+                                                   start_mark),
+                                               self.text_buffer.get_end_iter())
+        self.text_buffer.delete_mark(start_mark)
+        self.scroll_mark_onscreen(self.mark)
 
-        self.ps = ''
-        self.in_raw_input = False
-        self.run_on_raw_input = None
-        self.tab_pressed = 0
-        self.history = _ReadLine.History()
-        self.nonword_re = re.compile("[^\w\._]")
+    def showPrompt(self, prompt):
+        GLib.idle_add(self._showPrompt, prompt)
 
-    def freeze_undo(self):
-        try: self.begin_not_undoable_action()
-        except: pass
+    def _showPrompt(self, prompt):
+        '''
+        Prints prompt at start of line.
 
-    def thaw_undo(self):
-        try: self.end_not_undoable_action()
-        except: pass
+        @param prompt: Prompt to print.
+        @type prompt: string
+        '''
+        self._write(prompt)
+        self.text_buffer.move_mark(self.line_start,
+                                   self.text_buffer.get_end_iter())
 
-    def raw_input(self, ps=None):
-        if ps:
-            self.ps = ps
-        else:
-            self.ps = ''
+    def changeLine(self, text):
+        GLib.idle_add(self._changeLine, text)
 
-        itr = self.buffer.get_iter_at_mark(self.buffer.get_insert())
+    def _changeLine(self, text):
+        '''
+        Replace currently entered command line with given text.
 
-        if ps:
-            self.freeze_undo()
-            self.buffer.insert(itr, self.ps)
-            self.thaw_undo()
+        @param text: Text to use as replacement.
+        @type text: string
+        '''
+        iter = self.text_buffer.get_iter_at_mark(self.line_start)
+        iter.forward_to_line_end()
+        self.text_buffer.delete(
+            self.text_buffer.get_iter_at_mark(self.line_start), iter)
+        self._write(text, True)
 
-        self.__move_cursor_to(itr)
-        self.scroll_to_mark(self.cursor, 0.2)
+    def getCurrentLine(self):
+        '''
+        Get text in current command line.
 
-        self.in_raw_input = True
+        @return: Text of current command line.
+        @rtype: string
+        '''
+        rv = self.text_buffer.get_slice(
+            self.text_buffer.get_iter_at_mark(self.line_start),
+            self.text_buffer.get_end_iter(), False)
+        return rv
 
-        if self.run_on_raw_input:
-            run_now = self.run_on_raw_input
-            self.run_on_raw_input = None
-            self.buffer.insert_at_cursor(run_now + '\n')
+    def showReturned(self, text):
+        GLib.idle_add(self._showReturned, text)
 
-    def on_buf_mark_set(self, buff, itr, mark):
-        if mark is not buff.get_insert():
-            return
-        start = self.__get_start()  # @UnusedVariable
-        end = self.__get_end()  # @UnusedVariable
-        if itr.compare(self.__get_start()) >= 0 and \
-           itr.compare(self.__get_end()) <= 0:
-                buff.move_mark_by_name("cursor", itr)
-                self.scroll_to_mark(self.cursor, 0.2)
+    def _showReturned(self, text):
+        '''
+        Show returned text from last command and print new prompt.
 
-    def __insert(self, itr, text):
-        self.do_insert = True
-        self.buffer.insert(itr, text)
-        self.do_insert = False
+        @param text: Text to show.
+        @type text: string
+        '''
+        iter = self.text_buffer.get_iter_at_mark(self.line_start)
+        iter.forward_to_line_end()
+        self.text_buffer.apply_tag_by_name(
+            'notouch',
+            self.text_buffer.get_iter_at_mark(self.line_start),
+            iter)
+        self._write('\n'+text)
+        if text:
+            self._write('\n')
+        self._showPrompt(self.prompt)
+        self.text_buffer.move_mark(
+            self.line_start, self.text_buffer.get_end_iter())
+        self.text_buffer.place_cursor(self.text_buffer.get_end_iter())
 
-    def on_buf_insert(self, buf, itr, text, lon):
-        if not self.in_raw_input or self.do_insert or not lon:
-            return
-        buf.stop_emission("insert-text")
-        lines = text.splitlines()
-        need_eol = False
-        for l in lines:
-            if need_eol:
-                self._commit()
-                itr = self.__get_cursor()
+        if self.IP.rl_do_indent:
+            if self.no_input_splitter:
+                indentation = self.indent_spaces
             else:
-                cursor = self.__get_cursor()
-                if itr.compare(self.__get_start()) < 0:
-                    itr = cursor
-                elif itr.compare(self.__get_end()) > 0:
-                    itr = cursor
-                else:
-                    self.__move_cursor_to(itr)
-            need_eol = True
-            self.__insert(itr, l)
-        self.__move_cursor(0)
+                indentation = self.IP.input_splitter.indent_spaces * ' '
+            self.text_buffer.insert_at_cursor(indentation)
 
-    def __delete(self, start, end):
-        self.do_delete = True
-        self.buffer.delete(start, end)
-        self.do_delete = False
+    def onKeyPress(self, widget, event):
+        '''
+        Key press callback used for correcting behavior for console-like
+        interfaces. For example 'home' should go to prompt, not to begining of
+        line.
 
-    def on_buf_delete(self, buf, start, end):
-        if not self.in_raw_input or self.do_delete:
-            return
+        @param widget: Widget that key press accored in.
+        @type widget: gtk.Widget
+        @param event: Event object
+        @type event: gtk.gdk.Event
 
-        buf.stop_emission("delete-range")
-
-        start.order(end)
-        line_start = self.__get_start()
-        line_end = self.__get_end()
-
-        if start.compare(line_end) > 0:
-            return
-        if end.compare(line_start) < 0:
-            return
-
-        self.__move_cursor(0)
-
-        if start.compare(line_start) < 0:
-            start = line_start
-        if end.compare(line_end) > 0:
-            end = line_end
-        self.__delete(start, end)
-
-    def do_key_press_event(self, event, parent_type):
-        if not self.in_raw_input:
-            return parent_type.do_key_press_event(self, event)
-
-        tab_pressed = self.tab_pressed
-        self.tab_pressed = 0
-        handled = True
-
-        state = event.state & (gdk.SHIFT_MASK |
-                                gdk.CONTROL_MASK |
-                                gdk.MOD1_MASK)
-        keyval = event.keyval
-
-        if not state:
-            if keyval == _keys.Return or keyval == _keys.KP_Enter:
-                self._commit()
-            elif keyval == _keys.Up:
-                self.__history(-1)
-            elif keyval == _keys.Down:
-                self.__history(1)
-            elif keyval == _keys.Left:
-                self.__move_cursor(-1)
-            elif keyval == _keys.Right:
-                self.__move_cursor(1)
-            elif keyval == _keys.Home:
-                self.__move_cursor(-10000)
-            elif keyval == _keys.End:
-                self.__move_cursor(10000)
-            elif keyval == _keys.Tab:
-                cursor = self.__get_cursor()
-                if cursor.starts_line():
-                    handled = False
-                else:
-                    cursor.backward_char()
-                    if cursor.get_char().isspace():
-                        handled = False
-                    else:
-                        self.tab_pressed = tab_pressed + 1
-                        self.__complete()
+        @return: Return True if event should not trickle.
+        @rtype: boolean
+        '''
+        insert_mark = self.text_buffer.get_insert()
+        insert_iter = self.text_buffer.get_iter_at_mark(insert_mark)
+        selection_mark = self.text_buffer.get_selection_bound()
+        selection_iter = self.text_buffer.get_iter_at_mark(selection_mark)
+        start_iter = self.text_buffer.get_iter_at_mark(self.line_start)
+        if event.keyval == gdk.KEY_Home:
+            if event.state & gdk.ModifierType.CONTROL_MASK or \
+                    event.state & gdk.ModifierType.MOD1_MASK:
+                pass
+            elif event.state & gdk.ModifierType.SHIFT_MASK:
+                self.text_buffer.move_mark(insert_mark, start_iter)
+                return True
             else:
-                handled = False
-        elif state == gdk.CONTROL_MASK:
-            if keyval == _keys.u:
-                start = self.__get_start()
-                end = self.__get_cursor()
-                self.__delete(start, end)
-            else:
-                handled = False
-        else:
-            handled = False
+                self.text_buffer.place_cursor(start_iter)
+                return True
+        elif event.keyval == gdk.KEY_Left:
+            insert_iter.backward_cursor_position()
+            if not insert_iter.editable(True):
+                return True
+        elif not event.string:
+            pass
+        elif start_iter.compare(insert_iter) <= 0 and \
+                start_iter.compare(selection_iter) <= 0:
+            pass
+        elif start_iter.compare(insert_iter) > 0 and \
+                start_iter.compare(selection_iter) > 0:
+            self.text_buffer.place_cursor(start_iter)
+        elif insert_iter.compare(selection_iter) < 0:
+            self.text_buffer.move_mark(insert_mark, start_iter)
+        elif insert_iter.compare(selection_iter) > 0:
+            self.text_buffer.move_mark(selection_mark, start_iter)
 
-        if not handled:
-            return parent_type.do_key_press_event(self, event)
-        else:
-            return True
+        return self.onKeyPressExtend(event)
 
-    def __history(self, directorio):
-        text = self._get_line()
-        new_text = self.history.get(directorio, text)
-        if not new_text is None:
-            self.__replace_line(new_text)
-        self.__move_cursor(0)
-        self.scroll_to_mark(self.cursor, 0.2)
-
-    def __get_cursor(self):
-        return self.buffer.get_iter_at_mark(self.cursor)
-    def __get_start(self):
-        itr = self.__get_cursor()
-        itr.set_line_offset(len(self.ps))
-        return itr
-    def __get_end(self):
-        itr = self.__get_cursor()
-        if not itr.ends_line():
-            itr.forward_to_line_end()
-        return itr
-
-    def __get_text(self, start, end):
-        return self.buffer.get_text(start, end, False)
-
-    def __move_cursor_to(self, itr):
-        self.buffer.place_cursor(itr)
-        self.buffer.move_mark_by_name("cursor", itr)
-
-    def __move_cursor(self, howmany):
-        itr = self.__get_cursor()
-        end = self.__get_cursor()
-        if not end.ends_line():
-            end.forward_to_line_end()
-        line_len = end.get_line_offset()
-        move_to = itr.get_line_offset() + howmany
-        move_to = min(max(move_to, len(self.ps)), line_len)
-        itr.set_line_offset(move_to)
-        self.__move_cursor_to(itr)
-
-    def __delete_at_cursor(self, howmany):
-        itr = self.__get_cursor()
-        end = self.__get_cursor()
-        if not end.ends_line():
-            end.forward_to_line_end()
-        line_len = end.get_line_offset()
-        erase_to = itr.get_line_offset() + howmany
-        if erase_to > line_len:
-            erase_to = line_len
-        elif erase_to < len(self.ps):
-            erase_to = len(self.ps)
-        end.set_line_offset(erase_to)
-        self.__delete(itr, end)
-
-    def __get_width(self):
-        if not (self.flags() & gtk.REALIZED):
-            return 80
-        layout = pango.Layout(self.get_pango_context())
-        letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-        layout.set_text(letters)
-        pix_width = layout.get_pixel_size()[0]
-        return self.allocation.width * len(letters) / pix_width
-
-    def __print_completions(self, completions):
-        line_start = self.__get_text(self.__get_start(), self.__get_cursor())
-        line_end = self.__get_text(self.__get_cursor(), self.__get_end())
-        itr = self.buffer.get_end_iter()
-        self.__move_cursor_to(itr)
-        self.__insert(itr, "\n")
-
-        width = max(self.__get_width(), 4)
-        max_width = max([len(s) for s in completions])
-        n_columns = max(int(width / (max_width + 1)), 1)
-        col_width = int(width / n_columns)
-        total = len(completions)
-        col_length = total / n_columns
-        if total % n_columns:
-            col_length = col_length + 1
-        col_length = max(col_length, 1)
-
-        if col_length == 1:
-            n_columns = total
-            col_width = width / total
-
-        for i in range(col_length):
-            for j in range(n_columns):
-                ind = i + j*col_length
-                if ind < total:
-                    if j == n_columns - 1:
-                        n_spaces = 0
-                    else:
-                        n_spaces = col_width - len(completions[ind])
-                    self.__insert(itr, completions[ind] + " " * n_spaces)
-            self.__insert(itr, "\n")
-
-        self.__insert(itr, "%s%s%s" % (self.ps, line_start, line_end))
-        itr.set_line_offset(len(self.ps) + len(line_start))
-        self.__move_cursor_to(itr)
-        self.scroll_to_mark(self.cursor, 0.2)
-
-    def __complete(self):
-        text = self.__get_text(self.__get_start(), self.__get_cursor())
-        start = ''
-        word = text
-        nonwords = self.nonword_re.findall(text)
-        if nonwords:
-            last = text.rfind(nonwords[-1]) + len(nonwords[-1])
-            start = text[:last]
-            word = text[last:]
-
-        completions = self.complete(word)
-
-        if completions:
-            prefix = _commonprefix(completions)
-            if prefix != word:
-                start_iter = self.__get_start()
-                start_iter.forward_chars(len(start))
-                end_iter = start_iter.copy()
-                end_iter.forward_chars(len(word))
-                self.__delete(start_iter, end_iter)
-                self.__insert(end_iter, prefix)
-            elif self.tab_pressed > 1:
-                self.freeze_undo()
-                self.__print_completions(completions)
-                self.thaw_undo()
-                self.tab_pressed = 0
-
-    def complete(self, text):
-        return None
-
-    def _get_line(self):
-        start = self.__get_start()
-        end = self.__get_end()
-        return self.buffer.get_text(start, end, False)
-
-    def __replace_line(self, new_text):
-        start = self.__get_start()
-        end = self.__get_end()
-        self.__delete(start, end)
-        self.__insert(end, new_text)
-
-    def _commit(self):
-        end = self.__get_cursor()
-        if not end.ends_line():
-            end.forward_to_line_end()
-        text = self._get_line()
-        self.__move_cursor_to(end)
-        self.freeze_undo()
-        self.__insert(end, "\n")
-        self.in_raw_input = False
-        self.history.commit(text)
-        self.do_raw_input(text)
-        self.thaw_undo()
-
-    def do_raw_input(self, text):
+    def onKeyPressExtend(self, event):
+        '''
+        For some reason we can't extend onKeyPress directly (bug #500900).
+        '''
         pass
 
 
-class _Console(_ReadLine, code.InteractiveInterpreter):
-    def __init__(self, locales=None, banner=None,
-                 completer=None, use_rlcompleter=True,
-                 start_script=None):
-        _ReadLine.__init__(self)
-        
-        code.InteractiveInterpreter.__init__(self, locales)
-        self.locals["__console__"] = self
+class IPythonView(ConsoleView, IterableIPShell):
+    '''
+    Sub-class of both modified IPython shell and L{ConsoleView} this makes
+    a GTK+ IPython console.
+    '''
 
-        self.start_script = start_script
-        self.completer = completer
-        self.banner = banner
+    def __init__(self):
+        '''
+        Initialize. Redirect I/O to console.
+        '''
+        ConsoleView.__init__(self)
+        self.cout = StringIO()
+        IterableIPShell.__init__(self, cout=self.cout, cerr=self.cout,
+                                 input_func=self.raw_input)
+#    self.connect('key_press_event', self.keyPress)
+        self.interrupt = False
+        self.execute()
+        self.prompt = self.generatePrompt(False)
+        self.cout.truncate(0)
+        self.showPrompt(self.prompt)
 
-        if not self.completer and use_rlcompleter:
-            try:
-                import rlcompleter
-                self.completer = rlcompleter.Completer()
-            except ImportError:
-                pass
+    def raw_input(self, prompt=''):
+        '''
+        Custom raw_input() replacement. Get's current line from console buffer.
 
-        self.ps1 = ">>> "
-        self.ps2 = "... "
-        self.__start()
-        self.run_on_raw_input = start_script
-        self.raw_input(self.ps1)
+        @param prompt: Prompt to print. Here for compatability as replacement.
+        @type prompt: string
 
-    def __start(self):
-        self.cmd_buffer = ""
+        @return: The current command line text.
+        @rtype: string
+        '''
+        if self.interrupt:
+            self.interrupt = False
+            raise KeyboardInterrupt
+        return self.getCurrentLine()
 
-        self.freeze_undo()
-        self.thaw_undo()
-        self.buffer.set_text("")
+    def onKeyPressExtend(self, event):
+        '''
+        Key press callback with plenty of shell goodness, like history,
+        autocompletions, etc.
 
-        if self.banner:
-            itr = self.buffer.get_start_iter()
-            self.buffer.insert_with_tags_by_name(itr, self.banner, "stdout")
-            if not itr.starts_line():
-                self.buffer.insert(itr, "\n")
+        @param widget: Widget that key press occured in.
+        @type widget: gtk.Widget
+        @param event: Event object.
+        @type event: gtk.gdk.Event
 
-    def clear(self, start_script=None):
-        if start_script is None:
-            start_script = self.start_script
-        else:
-            self.start_script = start_script
+        @return: True if event should not trickle.
+        @rtype: boolean
+        '''
+        if event.state & gdk.ModifierType.CONTROL_MASK and event.keyval == 99:
+            self.interrupt = True
+            self._processLine()
+            return True
+        elif event.keyval == gdk.KEY_Return:
+            self._processLine()
+            return True
+        elif event.keyval == gdk.KEY_Up:
+            self.changeLine(self.historyBack())
+            return True
+        elif event.keyval == gdk.KEY_Down:
+            self.changeLine(self.historyForward())
+            return True
+        elif event.keyval == gdk.KEY_Tab:
+            if not self.getCurrentLine().strip():
+                return False
+            completed, possibilities = self.complete(self.getCurrentLine())
+            if len(possibilities) > 1:
+                slice = self.getCurrentLine()
+                self.write('\n')
+                for symbol in possibilities:
+                    self.write(symbol+'\n')
+                self.showPrompt(self.prompt)
+            self.changeLine(completed or slice)
+            return True
 
-        self.__start()
-        self.run_on_raw_input = start_script
+    def _processLine(self):
+        '''
+        Process current command line.
+        '''
+        self.history_pos = 0
+        self.execute()
+        rv = self.cout.getvalue()
+        if rv:
+            rv = rv.strip('\n')
+        self.showReturned(rv)
+        self.cout.truncate(0)
+        self.cout.seek(0)
 
-    def do_raw_input(self, text):
-        if self.cmd_buffer:
-            cmd = self.cmd_buffer + "\n" + text
-        else:
-            cmd = text
-
-        saved_stdout, saved_stderr = sys.stdout, sys.stderr
-        sys.stdout, sys.stderr = self._stdout, self._stderr
-
-        if self.runsource(cmd):
-            self.cmd_buffer = cmd
-            ps = self.ps2
-        else:
-            self.cmd_buffer = ''
-            ps = self.ps1
-
-        sys.stdout, sys.stderr = saved_stdout, saved_stderr
-        self.raw_input(ps)
-
-    def do_command(self, code):
-        try:
-            eval(code, self.locals)
-        except SystemExit:
-            raise
-        except:
-            self.showtraceback()
-
-    def runcode(self, code):
-        if gtk.pygtk_version[1] < 8:
-            self.do_command(code)
-        else:
-            self.emit("command", code)
-
-    def exec_command(self, command):
-        if self._get_line():
-            self._commit()
-        self.buffer.insert_at_cursor(command)
-        self._commit()
-
-    def complete_attr(self, start, end):
-        try:
-            obj = eval(start, self.locals)
-            strings = dir(obj)
-
-            if end:
-                completions = {}
-                for s in strings:
-                    if s.startswith(end):
-                        completions[s] = None
-                completions = list(completions.keys())
-            else:
-                completions = strings
-
-            completions.sort()
-            return [start + "." + s for s in completions]
-        except:
-            return None
-
-    def complete(self, text):
-        if self.completer:
-            completions = []
-            i = 0
-            try:
-                while 1:
-                    s = self.completer.complete(text, i)
-                    if s:
-                        completions.append(s)
-                        i = i + 1
-                    else:
-                        completions.sort()
-                        return completions
-            except NameError:
-                return None
-
-        dot = text.rfind(".")
-        if dot >= 0:
-            return self.complete_attr(text[:dot], text[dot+1:])
-
-        completions = {}
-        strings = keyword.kwlist
-
-        if self.locals:
-            strings.extend(list(self.locals.keys()))
-
-        try: strings.extend(list(eval("globals()", self.locals).keys()))
-        except: pass
-
-        try:
-            exec("import __builtin__", self.locals)
-            strings.extend(eval("dir(__builtin__)", self.locals))
-        except:
-            pass
-
-        for s in strings:
-            if s.startswith(text):
-                completions[s] = None
-        completions = list(completions.keys())
-        completions.sort()
-        return completions
-
-
-def ReadLineType(t=gtk.TextView):
-    class readline(t, _ReadLine):
-        def __init__(self, *args, **kwargs):
-            t.__init__(self)
-            _ReadLine.__init__(self, *args, **kwargs)
-        def do_key_press_event(self, event):
-            return _ReadLine.do_key_press_event(self, event, t)
-    gobject.type_register(readline)
-    return readline
-
-def ConsoleType(t=gtk.TextView):
-    class console_type(t, _Console):
-        __gsignals__ = {
-            'command' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (object,)),
-            'key-press-event' : 'override'
-          }
-
-        def __init__(self, *args, **kwargs):
-            if gtk.pygtk_version[1] < 8:
-                gobject.GObject.__init__(self)
-            else:
-                t.__init__(self)
-            _Console.__init__(self, *args, **kwargs)
-
-        def do_command(self, code):
-            return _Console.do_command(self, code)
-
-        def do_key_press_event(self, event):
-            return _Console.do_key_press_event(self, event, t)
-
-    if gtk.pygtk_version[1] < 8:
-        gobject.type_register(console_type)
-
-    return console_type
-
-ReadLine = ReadLineType()
-Console = ConsoleType()
 
 def _make_window():
+
     window = gtk.Window()
+    window.connect('delete-event', lambda x, y: gtk.main_quit())
     window.set_title("pyconsole.py")
     swin = gtk.ScrolledWindow()
-    swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_ALWAYS)
+    swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.ALWAYS)
     window.add(swin)
-    console = Console(banner="Hello there!",
-                      use_rlcompleter=False,
-                      start_script="from gtk import *\n")
+    console = IPythonView()
+    #from IPython.terminal.embed import InteractiveShellEmbed
+    #console = InteractiveShellEmbed()
+    #console.enable_gui('gtk3')
     swin.add(console)
     window.set_default_size(500, 400)
     window.show_all()
@@ -675,18 +700,21 @@ def _make_window():
 
     return console
 
-def attach_console(contenedor, banner = "Hola holita", script_inicio = "from framework import pclases\n", locales = None):
+
+def attach_console(contenedor, banner="Hola holita", script_inicio="from framework import pclases\n", locales=None):
     """
-    Inserta un TextView con la consola interactiva en 
+    Inserta un TextView con la consola interactiva en
     el contenedor recibido.
     """
     swin = gtk.ScrolledWindow()
-    swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_ALWAYS)
+    swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.ALWAYS)
     contenedor.add(swin)
-    console = Console(banner = banner,
-                      use_rlcompleter = False,
-                      start_script = script_inicio, 
-                      locales = locales)
+    console = IPythonView()
+    console.updateNamespace(locales)
+    # console = Console(banner=banner,
+    #                   use_rlcompleter=False,
+    #                   start_script=script_inicio,
+    #                   locales=locales)
     swin.add(console)
     contenedor.show_all()
     return console
@@ -694,4 +722,3 @@ def attach_console(contenedor, banner = "Hola holita", script_inicio = "from fra
 
 if __name__ == '__main__':
     _make_window()
-

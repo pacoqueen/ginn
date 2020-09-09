@@ -107,3 +107,8 @@ bin/f2py
 bin/f2py3
 bin/f2py3.8
 bin/pypprint
+bin/iptest
+bin/iptest3
+bin/ipython
+bin/ipython3
+bin/pygmentize

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2014 Francisco José Rodríguez Bogado                     #
+# Copyright (C) 2005-2020 Francisco José Rodríguez Bogado                     #
 #                         <frbogado@geotexan.com>                             #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
@@ -36,6 +36,7 @@ def guess_interprete():
     """
     Devuelve el intérprete python encontrado en el sistema.
     None si no se pudo determinar.
+    Solo útil para SO Windows.
     """
     sysdrive = os.getenv("SYSTEMDRIVE")
     if not sysdrive:
@@ -95,17 +96,17 @@ def run(modulo, clase, usuario, fconfig, obj_puid=None,
             args.append(" -d")
         if verbose:
             args.append(" -v")
-        # print comando, args
-        # subprocess.Popen([comando] + args, shell = True)
-        # Ahora no sé por qué esto de arriba no va. Esto de abajo parece que sí
-        subprocess.Popen(" ".join([comando] + args), shell=True)
+        # print(comando, args)
+        prcomando = " ".join([comando] + args)
+        # print(prcomando)
+        subprocess.Popen(prcomando, shell=True)
         # OJO: Si no funciona y Windows dice que
         # "La ruta de acceso no es válida", comprueba antes que nada que el
         # fichero de log de formularios existe y es accesible para escritura
         # para todos los usuarios. Para depurar, lo mejor es que
         # ejecutes el launcher directamente. Sin menú. Tal que así:
-        # Q:\ginn\formularios>C:\Python27\python.exe launcher.py -u admin -p
-        # adadmin -w bancos.py
+        # Q:\ginn\formularios>C:\Python27\python.exe launcher.py -u admin
+        # -p ******* -w bancos.py
     except Exception as msg:     # fallback @UnusedVariable
         # TODO: Esto debería ir al logger o algo:
         # print "launcher.py:", msg
@@ -138,6 +139,7 @@ def main():
         run(modulo, clase, usuario, fconfig, obj_puid, debug, verbose)
     else:
         sys.exit(1)
+
 
 if __name__ == '__main__':
     main()

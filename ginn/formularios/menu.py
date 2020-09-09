@@ -586,7 +586,7 @@ class Menu:
 
     def abrir_ventana_usuario(self, archivo):
         self.ventana.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
-        exec("import %s" % archivo)
+        exec("import {}".format(archivo))
         gobject.timeout_add(10000, self.volver_a_cursor_original)
         if archivo == "usuarios":
             from formularios import usuarios
@@ -633,7 +633,7 @@ class Menu:
         try:
             self.ventana.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
             while gtk.events_pending():
-                gtk.main_iteration(False)
+                gtk.main_iteration()
             # HACK: Debe haber una forma mejor de hacerlo. De momento me
             #       aprovecho de que el mainloop no va a atender al
             #       timeout aunque se cumpla el tiempo, ya que está
@@ -649,8 +649,8 @@ class Menu:
                  self.get_usuario().nivel >= 4)
                 and "partes_de_fabricacion" in archivo
                     and self.get_usuario().usuario != "cemento"):
-                exec("import %s" % archivo)
-                v = eval('%s.%s' % (archivo, clase))
+                exec("import {}".format(archivo))
+                v = getattr(archivo, clase)
                 try:
                     v(permisos="rx", usuario=self.get_usuario())
                 except TypeError:   # La ventana no soporta el modelo
@@ -743,7 +743,7 @@ class Menu:
 
             def forzar_iter_gtk(*args, **kw):
                 while gtk.events_pending():
-                    gtk.main_iteration(False)
+                    gtk.main_iteration()
 
             def printstdout(msg):
                 tv.get_buffer().insert_at_cursor(msg)
@@ -838,7 +838,7 @@ def enviar_correo(texto, usuario=None):
         gmail_pwd = usuario.cpass
     else:
         gmail_user = "practicas.geotexan@gmail.com"  # Utilizo una cuenta "genérica"
-        gmail_pwd = "20mesa20"  # FIXME !!!
+        gmail_pwd = "********"  # FIXME !!!
     gmail_from = gmail_user
     gmail_to = ['frbogado@geotexan.com']
     gmail_subject = "Geotex-INN: Informe de error"
