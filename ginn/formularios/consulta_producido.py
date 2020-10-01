@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2016  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2020  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -35,7 +35,23 @@
 
 # TODO: Mostrar los bultos también en la ventana. Solo se ven metros y kilos.
 
+import gi
+gi.require_version("Gtk", '3.0')
+from gi import pygtkcompat
+try:
+    from gi import pygtkcompat
+except ImportError:
+    pygtkcompat = None
+    from gi.repository import Gtk as gtk
+    from gi.repository import GObject as gobject
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+    import gtk
+    import gobject
 import datetime
+from ventana import Ventana
 from formularios import ventana_progreso
 from framework import pclases
 from informes import geninformes
@@ -45,16 +61,11 @@ try:
 except ImportError:
     pychart_available = False
 from tempfile import gettempdir
-from ventana import Ventana
-import gtk
 import time
-import mx.DateTime
-import pygtk
 import os
 from formularios import utils
 from formularios.ventana_progreso import VentanaProgreso
 from lib import charting
-pygtk.require('2.0')
 from formularios.consulta_ventas_por_producto import act_fecha
 from framework.memoize import memoized
 import sys
@@ -117,8 +128,9 @@ class ConsultaProducido(Ventana):
         utils.preparar_treeview(self.wids['tv_gtx'], cols)
         for i in range(1, 17):
             col = self.wids['tv_gtx'].get_column(i)
-            for cell in col.get_cell_renderers(): # One, actually
-                cell.set_property("xalign", 1.0)
+            # TODO: XXX: Ya no se hace así en Gtk3
+            # for cell in col.get_cell_renderers(): # One, actually
+            #     cell.set_property("xalign", 1.0)
         for nombre_tv in ("tv_fibra", "tv_cem"):
             _cols = [c[:] for c in cols if not c[0].startswith('m² ') and
                                                     not "Kg teórico" in c[0]]
@@ -127,14 +139,15 @@ class ConsultaProducido(Ventana):
             utils.preparar_treeview(self.wids[nombre_tv], _cols)
             for i in range(1, len(_cols) - 1):
                 col = self.wids[nombre_tv].get_column(i)
-                for cell in col.get_cell_renderers(): # One, actually
-                    cell.set_property("xalign", 1.0)
+                # TODO: XXX: Ya no se hace así en Gtk3
+                # for cell in col.get_cell_renderers(): # One, actually
+                #     cell.set_property("xalign", 1.0)
 
         temp = time.localtime()
         self.wids['e_fechafin'].set_text(utils.str_fecha(temp))
         self.wids['e_fechainicio'].set_text(
                 utils.str_fecha(
-                    mx.DateTime.localtime() - (7 * mx.DateTime.oneDay)))
+                    datetime.datetime.now() - (7 * datetime.timedelta(days=1))))
         try:
             self.wids['im_graph'].set_visible(pychart_available)
         except AttributeError:
@@ -161,6 +174,10 @@ class ConsultaProducido(Ventana):
             else:
                 extra_data = []
             abrir_csv(treeview2csv(tv, extra_data = extra_data))
+            # Portque si lo hago rápido, con el problema de los nombres de
+            # widgets en Gtk3, no da tiempo a crear 3 ficheros con nombres
+            # diferentes y solo se genera el último.
+            time.sleep(1)
 
     def chequear_cambios(self):
         pass
@@ -175,7 +192,7 @@ class ConsultaProducido(Ventana):
         vpro = VentanaProgreso(padre = self.wids['ventana'])
         vpro.mostrar()
         i = 0.0
-        tot = len(dic_prod.keys())
+        tot = len(list(dic_prod.keys()))
         model = tv.get_model()
         model.clear()
         total_kilos_a = 0.0
@@ -187,8 +204,8 @@ class ConsultaProducido(Ventana):
         total_bultos_a = 0
         total_bultos_b = 0
         total_bultos_c = 0
-        total_t_teorico = mx.DateTime.DateTimeDelta(0)
-        total_t_real = mx.DateTime.DateTimeDelta(0)
+        total_t_teorico = datetime.timedelta(0)
+        total_t_real = datetime.timedelta(0)
         total_huecos = 0.0
         for pvpuid in dic_prod:
             i += 1
@@ -384,7 +401,7 @@ class ConsultaProducido(Ventana):
             self.fin = utils.parse_fecha(self.wids['e_fechafin'].get_text())
         except ValueError:
             self.wids['e_fechafin'].set_text(utils.str_fecha(
-                mx.DateTime.today()))
+                datetime.datetime.today()))
             self.fin = utils.parse_fecha(self.wids['e_fechafin'].get_text())
         fechahorafin = datetime.datetime(year=self.fin.year,
                                          month=self.fin.month,
@@ -424,20 +441,20 @@ class ConsultaProducido(Ventana):
             if (pdp.es_de_balas()
                     and not "reenvas" in pdp.observaciones.lower()):
                 self.procesar_pdp_balas(pdp, prod_balas)
-                huecos_fibra += delta_entre_partes
+                huecos_fibra += delta_entre_partes.total_seconds()
             elif (pdp.es_de_bolsas()
                     and not "reenvas" in pdp.observaciones.lower()):
                 self.procesar_pdp_cajas(pdp, prod_pales)
-                huecos_cem += delta_entre_partes
+                huecos_cem += delta_entre_partes.total_seconds()
             elif pdp.es_de_rollos():
                 self.procesar_pdp_rollos(pdp, prod_rollos)
-                huecos_gtx += delta_entre_partes
+                huecos_gtx += delta_entre_partes.total_seconds()
                 pdps_rollos.append(pdp)
             else:
                 # WTF? ¿Nueva línea de producción? ¿Y yo con estos pelos?
-                raise ValueError, "consulta_producido.py::buscar -> %s "\
+                raise ValueError("consulta_producido.py::buscar -> %s "\
                         "(%s) no es un parte de fibra, rollo ni cemento." % (
-                                pdp.get_info(), pdp.puid)
+                                pdp.get_info(), pdp.puid))
             i += 1
         vpro.ocultar()
         self.rellenar_tabla(self.wids['tv_fibra'], prod_balas, huecos_fibra,
@@ -467,8 +484,8 @@ class ConsultaProducido(Ventana):
         for rolloc in rollosc:
             key = rolloc.productoVenta.puid
             cantidad = rolloc.peso_sin
-            tiempo_teorico = mx.DateTime.DateTimeDelta(0)
-            tiempo_real = mx.DateTime.DateTimeDelta(0)
+            tiempo_teorico = datetime.timedelta(0)
+            tiempo_real = datetime.timedelta(0)
             metros = 0.0    # Producto C al peso.
             update_dic_producto(prod_rollos, rolloc.productoVenta, 'c',
                                 cantidad, metros, tiempo_teorico, tiempo_real)
@@ -486,8 +503,8 @@ class ConsultaProducido(Ventana):
         for balac in balasc:
             key = balac.productoVenta.puid
             cantidad = balac.peso_sin
-            tiempo_teorico = mx.DateTime.DateTimeDelta(0)
-            tiempo_real = mx.DateTime.DateTimeDelta(0)
+            tiempo_teorico = datetime.timedelta(0)
+            tiempo_real = datetime.timedelta(0)
             update_dic_producto(prod_balas, balac.productoVenta, 'c', cantidad,
                                 0.0, tiempo_teorico, tiempo_real)
 
@@ -500,7 +517,7 @@ class ConsultaProducido(Ventana):
             # embalaje) por asuntos de Murano y la imagen que queremos dar
             # al cliente final (CWT)
             peso_sin = a.peso_real - a.peso_embalaje
-            tiempo_teorico = mx.DateTime.DateTimeDeltaFrom(
+            tiempo_teorico = datetime.timedelta(
                     hours = a.calcular_tiempo_teorico())
             partida = a.partida
             try:
@@ -516,7 +533,7 @@ class ConsultaProducido(Ventana):
             elif a.es_clase_c():
                 tipo = 'c'  # No debería, pues los partes solo llevan A y B.
             else:
-                raise ValueError, "Artículo %s no es A, B ni C." % (a.puid)
+                raise ValueError("Artículo %s no es A, B ni C." % (a.puid))
             update_dic_producto(prod_rollos, a.productoVenta, tipo, peso_sin,
                                 metros, tiempo_teorico,
                                 peso_teorico = peso_teorico)
@@ -528,11 +545,11 @@ class ConsultaProducido(Ventana):
         tiempo_real = pdp.get_duracion()
         try:
             update_dic_producto(prod_rollos, pdp.productoVenta, tipo, 0.0,
-                                0.0, mx.DateTime.DateTimeDelta(0), tiempo_real,
+                                0.0, datetime.timedelta(0), tiempo_real,
                                 bultos = 0, peso_teorico = 0)
             update_lote_partida(prod_rollos[pdp.productoVenta.puid],
                                 pdp.partida, tipo, 0.0, 0.0,
-                                mx.DateTime.DateTimeDelta(0), tiempo_real,
+                                datetime.timedelta(0), tiempo_real,
                                 bultos = 0, peso_teorico = 0)
         except (UnboundLocalError, AttributeError):
                     # No partida instanciada. No ha entrado en el for. No
@@ -542,18 +559,18 @@ class ConsultaProducido(Ventana):
                         # el cálculo de productividad. Aunque no se haya
                         # fabricado nada.
             update_dic_producto(prod_rollos, es_rollo, tipo, 0.0,
-                                0.0, mx.DateTime.DateTimeDelta(0), tiempo_real,
+                                0.0, datetime.timedelta(0), tiempo_real,
                                 bultos = 0, peso_teorico = 0)
             update_lote_partida(prod_rollos[None],
                                 pdp.partida, tipo, 0.0, 0.0,
-                                mx.DateTime.DateTimeDelta(0), tiempo_real,
+                                datetime.timedelta(0), tiempo_real,
                                 bultos = 0, peso_teorico = 0)
 
     def procesar_pdp_cajas(self, pdp, prod_pales):
         for a in pdp.articulos:
             key = a.productoVenta.puid
             peso_sin = a.peso_sin
-            tiempo_teorico = mx.DateTime.DateTimeDeltaFrom(
+            tiempo_teorico = datetime.timedelta(
                     hours = a.calcular_tiempo_teorico())
             partida = a.partidaCem
             if key not in prod_pales:
@@ -565,7 +582,7 @@ class ConsultaProducido(Ventana):
             elif a.es_clase_c():
                 tipo = 'c'  # No debería, pues los partes solo llevan A y B.
             else:
-                raise ValueError, "Artículo %s no es A, B ni C." % (a.puid)
+                raise ValueError("Artículo %s no es A, B ni C." % (a.puid))
             update_dic_producto(prod_pales, a.productoVenta, tipo, peso_sin,
                                 tiempo_teorico = tiempo_teorico)
             update_lote_partida(prod_pales[key], partida, tipo, peso_sin,
@@ -575,12 +592,12 @@ class ConsultaProducido(Ventana):
         tiempo_real = pdp.get_duracion()
         try:
             update_dic_producto(prod_pales, pdp.productoVenta, tipo, 0.0,
-                                tiempo_teorico = mx.DateTime.DateTimeDelta(0),
+                                tiempo_teorico = datetime.timedelta(0),
                                 tiempo_real = tiempo_real,
                                 bultos = 0)
             update_lote_partida(prod_pales[pdp.productoVenta.puid],
                                 pdp.partidaCem, tipo, 0.0,
-                                tiempo_teorico = mx.DateTime.DateTimeDelta(0),
+                                tiempo_teorico = datetime.timedelta(0),
                                 tiempo_real = tiempo_real,
                                 bultos = 0)
         except (UnboundLocalError, AttributeError):
@@ -591,12 +608,12 @@ class ConsultaProducido(Ventana):
                         # el cálculo de productividad. Aunque no se haya
                         # fabricado nada.
             update_dic_producto(prod_pales, es_rollo, tipo, 0.0,
-                                tiempo_teorico = mx.DateTime.DateTimeDelta(0),
+                                tiempo_teorico = datetime.timedelta(0),
                                 tiempo_real = tiempo_real,
                                 bultos = 0)
             update_lote_partida(prod_pales[None],
                                 pdp.partidaCem, tipo, 0.0,
-                                tiempo_teorico = mx.DateTime.DateTimeDelta(0),
+                                tiempo_teorico = datetime.timedelta(0),
                                 tiempo_real = tiempo_real,
                                 bultos = 0)
 
@@ -604,7 +621,7 @@ class ConsultaProducido(Ventana):
         for a in pdp.articulos:
             key = a.productoVenta.puid
             peso_sin = a.peso_sin
-            tiempo_teorico = mx.DateTime.DateTimeDeltaFrom(
+            tiempo_teorico = datetime.timedelta(
                     hours = a.calcular_tiempo_teorico())
             lote = a.lote or a.loteCem  # Dependiendo de si es fibra o
                                         # geocem en bigbags
@@ -617,7 +634,7 @@ class ConsultaProducido(Ventana):
             elif a.es_clase_c():
                 tipo = 'c'  # No debería, pues los partes solo llevan A y B.
             else:
-                raise ValueError, "Artículo %s no es A, B ni C." % (a.puid)
+                raise ValueError("Artículo %s no es A, B ni C." % (a.puid))
             update_dic_producto(prod_balas, a.productoVenta, tipo, peso_sin,
                                 tiempo_teorico = tiempo_teorico)
             update_lote_partida(prod_balas[key], lote, tipo, peso_sin,
@@ -627,12 +644,12 @@ class ConsultaProducido(Ventana):
         tiempo_real = pdp.get_duracion()
         try:
             update_dic_producto(prod_balas, pdp.productoVenta, tipo, 0.0,
-                                tiempo_teorico = mx.DateTime.DateTimeDelta(0),
+                                tiempo_teorico = datetime.timedelta(0),
                                 tiempo_real = tiempo_real,
                                 bultos = 0)
             update_lote_partida(prod_balas[pdp.productoVenta.puid],
                                 lote, tipo, 0.0,
-                                tiempo_teorico = mx.DateTime.DateTimeDelta(0),
+                                tiempo_teorico = datetime.timedelta(0),
                                 tiempo_real = tiempo_real,
                                 bultos = 0)
         except (UnboundLocalError, AttributeError):
@@ -643,13 +660,13 @@ class ConsultaProducido(Ventana):
                         # el cálculo de productividad. Aunque no se haya
                         # fabricado nada.
             update_dic_producto(prod_balas, es_rollo, tipo, 0.0,
-                                tiempo_teorico = mx.DateTime.DateTimeDelta(0),
+                                tiempo_teorico = datetime.timedelta(0),
                                 tiempo_real = tiempo_real,
                                 bultos = 0)
             # No lote. No producto.
             update_lote_partida(prod_balas[None],
                                 None, tipo, 0.0,
-                                tiempo_teorico = mx.DateTime.DateTimeDelta(0),
+                                tiempo_teorico = datetime.timedelta(0),
                                 tiempo_real = tiempo_real,
                                 bultos = 0)
 
@@ -697,7 +714,7 @@ class ConsultaProducido(Ventana):
             datachart.sort(key = lambda d: d[1], reverse = True)
             chart.plot(datachart)
             self.wids['eventbox_chart'].show_all()
-        except Exception, msg:
+        except Exception as msg:
             txt = "consulta_producido.py::rellenar_tabla -> "\
                   "Error al dibujar gráfica (charting): %s" % msg
             myprint(txt)
@@ -724,7 +741,7 @@ class ConsultaProducido(Ventana):
             theme.reinitialize()
             tempdir = gettempdir()
             formato = "png"   # NECESITA ghostscript
-            nombre_fichero = mx.DateTime.localtime().strftime(
+            nombre_fichero = datetime.datetime.now().strftime(
                     "gcproducido_%Y_%m_%d_%H_%M_%S")
             nomarchivo = "%s.%s" % (nombre_fichero, formato)
             nombregraph = os.path.join(tempdir, "%s") % (nomarchivo)
@@ -774,7 +791,7 @@ class ConsultaProducido(Ventana):
                     self.inicio and utils.str_fecha(self.inicio) or "",
                     utils.str_fecha(self.fin))
             tv = self.wids[nombre_tv]
-            totales = range(1, tv.get_model().get_n_columns() - 3)
+            totales = list(range(1, tv.get_model().get_n_columns() - 3))
             nome = nombre_tv.replace("tv", "e") + "_t_real"
             t_teorico = self.wids[nome].get_text()
             nome = nombre_tv.replace("tv", "e") + "_t_teorico"
@@ -814,11 +831,11 @@ class ConsultaProducido(Ventana):
             #vpro.set_valor(i / tot,
             #    "Calculando resumen de geotextiles (%s)..." % (widname))
             entry = self.wids[widname]
-            if func.func.func_code.co_argcount == 2: # 'cause memoize decorator
+            if func.func.__code__.co_argcount == 2: # 'cause memoize decorator
                 result = func(pdps, self.wids)
-            elif func.func.func_code.co_argcount == 4:
+            elif func.func.__code__.co_argcount == 4:
                 result = func(self.inicio, self.fin, pclases.RolloC, self.wids)
-            elif func.func.func_code.co_argcount == 5:
+            elif func.func.__code__.co_argcount == 5:
                 result = func(pdps, self.inicio, self.fin, pclases.RolloC,
                               self.wids)
             else:
@@ -833,7 +850,7 @@ class ConsultaProducido(Ventana):
                 elif utils.es_interpretable_como_fechahora(result):
                     str_result = utils.str_fechahora(result)
                 elif isinstance(result,
-                                (type(mx.DateTime.DateTimeDelta(0)),
+                                (type(datetime.timedelta(0)),
                                  datetime.timedelta)):
                     str_result = str_horas(result)
                 else:
@@ -849,7 +866,7 @@ def str_horas(fh):
     Devuelve un TimeDelta en horas:minutos
     """
     if isinstance(fh, float):
-        fh = mx.DateTime.DateTimeDeltaFrom(hours = fh)
+        fh = datetime.timedelta(hours = fh)
     try:
         res = "%02d:%02d" % (fh.hour + fh.day * 24, fh.minute)
     except AttributeError:  # Es un datetime.timedelta
@@ -872,7 +889,7 @@ def detectar_hueco(pdp, huecos):
     el TimeDelta con la diferencia.
     Además siempre se devuelve el parte anterior (si lo hubiera).
     """
-    tiempo_faltante = mx.DateTime.DateTimeDeltaFrom(0)
+    tiempo_faltante = datetime.timedelta(0)
     parte_anterior = None
     for last_parte in huecos[:]:    # Hay un parte de cada tipo en la lista
                                     # para controlar huecos. Busco el de la
@@ -893,8 +910,8 @@ def detectar_hueco(pdp, huecos):
                 # producción en ese turno.
                 tiempo_faltante = delta
                 if pclases.DEBUG:
-                    print(">>> %f --> Hueco detectado entre %s y %s" % (
-                        horas_delta, last_parte.get_info(), pdp.get_info()))
+                    print((">>> %f --> Hueco detectado entre %s y %s" % (
+                        horas_delta, last_parte.get_info(), pdp.get_info())))
     huecos.append(pdp)
     return tiempo_faltante, parte_anterior
 
@@ -909,8 +926,8 @@ def create_prod_bala(prod_balas, puid):
             '#': {'a': 0,
                   'b': 0,
                   'c': 0},
-            't_real': mx.DateTime.DateTimeDelta(0),
-            't_teorico': mx.DateTime.DateTimeDelta(0),
+            't_real': datetime.timedelta(0),
+            't_teorico': datetime.timedelta(0),
             'lotes_partidas': {}
             }
 
@@ -928,16 +945,16 @@ def create_prod_rollo(prod_rollos, puid):
             '#': {'a': 0,
                   'b': 0,
                   'c': 0},
-            't_real': mx.DateTime.DateTimeDelta(0),
-            't_teorico': mx.DateTime.DateTimeDelta(0),
+            't_real': datetime.timedelta(0),
+            't_teorico': datetime.timedelta(0),
             'peso_teorico': {'a': 0, 'b': 0},
             'lotes_partidas': {}
             }
 
 def update_lote_partida(dic_producto, lote_partida, tipo, cantidad,
                         metros = None,
-                        tiempo_teorico = mx.DateTime.DateTimeDelta(0),
-                        tiempo_real = mx.DateTime.DateTimeDelta(0),
+                        tiempo_teorico = datetime.timedelta(0),
+                        tiempo_real = datetime.timedelta(0),
                         bultos = None, peso_teorico = 0):
     """
     Actualiza el lote/partida del producto en las cantidades
@@ -961,8 +978,8 @@ def update_lote_partida(dic_producto, lote_partida, tipo, cantidad,
                 '#': {'a': 0,
                       'b': 0,
                       'c': 0},
-                't_real': mx.DateTime.DateTimeDelta(0),
-                't_teorico': mx.DateTime.DateTimeDelta(0)
+                't_real': datetime.timedelta(0),
+                't_teorico': datetime.timedelta(0)
             }
         try:
             es_rollo = lote_partida.productoVenta.es_rollo()
@@ -991,8 +1008,8 @@ def update_lote_partida(dic_producto, lote_partida, tipo, cantidad,
         pass    # No es un rollo
 
 def update_dic_producto(prod, pv, tipo, cantidad, metros = 0.0,
-                        tiempo_teorico = mx.DateTime.DateTimeDelta(0),
-                        tiempo_real = mx.DateTime.DateTimeDelta(0),
+                        tiempo_teorico = datetime.timedelta(0),
+                        tiempo_real = datetime.timedelta(0),
                         bultos = None, peso_teorico = 0):
     """
     Actualiza la producción del artículo en el diccionario de producciones.
@@ -1051,80 +1068,80 @@ def get_my_entry(funcname, wids):
 def obtener_fechahorainicio_primer_parte(pdps, wids):
     entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.5)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     try:
         res = min(pdps, key = lambda pdp: pdp.fechahorainicio).fechahorainicio
     except ValueError:
         res = None
     entry.set_progress_fraction(1.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     return res
 
 @memoized
 def obtener_fechahorafin_ultimo_parte(pdps, wids):
     entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.5)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     try:
         res = max(pdps, key = lambda pdp: pdp.fechahorafin).fechahorafin
     except ValueError:
         res = None
     entry.set_progress_fraction(1.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     return res
 
 @memoized
 def obtener_diferencia_horas_partes(pdps, wids):
     entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     ini = obtener_fechahorainicio_primer_parte(pdps, wids)
     entry.set_progress_fraction(0.25)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     fin = obtener_fechahorafin_ultimo_parte(pdps, wids)
     entry.set_progress_fraction(0.5)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     try:
         res = fin - ini
-    except TypeError, msg:
+    except TypeError as msg:
         res = None
     entry.set_progress_fraction(1.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     return res
 
 @memoized
 def calcular_t_real_total(pdps, wids):
     entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     i = 0.0
     tot = len(pdps)
     res = 0.0
     for pdp in pdps:
         i += 1
         entry.set_progress_fraction(i / tot)
-        while gtk.events_pending(): gtk.main_iteration(False)
-        res += pdp.get_duracion()
+        while gtk.events_pending(): gtk.main_iteration()
+        res += pdp.get_duracion().total_seconds()
     entry.set_progress_fraction(1.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     return res
 
 @memoized
 def calcular_t_teorico(pdps, wids):
     entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     i = 0.0
     tot = len(pdps)
     res = 0.0
     for pdp in pdps:
         i += 1
         entry.set_progress_fraction(i / tot)
-        while gtk.events_pending(): gtk.main_iteration(False)
+        while gtk.events_pending(): gtk.main_iteration()
         res += pdp.calcular_tiempo_teorico()
-    res = mx.DateTime.DateTimeDeltaFrom(hours = res)
+    res = datetime.timedelta(hours = res)
     entry.set_progress_fraction(1.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     return res
 
 @memoized
@@ -1152,19 +1169,19 @@ def calcular_productividad_conjunta(pdps, wids = None):
     #    res = 0.0
     entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     tiempo_teorico = calcular_t_teorico(pdps, wids)
     entry.set_progress_fraction(0.5)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     tiempo_real = calcular_t_real_total(pdps, wids)
     entry.set_progress_fraction(0.75)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     try:
         res = tiempo_teorico / tiempo_real * 100
     except ZeroDivisionError:
         res = 0.0   # No datos, no tiempo, no productividad.
     entry.set_progress_fraction(1.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     return res
 
 @memoized
@@ -1175,12 +1192,12 @@ def calcular_kgs_teoricos_a(pdps, wids):
     """
     entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     res = 0.0
     i = 0.0
     for pdp in pdps:
         entry.set_progress_fraction(i / len(pdps))
-        while gtk.events_pending(): gtk.main_iteration(False)
+        while gtk.events_pending(): gtk.main_iteration()
         for a in pdp.articulos:
             if a.es_clase_a():
                 try:
@@ -1189,7 +1206,7 @@ def calcular_kgs_teoricos_a(pdps, wids):
                     pass
         i += 1
     entry.set_progress_fraction(1.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     return res
 
 @memoized
@@ -1200,17 +1217,17 @@ def calcular_kgs_reales_a(pdps, wids):
     """
     entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     i = 0.0
     tot = len(pdps)
     res = 0.0
     for pdp in pdps:
         i += 1
         entry.set_progress_fraction(i / tot)
-        while gtk.events_pending(): gtk.main_iteration(False)
+        while gtk.events_pending(): gtk.main_iteration()
         res += pdp.calcular_kilos_producidos_A()
     entry.set_progress_fraction(1.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     return res
 
 @memoized
@@ -1221,16 +1238,16 @@ def calcular_diferencia_kgs_a(pdps, wids):
     """
     entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.25)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     reales = calcular_kgs_reales_a(pdps, wids)
     entry.set_progress_fraction(0.5)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     teoricos = calcular_kgs_teoricos_a(pdps, wids)
     entry.set_progress_fraction(0.75)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     res = reales - teoricos
     entry.set_progress_fraction(1.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     return res
 
 @memoized
@@ -1241,19 +1258,19 @@ def calcular_porcentaje_kgs(pdps, wids):
     """
     entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.25)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     diferencia = calcular_diferencia_kgs_a(pdps, wids)
     entry.set_progress_fraction(0.5)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     teoricos = calcular_kgs_teoricos_a(pdps, wids)
     entry.set_progress_fraction(0.75)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     try:
         res = diferencia * 100.0 / teoricos
     except ZeroDivisionError:
         res = 0.0
     entry.set_progress_fraction(1.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     return res
 
 @memoized
@@ -1263,17 +1280,17 @@ def calcular_kgs_reales_b(pdps, wids):
     """
     entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     i = 0.0
     tot = len(pdps)
     res = 0.0
     for pdp in pdps:
         i += 1
         entry.set_progress_fraction(i / tot)
-        while gtk.events_pending(): gtk.main_iteration(False)
+        while gtk.events_pending(): gtk.main_iteration()
         res += pdp.calcular_kilos_producidos_B()
     entry.set_progress_fraction(1.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     return res
 
 @memoized
@@ -1289,7 +1306,7 @@ def calcular_kgs_reales_c(fini, ffin, claseC, wids):
     # inicial y final de
     entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     res = 0.0
     objs = claseC.select(pclases.AND(claseC.q.fechahora >= fini,
                                      claseC.q.fechahora < ffin))
@@ -1299,10 +1316,10 @@ def calcular_kgs_reales_c(fini, ffin, claseC, wids):
     for o in objs:
         i += 1
         entry.set_progress_fraction(i / tot)
-        while gtk.events_pending(): gtk.main_iteration(False)
+        while gtk.events_pending(): gtk.main_iteration()
         res += o.articulo.peso_sin
     entry.set_progress_fraction(1.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     return res
 
 @memoized
@@ -1312,19 +1329,19 @@ def calcular_kg_total(pdps, fini, ffin, claseC, wids):
     """
     entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     A = calcular_kgs_reales_a(pdps, wids)
     entry.set_progress_fraction(0.25)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     B = calcular_kgs_reales_b(pdps, wids)
     entry.set_progress_fraction(0.5)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     C = calcular_kgs_reales_c(fini, ffin, claseC, wids)
     entry.set_progress_fraction(0.75)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     res = A + B + C
     entry.set_progress_fraction(1.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     return res
 
 @memoized
@@ -1335,22 +1352,22 @@ def calcular_desviaciones(pdps, fini, ffin, claseC, wids):
     """
     entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     # Esto es casi pura programación funcional. Me va a costar mucho tiempo
     # repitiendo llamadas a funciones para calcular los mismos resultados en
     # varios sitios que en Erlang estaría totalmente optimizado. For sure!
     diferencia_teoricos_reales = calcular_diferencia_kgs_a(pdps, wids)
     entry.set_progress_fraction(0.25)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     B = calcular_kgs_reales_b(pdps, wids)
     entry.set_progress_fraction(0.5)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     C = calcular_kgs_reales_c(fini, ffin, claseC, wids)
     entry.set_progress_fraction(0.75)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     res = diferencia_teoricos_reales + B + C
     entry.set_progress_fraction(1.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     return res
 
 @memoized
@@ -1368,17 +1385,17 @@ def calcular_consumo(pdps, wids):
     """
     entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     i = 0.0
     tot = len(pdps)
     res = 0.0
     for pdp in pdps:
         i += 1
         entry.set_progress_fraction(i / tot)
-        while gtk.events_pending(): gtk.main_iteration(False)
+        while gtk.events_pending(): gtk.main_iteration()
         res += pdp.calcular_consumo_mp()
     entry.set_progress_fraction(1.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     return res
 
 @memoized
@@ -1389,16 +1406,16 @@ def calcular_diff_cons_prod(pdps, fini, ffin, claseC, wids):
     """
     entry = get_my_entry(sys._getframe().f_code.co_name, wids) # UGLY HACK
     entry.set_progress_fraction(0.25)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     producido = calcular_kg_total(pdps, fini, ffin, claseC, wids)
     entry.set_progress_fraction(0.50)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     consumido = calcular_consumo(pdps, wids)
     entry.set_progress_fraction(0.75)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     res = consumido - producido
     entry.set_progress_fraction(1.0)
-    while gtk.events_pending(): gtk.main_iteration(False)
+    while gtk.events_pending(): gtk.main_iteration()
     return res
 
 WIDSRESUMEN = (("e_pdp_ini_gtx", obtener_fechahorainicio_primer_parte),

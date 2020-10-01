@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2014 Francisco José Rodríguez Bogado.                    #
+# Copyright (C) 2005-2020 Francisco José Rodríguez Bogado.                    #
 #                         <frbogado@geotexan.com>                             #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
@@ -26,32 +26,33 @@ import os
 from informes import geninformes
 from formularios import utils
 from formularios.trazabilidad import Trazabilidad
-import mx.DateTime
+import datetime
 from framework import pclases
 from formularios.reports import abrir_pdf
 from tempfile import gettempdir
 from gtk import TreeStore
+from functools import reduce
 
-def treeview2pdf(tv, titulo = None, fecha = None, apaisado = None, 
-                 pijama = False, graficos = [], numcols_a_totalizar = [], 
+def treeview2pdf(tv, titulo = None, fecha = None, apaisado = None,
+                 pijama = False, graficos = [], numcols_a_totalizar = [],
                  extra_data = []):
     """
     A partir de un TreeView crea un PDF con su contenido.
     1.- Asigna un nombre de archivo en función del nombre del TreeView.
     2.- Si titulo es None, asigna como título el nombre del TreeView.
-    3.- El ancho de los campos será el ancho relativo en porcentaje que ocupa 
-        el ancho de la columna (get_width) a la que correspondería. El título 
+    3.- El ancho de los campos será el ancho relativo en porcentaje que ocupa
+        el ancho de la columna (get_width) a la que correspondería. El título
         del campo será el título (get_title) de la columna.
-    4.- Si fecha no es None debe ser una cadena de texto. Si es None, se 
+    4.- Si fecha no es None debe ser una cadena de texto. Si es None, se
         usará la fecha actual del sistema.
-    5.- Si la suma del ancho de las columnas del TreeView es superior a 800 
-        píxeles el PDF generado será apaisado, a no ser que se fuerce mediante 
+    5.- Si la suma del ancho de las columnas del TreeView es superior a 800
+        píxeles el PDF generado será apaisado, a no ser que se fuerce mediante
         el parámetro "apaisado" que recibe la función.
-    numcols_a_totalizar es una lista de índices (empezando por 0) de las 
-    columnas a las que se va a intentar convertir a número y sumar para 
-    mostrar una última línea con el texto "TOTAL" o "TOTALES" si hay más de 
+    numcols_a_totalizar es una lista de índices (empezando por 0) de las
+    columnas a las que se va a intentar convertir a número y sumar para
+    mostrar una última línea con el texto "TOTAL" o "TOTALES" si hay más de
     una.
-    extra_data son líneas que se añadirán a las que tiene el TreeView 
+    extra_data son líneas que se añadirán a las que tiene el TreeView
     *al final* del informe (incluso detrás de los totales, si los hubiera).
     """
     archivo = get_nombre_archivo_from_tv(tv)
@@ -59,17 +60,17 @@ def treeview2pdf(tv, titulo = None, fecha = None, apaisado = None,
         titulo = get_titulo_from_tv(tv)
     campos, pdf_apaisado, cols_a_derecha, cols_centradas=get_campos_from_tv(tv)
     datos = get_datos_from_tv(tv)
-    totales = dict(zip(numcols_a_totalizar, len(numcols_a_totalizar) * [0]))
-    for fila in datos:  # Si es un TreeView solo sumaré los totales de primer 
+    totales = dict(list(zip(numcols_a_totalizar, len(numcols_a_totalizar) * [0])))
+    for fila in datos:  # Si es un TreeView solo sumaré los totales de primer
                     # nivel. Los hijos se marcan con ">" al inicio del texto.
         try:
-            if (fila and 
-                    (fila[0].startswith(">") 
-                        or ("]" in fila[0] 
+            if (fila and
+                    (fila[0].startswith(">")
+                        or ("]" in fila[0]
                             and fila[0].split("]")[1].startswith(">")))):
                 continue
         except (AttributeError, IndexError):
-            pass    # Aquí no ha pasado nada. 
+            pass    # Aquí no ha pasado nada.
         for numcol in totales:
             # Primero hay que limpiar de formato el texto.
             valor_a_parsear = fila[numcol]
@@ -81,19 +82,19 @@ def treeview2pdf(tv, titulo = None, fecha = None, apaisado = None,
                 continue
             try:
                 valor_a_sumar = utils.parse_float(valor_a_parsear)
-            except ValueError:  # ¿No hay dato en esa fila? Entonces cuento 
+            except ValueError:  # ¿No hay dato en esa fila? Entonces cuento
                                 # instancias.
                 valor_a_sumar = 1
                 #print fila, numcol, fila[numcol]
             if pclases.DEBUG:
-                print "+", fila[numcol], "=", valor_a_sumar
+                print("+", fila[numcol], "=", valor_a_sumar)
             totales[numcol] += valor_a_sumar
     if totales and datos:
         last_i = len(datos) - 1  # Apuntará a la última línea no nula
-        while (last_i > 0 
+        while (last_i > 0
                and reduce(lambda x, y: str(x) + str(y), datos[last_i]) == ""):
             last_i -= 1
-        if (datos[last_i] and 
+        if (datos[last_i] and
             not reduce(lambda x, y: x == y == "---" and "---", datos[last_i])):
             datos.append(("---", ) * len(campos))
         fila = ["TOTAL"] + [""] * (len(campos) - 1)
@@ -107,7 +108,7 @@ def treeview2pdf(tv, titulo = None, fecha = None, apaisado = None,
         extra_data = [extra_data]
     for extra in extra_data:
         dif_len = len(campos) - len(extra)
-        if dif_len <> 0 and not isinstance(extra, list):
+        if dif_len != 0 and not isinstance(extra, list):
             extra = list(extra)
         if dif_len > 0:
             extra += [""] * dif_len
@@ -115,19 +116,19 @@ def treeview2pdf(tv, titulo = None, fecha = None, apaisado = None,
             extra = extra[:len(campos)]
         datos.append(extra)
     if not fecha:
-        fecha = utils.str_fecha(mx.DateTime.localtime())
+        fecha = utils.str_fecha(datetime.datetime.now())
     if apaisado != None:
         pdf_apaisado = apaisado
-    return geninformes.imprimir2(archivo, 
-                                 titulo, 
-                                 campos, 
-                                 datos, 
-                                 fecha, 
-                                 apaisado = pdf_apaisado, 
-                                 cols_a_derecha = cols_a_derecha, 
-                                 cols_centradas = cols_centradas, 
-                                 pijama = pijama, 
-                                 graficos = graficos) 
+    return geninformes.imprimir2(archivo,
+                                 titulo,
+                                 campos,
+                                 datos,
+                                 fecha,
+                                 apaisado = pdf_apaisado,
+                                 cols_a_derecha = cols_a_derecha,
+                                 cols_centradas = cols_centradas,
+                                 pijama = pijama,
+                                 graficos = graficos)
 
 def get_nombre_archivo_from_tv(tv):
     """
@@ -150,9 +151,9 @@ def _str(x):
 
 def get_datos_from_tv(tv):
     """
-    Devuelve una lista de tuplas. Cada tupla contiene los datos de las cells 
+    Devuelve una lista de tuplas. Cada tupla contiene los datos de las cells
     del TreeView para cada fila.
-    Si la fila es padre de otra fila, añade debajo de la misma las filas hijas 
+    Si la fila es padre de otra fila, añade debajo de la misma las filas hijas
     con espacios a su izquierda y un separador horizontal al final.
     """
     datos = []
@@ -160,7 +161,7 @@ def get_datos_from_tv(tv):
     numcols = len(tv.get_columns())
     for fila in model:
         filadato = []
-        for i in xrange(numcols):
+        for i in range(numcols):
             index_columna = tv.get_column(i).get_data("q_ncol")
             if index_columna is None:
                 index_columna = i
@@ -187,9 +188,9 @@ def get_datos_from_tv(tv):
 
 def agregar_hijos(fila, numcols, numespacios, tv):
     """
-    Devuelve una lista con los hijos de "fila", y éstos a 
+    Devuelve una lista con los hijos de "fila", y éstos a
     su vez con sus hijos, etc... en diferentes niveles.
-    numespacios normalmente será el nivel de profundidad de 
+    numespacios normalmente será el nivel de profundidad de
     la recursión * 2.
     """
     iterator_hijos = fila.iterchildren()
@@ -199,20 +200,20 @@ def agregar_hijos(fila, numcols, numespacios, tv):
         filas = []
         for hijo in iterator_hijos:
             filahijo = []
-            for col in xrange(numcols):
+            for col in range(numcols):
                 index_columna = tv.get_column(col).get_data("q_ncol")
                 if index_columna is None: # Por si no viene de utils.preparar_*
                     index_columna = col
                 if index_columna == 0:
                     filahijo.append("%s%s" % (
-                        "[color=gris]" + "> " * numespacios, 
+                        "[color=gris]" + "> " * numespacios,
                         _str(hijo[index_columna])))
                 else:
-                    filahijo.append("%s" % (_str(hijo[index_columna])))     
+                    filahijo.append("%s" % (_str(hijo[index_columna])))
                         # Por si acaso trae un entero, un float o algo asina.
-            filas += [filahijo] + agregar_hijos(hijo, 
-                                                numcols, 
-                                                numespacios + 1, 
+            filas += [filahijo] + agregar_hijos(hijo,
+                                                numcols,
+                                                numespacios + 1,
                                                 tv)
         return filas
 
@@ -230,25 +231,25 @@ def get_titulo_from_tv(tv):
 
 def get_campos_from_tv(tv):
     """
-    Devuelve una tupla de tuplas. Cada tupla "interior" tiene el nombre 
-    del campo y el ancho relativo en tanto porciento respecto al total 
+    Devuelve una tupla de tuplas. Cada tupla "interior" tiene el nombre
+    del campo y el ancho relativo en tanto porciento respecto al total
     del TreeView.
-    Devuelve también un boolean que será True si el ancho total de las 
+    Devuelve también un boolean que será True si el ancho total de las
     columnas supera los 800 píxeles.
     """
     cols = []
     anchotv = 0
     for column in tv.get_columns():
         if not column.get_property("visible"):
-            continue 
+            continue
         anchocol = column.get_width()
         if anchocol == 0:
             anchocol = column.get_fixed_width()
             if anchocol == 0:
                 anchocol = 100.0 / len(tv.get_columns())
         anchotv += anchocol
-        cell = column.get_cell_renderers()[0]   # Nunca uso más de un cell por 
-                                                # columna. La alineación del 
+        cell = column.get_cell_renderers()[0]   # Nunca uso más de un cell por
+                                                # columna. La alineación del
                                                 # primero me basta.
         xalign = cell.get_property("xalign")
         if xalign < 0.4:
@@ -258,13 +259,13 @@ def get_campos_from_tv(tv):
         else:
             alineacion = 1      # Derecha
         tit_columna = column.get_title()
-        cols.append({'título': tit_columna, 
-                     'ancho': anchocol, 
+        cols.append({'título': tit_columna,
+                     'ancho': anchocol,
                      'alineación': alineacion})
     res = []
     cols_a_derecha = []
     cols_centradas = []
-    for col, i in zip(cols, range(len(cols))):
+    for col, i in zip(cols, list(range(len(cols)))):
         floanchocol = (col['ancho'] * 100.0) / anchotv
         col['ancho'] = int(round(floanchocol, 0))
             # Trunco para no sobrepasar el 100% en la suma total.
@@ -277,7 +278,7 @@ def get_campos_from_tv(tv):
 
 def gtktable2list(tabla):
     """
-    Devuelve una lista anidada de filas que contienen el texto de los 
+    Devuelve una lista anidada de filas que contienen el texto de los
     labels y entries de la tabla Gtk.
     """
     cols = tabla.get_property("n-columns")
@@ -289,13 +290,13 @@ def gtktable2list(tabla):
             fila.append("")
         res.append(fila)
     for child in tabla.get_children():
-        i, d, ar, ab = tabla.child_get(child, "left-attach", "right-attach", 
+        i, d, ar, ab = tabla.child_get(child, "left-attach", "right-attach",
                                               "top-attach", "bottom-attach")
         try:
             texto = child.get_text()
             try:
                 texto = texto.decode("utf8").encode("latin1")
-            except: 
+            except:
                 pass
         except AttributeError:
             pass    # El widget no es un entry ni un label

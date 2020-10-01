@@ -18040,8 +18040,11 @@ class ParteDeProduccion(SQLObject, PRPCTOO):
         NUNCA devolverá más de 23 horas, 59 minutos.
         """
         self.sync()
-        duracion = self.horafin - self.horainicio
-        if duracion < 0:
+        duracion = (datetime.datetime.combine(datetime.date.today(),
+                                              self.horafin)
+                    - datetime.datetime.combine(datetime.date.today(),
+                                                self.horainicio))
+        if duracion.days < 0:
             duracion += datetime.timedelta(days=1)
         while duracion > datetime.timedelta(days=1):
             duracion -= datetime.timedelta(days=1)

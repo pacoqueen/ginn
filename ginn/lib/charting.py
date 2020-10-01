@@ -573,7 +573,7 @@ class Chart(gtk.DrawingArea):
         max_size = graph_width - 15
 
 
-        ellipsize_label = lambda(text): 3  # @UnusedVariable
+        ellipsize_label = lambda text: 3  # @UnusedVariable
 
         #now let's put the labels and align them right
         set_color(context, dark[8])

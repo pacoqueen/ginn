@@ -1,29 +1,30 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<glade-interface>
+<?xml version="1.0"?>
+<interface>
   <!-- interface-requires gtk+ 2.6 -->
   <!-- interface-naming-policy toplevel-contextual -->
-  <widget class="GtkWindow" id="ventana">
+  <object class="GtkWindow" id="ventana">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Consulta: Consumo de materiales</property>
     <child>
-      <widget class="GtkVBox" id="vbox1">
+      <object class="GtkBox" id="vbox1">
+        <property name="orientation">vertical</property>              
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <child>
-          <widget class="GtkHBox" id="hbox6">
+          <object class="GtkBox" id="hbox6">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="spacing">5</property>
             <child>
-              <widget class="GtkCheckButton" id="ch_fibra">
-                <property name="label" translatable="yes">Línea de fibra</property>
+              <object class="GtkCheckButton" id="ch_fibra">
+                <property name="label" translatable="yes">L&#xED;nea de fibra</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_action_appearance">False</property>
                 <property name="draw_indicator">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
@@ -31,14 +32,14 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkCheckButton" id="ch_geotextiles">
-                <property name="label" translatable="yes">Línea de geotextiles</property>
+              <object class="GtkCheckButton" id="ch_geotextiles">
+                <property name="label" translatable="yes">L&#xED;nea de geotextiles</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_action_appearance">False</property>
                 <property name="draw_indicator">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
@@ -46,15 +47,15 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkCheckButton" id="ch_embolsado">
-                <property name="label" translatable="yes">Línea de embolsado</property>
+              <object class="GtkCheckButton" id="ch_embolsado">
+                <property name="label" translatable="yes">L&#xED;nea de embolsado</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
-                <property name="tooltip" translatable="yes">Los partes de fibra embolsada también llevan asociados un albarán interno de consumo con los mismos materiales y materia prima que aparecen aquí.</property>
+                <property name="tooltip-text" translatable="yes">Los partes de fibra embolsada tambi&#xE9;n llevan asociados un albar&#xE1;n interno de consumo con los mismos materiales y materia prima que aparecen aqu&#xED;.</property>
                 <property name="use_action_appearance">False</property>
                 <property name="draw_indicator">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
@@ -62,22 +63,22 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkCheckButton" id="ch_geocompuestos">
-                <property name="label" translatable="yes">Línea de comercializados</property>
+              <object class="GtkCheckButton" id="ch_geocompuestos">
+                <property name="label" translatable="yes">L&#xED;nea de comercializados</property>
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_action_appearance">False</property>
                 <property name="draw_indicator">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">3</property>
               </packing>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
@@ -86,19 +87,20 @@
           </packing>
         </child>
         <child>
-          <widget class="GtkVBox" id="vbox3">
+          <object class="GtkBox" id="vbox3">
+            <property name="orientation">vertical</property>              
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <widget class="GtkHBox" id="hbox2">
+              <object class="GtkBox" id="hbox2">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <widget class="GtkLabel" id="label2">
+                  <object class="GtkLabel" id="label2">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Fecha de inicio:   </property>
-                  </widget>
+                  </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
@@ -107,14 +109,14 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkEntry" id="e_fechainicio">
+                  <object class="GtkEntry" id="e_fechainicio">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
                     <property name="primary_icon_sensitive">True</property>
                     <property name="secondary_icon_sensitive">True</property>
-                  </widget>
+                  </object>
                   <packing>
                     <property name="expand">True</property>
                     <property name="fill">True</property>
@@ -122,19 +124,19 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkButton" id="b_fecha_inicio">
+                  <object class="GtkButton" id="b_fecha_inicio">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
                     <property name="use_action_appearance">False</property>
                     <child>
-                      <widget class="GtkImage" id="image2">
+                      <object class="GtkImage" id="image2">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="stock">gtk-find</property>
-                      </widget>
+                      </object>
                     </child>
-                  </widget>
+                  </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
@@ -142,11 +144,11 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkLabel" id="label3">
+                  <object class="GtkLabel" id="label3">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Fecha de fin:   </property>
-                  </widget>
+                  </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
@@ -155,14 +157,14 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkEntry" id="e_fechafin">
+                  <object class="GtkEntry" id="e_fechafin">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="primary_icon_activatable">False</property>
                     <property name="secondary_icon_activatable">False</property>
                     <property name="primary_icon_sensitive">True</property>
                     <property name="secondary_icon_sensitive">True</property>
-                  </widget>
+                  </object>
                   <packing>
                     <property name="expand">True</property>
                     <property name="fill">True</property>
@@ -170,26 +172,26 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkButton" id="b_fecha_fin">
+                  <object class="GtkButton" id="b_fecha_fin">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
                     <property name="use_action_appearance">False</property>
                     <child>
-                      <widget class="GtkImage" id="image3">
+                      <object class="GtkImage" id="image3">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="stock">gtk-find</property>
-                      </widget>
+                      </object>
                     </child>
-                  </widget>
+                  </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
                     <property name="position">5</property>
                   </packing>
                 </child>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
@@ -197,28 +199,28 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkButton" id="b_buscar">
+              <object class="GtkButton" id="b_buscar">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_action_appearance">False</property>
                 <child>
-                  <widget class="GtkAlignment" id="alignment1">
+                  <object class="GtkAlignment" id="alignment1">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xscale">0</property>
                     <property name="yscale">0</property>
                     <child>
-                      <widget class="GtkHBox" id="hbox5">
+                      <object class="GtkBox" id="hbox5">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="spacing">2</property>
                         <child>
-                          <widget class="GtkImage" id="image4">
+                          <object class="GtkImage" id="image4">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="stock">gtk-yes</property>
-                          </widget>
+                          </object>
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">False</property>
@@ -226,23 +228,23 @@
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkLabel" id="label6">
+                          <object class="GtkLabel" id="label6">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="label" translatable="yes">Iniciar nueva consulta</property>
                             <property name="use_underline">True</property>
-                          </widget>
+                          </object>
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">False</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
-                      </widget>
+                      </object>
                     </child>
-                  </widget>
+                  </object>
                 </child>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
@@ -250,7 +252,7 @@
                 <property name="position">1</property>
               </packing>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
@@ -258,18 +260,18 @@
           </packing>
         </child>
         <child>
-          <widget class="GtkScrolledWindow" id="scrolledwindow1">
+          <object class="GtkScrolledWindow" id="scrolledwindow1">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="shadow_type">in</property>
             <child>
-              <widget class="GtkTreeView" id="tv_datos">
+              <object class="GtkTreeView" id="tv_datos">
                 <property name="height_request">300</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-              </widget>
+              </object>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="expand">True</property>
             <property name="fill">True</property>
@@ -277,16 +279,16 @@
           </packing>
         </child>
         <child>
-          <widget class="GtkHBox" id="hbox4">
+          <object class="GtkBox" id="hbox4">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <widget class="GtkLabel" id="label5">
+              <object class="GtkLabel" id="label5">
                 <property name="can_focus">False</property>
                 <property name="xalign">1</property>
                 <property name="label" translatable="yes">&lt;small&gt;NOTA: El consumo de fibra se contabiliza por &lt;u&gt;partida completa&lt;/u&gt;.&lt;/small&gt;</property>
                 <property name="use_markup">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
@@ -294,7 +296,7 @@
                 <property name="position">0</property>
               </packing>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
@@ -303,19 +305,19 @@
           </packing>
         </child>
         <child>
-          <widget class="GtkHButtonBox" id="hbuttonbox1">
+          <object class="GtkHButtonBox" id="hbuttonbox1">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="layout_style">spread</property>
             <child>
-              <widget class="GtkButton" id="b_imprimir">
+              <object class="GtkButton" id="b_imprimir">
                 <property name="label">gtk-print</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
@@ -323,7 +325,7 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkButton" id="b_salir">
+              <object class="GtkButton" id="b_salir">
                 <property name="label">gtk-quit</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -331,7 +333,7 @@
                 <property name="receives_default">False</property>
                 <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
@@ -339,28 +341,28 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkButton" id="b_exportar">
+              <object class="GtkButton" id="b_exportar">
                 <property name="label" translatable="yes">Exportar a CSV</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <property name="use_action_appearance">False</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
                 <property name="position">2</property>
               </packing>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">4</property>
           </packing>
         </child>
-      </widget>
+      </object>
     </child>
-  </widget>
-</glade-interface>
+  </object>
+</interface>

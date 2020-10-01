@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2014  Francisco José Rodríguez Bogado                    #
+# Copyright (C) 2005-2020  Francisco José Rodríguez Bogado                    #
 #                          <pacoqueen@users.sourceforge.net>                  #
 #                                                                             #
 # This file is part of GeotexInn.                                             #
@@ -32,13 +32,25 @@
 # 7 de marzo de 2014 -> Rediseño.
 ###############################################################################
 
+import gi
+gi.require_version("Gtk", '3.0')
+from gi import pygtkcompat
+try:
+    from gi import pygtkcompat
+except ImportError:
+    pygtkcompat = None
+    from gi.repository import Gtk as gtk
+    from gi.repository import GObject as gobject
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+    import gtk
+    import gobject
+import datetime
 from ventana import Ventana
 from formularios import utils
-import pygtk
-pygtk.require('2.0')
-import gtk
 from framework import pclases
-import mx.DateTime
 from collections import defaultdict
 
 
@@ -73,9 +85,10 @@ class ConsultaVentasPorProducto(Ventana):
         for tv in (self.wids['tv_fibra'], self.wids['tv_cem']):
             utils.preparar_treeview(tv, cols)
             tv.connect("row-activated", self.abrir_producto_albaran_o_abono)
-            for n in range(1, 9):
-                tv.get_column(n).get_cell_renderers()[0].set_property(
-                    'xalign', 1)
+            # TODO: XXX: Ya no se hace así en Gtk3
+            # for n in range(1, 9):
+            #     tv.get_column(n).get_cell_renderers()[0].set_property(
+            #         'xalign', 1)
         # TreeView de geotextiles
         cols.insert(1,
                     ('m² A', 'gobject.TYPE_STRING', False, True, False, None))
@@ -90,8 +103,9 @@ class ConsultaVentasPorProducto(Ventana):
         self.wids['tv_gtx'].connect("row-activated",
                                     self.abrir_producto_albaran_o_abono)
         tv = self.wids['tv_gtx']
-        for n in range(1, 13):
-            tv.get_column(n).get_cell_renderers()[0].set_property('xalign', 1)
+        # TODO: XXX: Ya no se hace así en Gtk3
+        # for n in range(1, 13):
+        #     tv.get_column(n).get_cell_renderers()[0].set_property('xalign', 1)
         # TreeView de otros
         cols = [
             ('Producto', 'gobject.TYPE_STRING', False, True, True, None),
@@ -101,7 +115,8 @@ class ConsultaVentasPorProducto(Ventana):
         self.wids['tv_otros'].connect("row-activated",
                                       self.abrir_producto_albaran_o_abono)
         tv = self.wids['tv_otros']
-        tv.get_column(1).get_cell_renderers()[0].set_property('xalign', 1)
+        # TODO: XXX: Ya no se hace así en Gtk3
+        # tv.get_column(1).get_cell_renderers()[0].set_property('xalign', 1)
         fin = mx.DateTime.localtime()
         inicio = mx.DateTime.localtime() - mx.DateTime.oneWeek
         self.wids['e_fechainicio'].set_text(utils.str_fecha(inicio))
@@ -132,7 +147,7 @@ class ConsultaVentasPorProducto(Ventana):
         kilos reales CON embalaje y bultos. También busca los productos de
         compra con las cantidades que salieron o entraron.
         """
-        from ventana_progreso import VentanaProgreso
+        from .ventana_progreso import VentanaProgreso
         vpro = VentanaProgreso(padre=self.wids['ventana'])
         vpro.mostrar()
         fini = utils.parse_fecha(self.wids['e_fechainicio'].get_text())
@@ -152,12 +167,12 @@ class ConsultaVentasPorProducto(Ventana):
             i += 1
             vpro.set_valor(i / tot, "Analizando albarán %s..." % a.numalbaran)
             if a.es_de_movimiento():
-                continue    # No cuento los interalmacenes porque me falsean 
-                # los totales ya que en realidad la mercancía no se ha movido 
-                # a ningún sitio todavía. Simplemente se han mandado a otro 
+                continue    # No cuento los interalmacenes porque me falsean
+                # los totales ya que en realidad la mercancía no se ha movido
+                # a ningún sitio todavía. Simplemente se han mandado a otro
                 # almacén en espera de ser vendidos definitivamente al cliente.
-                # Esa venta, aunque no se facture, es la que debe contar. Da 
-                # igual que sea venta a cliente o salida por consumo propio. 
+                # Esa venta, aunque no se facture, es la que debe contar. Da
+                # igual que sea venta a cliente o salida por consumo propio.
                 # Los interalmacenes no implican salida real de mercancía,
                 # solo movimiento.
             extract_data_from_albaran(a, fib, gtx, cem, otros)
@@ -203,7 +218,7 @@ class ConsultaVentasPorProducto(Ventana):
         tot_cem = {'kg': {'a': 0.0, 'b': 0.0, 'c': 0.0},
                    '#':  {'a': 0,   'b': 0,   'c': 0}
                    }
-        from ventana_progreso import VentanaProgreso
+        from .ventana_progreso import VentanaProgreso
         vpro = VentanaProgreso(padre=self.wids['ventana'])
         vpro.mostrar()
         i = 0.0
@@ -239,9 +254,9 @@ class ConsultaVentasPorProducto(Ventana):
         """
         Rellena los totales de fibra, geotextiles y cemento.
         """
-        for dim in tot.keys():
+        for dim in list(tot.keys()):
             total = 0.0
-            for qlty in tot[dim].keys():
+            for qlty in list(tot[dim].keys()):
                 cantidad = tot[dim][qlty]
                 total += cantidad
                 nomentry = "e_%s_%s_%s" % (tipo, dim, qlty)
@@ -318,13 +333,13 @@ class ConsultaVentasPorProducto(Ventana):
         pactiva = self.wids['notebook1'].get_current_page()
         if pactiva == 0:
             tv = self.wids['tv_fibra']
-            totales = range(1, tv.get_model().get_n_columns() - 1)
+            totales = list(range(1, tv.get_model().get_n_columns() - 1))
         elif pactiva == 1:
             tv = self.wids['tv_gtx']
-            totales = range(1, tv.get_model().get_n_columns() - 1)
+            totales = list(range(1, tv.get_model().get_n_columns() - 1))
         elif pactiva == 2:
             tv = self.wids['tv_cem']
-            totales = range(1, tv.get_model().get_n_columns() - 1)
+            totales = list(range(1, tv.get_model().get_n_columns() - 1))
         elif pactiva == 3:
             tv = self.wids['tv_otros']
             totales = []
@@ -523,11 +538,11 @@ def extract_dic_abc(d):
             m2 = defaultdict(lambda: 0.0)
             kg = defaultdict(lambda: 0.0)
             bultos = defaultdict(lambda: 0)
-            cantidad = 0.0 
+            cantidad = 0.0
             for albaran in d:
                 _m2, _kg, _bultos, _cantidad = extract_dic_abc(d[albaran])
-                if _m2 is None:     # Si no es rollo, esto debe devolver None 
-                    m2 = None       # porque es donde se fijan el resto de 
+                if _m2 is None:     # Si no es rollo, esto debe devolver None
+                    m2 = None       # porque es donde se fijan el resto de
                                     # funciones para saber si es rollo o no:
                                     # que tenga valor la clave m2 o sea None.
                 if _cantidad is None:
@@ -536,7 +551,7 @@ def extract_dic_abc(d):
                                        (kg, _kg),
                                        (bultos, _bultos)):
                     if dparcial is not None:
-                        for qlty in dparcial.keys():
+                        for qlty in list(dparcial.keys()):
                             dsum[qlty] += dparcial[qlty]
                 if _cantidad is not None:
                     cantidad += _cantidad
@@ -696,7 +711,7 @@ def extract_data_from_abono(alb, fib, gtx, cem, otros):
 
 def convertir_a_listview(otv):
     """
-    Convierte el TreeView en un ListView con los mismos datos que el original y 
+    Convierte el TreeView en un ListView con los mismos datos que el original y
     lo devuelve.
     """
     ntv = gtk.TreeView()
@@ -713,8 +728,8 @@ def convertir_a_listview(otv):
         ncell = type(ocell)()
         ncol = gtk.TreeViewColumn(title, ncell)
         ncol.set_data("q_ncol", ocol.get_data("q_ncol"))
-        ncol.get_cell_renderers()[0].set_property('xalign', 
-                ocol.get_cell_renderers()[0].get_property('xalign')) 
+        ncol.get_cell_renderers()[0].set_property('xalign',
+                ocol.get_cell_renderers()[0].get_property('xalign'))
         ntv.append_column(ncol)
     return ntv
 

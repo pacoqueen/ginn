@@ -43,15 +43,27 @@
 ## NOTAS:
 ##
 ###################################################################
+import gi
+gi.require_version("Gtk", '3.0')
+from gi import pygtkcompat
+try:
+    from gi import pygtkcompat
+except ImportError:
+    pygtkcompat = None
+    from gi.repository import Gtk as gtk
+    from gi.repository import GObject as gobject
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+    import gtk
+    import gobject
+import datetime
 from formularios.ventana_progreso import VentanaProgreso
 from framework import pclases
 from informes import geninformes
 from ventana import Ventana
-import gtk
-import mx.DateTime
-import pygtk
 from formularios import utils
-pygtk.require('2.0')
 try:
     from api import murano
     MURANO = True
@@ -83,10 +95,7 @@ class BalasCable(Ventana):
                 productos_cable.append(
                         (ceb.productosVenta[0].id,
                          ceb.productosVenta[0].descripcion))
-        productos_cable.sort(
-                lambda p1, p2: (p1[-1] < p2[-1] and -1)
-                                or (p1[-1] > p2[-1] and 1)
-                                or 0)
+        productos_cable.sort(key = lambda p: p[-1])
         utils.rellenar_lista(self.wids['cbe_producto'], productos_cable)
         self.wids['sp_ver'].set_value(15)
         self.preparar_tv(self.wids['tv_balas'])
@@ -118,7 +127,7 @@ class BalasCable(Ventana):
         Genera una lista de diccionarios con los datos de las balas
         para generar sus etiquetas.
         """
-        from listado_balas import preparar_datos_etiquetas_balas_cable
+        from .listado_balas import preparar_datos_etiquetas_balas_cable
         data = preparar_datos_etiquetas_balas_cable(balas)
         if data:
             from formularios import reports
@@ -139,7 +148,7 @@ class BalasCable(Ventana):
                 murano_deleted = murano.ops.delete_articulo(a, observaciones="")
                 #a.balaCable = None
                 a.destroy(ventana = __file__)
-            except Exception, msg:
+            except Exception as msg:
                 self.logger.error("%sbalas_cable::borrar_balas -> Artículo ID %d de bala ID %d (%s) no se pudo eliminar. Excepción: %s"
                     % (self.usuario and self.usuario.usuario + ": " or "", a.id, b.id, b.codigo, msg))
                 #a.balaCable = b
@@ -148,12 +157,12 @@ class BalasCable(Ventana):
             else:
                 try:
                     b.destroy(ventana = __file__)
-                except Exception, msg:
+                except Exception as msg:
                     self.logger.error("%sbalas_cable::borrar_balas -> Bala ID %d (%s) no se pudo eliminar. Excepción: %s"
                         % (self.usuario and self.usuario.usuario + ": " or "", b.id, b.codigo, msg))
                     try:
                         b.destroy_en_cascada(ventana = __file__)
-                    except Exception, msg:
+                    except Exception as msg:
                         self.logger.error("%sbalas_cable::borrar_balas -> Bala ID %d (%s) no se pudo eliminar en cascada. Excepción: %s"
                             % (self.usuario and self.usuario.usuario + ": " or "", b.id, b.codigo, msg))
         self.actualizar_tabla()
@@ -215,7 +224,7 @@ class BalasCable(Ventana):
                                 bala = None,
                                 bigbag = None,
                                 rollo = None,
-                                fechahora = mx.DateTime.localtime(),
+                                fechahora = datetime.datetime.now(),
                                 productoVenta = producto,
                                 parteDeProduccion = None,
                                 albaranSalida = None,
@@ -325,8 +334,8 @@ class BalasCable(Ventana):
         No se almacenan mes y año, de modo que en cuanto se refresque la
         pantalla volverá al mes y año actual.
         """
-        mes_actual = mx.DateTime.today().month
-        meses = zip(range(1, 13), ("enero",
+        mes_actual = datetime.datetime.today().month
+        meses = list(zip(list(range(1, 13)), ("enero",
                                    "febrero",
                                    "marzo",
                                    "abril",
@@ -337,14 +346,14 @@ class BalasCable(Ventana):
                                    "septiembre",
                                    "octubre",
                                    "noviembre",
-                                   "diciembre"))
+                                   "diciembre")))
         mes = utils.dialogo_combo(titulo = "MES",
                                   texto = "Seleccione mes:",
                                   ops = meses,
                                   padre = self.wids['ventana'],
                                   valor_por_defecto = mes_actual)
         if mes != None:
-            anno_actual = mx.DateTime.today().year
+            anno_actual = datetime.datetime.today().year
             anno = utils.dialogo_entrada(titulo = "AÑO",
                                          texto = "Introduzca año:",
                                          valor_por_defecto = str(anno_actual),
@@ -368,9 +377,9 @@ class BalasCable(Ventana):
         """
         totacum = pclases.BalaCable.calcular_acumulado_peso_sin()
         if mes == None or not isinstance(mes, int):
-            mes = mx.DateTime.localtime().month
+            mes = datetime.datetime.now().month
         if anno == None or not isinstance(anno, int):
-            anno = mx.DateTime.localtime().year
+            anno = datetime.datetime.now().year
         self.wids['label4'].set_text("Total mes:\n<small><i>%02d/%d</i></small>" % (
             mes, anno))
         self.wids['label4'].set_use_markup(True)
@@ -405,9 +414,11 @@ class BalasCable(Ventana):
                 ('Observaciones', 'gobject.TYPE_STRING', True, False, False, self.cambiar_observaciones),
                 ('ID', 'gobject.TYPE_INT64', False, False, False, None))
         utils.preparar_listview(tv, cols)
+        # XXX: No se hace así ya.
+        # TODO: Gtk3 no tiene get_cell_renderers XXX XXX XXX XXX XXX XXX XXX
         for col in tv.get_columns()[2:3]:
-            for cell in col.get_cell_renderers():
-                cell.set_property("xalign", 1.0)
+        #     for cell in col.get_cell_renderers():
+        #         cell.set_property("xalign", 1.0)
             col.set_alignment(0.5)
         self.wids['tv_balas'].get_selection().set_mode(gtk.SELECTION_MULTIPLE)
 

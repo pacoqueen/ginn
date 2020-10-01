@@ -395,21 +395,7 @@ class ConsoleView(gtk.TextView):
         Initialize console view.
         '''
         gtk.TextView.__init__(self)
-        pango_ctx = self.get_pango_context()
-        chosen = None
-        for f in pango_ctx.list_families():
-            name = f.get_name()
-            # These are known to show e.g U+FFFC
-            if name in ["Courier New", "Courier Mono"]:
-                chosen = name
-                break
-            if name in ["Liberation Sans"]:
-                chosen = name
-                # But prefer a monospace one if possible
-        if chosen == None:
-            chosen = "Mono"
-        # TODO: XXX Deprecated XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX XXX
-        # self.modify_font(Pango.FontDescription(chosen))
+        self.set_monospace(True)
         self.set_cursor_visible(True)
         self.text_buffer = self.get_buffer()
         self.mark = self.text_buffer.create_mark('scroll_mark',
@@ -422,9 +408,8 @@ class ConsoleView(gtk.TextView):
         self.text_buffer.create_tag('0')
         self.text_buffer.create_tag('notouch', editable=False)
         self.color_pat = re.compile('\x01?\x1b\[(.*?)m\x02?')
-        self.line_start = \
-            self.text_buffer.create_mark('line_start',
-                                         self.text_buffer.get_end_iter(), True)
+        self.line_start = self.text_buffer.create_mark('line_start',
+                self.text_buffer.get_end_iter(), True)
         self.connect('key-press-event', self.onKeyPress)
 
     def write(self, text, editable=False):
@@ -603,7 +588,7 @@ class IPythonView(ConsoleView, IterableIPShell):
         self.cout = StringIO()
         IterableIPShell.__init__(self, cout=self.cout, cerr=self.cout,
                                  input_func=self.raw_input)
-#    self.connect('key_press_event', self.keyPress)
+        # self.connect('key_press_event', self.keyPress)
         self.interrupt = False
         self.execute()
         self.prompt = self.generatePrompt(False)

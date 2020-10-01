@@ -147,13 +147,13 @@ def get_datos_from_tv(tv, filtro_ceros, desglosar):
     numcols = len(tv.get_columns())
     for fila in model:
         filadato = []
-        for i in xrange(numcols):
-            index_columna = tv.get_column(i).get_data("q_ncol")
+        for i in range(numcols):
+            index_columna = tv.get_column(i).q_ncol
             if index_columna is None:
                 index_columna = i
             valor = fila[index_columna]
             if isinstance(valor, bool):
-                dato = valor and u"Sí".encode("iso-8859-15") or "No"
+                dato = valor and "Sí".encode("iso-8859-15") or "No"
             else:
                 try:
                     valor = to_float(valor)
@@ -203,13 +203,13 @@ def agregar_hijos(fila, numcols, numespacios, tv):
         filas = []
         for hijo in iterator_hijos:
             filahijo = []
-            for col in xrange(numcols):
+            for col in range(numcols):
                 index_columna = tv.get_column(col).get_data("q_ncol")
                 if index_columna is None:
                     index_columna = col
                 valor = hijo[index_columna]
                 if isinstance(valor, bool):
-                    dato = valor and u"Sí".encode("iso-8859-15") or "No"
+                    dato = valor and "Sí".encode("iso-8859-15") or "No"
                 else:
                     try:
                         valor = to_float(valor)

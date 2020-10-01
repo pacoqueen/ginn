@@ -1746,6 +1746,8 @@ def comparar_como_fechahora(n, m):
     """
     n = convertir_a_fechahora(n)
     m = convertir_a_fechahora(m)
+    if n is None and m is None:
+        return 0
     if n < m:
         return -1
     elif n > m:

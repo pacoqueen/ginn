@@ -34,17 +34,29 @@
 ###################################################################
 
 
-import pygtk
-pygtk.require('2.0')
+import gi
+gi.require_version("Gtk", '3.0')
+from gi import pygtkcompat
+try:
+    from gi import pygtkcompat
+except ImportError:
+    pygtkcompat = None
+    from gi.repository import Gtk as gtk
+    from gi.repository import GObject as gobject
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+    import gtk
+    import gobject
 from framework import pclases
 from formularios import ventana_progreso
 from formularios.ventana import Ventana
 from formularios import utils
 #from formularios.consulta_ventas_por_producto import act_fecha
 from informes import geninformes
-import gtk
 import time
-import mx.DateTime
+import datetime
 
 
 class ConsultaConsumo(Ventana):
@@ -83,12 +95,13 @@ class ConsultaConsumo(Ventana):
                  False, True, False, None),
                 ('ID', 'gobject.TYPE_STRING', False, False, False, None))
         utils.preparar_treeview(self.wids['tv_datos'], cols)
-        for ncol in range(1, 4):
-            self.wids['tv_datos'].get_column(ncol).get_cell_renderers()[0].set_property("xalign", 1)
-        self.fin = mx.DateTime.today() + mx.DateTime.TimeDelta(hours = 6)
+        # TODO: XXX: Ya no se hace así en Gtk3.
+        # for ncol in range(1, 4):
+        #     self.wids['tv_datos'].get_column(ncol).get_cell_renderers()[0].set_property("xalign", 1)
+        self.fin = datetime.datetime.today() + datetime.timedelta(hours = 6)
         self.wids['e_fechafin'].set_text(utils.str_fechahora(self.fin))
         self.wids['e_fechainicio'].set_text(
-            utils.str_fechahora(self.fin - (7 * mx.DateTime.oneDay)))
+            utils.str_fechahora(self.fin - (7 * datetime.timedelta(days=1))))
         self.inicio = utils.parse_fechahora(self.wids['e_fechainicio'].get_text())
         # self.wids['ch_fibra'].set_active(True)
         self.wids['ch_geotextiles'].set_active(True)
@@ -135,7 +148,7 @@ class ConsultaConsumo(Ventana):
             fecha_defecto=utils.parse_fechahora(
                 self.wids['e_fechainicio'].get_text()),
             padre=self.wids['ventana'])
-        temp = mx.DateTime.DateFrom(day=temp[0], month=temp[1], year=temp[2]) + mx.DateTime.TimeDelta(hours = 6)
+        temp = datetime.datetime(day=temp[0], month=temp[1], year=temp[2]) + datetime.timedelta(hours = 6)
         self.wids['e_fechainicio'].set_text(utils.str_fechahora(temp))
 
     def set_fin(self, boton):
@@ -143,7 +156,7 @@ class ConsultaConsumo(Ventana):
             fecha_defecto=utils.parse_fechahora(
                 self.wids['e_fechafin'].get_text()),
             padre=self.wids['ventana'])
-        temp = mx.DateTime.DateFrom(day=temp[0], month=temp[1], year=temp[2]) + mx.DateTime.TimeDelta(hours = 6)
+        temp = datetime.datetime(day=temp[0], month=temp[1], year=temp[2]) + datetime.timedelta(hours = 6)
         self.wids['e_fechafin'].set_text(utils.str_fechahora(temp))
 
     def por_fecha(self, e1, e2):
@@ -186,7 +199,7 @@ class ConsultaConsumo(Ventana):
             fechafin = self.fin = utils.parse_fechahora(
                 self.wids['e_fechafin'].get_text())
         except ValueError:
-            fechafin = self.fin = mx.DateTime.today()
+            fechafin = self.fin = datetime.datetime.today()
         PDP = pclases.ParteDeProduccion
         if not self.inicio:
             pdps = PDP.select(PDP.q.fechahorainicio < self.fin,
@@ -196,9 +209,9 @@ class ConsultaConsumo(Ventana):
                                           PDP.q.fechahorainicio < self.fin),
                               orderBy='fecha')
         try:
-            dias = ((fechafin - fechainicio) + mx.DateTime.oneDay).days
+            dias = ((fechafin - fechainicio) + datetime.timedelta(days=1)).days
         except TypeError:   # Alguna de las fechas es None. Uso los partes
-            dias = ((pdps[-1].fecha - pdps[0].fecha) + mx.DateTime.oneDay).days
+            dias = ((pdps[-1].fecha - pdps[0].fecha) + datetime.timedelta(days=1)).days
         vpro = ventana_progreso.VentanaProgreso(padre=self.wids['ventana'])
         tot = pdps.count()
         i = 0.0
@@ -405,7 +418,7 @@ class ConsultaConsumo(Ventana):
         from formularios import reports
         datos = []
         model = self.wids['tv_datos'].get_model()
-        for i in xrange(len(model)):
+        for i in range(len(model)):
             datos.append((model[i][0], model[i][1]))
         if not self.inicio:
             fechaInforme = 'Hasta ' + utils.str_fechahora(self.fin)

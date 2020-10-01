@@ -496,6 +496,13 @@ class Menu:
                     os.path.join(
                         os.path.dirname(os.path.realpath(__file__)),
                         '..', 'imagenes', 'dorsia.png'))
+            # XXX Oscurezco para destacar las ventanas no portadas a glade gtk3
+            fichglade = os.path.join(
+                os.path.dirname(os.path.realpath(__file__)),
+                '..', 'formularios', ventana.fichero.replace(".py", ".glade"))
+            if not os.path.exists(fichglade):
+                color = 0x00000000
+                pixbuf.saturate_and_pixelate(pixbuf, 0.5, True)
             model.append((self.cutmaister(ventana.descripcion),
                           pixbuf, ventana.fichero, ventana.clase))
             # El model tiene: nombre (descripción), icono, archivo, clase,
