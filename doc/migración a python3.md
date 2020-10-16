@@ -21,3 +21,12 @@ vi fichero.glade
 > Y comprobar que todos los widgets son compatibles.
 
 glade fichero.glade
+
+---
+
+Para depurar widgets GTK: https://wiki.gnome.org/action/show/Projects/GTK/Inspector?action=show&redirect=Projects%2FGTK%2B%2FInspector
+
+`gsettings set org.gtk.Settings.Debug enable-inspector-keybinding true`
+
+y Ctrl+Shift+D o Ctrl+Shift+I.
+
