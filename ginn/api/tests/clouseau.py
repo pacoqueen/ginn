@@ -57,8 +57,14 @@ sys.argv = _argv
 
 def exceldate2datetime(serial):
     """ Convierte una fecha "serial" de Excel (un float) a datetime. """
-    seconds = (serial - 25569) * 86400.0
-    res = datetime.datetime.utcfromtimestamp(seconds)
+    try:
+        res = datetime.datetime.strptime(serial, "%m/%d/%Y %H:%M:%S")
+    except (TypeError, ValueError):
+        try:
+            seconds = (serial - 25569) * 86400.0
+        except TypeError:
+            seconds = (float(serial) - 25569) * 86400.0
+        res = datetime.datetime.utcfromtimestamp(seconds)
     return res
 
 
