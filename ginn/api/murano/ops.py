@@ -1655,7 +1655,12 @@ def create_rollo(rollo, cantidad=1, producto=None, guid_proceso=None,
         # Sage me indica que no informe de la serie en el movimiento de stock
         # para solucionar lo del registro duplicado creado por Murano.
         ubicacion = "Almac. de geotextiles."[:15]
-        unidad_medida = "M2"
+        if articulo.get_str_calidad() == "C":
+            # Los productos C se almacenan y venden en kg. No tienen largo y
+            # ancho medible.
+            unidad_medida = "KG"
+        else:
+            unidad_medida = "M2"
         # pylint: disable=bad-continuation
         (c, database, ejercicio, periodo, fecha, documento, codigo_articulo,
          codigo_almacen, grupo_talla, codigo_talla, tipo_movimiento,
