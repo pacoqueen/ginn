@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2020  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2021  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -79,7 +79,7 @@ try:
     from formularios import nftp
 except ImportError as msg:
     print("WARNING: No se pudo importar nftp. No se podrá usar FTP:\n%s" % (msg))
-from .fixedpoint import FixedPoint as Ffloat
+from fixedpoint import FixedPoint as Ffloat
 from collections import defaultdict
 import re
 from lib.fuzzywuzzy.fuzzywuzzy import process as fuzzyprocess # fuzzyprocess

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2019  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2021  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -69,10 +69,25 @@
 # sys.stdout = open("salida_debug.txt", "a")
 
 import time
-import pygtk
-pygtk.require('2.0')
-import gtk                          # noqa
-import mx.DateTime                  # noqa
+
+import gi
+gi.require_version("Gtk", '3.0')
+from gi import pygtkcompat
+
+try:
+    from gi import pygtkcompat
+except ImportError:
+    pygtkcompat = None
+    from gi.repository import Gtk as gtk
+    from gi.repository import GObject as gobject
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+    import gtk
+    import gobject
+
+
 from ventana import Ventana         # noqa
 from formularios import utils       # noqa
 from formularios import reports     # noqa
@@ -113,7 +128,7 @@ try:
         # Intento sumar. Si no se puede, salta un TypeError.
         claruki = incidencia.horainicio + UNDIA
 except TypeError:
-    UNDIA = mx.DateTime.oneDay
+    UNDIA = datetime.timedelta(days=1)
 
 
 def build_etiqueta(rollo):
@@ -272,7 +287,7 @@ class PartesDeFabricacionRollos(Ventana):
                                       self.actualizar_consumo_estimado)
         self.wids['sp_merma'].set_property("visible", False)
         # Agrego campo calculado nuevo (NEW! 19/06/2019)
-        hbox = self.wids['e_consumo_estimado'].parent
+        hbox = self.wids['e_consumo_estimado'].get_parent()
         label = gtk.Label('Producción teórica: ')
         self.wids['e_prod_teorica'] = entry = gtk.Entry()
         entry.set_property("editable", False)
@@ -407,11 +422,13 @@ class PartesDeFabricacionRollos(Ventana):
         except AttributeError as msg:
             txt = "%s: partes_de_fabricacion_rollos.py::es_diferente -> Devuelvo True; Excepción 'AttributeError': %s" % (self.usuario, msg)
             self.logger.error(txt)
-            partedeproduccion.sync()  # Si la excepción es por lo que pienso, al sincronizar se actualizarán las horas como mx y no como str.
+            partedeproduccion.sync()  # Si la excepción es por lo que pienso, al sincronizar se actualizarán las horas como datetime y no como str.
             condicion = False
         return not condicion    # Condición verifica que sea igual
 
     def colorear_rollos(self, tv):
+        # TODO: De momento desactivado. No get_cell_renderers en gtk3.
+        return
         def cell_func(column, cell, model, itr, numcol):
             cell.set_property("foreground", None)   # Colores por defecto. Si no se cumple nada de lo de abajo, es como debe estar la fila.
             cell.set_property("cell-background", None)
@@ -464,7 +481,7 @@ class PartesDeFabricacionRollos(Ventana):
                 # Y si es None no se ha intentado volcar todavía. Colores por defecto
 
         cols = tv.get_columns()
-        for i in xrange(len(cols)):
+        for i in range(len(cols)):
             column = cols[i]
             cells = column.get_cell_renderers()
             for cell in cells:
@@ -476,6 +493,8 @@ class PartesDeFabricacionRollos(Ventana):
         cuyas horas trabajadas sean inferiores o superiores a
         la duración del parte.
         """
+        # TODO: De momento desactivado. No get_cell_renderers en gtk3.
+        return
         def cell_func(column, cell, model, itr, numcol):
             idht = model[itr][-1]
             ht = pclases.HorasTrabajadas.get(idht)
@@ -527,7 +546,7 @@ class PartesDeFabricacionRollos(Ventana):
                         gtk.ICON_SIZE_SMALL_TOOLBAR))
             b_rescatar_prodestandar.connect("clicked",
                     self.rescatar_prodestandar)
-            tabla = self.wids['e_o11'].parent
+            tabla = self.wids['e_o11'].get_parent()
             i, d, ar, ab = tabla.child_get(self.wids['e_o11'],
                 "left-attach", "right-attach", "top-attach", "bottom-attach")
             tabla.remove(self.wids['e_o11'])
@@ -642,7 +661,7 @@ class PartesDeFabricacionRollos(Ventana):
         ide = model[path][-1]
         desecho = pclases.DescuentoDeMaterial.get(ide)
         desecho.observaciones = newtext
-        desecho.fechahora = mx.DateTime.localtime()     # Actualizo la fecha y hora.
+        desecho.fechahora = datetime.datetime.today()  # Actualizo la fecha y hora.
         self.objeto.unificar_desechos()
         self.rellenar_tabla_desechos()
 
@@ -803,9 +822,13 @@ class PartesDeFabricacionRollos(Ventana):
         ht = pclases.HorasTrabajadas.get(ide)
         try:
             try:
-                dtdelta = mx.DateTime.DateTimeDelta(0, float(newtext.split(':')[0]), float(newtext.split(':')[1]), 0)
+                dtdelta = datetime.timedelta(hours=float(newtext.split(':')[0]),
+                                             minutes=float(newtext.split(':')[1]),
+                                             seconds=0)
             except IndexError:
-                dtdelta = mx.DateTime.DateTimeDelta(0, int(newtext), 0)
+                dtdelta = datetime.timedelta(hours=int(newtext),
+                                             minutes=0,
+                                             seconds=0)
                 newtext = utils.str_hora_corta(dtdelta)
             if dtdelta > self.objeto.get_duracion():
                 utils.dialogo_info(titulo = "TIEMPO INCORRECTO",
@@ -970,7 +993,7 @@ class PartesDeFabricacionRollos(Ventana):
         DEPRECATED.
         ¡OBSOLETO!
         """
-        if isinstance(hfin, mx.DateTime.DateTimeDeltaType):
+        if isinstance(hfin, datetime.timedelta):
             hfin = hfin + UNDIA
         duracion = hfin - hini
         if duracion.day > 0:
@@ -1267,12 +1290,7 @@ class PartesDeFabricacionRollos(Ventana):
             res = d.horafin.strftime('%H:%M')
         except AttributeError:
             try:
-                try:
-                    fechahora_fin = d.fechahora+mx.DateTime.DateTimeDeltaFrom(
-                            hours = d.calcular_tiempo_teorico(
-                                solo_clase_a = False))
-                except TypeError:
-                    fechahora_fin = d.fechahora + datetime.timedelta(
+                fechahora_fin = d.fechahora + datetime.timedelta(
                             hours = d.calcular_tiempo_teorico(
                                 solo_clase_a = False))
                 res = utils.str_fechahoralarga(fechahora_fin)
@@ -1630,7 +1648,7 @@ class PartesDeFabricacionRollos(Ventana):
         ide = model[path][-1]
         incidencia = pclases.Incidencia.get(ide)
         try:
-            incidencia.horainicio = mx.DateTime.DateTimeFrom(
+            incidencia.horainicio = datetime.datetime(
                                         day = self.objeto.fecha.day,
                                         month = self.objeto.fecha.month,
                                         year = self.objeto.fecha.year,
@@ -1660,7 +1678,7 @@ class PartesDeFabricacionRollos(Ventana):
         ide = model[path][-1]
         incidencia = pclases.Incidencia.get(ide)
         try:
-            incidencia.horafin = mx.DateTime.DateTimeFrom(
+            incidencia.horafin = datetime.datetime(
                                         day = self.objeto.fecha.day,
                                         month = self.objeto.fecha.month,
                                         year = self.objeto.fecha.year,
@@ -1701,7 +1719,7 @@ class PartesDeFabricacionRollos(Ventana):
         if partedeproduccion != None:
             partedeproduccion.notificador.desactivar()
         partedeproduccion = pclases.ParteDeProduccion(
-            fecha = mx.DateTime.localtime(),
+            fecha = datetime.datetime.today(),
             horainicio = time.struct_time(time.localtime()[:4]
                                           + (0,0)
                                           + time.localtime()[6:]),
@@ -1739,7 +1757,8 @@ class PartesDeFabricacionRollos(Ventana):
                 if a_buscar != '':
                     a_buscar = a_buscar.replace("-", "/")
                     if a_buscar.count('/') == 1:
-                        a_buscar = "%s/%d" % (a_buscar, mx.DateTime.localtime().year)
+                        a_buscar = "%s/%d" % (a_buscar,
+                                datetime.datetime.today().year)
                     try:
                         fecha = utils.parse_fecha(a_buscar)
                     except ValueError:
@@ -1865,7 +1884,7 @@ class PartesDeFabricacionRollos(Ventana):
         try:
             partedeproduccion.fecha = utils.parse_fecha(fecha)
         except:
-            partedeproduccion.fecha = mx.DateTime.localtime()
+            partedeproduccion.fecha = datetime.datetime.today()
         partedeproduccion.horainicio = horainicio
         partedeproduccion.horafin = horafin
         partedeproduccion._corregir_campos_fechahora()
@@ -2003,7 +2022,7 @@ class PartesDeFabricacionRollos(Ventana):
                                padre=self.wids['ventana'])
             return
         criterio = pclases.ProductoVenta.q.lineaDeProduccionID == idlineasrollos[0].id
-        for i in xrange(1, idlineasrollos.count()):
+        for i in range(1, idlineasrollos.count()):
             criterio = pclases.OR(criterio, pclases.ProductoVenta.q.lineaDeProduccionID == idlineasrollos[i].id)
         producto = self.buscar_producto(criterio)
         if producto is not None:
@@ -2247,11 +2266,11 @@ class PartesDeFabricacionRollos(Ventana):
             if not utils.dialogo(titulo = "¿ESTÁ SEGURO?",
                                  texto = "Ha introducido un rango demasiado grande (%s).\n¿Está realmente seguro de que quiere introducir %d artículos al parte?" % (rango, fin+1-ini),
                                  padre = self.wids['ventana']):
-                return xrange(0,0)
+                return range(0,0)
         if not defectuosos:
-            return xrange(ini, fin+1)
+            return range(ini, fin+1)
         else:
-            return range(-fin, -ini + 1)[::-1]  # HACK: Python 2.3 no tiene __reversed__ en el xrange.
+            return list(range(-fin, -ini + 1))[::-1]  # HACK: Python 2.3 no tiene __reversed__ en el xrange.
 
     def drop_rollo(self, boton):
         if not self.usuario or self.usuario.nivel > 1:
@@ -2359,16 +2378,16 @@ class PartesDeFabricacionRollos(Ventana):
         if horafin == None:
             return
         self.objeto.sync()
-        horaini = mx.DateTime.DateTimeFrom('%d-%2d-%2d %s' %
-                                            (self.objeto.fecha.year,
-                                             self.objeto.fecha.month,
-                                             self.objeto.fecha.day,
-                                             horaini))
-        horafin = mx.DateTime.DateTimeFrom('%d-%2d-%2d %s' %
-                                            (self.objeto.fecha.year,
-                                             self.objeto.fecha.month,
-                                             self.objeto.fecha.day,
-                                             horafin))
+        horaini = datetime.datetime('%d-%2d-%2d %s' %
+                                    (self.objeto.fecha.year,
+                                    self.objeto.fecha.month,
+                                    self.objeto.fecha.day,
+                                    horaini))
+        horafin = datetime.datetime('%d-%2d-%2d %s' %
+                                    (self.objeto.fecha.year,
+                                    self.objeto.fecha.month,
+                                    self.objeto.fecha.day,
+                                    horafin))
         if horaini > horafin:
             horafin += UNDIA
         while horaini < self.objeto.fechahorainicio:   # El parte está en la
@@ -2682,7 +2701,7 @@ class PartesDeFabricacionRollos(Ventana):
         except:
             utils.dialogo_info(titulo = 'CÓDIGO INCORRECTO', texto = 'Los códigos deben ser numéricos.\n\nVerifique que los ha escrito correctamente y que ha separado el rango con un guión.', padre = self.wids['ventana'])
             return []
-        return xrange(ini, fin+1)
+        return range(ini, fin+1)
 
     def add_bala(self, w):
         """ DEPRECATED """
@@ -2984,10 +3003,7 @@ class PartesDeFabricacionRollos(Ventana):
 
     def _DEPRECATED_bloquear(self, ch, mostrar_alerta=True):
         # Si el parte tiene menos de un día y se encuentra bloqueado, dejo que lo pueda desbloquear cualquiera.
-        try:
-            es_de_hoy = mx.DateTime.localtime() - self.objeto.fecha <= UNDIA
-        except TypeError:   # Estoy funcionando con mx para la fecha del parte
-            es_de_hoy = mx.DateTime.localtime() - self.objeto.fecha <= mx.DateTime.oneDay
+        es_de_hoy = datetime.datetime.today() - self.objeto.fecha <= UNDIA
         if es_de_hoy and (self.objeto.bloqueado or ch.get_active()):
             self.objeto.bloqueado = False
         elif ch.get_active() != self.objeto.bloqueado:
@@ -3045,7 +3061,7 @@ class PartesDeFabricacionRollos(Ventana):
                         # Porque Mr. Soy-demasiado-listo-para-esperar me tiene hasta los...
                         finparte = utils.convertir_a_fechahora(
                                 self.objeto.fechahorafin)
-                        ahora = mx.DateTime.now()
+                        ahora = datetime.datetime.now()
                         parte_terminado = ahora - finparte > 0
                         sensitive = self.wids['ch_bloqueado'].get_sensitive()
                         activo = sensitive and parte_terminado
@@ -3432,7 +3448,7 @@ class PartesDeFabricacionRollos(Ventana):
         if ("w" in self.__permisos
             and self.objeto
             and not self.objeto.bloqueado
-            and self.objeto.fecha < mx.DateTime.localtime() - UNDIA
+            and self.objeto.fecha < datetime.datetime.today() - UNDIA
            ):  # Tiene permiso para bloquear el parte
             res = utils.dialogo(titulo = "DEBE VERIFICAR EL PARTE",
                                 texto = "Antes de cerrar el parte debe verifi"
@@ -3560,10 +3576,9 @@ class PartesDeFabricacionRollos(Ventana):
         res = []
         LAB = pclases.Laborable
         dia_lab_parte = self.objeto.fecha
-        if isinstance(self.objeto.horainicio,
-                      type(mx.DateTime.DateTimeDelta(0))):
-            seis_am = mx.DateTime.DateTimeDeltaFrom(hours = 6)
-            medianoche = mx.DateTime.DateTimeDeltaFrom(hours = 0)
+        if isinstance(self.objeto.horainicio, datetime.timedelta):
+            seis_am = datetime.timedelta(hours = 6)
+            medianoche = datetime.timedelta(hours = 0)
             restar_un_dia = lambda f: f - UNDIA
         else:
             seis_am = datetime.time(6)
@@ -4041,7 +4056,7 @@ def get_puerto_serie(debug = False):
                 except:
                     com = None
     else:
-        for numpuerto in [2] + range(3, 16) + [1]:
+        for numpuerto in [2] + list(range(3, 16)) + [1]:
             try:
                 com = serial.Serial("COM%d" % numpuerto)
                 break
@@ -4119,7 +4134,7 @@ def imprimir_etiqueta(articulo, marcado_ce, ventana_parte, defectuoso = False):
                     # salido de más.
             else:
                 ultima = articulo.rollo.numrollo + 1
-            for numrollo in xrange(articulo.rollo.numrollo, ultima):
+            for numrollo in range(articulo.rollo.numrollo, ultima):
                 elemento = {'descripcion': producto.nombre,
                             'densidad': str(campos.gramos),
                             'ancho': "%s m" % (campos.ancho),

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-# Copyright (C) 2005-2020  Francisco José Rodríguez Bogado,                   #
+# Copyright (C) 2005-2021  Francisco José Rodríguez Bogado,                   #
 #                          Diego Muñoz Escalante.                             #
 # (pacoqueen@users.sourceforge.net, escalant3@users.sourceforge.net)          #
 #                                                                             #
@@ -52,13 +52,26 @@
 #  - Comprobar que las horas del parte no pisan a otro parte de balas.
 ###################################################################
 
+import gi
+gi.require_version("Gtk", '3.0')
+from gi import pygtkcompat
+
+try:
+    from gi import pygtkcompat
+except ImportError:
+    pygtkcompat = None
+    from gi.repository import Gtk as gtk
+    from gi.repository import GObject as gobject
+
+if pygtkcompat is not None:
+    pygtkcompat.enable()
+    pygtkcompat.enable_gtk(version='3.0')
+    import gtk
+    import gobject
+
 from ventana import Ventana
 from formularios import utils
-import pygtk
-pygtk.require('2.0')
-import gtk                                                          # noqa
 import time                                                         # noqa
-import mx.DateTime                                                  # noqa
 from framework import pclases                                       # noqa
 from informes import geninformes                                    # noqa
 from utils import _float as float                                   # noqa
@@ -635,7 +648,7 @@ class PartesDeFabricacionBalas(Ventana):
         desecho = pclases.DescuentoDeMaterial.get(ide)
         desecho.observaciones = newtext
         # Actualizo la fecha y hora.
-        desecho.fechahora = mx.DateTime.localtime()
+        desecho.fechahora = datetime.datetime.today()
         self.objeto.unificar_desechos()
         self.rellenar_tabla_desechos()
 
@@ -1338,11 +1351,11 @@ class PartesDeFabricacionBalas(Ventana):
                 return False
 
     def calcular_duracion(self, hfin, hini):
-        if isinstance(hfin, mx.DateTime.DateTimeDeltaType):
-            hfin = hfin + mx.DateTime.oneDay
+        if isinstance(hfin, datetime.timedelta):
+            hfin = hfin + datetime.timedelta(days=1)
         duracion = hfin - hini
         if duracion.day > 0:
-            duracion -= mx.DateTime.oneDay
+            duracion -= datetime.timedelta(days=1)
         if duracion.day > 0:
             myprint("WARNING: partes_de_fabricacion_balas: calcular_duracion:"
                     " ID %d: ¿Seguro que dura más de un día completo?" % (
@@ -1629,8 +1642,8 @@ class PartesDeFabricacionBalas(Ventana):
             for horaini in confs_silos:
                 self.wids['tv_granza_silos'].set_sensitive(True)
                 try:
-                    horafin = confs_silos.keys()[
-                            confs_silos.keys().index(horaini) + 1]
+                    horafin = list(confs_silos.keys())[
+                            list(confs_silos.keys()).index(horaini) + 1]
                 except IndexError:
                     horafin = self.objeto.fechahorafin
                 configs = confs_silos[horaini]
@@ -1781,7 +1794,7 @@ class PartesDeFabricacionBalas(Ventana):
         ide = model[path][-1]
         ht = pclases.HorasTrabajadas.get(ide)
         try:
-            dtdelta = mx.DateTime.DateTimeDelta(
+            dtdelta = datetime.timedelta(
                     0,
                     float(newtext.split(':')[0]),
                     float(newtext.split(':')[1]),
@@ -1974,21 +1987,21 @@ class PartesDeFabricacionBalas(Ventana):
         incidencia = pclases.Incidencia.get(ide)
         self.objeto.sync()
         try:
-            incidencia.horainicio = mx.DateTime.DateTimeFrom(
+            incidencia.horainicio = datetime.datetime(
                     day=self.objeto.fecha.day,
                     month=self.objeto.fecha.month,
                     year=self.objeto.fecha.year,
                     hour=int(newtext.split(":")[0]),
                     minute=int(newtext.split(":")[1]))
             if (incidencia.horafin - incidencia.horainicio).days > 1:
-                incidencia.horainicio + mx.DateTime.oneDay
+                incidencia.horainicio + datetime.timedelta(days=1)
             while incidencia.horainicio < self.objeto.fechahorainicio:  # El
                 # parte está en la franja de medianoche y la incidencia
                 # comienza después de las 12.
                 try:
-                    incidencia.horainicio += mx.DateTime.oneDay   # Debe llevar
+                    incidencia.horainicio += datetime.timedelta(days=1)   # Debe llevar
                     # la fecha del día siguiente.
-                    incidencia.horafin += mx.DateTime.oneDay
+                    incidencia.horafin += datetime.timedelta(days=1)
                 except TypeError:   # Es un datetime
                     incidencia.horainicio += datetime.timedelta(1)
                     incidencia.horafin += datetime.timedelta(1)
@@ -2017,7 +2030,7 @@ class PartesDeFabricacionBalas(Ventana):
         incidencia = pclases.Incidencia.get(ide)
         self.objeto.sync()
         try:
-            incidencia.horafin = mx.DateTime.DateTimeFrom(
+            incidencia.horafin = datetime.datetime(
                     day=self.objeto.fecha.day,
                     month=self.objeto.fecha.month,
                     year=self.objeto.fecha.year,
@@ -2025,15 +2038,15 @@ class PartesDeFabricacionBalas(Ventana):
                     minute=int(newtext.split(":")[1]))
             if (incidencia.horafin - incidencia.horainicio).days < 0:
                 try:
-                    incidencia.horafin += mx.DateTime.oneDay
+                    incidencia.horafin += datetime.timedelta(days=1)
                 except TypeError:
                     incidencia.horafin += datetime.timedelta(days=1)
             while incidencia.horainicio < self.objeto.fechahorainicio:  # El
                 # parte está en la franja de medianoche y la incidencia
                 # comienza después de las 12.
                 try:
-                    incidencia.horainicio += mx.DateTime.oneDay   # Debe llevar
-                    incidencia.horafin += mx.DateTime.oneDay    # la fecha del
+                    incidencia.horainicio += datetime.timedelta(days=1)   # Debe llevar
+                    incidencia.horafin += datetime.timedelta(days=1)    # la fecha del
                     # día siguiente
                 except TypeError:   # Es un datetime
                     incidencia.horainicio += datetime.timedelta(1)
@@ -2073,7 +2086,7 @@ class PartesDeFabricacionBalas(Ventana):
                 time.localtime()[:3] + ((time.localtime()[3]+8) % 24, 0, 0)
                 + time.localtime()[6:])
         partedeproduccion = pclases.ParteDeProduccion(
-                fecha=mx.DateTime.localtime(),
+                fecha=datetime.datetime.now(),
                 horainicio=horainicio,
                 horafin=horafin,
                 prodestandar=0,
@@ -2107,7 +2120,7 @@ class PartesDeFabricacionBalas(Ventana):
                     a_buscar = a_buscar.replace("-", "/")
                     if a_buscar.count('/') == 1:
                         a_buscar = "%s/%d" % (a_buscar,
-                                              mx.DateTime.localtime().year)
+                                              datetime.datetime.now().year)
                     try:
                         fecha = utils.parse_fecha(a_buscar)
                     except ValueError:
@@ -2260,18 +2273,18 @@ class PartesDeFabricacionBalas(Ventana):
         try:
             partedeproduccion.fecha = utils.parse_fecha(fecha)
         except:                                                         # noqa
-            partedeproduccion.fecha = mx.DateTime.localtime()
+            partedeproduccion.fecha = datetime.datetime.now()
         partedeproduccion.sync()    # Para forzar a que el atributo fecha sea
         # una fecha "válida" dentro del dominio antes de leerlo para guardar
         # la hora.
         try:
-            partedeproduccion.horainicio = mx.DateTime.DateTimeFrom(
+            partedeproduccion.horainicio = datetime.datetime(
                 day=partedeproduccion.fecha.day,
                 month=partedeproduccion.fecha.month,
                 year=partedeproduccion.fecha.year,
                 hour=int(horainicio.split(":")[0]),
                 minute=int(horainicio.split(":")[1]))
-            partedeproduccion.horafin = mx.DateTime.DateTimeFrom(
+            partedeproduccion.horafin = datetime.datetime(
                 day=partedeproduccion.fecha.day,
                 month=partedeproduccion.fecha.month,
                 year=partedeproduccion.fecha.year,
@@ -2921,7 +2934,7 @@ class PartesDeFabricacionBalas(Ventana):
             return None, pedir_peso
         if '-' in numbala:
             try:
-                ini, fin = map(int, numbala.split('-'))
+                ini, fin = list(map(int, numbala.split('-')))
             except:                                                     # noqa
                 utils.dialogo_info(titulo='RANGO INCORRECTO',
                                    texto='El rango "%s" introducido no es '
@@ -2948,7 +2961,7 @@ class PartesDeFabricacionBalas(Ventana):
                                    padre=self.wids['ventana'])
                 return None, pedir_peso
             ini, fin = numbala, numbala
-        return range(ini, fin+1), pedir_peso
+        return list(range(ini, fin+1)), pedir_peso
 
     def crear_bala(self, numbala, peso, lote, fibracemento=False):
         """
@@ -3187,25 +3200,25 @@ class PartesDeFabricacionBalas(Ventana):
         if not horafin:
             return
         self.objeto.sync()
-        horaini = mx.DateTime.DateTimeFrom(day=self.objeto.fecha.day,
+        horaini = datetime.datetime(day=self.objeto.fecha.day,
                                            month=self.objeto.fecha.month,
                                            year=self.objeto.fecha.year,
                                            hour=int(horaini.split(":")[0]),
                                            minute=int(horaini.split(":")[1]),
                                            second=0)
-        horafin = mx.DateTime.DateTimeFrom(day=self.objeto.fecha.day,
+        horafin = datetime.datetime(day=self.objeto.fecha.day,
                                            month=self.objeto.fecha.month,
                                            year=self.objeto.fecha.year,
                                            hour=int(horafin.split(":")[0]),
                                            minute=int(horafin.split(":")[1]),
                                            second=0)
         if horaini > horafin:
-            horafin = horafin + mx.DateTime.oneDay
+            horafin = horafin + datetime.timedelta(days=1)
         while horaini < self.objeto.fechahorainicio:   # El parte está en la
             # franja de medianoche y la incidencia comienza después de las 12.
-            horaini += mx.DateTime.oneDay   # Debe llevar la fecha del día
+            horaini += datetime.timedelta(days=1)   # Debe llevar la fecha del día
             # siguiente.
-            horafin += mx.DateTime.oneDay
+            horafin += datetime.timedelta(days=1)
         if entran_en_turno(self.objeto, horaini, horafin):
             observaciones = utils.dialogo_entrada(
                     titulo='OBSERVACIONES',
@@ -3739,7 +3752,7 @@ class PartesDeFabricacionBalas(Ventana):
                                 codigo=codigo,
                                 observaciones=observaciones,
                                 pendiente=True,
-                                envio=mx.DateTime.localtime(),
+                                envio=datetime.datetime.now(),
                                 recepcion=None,
                                 loteCem=None)
             pclases.Auditoria.nuevo(m, self.usuario, __file__)
@@ -3770,7 +3783,7 @@ class PartesDeFabricacionBalas(Ventana):
     def _DEPRECATED_bloquear(self, ch, mostrar_alerta=True):
         # Si el parte tiene menos de un día y se encuentra bloqueado, dejo
         # que lo pueda desbloquear cualquiera.
-        if (mx.DateTime.localtime() - self.objeto.fecha <= mx.DateTime.oneDay
+        if (datetime.datetime.now() - self.objeto.fecha <= datetime.timedelta(days=1)
                 and (self.objeto.bloqueado or ch.get_active())):
             self.objeto.bloqueado = False
         elif ch.get_active() != self.objeto.bloqueado:
@@ -3840,7 +3853,7 @@ class PartesDeFabricacionBalas(Ventana):
                         # tiene hasta los...
                         finparte = utils.convertir_a_fechahora(
                                 self.objeto.fechahorafin)
-                        ahora = mx.DateTime.now()
+                        ahora = datetime.datetime.now()
                         parte_terminado = ahora - finparte > 0
                         sensitive = self.wids['ch_bloqueado'].get_sensitive()
                         activo = sensitive and parte_terminado
@@ -4456,7 +4469,7 @@ class PartesDeFabricacionBalas(Ventana):
                                            padre=self.wids['ventana'])
 
     def _salir(self, w, event=None):
-        ayer = mx.DateTime.localtime()-mx.DateTime.oneDay
+        ayer = datetime.datetime.now()-datetime.timedelta(days=1)
         if ("w" in self.__permisos
                 and self.objeto
                 and not self.objeto.bloqueado
@@ -4595,14 +4608,14 @@ class PartesDeFabricacionBalas(Ventana):
         res = []
         LAB = pclases.Laborable
         dia_lab_parte = self.objeto.fecha
-        seis_am = mx.DateTime.DateTimeDeltaFrom(hours=6)
-        medianoche = mx.DateTime.DateTimeDeltaFrom(hours=0)
+        seis_am = datetime.timedelta(hours=6)
+        medianoche = datetime.timedelta(hours=0)
         if (self.objeto.horainicio >= medianoche
                 and self.objeto.horainicio <= seis_am
                 and self.objeto.horafin <= seis_am):
             # No se mezclan turnos, esta última comprobación podría no hacer
             # falta.
-            dia_lab_parte -= mx.DateTime.oneDay
+            dia_lab_parte -= datetime.timedelta(days=1)
         laborables = LAB.select(
                 """calendario_laboral_id = %d
                    AND date_part('day', fecha) = %d""" % (
@@ -4641,13 +4654,13 @@ class PartesDeFabricacionBalas(Ventana):
                 thi = turnohorainicio
                 thf = turnohorafin
                 if thi > thf:
-                    thf += mx.DateTime.oneDay
+                    thf += datetime.timedelta(days=1)
                 if ohi > ohf:
-                    ohf += mx.DateTime.oneDay
+                    ohf += datetime.timedelta(days=1)
                 if ohi >= medianoche and ohi < seis_am:
-                    ohi += mx.DateTime.oneDay
+                    ohi += datetime.timedelta(days=1)
                 if ohf >= medianoche and ohf <= seis_am:
-                    ohf += mx.DateTime.oneDay
+                    ohf += datetime.timedelta(days=1)
                 if thi <= ohi <= thf and thi <= ohf <= thf:
                     for empleado in laborable.empleados:
                         res.append(empleado)
@@ -5320,15 +5333,15 @@ def mostrar_carga_silo(label, silo):
 def entran_en_turno(selfobjeto, hi, hf):
     # TODO: Falta comprobar que además de que entran en el turno no se
     # pisen con otras incidencias del mismo parte.
-    hini = mx.DateTime.DateTimeDeltaFrom(':'.join(map(str, hi.tuple()[3:6])))
-    hfin = mx.DateTime.DateTimeDeltaFrom(':'.join(map(str, hf.tuple()[3:6])))
+    hini = datetime.timedelta(':'.join(map(str, hi.tuple()[3:6])))
+    hfin = datetime.timedelta(':'.join(map(str, hf.tuple()[3:6])))
     tini = selfobjeto.horainicio
     if not isinstance(tini, type(hini)):
-        # Can't compare datetime.time to mx.DateTime.DateTimeDelta.
+        # Can't compare datetime.time to datetime.timedelta.
         tini = utils.DateTime2DateTimeDelta(tini)
     tfin = selfobjeto.horafin
     if not isinstance(tfin, type(hfin)):
-        # Can't compare datetime.time to mx.DateTime.DateTimeDelta.
+        # Can't compare datetime.time to datetime.timedelta.
         tfin = utils.DateTime2DateTimeDelta(tfin)
     if tini <= tfin:
         hini_dentro = hini >= tini and hini <= tfin
