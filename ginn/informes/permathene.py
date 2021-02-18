@@ -67,8 +67,8 @@ def crear_etiquetas_rollos(rollos, mostrar_marcado=True, lang="es"):
              # "09 iso1": "De EN13249:2001 a EN13257:2001",  # Fijo
              # "10 iso2": "EN13265:2001",     # Fijo
              # La norma ha cambiado. Ahora nos regimos por la del 2014
-             "09 iso1": "De EN13249:2014 a EN13257:2014",  # Fijo
-             "10 iso2": "EN13265:2014",     # Fijo
+             "09 iso1": "De EN13249 a EN13257",  # Fijo
+             "10 iso2": "EN13265",     # Fijo
              "11 blanco2": "",      # Separador
              "12 producto": None,
              "13 descripcion":
@@ -494,8 +494,8 @@ def helene_laanest(texto):
     translate_table["Fabricado por: %s"] = "Manufactured by: %s"
     translate_table["Distribuido por: %s"] = "Distributed by: %s"
     translate_table["Tfno: %s, %s"] = "Phone: %s, %s"
-    translate_table["De EN13249:2014 a EN13257:2014"] = "From EN13249:2014 "\
-        "to EN13257:2014"
+    translate_table["De EN13249 a EN13257"] = "From EN13249 "\
+        "to EN13257"
     translate_table["Geotextil no tejido de polipropileno 100% virgen"] \
         = "Nonwoven geotextile of 100% polypropylene fibres."
     translate_table["Uso: %s"] = "Use: %s"
