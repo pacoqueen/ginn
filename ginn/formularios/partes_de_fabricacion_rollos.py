@@ -2981,7 +2981,11 @@ class PartesDeFabricacionRollos(Ventana):
             # CWT: Enviar un correo electrónico a una dirección HARDCODED sí
             #      o sí. +jmadrid
             if m.codigo:
-                msj = "La muestra %s está " % m.codigo
+                try:
+                    descripcion = m.partida.productoVenta.descripcion
+                except AttributeError:
+                    descripcion = "geotextiles"
+                msj = "La muestra %s de %s está ".format(m.codigo, descripcion)
             else:
                 msj = "Tiene una muestra "
             msj += "pendiente de analizar."
