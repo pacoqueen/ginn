@@ -2966,7 +2966,7 @@ class PartesDeFabricacionRollos(Ventana):
                     descripcion = m.partida.productoVenta.descripcion
                 except AttributeError:
                     descripcion = "geotextiles"
-                msj = "La muestra %s de %s está ".format(m.codigo, descripcion)
+                msj = "La muestra {} de {} está ".format(m.codigo, descripcion)
             else:
                 msj = "Tiene una muestra "
             msj += "pendiente de analizar."
@@ -2979,9 +2979,12 @@ class PartesDeFabricacionRollos(Ventana):
             except IndexError:
                 pass
             rte = self.usuario
-            asunto = "Muestra {} extraída".format(m.codigo and m.codigo or "")
-            texto = "{}\n\n\n{}\n\n\n{}".format(msj, m.observaciones,
-                                                utils.str_fechahora(m.envio))
+            asunto = "Muestra {} [{}] extraída".format(
+                    m.codigo and m.codigo or "",
+                    m.partida and m.partida and m.partida.productoVenta
+                        and m.partida.productoVenta.descripcion or "")
+            texto = "{}\n\n\nObservaciones: {}\n\n\nFecha y hora: {}".format(
+                    msj, m.observaciones, utils.str_fechahora(m.envio))
             utils.enviar_correoe(rte.cuenta, dests, asunto, texto,
                                  servidor=rte.smtpserver, usuario=rte.smtpuser,
                                  password=rte.smtppassword, ssl=True)
