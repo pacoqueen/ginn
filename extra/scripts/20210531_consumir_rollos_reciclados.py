@@ -143,14 +143,32 @@ def consumir_articulo(articulo, simulate=True, strict_mode=False, tag=None):
         res = False
         print("[STRICT ON] El artículo {} no está en almacén.".format(articulo.codigo))
     else:
-        lastop = murano.ops.get_ultimo_movimiento_articulo_serie(
-                murano.connection.Connection(), articulo)
-        if lastop and lastop['Comentario'].startswith("Consum. como reciclada"):
+        if ya_consumido(articulo):
             res = True
             print("Artículo {} ya consumido anteriormente.".format(articulo.codigo))
         else:
             res = False
             print("El artículo {} no está en almacén.".format(articulo.codigo))
+    return res
+
+def ya_consumido(articulo):
+    """
+    Devuelve True si el artículo ya se consumió en meses anteriores como
+    fibra reciclada.
+    No mira la serie ni el tipo de movimiento. Solo los comentarios.
+    """
+    res = None
+    lastop = murano.ops.get_ultimo_movimiento_articulo_serie(
+                murano.connection.Connection(), articulo)
+    if not lastop:
+        res = False
+    else:
+        if lastop['Comentario'].startswith("Consum. como reciclada"):
+            res = True
+        elif lastop['Comentario'].startswith("Consumo desgarradora"):
+            res = True
+        else:
+            res = False
     return res
 
 def consumir_rollos(articulos, simulate=True):
