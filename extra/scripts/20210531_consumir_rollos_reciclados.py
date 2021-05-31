@@ -26,7 +26,7 @@ from api import murano          # noqa
 from lib.tqdm import tqdm       # noqa
 
 
-def cargar_rollos_a_reciciclar():
+def cargar_rollos_a_reciclar():
     """Devuelve la lista de códigos de rollos para dar de baja en Murano."""
     codigos = """Y7189
 Y7089
