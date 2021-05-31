@@ -172,7 +172,7 @@ def main():
     Rutina principal.
     """
     rollos = cargar_rollos_a_reciclar()
-    res = consumir_rollos(rollos, simulate=True)
+    res = consumir_rollos(rollos, simulate=False)
     if res:
         print("OK")
     else:
