@@ -113,7 +113,7 @@ Y7519
 Y7441"""
     cods = codigos.split()
     rollos = []
-    for cod in tqdm(cods, "Cargando rollos a reciclar..."):
+    for cod in tqdm.tqdm(cods, "Cargando rollos a reciclar..."):
         rollos.append(pclases.Articulo.get_articulo(cod))
     assert len(rollos) == len(cods)
     return rollos
@@ -162,7 +162,7 @@ def consumir_rollos(articulos):
     facilitar la trazabilidad.
     """
     res = None
-    for articulo in tqdm(articulos, "Consumiendo artículos..."):
+    for articulo in tqdm.tqdm(articulos, "Consumiendo artículos..."):
         res = consumir_articulo(articulo, simulate=simulate) and res
     print("{} artículos tratados.".format(len(articulos)))
     return res
