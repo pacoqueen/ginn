@@ -145,7 +145,7 @@ def consumir_articulo(articulo, simulate=True, strict_mode=False, tag=None):
     else:
         lastop = murano.ops.get_ultimo_movimiento_articulo_serie(
                 murano.connection.Connection(), articulo)
-        if lastop['Comentario'].startswith("Consum. como reciclada"):
+        if lastop and lastop['Comentario'].startswith("Consum. como reciclada"):
             res = True
             print("Artículo {} ya consumido anteriormente.".format(articulo.codigo))
         else:
