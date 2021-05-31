@@ -153,7 +153,7 @@ def consumir_articulo(articulo, simulate=True, strict_mode=False, tag=None):
             print("El artículo {} no está en almacén.".format(articulo.codigo))
     return res
 
-def consumir_rollos(articulos):
+def consumir_rollos(articulos, simulate=True):
     """
     Comprueba si el artículo existe en Murano y si está disponible en almacén.
     Si no lo está, comprueba que se ha dado de baja como consumo de fibra
