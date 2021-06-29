@@ -28,89 +28,44 @@ from lib.tqdm import tqdm       # noqa
 
 def cargar_rollos_a_reciclar():
     """Devuelve la lista de códigos de rollos para dar de baja en Murano."""
-    codigos = """Y7189
-Y7089
-Y7190
-Y7193
-Y7205
-Y7209
-Y7192
-X2274
-Y7225
-X2283
-Y7223
-Y7257
-Y7237
-Y7227
-Y7208
-Y7256
-Y7234
-Y7211
-Y7290
-Y7287
-Y7291
-Y7277
-Y7266
-Y7267
-Y7269
-Y7302
-Y7314
-Y7309
-Y7369
-Y7371
-Y7286
-Y7311
-Y7328
-Y7312
-Y7283
-Y7378
-Y7361
-Y7383
-Y7373
-Y7372
-Y7388
-Y7389
-Y7363
-Y7391
-Y7210
-Y7390
-Y7375
-Y7300
-Y7386
-Y7408
-Y7415
-Y7387
-Y7430
-Y7395
-Y7398
-Y7429
-Y7382
-Y7481
-Y7487
-Y7489
-Y7483
-Y7485
-Y7478
-Y7482
-Y7447
-Y7491
-Y7492
-Y7494
-Y7484
-Y7352
-Y7345
-Y7358
-Y7440
-Y7524
-Y7504
-Y7412
-Y7439
+    codigos = """Y7526
 Y7531
-Y7524
-Y7525
-Y7520
-Y7519
-Y7441"""
+Y7529
+Y7518
+Y7477
+Y7488
+Y7515
+Y7449
+Y7534
+Y7476
+Y7503
+Y7444
+Y7451
+Y7517
+Y7452
+Y7454
+Y7450
+Y7498
+Y7542
+Y7523
+Y7541
+Y7545
+Y7513
+Y7427
+Y7563
+Y7546
+Y7583
+Y7584
+Y7571
+Y7585
+Y7575
+Y7572
+Y7574
+Y7588
+Y7573
+Y7577
+Y7587
+Y7576"""
     cods = codigos.split()
     rollos = []
     for cod in tqdm.tqdm(cods, "Cargando rollos a reciclar..."):
@@ -128,7 +83,7 @@ def consumir_articulo(articulo, simulate=True, strict_mode=False, tag=None):
     como fibra reciclada.
     """
     if tag is None:
-        tag = " +cgutierrez"    # Últimos rollos de cgutierrez: mayo 21
+        tag = " +abahamonde"    # Rollos anotados por abahamonde
     if murano.ops.esta_en_almacen(articulo):
         if not simulate:
             res = murano.ops.delete_articulo(articulo, observaciones="Consum. como reciclada {}{}".format(datetime.date.today().strftime("%b%y"), tag))
@@ -190,7 +145,7 @@ def main():
     Rutina principal.
     """
     rollos = cargar_rollos_a_reciclar()
-    res = consumir_rollos(rollos, simulate=False)
+    res = consumir_rollos(rollos, simulate=True)
     if res:
         print("OK")
     else:
