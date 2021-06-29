@@ -116,8 +116,8 @@ def consumir_rollos(articulos, simulate=True):
     Si el rollo está en almacén lo da de baja con un comentario especial para
     facilitar la trazabilidad.
     """
-    res = None
-    for articulo in tqdm(articulos, "Consumiendo artículos..."):
+    res = True
+    for articulo in tqdm.tqdm(articulos, "Consumiendo artículos..."):
         res = consumir_articulo(articulo, simulate=simulate) and res
     print("{} artículos tratados.".format(len(articulos)))
     return res
