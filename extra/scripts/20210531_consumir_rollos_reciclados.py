@@ -28,44 +28,51 @@ from lib.tqdm import tqdm       # noqa
 
 def cargar_rollos_a_reciciclar():
     """Devuelve la lista de códigos de rollos para dar de baja en Murano."""
-    codigos = """Y7526
-Y7531
-Y7529
-Y7518
-Y7477
-Y7488
-Y7515
-Y7449
-Y7534
-Y7476
-Y7503
-Y7444
-Y7451
-Y7517
-Y7452
-Y7454
-Y7450
-Y7498
-Y7542
-Y7523
-Y7541
-Y7545
-Y7513
-Y7427
-Y7563
-Y7546
-Y7583
-Y7584
-Y7571
-Y7585
-Y7575
-Y7572
-Y7574
-Y7588
-Y7573
-Y7577
-Y7587
-Y7576"""
+    codigos = """Y7618
+Y7582
+Y7564
+Y7569
+Y7586
+Y7610
+Y7579
+Y7623
+Y7612
+Y7607
+Y7580
+Y7624
+Y7609
+Y7643
+Y7655
+Y7548
+Y7644
+Y7653
+Y7591
+Y7622
+Y7680
+Y7681
+Y7565
+Y7646
+Y7667
+X2305
+Y7690
+Y7683
+Y7630
+Y7601
+Y7692
+X2312
+Y7689
+Y7698
+Y7676
+Y7671
+Y7640
+Y7647
+Y7641
+Y7673
+Y7701
+Y7700
+Y7619
+Y7672
+Y7632"""
     cods = codigos.split()
     rollos = []
     for cod in tqdm(cods, "Cargando rollos a reciclar..."):
