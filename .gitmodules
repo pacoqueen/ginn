@@ -43,3 +43,6 @@
 [submodule "ginn/lib/lxml"]
 	path = ginn/lib/lxml
 	url = git@github.com:Geotexan/lxml.git
+[submodule "ginn/api/sap/toodles"]
+	path = ginn/api/sap/toodles
+	url = git@github.com:Geotexan/toodles.git
