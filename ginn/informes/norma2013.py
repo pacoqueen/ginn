@@ -31,8 +31,8 @@ def etiqueta_rollos_norma13(rollos, mostrar_marcado=True, lang="es"):
     """
     # Voy a tratar de reescribir esto regla en mano a ver si consigo
     # cuadrarlo bien en la etiquetadora GEMINI.
-    alto = 12.55 * cm
     ancho = 8.4 * cm
+    alto = 12.55 * cm
 
     # Creo la hoja
     nomarchivo = os.path.join(gettempdir(),
